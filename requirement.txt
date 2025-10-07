@@ -1,0 +1,15 @@
+# Minimal dependencies for LINE RAG Bot
+
+pinecone[grpc]>=7.3.0
+sentence-transformers>=2.3.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+flask>=2.3.0
+line-bot-sdk>=3.5.0
+pdfplumber>=0.11.0 
+pdf2image>=1.17.0
+pytesseract>=0.3.12
+pythainlp>=5.1.2
+openpyxl>=3.1.5
+xlsxwriter>=3.2.9
+tqdm>=4.67.1
