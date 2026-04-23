@@ -1,0 +1,20 @@
+{
+  "updated_at": "2026-04-24T01:22:12.062905",
+  "status": "complete",
+  "phase": "complete",
+  "problem_source": "detected",
+  "top_k": 15,
+  "ground_truth_path": "expanded_ground_truth.json",
+  "strategies": [
+    "basic",
+    "h2l-hybrid"
+  ],
+  "completed_strategy_count": 2,
+  "total_strategy_count": 2,
+  "completed_case_count": 150,
+  "latest_summary": "evaluation_results/pairs/hybrid_detected_top15/proper_eval_summary_20260424_012211.json",
+  "latest_raw": "evaluation_results/pairs/hybrid_detected_top15/proper_eval_raw_20260424_012211.json",
+  "latest_cases": "evaluation_results/pairs/hybrid_detected_top15/proper_eval_cases_20260424_012211.json",
+  "history_limit": 2,
+  "save_history": true
+}

@@ -1,0 +1,20 @@
+{
+  "updated_at": "2026-04-24T00:17:20.402334",
+  "status": "complete",
+  "phase": "complete",
+  "problem_source": "detected",
+  "top_k": 15,
+  "ground_truth_path": "expanded_ground_truth.json",
+  "strategies": [
+    "bm25_only",
+    "h2l-bm25"
+  ],
+  "completed_strategy_count": 2,
+  "total_strategy_count": 2,
+  "completed_case_count": 150,
+  "latest_summary": "evaluation_results/pairs/bm25_detected_top15/proper_eval_summary_20260424_001720.json",
+  "latest_raw": "evaluation_results/pairs/bm25_detected_top15/proper_eval_raw_20260424_001720.json",
+  "latest_cases": "evaluation_results/pairs/bm25_detected_top15/proper_eval_cases_20260424_001720.json",
+  "history_limit": 2,
+  "save_history": true
+}

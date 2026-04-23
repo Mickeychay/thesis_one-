@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-04-19T12:40:17.642535",
+    "timestamp": "2026-04-24T01:01:05.998657",
     "num_cases": 75,
     "strategies": [
       "hyde",
@@ -28,131 +28,131 @@
         "n": 75
       },
       "total_relevant": {
-        "mean": 0.5866666666666667,
-        "std": 1.059475761350343,
+        "mean": 0.7066666666666667,
+        "std": 1.2519140900592538,
         "median": 0.0,
         "min": 0.0,
-        "max": 5.0,
+        "max": 7.0,
         "n": 75
       },
       "MAP": {
-        "mean": 0.12297258667258668,
-        "std": 0.2478315141367103,
+        "mean": 0.1744520624877768,
+        "std": 0.30573363449648405,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "MRR": {
-        "mean": 0.1461909571909572,
-        "std": 0.30834369611636575,
+        "mean": 0.20713804713804715,
+        "std": 0.36261922921002654,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "P@3": {
-        "mean": 0.057777777777777775,
-        "std": 0.15751151241483868,
+        "mean": 0.08888888888888888,
+        "std": 0.17497795275581798,
         "median": 0.0,
         "min": 0.0,
         "max": 0.6666666666666666,
         "n": 75
       },
       "R@3": {
-        "mean": 0.08977777777777776,
-        "std": 0.2509226431382911,
+        "mean": 0.15025396825396825,
+        "std": 0.3103122006617958,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "F1@3": {
-        "mean": 0.06577777777777778,
-        "std": 0.17520133039688798,
+        "mean": 0.10292063492063494,
+        "std": 0.1969194245450776,
         "median": 0.0,
         "min": 0.0,
         "max": 0.8,
         "n": 75
       },
       "nDCG@3": {
-        "mean": 0.09700793550558248,
-        "std": 0.2580528887978066,
+        "mean": 0.14141517064831485,
+        "std": 0.30076559074921144,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "P@5": {
-        "mean": 0.05333333333333334,
-        "std": 0.13199326582148888,
+        "mean": 0.07466666666666666,
+        "std": 0.14150932438849706,
         "median": 0.0,
         "min": 0.0,
-        "max": 0.8,
+        "max": 0.6,
         "n": 75
       },
       "R@5": {
-        "mean": 0.1362222222222222,
-        "std": 0.3068281378440373,
+        "mean": 0.1937142857142857,
+        "std": 0.34707995597957186,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "F1@5": {
-        "mean": 0.07156613756613757,
-        "std": 0.16308437242005994,
+        "mean": 0.09979894179894182,
+        "std": 0.1748781909794475,
         "median": 0.0,
         "min": 0.0,
-        "max": 0.8000000000000002,
+        "max": 0.6,
         "n": 75
       },
       "nDCG@5": {
-        "mean": 0.11572125183944143,
-        "std": 0.2655134616164252,
+        "mean": 0.1599442505472366,
+        "std": 0.30521806016369335,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "P@10": {
-        "mean": 0.048,
-        "std": 0.09289420505786856,
+        "mean": 0.05866666666666667,
+        "std": 0.11206347407707037,
         "median": 0.0,
         "min": 0.0,
-        "max": 0.5,
+        "max": 0.6,
         "n": 75
       },
       "R@10": {
-        "mean": 0.26111111111111107,
-        "std": 0.41773935993572137,
+        "mean": 0.306984126984127,
+        "std": 0.43758723710029096,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "F1@10": {
-        "mean": 0.07733821733821733,
-        "std": 0.1397189778963346,
+        "mean": 0.09213570742982508,
+        "std": 0.15672640301467064,
         "median": 0.0,
         "min": 0.0,
-        "max": 0.6666666666666666,
+        "max": 0.7058823529411764,
         "n": 75
       },
       "nDCG@10": {
-        "mean": 0.15652665870204005,
-        "std": 0.28477665163523913,
+        "mean": 0.20018615236070206,
+        "std": 0.32318679326193916,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "retrieval_time": {
-        "mean": 3.6198070367177326,
-        "std": 0.938418839206582,
-        "median": 3.5431721210479736,
-        "min": 1.7303309440612793,
-        "max": 8.480329990386963,
+        "mean": 4.023713121414184,
+        "std": 1.550299432940552,
+        "median": 3.8174519538879395,
+        "min": 2.1545419692993164,
+        "max": 13.61416220664978,
         "n": 75
       },
       "num_detected_problems": {
@@ -174,137 +174,137 @@
         "n": 75
       },
       "total_relevant": {
-        "mean": 0.7733333333333333,
-        "std": 1.3423693811896766,
+        "mean": 0.72,
+        "std": 1.3222203548072715,
         "median": 0.0,
         "min": 0.0,
-        "max": 7.0,
+        "max": 8.0,
         "n": 75
       },
       "MAP": {
-        "mean": 0.19396752982467266,
-        "std": 0.32174456461325385,
+        "mean": 0.16822576035076034,
+        "std": 0.29786068231787105,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "MRR": {
-        "mean": 0.23447138047138044,
-        "std": 0.3868842916328991,
+        "mean": 0.213983793983794,
+        "std": 0.37640523509701634,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "P@3": {
-        "mean": 0.11111111111111109,
-        "std": 0.21314806770278752,
+        "mean": 0.08888888888888888,
+        "std": 0.17497795275581798,
         "median": 0.0,
         "min": 0.0,
-        "max": 1.0,
+        "max": 0.6666666666666666,
         "n": 75
       },
       "R@3": {
-        "mean": 0.16215873015873014,
-        "std": 0.31350735104376454,
+        "mean": 0.13666666666666666,
+        "std": 0.28403181877049277,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "F1@3": {
-        "mean": 0.12006349206349207,
-        "std": 0.21526379019732608,
+        "mean": 0.09913419913419914,
+        "std": 0.18834654932664366,
         "median": 0.0,
         "min": 0.0,
-        "max": 0.8,
+        "max": 0.6666666666666666,
         "n": 75
       },
       "nDCG@3": {
-        "mean": 0.17107263617289342,
-        "std": 0.3248659125632131,
+        "mean": 0.15190213026668586,
+        "std": 0.31111927055489286,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "P@5": {
-        "mean": 0.08533333333333334,
-        "std": 0.15722029837849255,
+        "mean": 0.07200000000000001,
+        "std": 0.14100591004162438,
         "median": 0.0,
         "min": 0.0,
         "max": 0.8,
         "n": 75
       },
       "R@5": {
-        "mean": 0.2173968253968254,
-        "std": 0.3681331164587213,
+        "mean": 0.1822222222222222,
+        "std": 0.3279265199234972,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "F1@5": {
-        "mean": 0.11252910052910053,
-        "std": 0.1888100984279854,
+        "mean": 0.09476597476597479,
+        "std": 0.1651366519863201,
         "median": 0.0,
         "min": 0.0,
-        "max": 0.7499999999999999,
+        "max": 0.6153846153846154,
         "n": 75
       },
       "nDCG@5": {
-        "mean": 0.1929233864986199,
-        "std": 0.3322962993730638,
+        "mean": 0.1694194068146184,
+        "std": 0.31375135619861755,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "P@10": {
-        "mean": 0.064,
-        "std": 0.11271202242884296,
+        "mean": 0.052,
+        "std": 0.10244998779892558,
         "median": 0.0,
         "min": 0.0,
         "max": 0.6,
         "n": 75
       },
       "R@10": {
-        "mean": 0.30542857142857144,
-        "std": 0.43242003179805016,
+        "mean": 0.25333333333333335,
+        "std": 0.40653003169097685,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "F1@10": {
-        "mean": 0.0996730589671766,
-        "std": 0.16019420972121534,
+        "mean": 0.08103674103674105,
+        "std": 0.14421478927462497,
         "median": 0.0,
         "min": 0.0,
-        "max": 0.7058823529411764,
+        "max": 0.6666666666666665,
         "n": 75
       },
       "nDCG@10": {
-        "mean": 0.22734528734182552,
-        "std": 0.3502853951983777,
+        "mean": 0.19442486621523608,
+        "std": 0.3325636465294933,
         "median": 0.0,
         "min": 0.0,
         "max": 1.0,
         "n": 75
       },
       "retrieval_time": {
-        "mean": 4.056056022644043,
-        "std": 0.8050871525531157,
-        "median": 4.141865015029907,
-        "min": 1.6327309608459473,
-        "max": 5.945321083068848,
+        "mean": 8.42073872566223,
+        "std": 5.5701948437405875,
+        "median": 5.534750938415527,
+        "min": 2.536733865737915,
+        "max": 26.769176721572876,
         "n": 75
       },
       "num_detected_problems": {
-        "mean": 3.466666666666667,
-        "std": 2.2939534045447,
-        "median": 3.0,
+        "mean": 2.6666666666666665,
+        "std": 1.828174560106945,
+        "median": 2.0,
         "min": 0.0,
         "max": 8.0,
         "n": 75
@@ -316,31 +316,31 @@
       "pairwise": {
         "hyde_vs_h2l-hyde": {
           "test": "wilcoxon_signed_rank",
-          "statistic": 45.0,
-          "p_value": 0.02499223291619807,
-          "significant": "True",
-          "cohens_d": -0.2771696457105996,
-          "effect_interpretation": "small",
-          "mean_diff": -0.07720213465917847
+          "statistic": 88.5,
+          "p_value": 0.7934248337952458,
+          "significant": "False",
+          "cohens_d": -0.04552047441186848,
+          "effect_interpretation": "negligible",
+          "mean_diff": -0.009475156267381796
         }
       },
       "descriptive": {
         "hyde": {
-          "mean": 0.11572125183944143,
-          "std": 0.2655134616164252,
+          "mean": 0.1599442505472366,
+          "std": 0.30521806016369335,
           "median": 0.0,
           "ci_95": [
-            0.05562989857265816,
-            0.1758126051062247
+            0.09086690070199545,
+            0.22902160039247776
           ]
         },
         "h2l-hyde": {
-          "mean": 0.1929233864986199,
-          "std": 0.3322962993730638,
+          "mean": 0.1694194068146184,
+          "std": 0.31375135619861755,
           "median": 0.0,
           "ci_95": [
-            0.117717654204268,
-            0.2681291187929718
+            0.09841079027034466,
+            0.24042802335889213
           ]
         }
       }
@@ -349,31 +349,31 @@
       "pairwise": {
         "hyde_vs_h2l-hyde": {
           "test": "wilcoxon_signed_rank",
-          "statistic": 21.0,
-          "p_value": 0.01648422162567482,
-          "significant": "True",
-          "cohens_d": -0.2823724829518376,
-          "effect_interpretation": "small",
-          "mean_diff": -0.03200000000000001
+          "statistic": 44.0,
+          "p_value": 0.9119780165048018,
+          "significant": "False",
+          "cohens_d": 0.026499946973824722,
+          "effect_interpretation": "negligible",
+          "mean_diff": 0.0026666666666666505
         }
       },
       "descriptive": {
         "hyde": {
-          "mean": 0.05333333333333334,
-          "std": 0.13199326582148888,
+          "mean": 0.07466666666666666,
+          "std": 0.14150932438849706,
           "median": 0.0,
           "ci_95": [
-            0.023460445092457604,
-            0.08320622157420907
+            0.04264009162747865,
+            0.10669324170585467
           ]
         },
         "h2l-hyde": {
-          "mean": 0.08533333333333334,
-          "std": 0.15722029837849255,
+          "mean": 0.07200000000000001,
+          "std": 0.14100591004162438,
           "median": 0.0,
           "ci_95": [
-            0.049751030149702134,
-            0.12091563651696455
+            0.0400873583530149,
+            0.10391264164698512
           ]
         }
       }
@@ -382,31 +382,31 @@
       "pairwise": {
         "hyde_vs_h2l-hyde": {
           "test": "wilcoxon_signed_rank",
-          "statistic": 94.0,
-          "p_value": 0.013046866251677875,
-          "significant": "True",
-          "cohens_d": -0.30018304645253685,
-          "effect_interpretation": "small",
-          "mean_diff": -0.07099494315208599
+          "statistic": 134.0,
+          "p_value": 0.44315186305531074,
+          "significant": "False",
+          "cohens_d": 0.03672868991797417,
+          "effect_interpretation": "negligible",
+          "mean_diff": 0.006226302137016471
         }
       },
       "descriptive": {
         "hyde": {
-          "mean": 0.12297258667258668,
-          "std": 0.2478315141367103,
+          "mean": 0.1744520624877768,
+          "std": 0.30573363449648405,
           "median": 0.0,
           "ci_95": [
-            0.0668830348435898,
-            0.17906213850158353
+            0.10525802718644468,
+            0.24364609778910895
           ]
         },
         "h2l-hyde": {
-          "mean": 0.19396752982467266,
-          "std": 0.32174456461325385,
+          "mean": 0.16822576035076034,
+          "std": 0.29786068231787105,
           "median": 0.0,
           "ci_95": [
-            0.12114987991668634,
-            0.266785179732659
+            0.10081354186480679,
+            0.2356379788367139
           ]
         }
       }
@@ -415,31 +415,31 @@
       "pairwise": {
         "hyde_vs_h2l-hyde": {
           "test": "wilcoxon_signed_rank",
-          "statistic": 29.5,
-          "p_value": 0.0027747992455175305,
-          "significant": "True",
-          "cohens_d": -0.35569391931386274,
-          "effect_interpretation": "small",
-          "mean_diff": -0.08828042328042324
+          "statistic": 92.5,
+          "p_value": 0.9198151206572287,
+          "significant": "False",
+          "cohens_d": -0.02918888437207182,
+          "effect_interpretation": "negligible",
+          "mean_diff": -0.006845746845746847
         }
       },
       "descriptive": {
         "hyde": {
-          "mean": 0.1461909571909572,
-          "std": 0.30834369611636575,
+          "mean": 0.20713804713804715,
+          "std": 0.36261922921002654,
           "median": 0.0,
           "ci_95": [
-            0.07640620933631971,
-            0.2159757050455947
+            0.12506958977573174,
+            0.28920650450036256
           ]
         },
         "h2l-hyde": {
-          "mean": 0.23447138047138044,
-          "std": 0.3868842916328991,
+          "mean": 0.213983793983794,
+          "std": 0.37640523509701634,
           "median": 0.0,
           "ci_95": [
-            0.1469112225029396,
-            0.3220315384398213
+            0.12879526977119649,
+            0.2991723181963915
           ]
         }
       }
@@ -458,93 +458,93 @@
         "h2l": "h2l-hyde",
         "case_count": 75,
         "quality_metric_wins": {
-          "h2l": 3,
-          "baseline": 0,
+          "h2l": 2,
+          "baseline": 1,
           "tie": 0
         },
         "metrics": [
           {
             "metric": "MAP",
             "n": 75,
-            "baseline_mean": 0.12297258667258668,
-            "h2l_mean": 0.19396752982467266,
-            "delta_mean": 0.07099494315208602,
-            "h2l_case_wins": 20,
-            "baseline_case_wins": 8,
-            "ties": 47,
+            "baseline_mean": 0.1744520624877768,
+            "h2l_mean": 0.16822576035076034,
+            "delta_mean": -0.006226302137016428,
+            "h2l_case_wins": 11,
+            "baseline_case_wins": 14,
+            "ties": 50,
             "bootstrap_ci": {
-              "mean": 0.07099494315208602,
-              "ci_lower": 0.026882010861050142,
-              "ci_upper": 0.13777113495857904,
-              "se_bootstrap": 0.027555191317272635
+              "mean": -0.006226302137016428,
+              "ci_lower": -0.037148041369065715,
+              "ci_upper": 0.04237657689102142,
+              "se_bootstrap": 0.01944525421808194
             },
             "bayesian_signed_rank": {
-              "p_h2l_wins": 0.9948,
-              "p_rope": 0.0052,
-              "p_baseline_wins": 0.0,
+              "p_h2l_wins": 0.197,
+              "p_rope": 0.3676,
+              "p_baseline_wins": 0.4354,
               "rope": 0.01
             },
             "paired_test": {
               "test": "wilcoxon_signed_rank",
-              "p_value": 0.013046866251677875,
-              "statistic": 94.0,
-              "significant": true
+              "p_value": 0.44315186305531074,
+              "statistic": 134.0,
+              "significant": false
             }
           },
           {
             "metric": "MRR",
             "n": 75,
-            "baseline_mean": 0.1461909571909572,
-            "h2l_mean": 0.23447138047138044,
-            "delta_mean": 0.08828042328042328,
-            "h2l_case_wins": 16,
-            "baseline_case_wins": 5,
-            "ties": 54,
+            "baseline_mean": 0.20713804713804715,
+            "h2l_mean": 0.213983793983794,
+            "delta_mean": 0.006845746845746845,
+            "h2l_case_wins": 9,
+            "baseline_case_wins": 10,
+            "ties": 56,
             "bootstrap_ci": {
-              "mean": 0.08828042328042328,
-              "ci_lower": 0.040694429639498694,
-              "ci_upper": 0.15697986279752194,
-              "se_bootstrap": 0.029048123224427045
+              "mean": 0.006845746845746845,
+              "ci_lower": -0.040887879942421386,
+              "ci_upper": 0.06164129277950556,
+              "se_bootstrap": 0.026350134153428278
             },
             "bayesian_signed_rank": {
-              "p_h2l_wins": 0.9994,
-              "p_rope": 0.0006,
-              "p_baseline_wins": 0.0,
+              "p_h2l_wins": 0.4498,
+              "p_rope": 0.2828,
+              "p_baseline_wins": 0.2674,
               "rope": 0.01
             },
             "paired_test": {
               "test": "wilcoxon_signed_rank",
-              "p_value": 0.0027747992455175305,
-              "statistic": 29.5,
-              "significant": true
+              "p_value": 0.9198151206572287,
+              "statistic": 92.5,
+              "significant": false
             }
           },
           {
             "metric": "nDCG@5",
             "n": 75,
-            "baseline_mean": 0.11572125183944143,
-            "h2l_mean": 0.1929233864986199,
-            "delta_mean": 0.07720213465917847,
-            "h2l_case_wins": 14,
-            "baseline_case_wins": 6,
-            "ties": 55,
+            "baseline_mean": 0.1599442505472366,
+            "h2l_mean": 0.1694194068146184,
+            "delta_mean": 0.00947515626738179,
+            "h2l_case_wins": 10,
+            "baseline_case_wins": 9,
+            "ties": 56,
             "bootstrap_ci": {
-              "mean": 0.07720213465917847,
-              "ci_lower": 0.020787254735687,
-              "ci_upper": 0.15021982199248035,
-              "se_bootstrap": 0.032294333401558344
+              "mean": 0.00947515626738179,
+              "ci_lower": -0.03293667314603951,
+              "ci_upper": 0.0627733480331503,
+              "se_bootstrap": 0.023978173440723446
             },
             "bayesian_signed_rank": {
-              "p_h2l_wins": 0.986,
-              "p_rope": 0.0128,
-              "p_baseline_wins": 0.0012,
+              "p_h2l_wins": 0.4774,
+              "p_rope": 0.308,
+              "p_baseline_wins": 0.2146,
               "rope": 0.01
             },
             "paired_test": {
               "test": "wilcoxon_signed_rank",
-              "p_value": 0.02499223291619807,
-              "statistic": 45.0,
-              "significant": true
+              "p_value": 0.7934248337952458,
+              "statistic": 88.5,
+              "significant": false
             }
           }
         ],
@@ -553,21 +553,21 @@
             "name": "adversarial_l2_test",
             "MAP": {
               "n": 1,
-              "delta_mean": 0.25,
+              "delta_mean": 0.0888888888888889,
               "h2l_wins": 1,
               "baseline_wins": 0,
               "ties": 0
             },
             "MRR": {
               "n": 1,
-              "delta_mean": 0.25,
+              "delta_mean": 0.0888888888888889,
               "h2l_wins": 1,
               "baseline_wins": 0,
               "ties": 0
             },
             "nDCG@5": {
               "n": 1,
-              "delta_mean": 0.43067655807339306,
+              "delta_mean": 0.38685280723454163,
               "h2l_wins": 1,
               "baseline_wins": 0,
               "ties": 0
@@ -578,24 +578,24 @@
             "name": "คนพิการ",
             "MAP": {
               "n": 7,
-              "delta_mean": 0.15526695526695528,
-              "h2l_wins": 2,
-              "baseline_wins": 1,
-              "ties": 4
+              "delta_mean": -0.015233236151603522,
+              "h2l_wins": 0,
+              "baseline_wins": 2,
+              "ties": 5
             },
             "MRR": {
               "n": 7,
-              "delta_mean": 0.19387755102040818,
-              "h2l_wins": 2,
+              "delta_mean": 0.07142857142857142,
+              "h2l_wins": 1,
               "baseline_wins": 0,
-              "ties": 5
+              "ties": 6
             },
             "nDCG@5": {
               "n": 7,
-              "delta_mean": 0.12983154495570332,
+              "delta_mean": 0.06836155098201979,
               "h2l_wins": 2,
-              "baseline_wins": 1,
-              "ties": 4
+              "baseline_wins": 0,
+              "ties": 5
             },
             "n_cases": 7
           },
@@ -628,16 +628,16 @@
             "name": "ครอบครัว/หนี้สิน",
             "MAP": {
               "n": 2,
-              "delta_mean": 0.045454545454545456,
-              "h2l_wins": 1,
-              "baseline_wins": 0,
+              "delta_mean": -0.01428571428571429,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
               "ties": 1
             },
             "MRR": {
               "n": 2,
-              "delta_mean": 0.045454545454545456,
-              "h2l_wins": 1,
-              "baseline_wins": 0,
+              "delta_mean": -0.01428571428571429,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
               "ties": 1
             },
             "nDCG@5": {
@@ -703,24 +703,24 @@
             "name": "ผู้ประสบปัญหาสุขภาพจิตและจิตเวช",
             "MAP": {
               "n": 9,
-              "delta_mean": -0.0024799274799274826,
-              "h2l_wins": 3,
+              "delta_mean": 0.01297899631232964,
+              "h2l_wins": 2,
               "baseline_wins": 1,
-              "ties": 5
+              "ties": 6
             },
             "MRR": {
               "n": 9,
-              "delta_mean": 0.007800224466891128,
-              "h2l_wins": 2,
-              "baseline_wins": 1,
+              "delta_mean": 0.048196248196248195,
+              "h2l_wins": 1,
+              "baseline_wins": 2,
               "ties": 6
             },
             "nDCG@5": {
               "n": 9,
-              "delta_mean": -0.026301683339980786,
-              "h2l_wins": 2,
+              "delta_mean": -0.028023972802231692,
+              "h2l_wins": 1,
               "baseline_wins": 1,
-              "ties": 6
+              "ties": 7
             },
             "n_cases": 9
           },
@@ -728,9 +728,9 @@
             "name": "ผู้ป่วยเอดส์และวัณโรค",
             "MAP": {
               "n": 1,
-              "delta_mean": 0.05555555555555547,
-              "h2l_wins": 1,
-              "baseline_wins": 0,
+              "delta_mean": -0.023809523809523836,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
               "ties": 0
             },
             "MRR": {
@@ -753,24 +753,24 @@
             "name": "ผู้ป่วยโรคเรื้อรังไม่ติดต่อ (NCD)",
             "MAP": {
               "n": 5,
-              "delta_mean": 0.17777777777777776,
-              "h2l_wins": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
               "baseline_wins": 0,
-              "ties": 4
+              "ties": 5
             },
             "MRR": {
               "n": 5,
-              "delta_mean": 0.17777777777777776,
-              "h2l_wins": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
               "baseline_wins": 0,
-              "ties": 4
+              "ties": 5
             },
             "nDCG@5": {
               "n": 5,
-              "delta_mean": 0.2,
-              "h2l_wins": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
               "baseline_wins": 0,
-              "ties": 4
+              "ties": 5
             },
             "n_cases": 5
           },
@@ -778,24 +778,24 @@
             "name": "ผู้สูงอายุ",
             "MAP": {
               "n": 16,
-              "delta_mean": 0.12713068181818182,
-              "h2l_wins": 4,
-              "baseline_wins": 0,
-              "ties": 12
+              "delta_mean": -0.004296744921744918,
+              "h2l_wins": 2,
+              "baseline_wins": 1,
+              "ties": 13
             },
             "MRR": {
               "n": 16,
-              "delta_mean": 0.125,
-              "h2l_wins": 4,
-              "baseline_wins": 0,
-              "ties": 12
+              "delta_mean": 0.004734848484848484,
+              "h2l_wins": 2,
+              "baseline_wins": 1,
+              "ties": 13
             },
             "nDCG@5": {
               "n": 16,
-              "delta_mean": 0.13541302721880014,
-              "h2l_wins": 4,
-              "baseline_wins": 0,
-              "ties": 12
+              "delta_mean": 0.0022817438562366885,
+              "h2l_wins": 2,
+              "baseline_wins": 1,
+              "ties": 13
             },
             "n_cases": 16
           },
@@ -803,17 +803,17 @@
             "name": "รุนแรง/วัยรุ่น",
             "MAP": {
               "n": 2,
-              "delta_mean": -0.05555555555555555,
+              "delta_mean": 0.0,
               "h2l_wins": 0,
-              "baseline_wins": 1,
-              "ties": 1
+              "baseline_wins": 0,
+              "ties": 2
             },
             "MRR": {
               "n": 2,
-              "delta_mean": -0.05555555555555555,
+              "delta_mean": 0.0,
               "h2l_wins": 0,
-              "baseline_wins": 1,
-              "ties": 1
+              "baseline_wins": 0,
+              "ties": 2
             },
             "nDCG@5": {
               "n": 2,
@@ -828,24 +828,24 @@
             "name": "เคสขอทุนฝึกอาชีพและฟื้นฟูสมรรถภาพ",
             "MAP": {
               "n": 2,
-              "delta_mean": 0.013888888888888895,
-              "h2l_wins": 1,
-              "baseline_wins": 0,
-              "ties": 1
+              "delta_mean": -0.4142857142857143,
+              "h2l_wins": 0,
+              "baseline_wins": 2,
+              "ties": 0
             },
             "MRR": {
               "n": 2,
-              "delta_mean": 0.0,
+              "delta_mean": -0.45,
               "h2l_wins": 0,
-              "baseline_wins": 0,
-              "ties": 2
+              "baseline_wins": 1,
+              "ties": 1
             },
             "nDCG@5": {
               "n": 2,
-              "delta_mean": 0.0,
+              "delta_mean": -0.5,
               "h2l_wins": 0,
-              "baseline_wins": 0,
-              "ties": 2
+              "baseline_wins": 2,
+              "ties": 0
             },
             "n_cases": 2
           },
@@ -853,23 +853,23 @@
             "name": "เคสติดเตียงไร้ญาติ",
             "MAP": {
               "n": 3,
-              "delta_mean": 0.18743386243386242,
-              "h2l_wins": 2,
-              "baseline_wins": 0,
+              "delta_mean": 0.22435897435897437,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
               "ties": 1
             },
             "MRR": {
               "n": 3,
-              "delta_mean": 0.3194444444444445,
-              "h2l_wins": 2,
-              "baseline_wins": 0,
+              "delta_mean": 0.08333333333333333,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
               "ties": 1
             },
             "nDCG@5": {
               "n": 3,
-              "delta_mean": 0.3673542101988991,
-              "h2l_wins": 2,
-              "baseline_wins": 0,
+              "delta_mean": 0.2169736432690442,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
               "ties": 1
             },
             "n_cases": 3
@@ -878,23 +878,23 @@
             "name": "เคสประสบปัญหาถูกกระทำความรุนแรง",
             "MAP": {
               "n": 5,
-              "delta_mean": 0.08412698412698412,
-              "h2l_wins": 2,
-              "baseline_wins": 0,
+              "delta_mean": -0.07666666666666666,
+              "h2l_wins": 0,
+              "baseline_wins": 2,
               "ties": 3
             },
             "MRR": {
               "n": 5,
-              "delta_mean": 0.1,
-              "h2l_wins": 2,
-              "baseline_wins": 0,
+              "delta_mean": -0.058333333333333334,
+              "h2l_wins": 0,
+              "baseline_wins": 2,
               "ties": 3
             },
             "nDCG@5": {
               "n": 5,
-              "delta_mean": 0.059216382193173045,
-              "h2l_wins": 1,
-              "baseline_wins": 0,
+              "delta_mean": -0.07672982780758006,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
               "ties": 4
             },
             "n_cases": 5
@@ -903,24 +903,24 @@
             "name": "เคสปัญหาครอบครัว",
             "MAP": {
               "n": 7,
-              "delta_mean": -0.0005102040816326532,
-              "h2l_wins": 0,
-              "baseline_wins": 1,
-              "ties": 6
+              "delta_mean": 0.05928833071690215,
+              "h2l_wins": 2,
+              "baseline_wins": 0,
+              "ties": 5
             },
             "MRR": {
               "n": 7,
-              "delta_mean": -0.0035714285714285704,
-              "h2l_wins": 0,
-              "baseline_wins": 1,
-              "ties": 6
+              "delta_mean": 0.12051282051282051,
+              "h2l_wins": 2,
+              "baseline_wins": 0,
+              "ties": 5
             },
             "nDCG@5": {
               "n": 7,
-              "delta_mean": 0.0,
-              "h2l_wins": 0,
+              "delta_mean": 0.0875924561093512,
+              "h2l_wins": 1,
               "baseline_wins": 0,
-              "ties": 7
+              "ties": 6
             },
             "n_cases": 7
           },
@@ -928,23 +928,23 @@
             "name": "เคสปัญหาด้านการเงิน",
             "MAP": {
               "n": 4,
-              "delta_mean": -0.16968344155844153,
-              "h2l_wins": 0,
-              "baseline_wins": 3,
+              "delta_mean": -0.06573426573426573,
+              "h2l_wins": 1,
+              "baseline_wins": 2,
               "ties": 1
             },
             "MRR": {
               "n": 4,
-              "delta_mean": -0.0375,
-              "h2l_wins": 0,
+              "delta_mean": -0.08333333333333333,
+              "h2l_wins": 1,
               "baseline_wins": 1,
-              "ties": 3
+              "ties": 2
             },
             "nDCG@5": {
               "n": 4,
-              "delta_mean": -0.17205642522725212,
-              "h2l_wins": 0,
-              "baseline_wins": 3,
+              "delta_mean": 0.06902782977572725,
+              "h2l_wins": 2,
+              "baseline_wins": 1,
               "ties": 1
             },
             "n_cases": 4
@@ -953,23 +953,23 @@
             "name": "เคสปัญหาด้านความรัก",
             "MAP": {
               "n": 1,
-              "delta_mean": 0.7916666666666666,
+              "delta_mean": 0.027777777777777762,
               "h2l_wins": 1,
               "baseline_wins": 0,
               "ties": 0
             },
             "MRR": {
               "n": 1,
-              "delta_mean": 0.875,
-              "h2l_wins": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
               "baseline_wins": 0,
-              "ties": 0
+              "ties": 1
             },
             "nDCG@5": {
               "n": 1,
-              "delta_mean": 0.9871451602176229,
-              "h2l_wins": 1,
-              "baseline_wins": 0,
+              "delta_mean": -0.04498937734002004,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
               "ties": 0
             },
             "n_cases": 1
@@ -978,14 +978,14 @@
             "name": "เด็กและสตรี",
             "MAP": {
               "n": 2,
-              "delta_mean": -0.041666666666666664,
+              "delta_mean": -0.0625,
               "h2l_wins": 0,
               "baseline_wins": 1,
               "ties": 1
             },
             "MRR": {
               "n": 2,
-              "delta_mean": -0.041666666666666664,
+              "delta_mean": -0.0625,
               "h2l_wins": 0,
               "baseline_wins": 1,
               "ties": 1
@@ -1003,7 +1003,7 @@
             "name": "เด็กและเยาวชน",
             "MAP": {
               "n": 3,
-              "delta_mean": 0.004998546427117871,
+              "delta_mean": 0.0130192723942724,
               "h2l_wins": 1,
               "baseline_wins": 0,
               "ties": 2
@@ -1017,7 +1017,7 @@
             },
             "nDCG@5": {
               "n": 3,
-              "delta_mean": -0.058764853212361134,
+              "delta_mean": -0.016860005277442414,
               "h2l_wins": 0,
               "baseline_wins": 1,
               "ties": 2
@@ -1030,24 +1030,24 @@
             "name": "complex",
             "MAP": {
               "n": 24,
-              "delta_mean": 0.11663161243518387,
-              "h2l_wins": 8,
-              "baseline_wins": 3,
-              "ties": 13
+              "delta_mean": -0.038265353611335755,
+              "h2l_wins": 2,
+              "baseline_wins": 6,
+              "ties": 16
             },
             "MRR": {
               "n": 24,
-              "delta_mean": 0.13978324915824916,
-              "h2l_wins": 7,
-              "baseline_wins": 2,
-              "ties": 15
+              "delta_mean": -0.02854090354090354,
+              "h2l_wins": 2,
+              "baseline_wins": 5,
+              "ties": 17
             },
             "nDCG@5": {
               "n": 24,
-              "delta_mean": 0.1113529776208051,
-              "h2l_wins": 5,
-              "baseline_wins": 2,
-              "ties": 17
+              "delta_mean": -0.023947367872740998,
+              "h2l_wins": 1,
+              "baseline_wins": 3,
+              "ties": 20
             },
             "n_cases": 24
           },
@@ -1055,24 +1055,24 @@
             "name": "moderate",
             "MAP": {
               "n": 21,
-              "delta_mean": 0.12366799866799864,
-              "h2l_wins": 10,
-              "baseline_wins": 3,
-              "ties": 8
+              "delta_mean": 0.050633361347647066,
+              "h2l_wins": 7,
+              "baseline_wins": 5,
+              "ties": 9
             },
             "MRR": {
               "n": 21,
-              "delta_mean": 0.1388682745825603,
-              "h2l_wins": 7,
-              "baseline_wins": 2,
+              "delta_mean": 0.06139627568198997,
+              "h2l_wins": 5,
+              "baseline_wins": 4,
               "ties": 12
             },
             "nDCG@5": {
               "n": 21,
-              "delta_mean": 0.12676396793377906,
-              "h2l_wins": 7,
-              "baseline_wins": 2,
-              "ties": 12
+              "delta_mean": 0.0619589914250072,
+              "h2l_wins": 6,
+              "baseline_wins": 4,
+              "ties": 11
             },
             "n_cases": 21
           },
@@ -1080,24 +1080,24 @@
             "name": "simple",
             "MAP": {
               "n": 30,
-              "delta_mean": -0.0023855311355311343,
+              "delta_mean": -0.0203968253968254,
               "h2l_wins": 2,
-              "baseline_wins": 2,
-              "ties": 26
+              "baseline_wins": 3,
+              "ties": 25
             },
             "MRR": {
               "n": 30,
-              "delta_mean": 0.011666666666666665,
+              "delta_mean": -0.0030303030303030294,
               "h2l_wins": 2,
               "baseline_wins": 1,
               "ties": 27
             },
             "nDCG@5": {
               "n": 30,
-              "delta_mean": 0.015188176997656741,
-              "h2l_wins": 2,
+              "delta_mean": -0.0005255090308577728,
+              "h2l_wins": 3,
               "baseline_wins": 2,
-              "ties": 26
+              "ties": 25
             },
             "n_cases": 30
           }
