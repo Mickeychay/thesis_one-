@@ -1,0 +1,1109 @@
+{
+  "metadata": {
+    "timestamp": "2026-04-19T11:52:38.785742",
+    "num_cases": 75,
+    "strategies": [
+      "bm25_only",
+      "h2l-bm25"
+    ],
+    "top_k": 15,
+    "problem_source": "detected",
+    "status": "complete",
+    "completed_strategies": [
+      "bm25_only",
+      "h2l-bm25"
+    ],
+    "pending_strategies": [],
+    "completed_strategy_count": 2,
+    "total_strategy_count": 2
+  },
+  "aggregates": {
+    "bm25_only": {
+      "total_docs": {
+        "mean": 15.0,
+        "std": 0.0,
+        "median": 15.0,
+        "min": 15.0,
+        "max": 15.0,
+        "n": 75
+      },
+      "total_relevant": {
+        "mean": 0.96,
+        "std": 1.4736802004957976,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 6.0,
+        "n": 75
+      },
+      "MAP": {
+        "mean": 0.29748842515509183,
+        "std": 0.4011015875036162,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "MRR": {
+        "mean": 0.343003663003663,
+        "std": 0.4537704691111013,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "P@3": {
+        "mean": 0.1955555555555555,
+        "std": 0.293602570042911,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "R@3": {
+        "mean": 0.2811111111111111,
+        "std": 0.40004937966810983,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "F1@3": {
+        "mean": 0.21095238095238092,
+        "std": 0.29209929042168625,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.8571428571428571,
+        "n": 75
+      },
+      "nDCG@3": {
+        "mean": 0.3055065474441204,
+        "std": 0.4187988948718574,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "P@5": {
+        "mean": 0.13599999999999998,
+        "std": 0.21206288375542443,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.8,
+        "n": 75
+      },
+      "R@5": {
+        "mean": 0.30599999999999994,
+        "std": 0.41997918819688973,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "F1@5": {
+        "mean": 0.17416257816257816,
+        "std": 0.2487062214276054,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.888888888888889,
+        "n": 75
+      },
+      "nDCG@5": {
+        "mean": 0.3058252649623022,
+        "std": 0.4148117653036906,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "P@10": {
+        "mean": 0.07866666666666668,
+        "std": 0.12784713093725994,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.5,
+        "n": 75
+      },
+      "R@10": {
+        "mean": 0.33355555555555555,
+        "std": 0.4492008816763001,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "F1@10": {
+        "mean": 0.12044877344877344,
+        "std": 0.18372667822435884,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.6666666666666666,
+        "n": 75
+      },
+      "nDCG@10": {
+        "mean": 0.31768050220261035,
+        "std": 0.4266826896811041,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "retrieval_time": {
+        "mean": 0.0012797832489013672,
+        "std": 0.0011522413036198045,
+        "median": 0.0010571479797363281,
+        "min": 0.00021386146545410156,
+        "max": 0.009560108184814453,
+        "n": 75
+      },
+      "num_detected_problems": {
+        "mean": 0.0,
+        "std": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "n": 75
+      }
+    },
+    "h2l-bm25": {
+      "total_docs": {
+        "mean": 15.0,
+        "std": 0.0,
+        "median": 15.0,
+        "min": 15.0,
+        "max": 15.0,
+        "n": 75
+      },
+      "total_relevant": {
+        "mean": 0.8933333333333333,
+        "std": 1.362089897506361,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 5.0,
+        "n": 75
+      },
+      "MAP": {
+        "mean": 0.2996089466089466,
+        "std": 0.4054586621339018,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "MRR": {
+        "mean": 0.33311111111111114,
+        "std": 0.44796241023958056,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "P@3": {
+        "mean": 0.20444444444444446,
+        "std": 0.31218861029041683,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "R@3": {
+        "mean": 0.29155555555555557,
+        "std": 0.40249567132094566,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "F1@3": {
+        "mean": 0.22126984126984126,
+        "std": 0.30566442092794244,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.8571428571428571,
+        "n": 75
+      },
+      "nDCG@3": {
+        "mean": 0.30722824527199716,
+        "std": 0.4198394435237697,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "P@5": {
+        "mean": 0.14400000000000002,
+        "std": 0.22285421243494588,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "R@5": {
+        "mean": 0.32799999999999996,
+        "std": 0.4377904115492303,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "F1@5": {
+        "mean": 0.18704761904761905,
+        "std": 0.2657265855945941,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "nDCG@5": {
+        "mean": 0.31577196087806864,
+        "std": 0.4217887459647352,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "P@10": {
+        "mean": 0.08133333333333333,
+        "std": 0.12721984471335,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.5,
+        "n": 75
+      },
+      "R@10": {
+        "mean": 0.35733333333333334,
+        "std": 0.468166162335079,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "F1@10": {
+        "mean": 0.1265672105672106,
+        "std": 0.18754428302259488,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 0.6666666666666666,
+        "n": 75
+      },
+      "nDCG@10": {
+        "mean": 0.32553640966114716,
+        "std": 0.4324277816016793,
+        "median": 0.0,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "retrieval_time": {
+        "mean": 0.00425472895304362,
+        "std": 0.0030393272351084276,
+        "median": 0.0034618377685546875,
+        "min": 0.00029969215393066406,
+        "max": 0.013274908065795898,
+        "n": 75
+      },
+      "num_detected_problems": {
+        "mean": 3.466666666666667,
+        "std": 2.2939534045447,
+        "median": 3.0,
+        "min": 0.0,
+        "max": 8.0,
+        "n": 75
+      }
+    }
+  },
+  "statistical_tests": {
+    "nDCG@5": {
+      "pairwise": {
+        "bm25_only_vs_h2l-bm25": {
+          "test": "wilcoxon_signed_rank",
+          "statistic": 32.0,
+          "p_value": 0.3454475304692258,
+          "significant": "False",
+          "cohens_d": -0.11005086728648193,
+          "effect_interpretation": "negligible",
+          "mean_diff": -0.009946695915766413
+        }
+      },
+      "descriptive": {
+        "bm25_only": {
+          "mean": 0.3058252649623022,
+          "std": 0.4148117653036906,
+          "median": 0.0,
+          "ci_95": [
+            0.21194452469274727,
+            0.3997060052318572
+          ]
+        },
+        "h2l-bm25": {
+          "mean": 0.31577196087806864,
+          "std": 0.4217887459647352,
+          "median": 0.0,
+          "ci_95": [
+            0.220312181236702,
+            0.4112317405194353
+          ]
+        }
+      }
+    },
+    "P@5": {
+      "pairwise": {
+        "bm25_only_vs_h2l-bm25": {
+          "test": "wilcoxon_signed_rank",
+          "statistic": 20.5,
+          "p_value": 0.8066143722406066,
+          "significant": "False",
+          "cohens_d": -0.11624763857490032,
+          "effect_interpretation": "negligible",
+          "mean_diff": -0.008000000000000035
+        }
+      },
+      "descriptive": {
+        "bm25_only": {
+          "mean": 0.13599999999999998,
+          "std": 0.21206288375542443,
+          "median": 0.0,
+          "ci_95": [
+            0.08800565129564153,
+            0.18399434870435843
+          ]
+        },
+        "h2l-bm25": {
+          "mean": 0.14400000000000002,
+          "std": 0.22285421243494588,
+          "median": 0.0,
+          "ci_95": [
+            0.09356334370057168,
+            0.19443665629942836
+          ]
+        }
+      }
+    },
+    "MAP": {
+      "pairwise": {
+        "bm25_only_vs_h2l-bm25": {
+          "test": "wilcoxon_signed_rank",
+          "statistic": 124.0,
+          "p_value": 0.9353114289860184,
+          "significant": "False",
+          "cohens_d": -0.021719692221873168,
+          "effect_interpretation": "negligible",
+          "mean_diff": -0.0021205214538547734
+        }
+      },
+      "descriptive": {
+        "bm25_only": {
+          "mean": 0.29748842515509183,
+          "std": 0.4011015875036162,
+          "median": 0.0,
+          "ci_95": [
+            0.20671059022419302,
+            0.38826626008599063
+          ]
+        },
+        "h2l-bm25": {
+          "mean": 0.2996089466089466,
+          "std": 0.4054586621339018,
+          "median": 0.0,
+          "ci_95": [
+            0.20784501285946333,
+            0.3913728803584299
+          ]
+        }
+      }
+    },
+    "MRR": {
+      "pairwise": {
+        "bm25_only_vs_h2l-bm25": {
+          "test": "wilcoxon_signed_rank",
+          "statistic": 10.0,
+          "p_value": 0.2602687827075286,
+          "significant": "False",
+          "cohens_d": 0.09663701192405597,
+          "effect_interpretation": "negligible",
+          "mean_diff": 0.009892551892551837
+        }
+      },
+      "descriptive": {
+        "bm25_only": {
+          "mean": 0.343003663003663,
+          "std": 0.4537704691111013,
+          "median": 0.0,
+          "ci_95": [
+            0.24030573802695693,
+            0.445701587980369
+          ]
+        },
+        "h2l-bm25": {
+          "mean": 0.33311111111111114,
+          "std": 0.44796241023958056,
+          "median": 0.0,
+          "ci_95": [
+            0.23172767360075824,
+            0.434494548621464
+          ]
+        }
+      }
+    }
+  },
+  "experiment_diagnostics": {
+    "metadata": {
+      "problem_source": "detected",
+      "num_cases": 75,
+      "top_k": 15
+    },
+    "pairs": [
+      {
+        "pair_id": "pair_1",
+        "baseline": "bm25_only",
+        "h2l": "h2l-bm25",
+        "case_count": 75,
+        "quality_metric_wins": {
+          "h2l": 2,
+          "baseline": 1,
+          "tie": 0
+        },
+        "metrics": [
+          {
+            "metric": "MAP",
+            "n": 75,
+            "baseline_mean": 0.29748842515509183,
+            "h2l_mean": 0.2996089466089466,
+            "delta_mean": 0.002120521453854789,
+            "h2l_case_wins": 10,
+            "baseline_case_wins": 12,
+            "ties": 53,
+            "bootstrap_ci": {
+              "mean": 0.002120521453854789,
+              "ci_lower": -0.020095782111815962,
+              "ci_upper": 0.025517221301450864,
+              "se_bootstrap": 0.011485043684094339
+            },
+            "bayesian_signed_rank": {
+              "p_h2l_wins": 0.2456,
+              "p_rope": 0.6216,
+              "p_baseline_wins": 0.1328,
+              "rope": 0.01
+            },
+            "paired_test": {
+              "test": "wilcoxon_signed_rank",
+              "p_value": 0.9353114289860184,
+              "statistic": 124.0,
+              "significant": false
+            }
+          },
+          {
+            "metric": "MRR",
+            "n": 75,
+            "baseline_mean": 0.343003663003663,
+            "h2l_mean": 0.33311111111111114,
+            "delta_mean": -0.009892551892551893,
+            "h2l_case_wins": 3,
+            "baseline_case_wins": 5,
+            "ties": 67,
+            "bootstrap_ci": {
+              "mean": -0.009892551892551893,
+              "ci_lower": -0.040924722296511444,
+              "ci_upper": 0.010085470085470085,
+              "se_bootstrap": 0.01205497254637214
+            },
+            "bayesian_signed_rank": {
+              "p_h2l_wins": 0.048,
+              "p_rope": 0.4908,
+              "p_baseline_wins": 0.4612,
+              "rope": 0.01
+            },
+            "paired_test": {
+              "test": "wilcoxon_signed_rank",
+              "p_value": 0.2602687827075286,
+              "statistic": 10.0,
+              "significant": false
+            }
+          },
+          {
+            "metric": "nDCG@5",
+            "n": 75,
+            "baseline_mean": 0.3058252649623022,
+            "h2l_mean": 0.31577196087806864,
+            "delta_mean": 0.009946695915766413,
+            "h2l_case_wins": 7,
+            "baseline_case_wins": 6,
+            "ties": 62,
+            "bootstrap_ci": {
+              "mean": 0.009946695915766413,
+              "ci_lower": -0.008760527647955598,
+              "ci_upper": 0.032965675667482694,
+              "se_bootstrap": 0.010595409095043275
+            },
+            "bayesian_signed_rank": {
+              "p_h2l_wins": 0.4888,
+              "p_rope": 0.4822,
+              "p_baseline_wins": 0.029,
+              "rope": 0.01
+            },
+            "paired_test": {
+              "test": "wilcoxon_signed_rank",
+              "p_value": 0.3454475304692258,
+              "statistic": 32.0,
+              "significant": false
+            }
+          }
+        ],
+        "by_category": [
+          {
+            "name": "adversarial_l2_test",
+            "MAP": {
+              "n": 1,
+              "delta_mean": 0.06666666666666667,
+              "h2l_wins": 1,
+              "baseline_wins": 0,
+              "ties": 0
+            },
+            "MRR": {
+              "n": 1,
+              "delta_mean": 0.06666666666666667,
+              "h2l_wins": 1,
+              "baseline_wins": 0,
+              "ties": 0
+            },
+            "nDCG@5": {
+              "n": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 1
+            },
+            "n_cases": 1
+          },
+          {
+            "name": "คนพิการ",
+            "MAP": {
+              "n": 7,
+              "delta_mean": 0.026444719301862145,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
+              "ties": 5
+            },
+            "MRR": {
+              "n": 7,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 7
+            },
+            "nDCG@5": {
+              "n": 7,
+              "delta_mean": 0.02991216084807805,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
+              "ties": 5
+            },
+            "n_cases": 7
+          },
+          {
+            "name": "คนเร่ร่อน/ไร้ที่อยู่",
+            "MAP": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "MRR": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "nDCG@5": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "n_cases": 2
+          },
+          {
+            "name": "ครอบครัว/หนี้สิน",
+            "MAP": {
+              "n": 2,
+              "delta_mean": -0.25,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 1
+            },
+            "MRR": {
+              "n": 2,
+              "delta_mean": -0.25,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 1
+            },
+            "nDCG@5": {
+              "n": 2,
+              "delta_mean": -0.18453512321427123,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 1
+            },
+            "n_cases": 2
+          },
+          {
+            "name": "ปัญหาครอบครัว",
+            "MAP": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "MRR": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "nDCG@5": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "n_cases": 2
+          },
+          {
+            "name": "ผู้ประสบปัญหายาเสพติด",
+            "MAP": {
+              "n": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 1
+            },
+            "MRR": {
+              "n": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 1
+            },
+            "nDCG@5": {
+              "n": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 1
+            },
+            "n_cases": 1
+          },
+          {
+            "name": "ผู้ประสบปัญหาสุขภาพจิตและจิตเวช",
+            "MAP": {
+              "n": 9,
+              "delta_mean": 0.06806064306064306,
+              "h2l_wins": 2,
+              "baseline_wins": 1,
+              "ties": 6
+            },
+            "MRR": {
+              "n": 9,
+              "delta_mean": 0.05555555555555555,
+              "h2l_wins": 1,
+              "baseline_wins": 0,
+              "ties": 8
+            },
+            "nDCG@5": {
+              "n": 9,
+              "delta_mean": 0.06444036988886964,
+              "h2l_wins": 2,
+              "baseline_wins": 1,
+              "ties": 6
+            },
+            "n_cases": 9
+          },
+          {
+            "name": "ผู้ป่วยเอดส์และวัณโรค",
+            "MAP": {
+              "n": 1,
+              "delta_mean": 0.04807692307692313,
+              "h2l_wins": 1,
+              "baseline_wins": 0,
+              "ties": 0
+            },
+            "MRR": {
+              "n": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 1
+            },
+            "nDCG@5": {
+              "n": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 1
+            },
+            "n_cases": 1
+          },
+          {
+            "name": "ผู้ป่วยโรคเรื้อรังไม่ติดต่อ (NCD)",
+            "MAP": {
+              "n": 5,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 5
+            },
+            "MRR": {
+              "n": 5,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 5
+            },
+            "nDCG@5": {
+              "n": 5,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 5
+            },
+            "n_cases": 5
+          },
+          {
+            "name": "ผู้สูงอายุ",
+            "MAP": {
+              "n": 16,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 16
+            },
+            "MRR": {
+              "n": 16,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 16
+            },
+            "nDCG@5": {
+              "n": 16,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 16
+            },
+            "n_cases": 16
+          },
+          {
+            "name": "รุนแรง/วัยรุ่น",
+            "MAP": {
+              "n": 2,
+              "delta_mean": -0.03250915750915751,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
+              "ties": 0
+            },
+            "MRR": {
+              "n": 2,
+              "delta_mean": -0.03250915750915751,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
+              "ties": 0
+            },
+            "nDCG@5": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "n_cases": 2
+          },
+          {
+            "name": "เคสขอทุนฝึกอาชีพและฟื้นฟูสมรรถภาพ",
+            "MAP": {
+              "n": 2,
+              "delta_mean": -0.0037878787878787845,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 1
+            },
+            "MRR": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "nDCG@5": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "n_cases": 2
+          },
+          {
+            "name": "เคสติดเตียงไร้ญาติ",
+            "MAP": {
+              "n": 3,
+              "delta_mean": 0.019047619047619053,
+              "h2l_wins": 1,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "MRR": {
+              "n": 3,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 3
+            },
+            "nDCG@5": {
+              "n": 3,
+              "delta_mean": 0.04373502583744726,
+              "h2l_wins": 1,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "n_cases": 3
+          },
+          {
+            "name": "เคสประสบปัญหาถูกกระทำความรุนแรง",
+            "MAP": {
+              "n": 5,
+              "delta_mean": 0.04777777777777781,
+              "h2l_wins": 2,
+              "baseline_wins": 0,
+              "ties": 3
+            },
+            "MRR": {
+              "n": 5,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 5
+            },
+            "nDCG@5": {
+              "n": 5,
+              "delta_mean": 0.061366043892232415,
+              "h2l_wins": 2,
+              "baseline_wins": 0,
+              "ties": 3
+            },
+            "n_cases": 5
+          },
+          {
+            "name": "เคสปัญหาครอบครัว",
+            "MAP": {
+              "n": 7,
+              "delta_mean": -0.04285714285714286,
+              "h2l_wins": 0,
+              "baseline_wins": 2,
+              "ties": 5
+            },
+            "MRR": {
+              "n": 7,
+              "delta_mean": -0.02380952380952381,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 6
+            },
+            "nDCG@5": {
+              "n": 7,
+              "delta_mean": -0.02861509102641291,
+              "h2l_wins": 0,
+              "baseline_wins": 2,
+              "ties": 5
+            },
+            "n_cases": 7
+          },
+          {
+            "name": "เคสปัญหาด้านการเงิน",
+            "MAP": {
+              "n": 4,
+              "delta_mean": -0.01962759462759464,
+              "h2l_wins": 1,
+              "baseline_wins": 2,
+              "ties": 1
+            },
+            "MRR": {
+              "n": 4,
+              "delta_mean": -0.125,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 3
+            },
+            "nDCG@5": {
+              "n": 4,
+              "delta_mean": 0.0219985813465092,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
+              "ties": 2
+            },
+            "n_cases": 4
+          },
+          {
+            "name": "เคสปัญหาด้านความรัก",
+            "MAP": {
+              "n": 1,
+              "delta_mean": -0.01025641025641022,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 0
+            },
+            "MRR": {
+              "n": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 1
+            },
+            "nDCG@5": {
+              "n": 1,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 1
+            },
+            "n_cases": 1
+          },
+          {
+            "name": "เด็กและสตรี",
+            "MAP": {
+              "n": 2,
+              "delta_mean": -0.038461538461538464,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 1
+            },
+            "MRR": {
+              "n": 2,
+              "delta_mean": -0.038461538461538464,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 1
+            },
+            "nDCG@5": {
+              "n": 2,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 2
+            },
+            "n_cases": 2
+          },
+          {
+            "name": "เด็กและเยาวชน",
+            "MAP": {
+              "n": 3,
+              "delta_mean": -0.0037037037037036904,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 2
+            },
+            "MRR": {
+              "n": 3,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 3
+            },
+            "nDCG@5": {
+              "n": 3,
+              "delta_mean": 0.0,
+              "h2l_wins": 0,
+              "baseline_wins": 0,
+              "ties": 3
+            },
+            "n_cases": 3
+          }
+        ],
+        "by_complexity": [
+          {
+            "name": "complex",
+            "MAP": {
+              "n": 24,
+              "delta_mean": -0.023694207027540354,
+              "h2l_wins": 4,
+              "baseline_wins": 6,
+              "ties": 14
+            },
+            "MRR": {
+              "n": 24,
+              "delta_mean": -0.03369200244200244,
+              "h2l_wins": 1,
+              "baseline_wins": 4,
+              "ties": 19
+            },
+            "nDCG@5": {
+              "n": 24,
+              "delta_mean": -0.0062082150229396255,
+              "h2l_wins": 3,
+              "baseline_wins": 3,
+              "ties": 18
+            },
+            "n_cases": 24
+          },
+          {
+            "name": "moderate",
+            "MAP": {
+              "n": 21,
+              "delta_mean": 0.03566988566988568,
+              "h2l_wins": 5,
+              "baseline_wins": 5,
+              "ties": 11
+            },
+            "MRR": {
+              "n": 21,
+              "delta_mean": 0.026984126984126982,
+              "h2l_wins": 2,
+              "baseline_wins": 0,
+              "ties": 19
+            },
+            "nDCG@5": {
+              "n": 21,
+              "delta_mean": 0.033969388116602654,
+              "h2l_wins": 3,
+              "baseline_wins": 3,
+              "ties": 15
+            },
+            "n_cases": 21
+          },
+          {
+            "name": "simple",
+            "MAP": {
+              "n": 30,
+              "delta_mean": -0.0007122507122507153,
+              "h2l_wins": 1,
+              "baseline_wins": 1,
+              "ties": 28
+            },
+            "MRR": {
+              "n": 30,
+              "delta_mean": -0.016666666666666666,
+              "h2l_wins": 0,
+              "baseline_wins": 1,
+              "ties": 29
+            },
+            "nDCG@5": {
+              "n": 30,
+              "delta_mean": 0.006054740126145871,
+              "h2l_wins": 1,
+              "baseline_wins": 0,
+              "ties": 29
+            },
+            "n_cases": 30
+          }
+        ]
+      }
+    ],
+    "interpretation": "ใช้ paired diagnostics เพื่อดู mean delta, CI, ROPE และผลแยก category; ถ้า CI คร่อม 0 หรือ p_rope สูง ควรสรุปว่าแนวโน้มยังไม่ชัด"
+  }
+}

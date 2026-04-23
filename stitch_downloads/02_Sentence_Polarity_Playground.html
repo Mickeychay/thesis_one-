@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentence Polarity Playground | H2L Research</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#d6e4f9",
+                        "primary": "#000000",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#3a4859",
+                        "surface-dim": "#d8dadc",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed": "#00201d",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "on-tertiary-container": "#0c9488",
+                        "tertiary-fixed": "#89f5e7",
+                        "tertiary": "#000000",
+                        "primary-fixed-dim": "#bac8dc",
+                        "inverse-surface": "#2d3133",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-tint": "#525f71",
+                        "on-tertiary-fixed-variant": "#005049",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "surface": "#f7f9fb",
+                        "primary-container": "#0f1c2c",
+                        "secondary-fixed": "#d5e3fc",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#6bd8cb",
+                        "outline-variant": "#c4c6cc",
+                        "on-primary-container": "#778598",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "secondary-container": "#d5e3fc",
+                        "on-surface-variant": "#44474c",
+                        "inverse-primary": "#bac8dc",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed": "#0f1c2c",
+                        "surface-bright": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "outline": "#74777d",
+                        "on-secondary-container": "#57657a",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-container": "#00201d",
+                        "secondary": "#515f74"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(247, 249, 251, 0.8);
+            backdrop-filter: blur(16px);
+        }
+        .text-ink { color: #191c1e; }
+        .text-muted { color: #44474c; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-background selection:bg-tertiary-fixed-dim">
+<!-- TopAppBar from JSON -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl shadow-sm shadow-slate-200/20">
+<nav class="flex justify-between items-center px-8 h-16 w-full max-w-[1920px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-slate-900 font-headline">Clinical Academic Excellence</span>
+<div class="hidden md:flex gap-6 items-center font-headline tracking-tight font-semibold">
+<a class="text-teal-600 border-b-2 border-teal-600 pb-1" href="#">Dashboard</a>
+<a class="text-slate-500 hover:text-slate-700 transition-colors" href="#">Pipeline</a>
+<a class="text-slate-500 hover:text-slate-700 transition-colors" href="#">Metrics</a>
+<a class="text-slate-500 hover:text-slate-700 transition-colors" href="#">Reports</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-1.5 rounded-full bg-slate-100 border-none focus:ring-2 focus:ring-teal-500 w-64 text-sm" placeholder="Search research logs..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors"><span class="material-symbols-outlined">settings</span></button>
+<img alt="Researcher Profile" class="w-8 h-8 rounded-full border border-slate-200" data-alt="Professional clinical researcher portrait with a clean white background, soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-LqvgGm8nXdMCFqY8b7s6Mso1cXXKc339Z2wmDLOfrCkvYdjCNOXpudeTJpJXNrw9C_dI1_e9qvkpRVwYVw4Arz67kOGgDHY5qcYfVH-Ta-WPUmHKOcrl61KRdNgx1C2VkWmu774YQiXesEX8A65ilo8Sl4Nh23akD0fGjbDPxeQL6UJEAKHCIO-6sP9Q7dY3v3IJYDM2muvT0haLw9PZAi2NE076w62PGe8m79RVuzrbGfbpzN9sVpPaoE-mHV9MumWpHKluSjEH"/>
+</div>
+</nav>
+<div class="bg-slate-200/50 h-[1px]"></div>
+</header>
+<!-- SideNavBar from JSON -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] flex flex-col p-4 w-72 bg-slate-50 z-40">
+<div class="flex items-center gap-3 px-2 mb-8">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div>
+<h2 class="font-headline font-bold text-slate-900 leading-tight">H2L Research</h2>
+<p class="text-xs text-slate-500">Clinical Integrity Panel</p>
+</div>
+</div>
+<div class="space-y-1 flex-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all bg-white text-teal-600 font-semibold shadow-sm" href="#">
+<span class="material-symbols-outlined">analytics</span> Overview
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined">account_tree</span> Logic Flow
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined">verified_user</span> Data Integrity
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined">history_edu</span> Audit Logs
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 hover:translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined">ios_share</span> Export
+            </a>
+</div>
+<div class="mt-auto pt-6 border-t border-slate-200">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold mb-4 hover:opacity-90 transition-opacity">
+                Verify Dataset
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-sm text-slate-500 hover:text-slate-900" href="#"><span class="material-symbols-outlined text-sm">help_outline</span> Support</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm text-slate-500 hover:text-slate-900" href="#"><span class="material-symbols-outlined text-sm">description</span> Documentation</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-72 pt-16 min-h-screen">
+<div class="max-w-6xl mx-auto p-12">
+<!-- Header Section -->
+<header class="mb-12">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container text-[10px] font-bold tracking-widest uppercase">Research Integrity Badge</span>
+<span class="text-xs text-on-surface-variant/60 font-medium">Linguistic Analysis Unit</span>
+</div>
+<h1 class="text-4xl font-headline font-extrabold text-ink tracking-tight mb-4">Sentence Polarity Playground</h1>
+<p class="text-on-surface-variant max-w-2xl leading-relaxed">
+                    Interactive diagnostic environment for testing the H2L polarity engine. Monitor negation windows, subject gating, and clinical sentiment weights in real-time.
+                </p>
+</header>
+<!-- Input Sandbox Section -->
+<section class="grid grid-cols-1 gap-6 mb-8">
+<div class="bg-surface-container-low p-8 rounded-xl border-b border-outline-variant/20">
+<label class="block text-sm font-semibold text-on-surface-variant mb-4 font-headline">Clinical Sentence Input</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-highest/50 border-none border-b-2 border-transparent focus:border-on-tertiary-container focus:ring-0 text-2xl font-headline font-medium py-6 px-4 transition-all rounded-t-lg" placeholder="Enter sentence for analysis..." type="text" value="ผู้ป่วยไม่มีความเครียดสะสม"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+<span class="bg-white/80 px-3 py-1 rounded text-[10px] font-bold text-slate-500 shadow-sm uppercase tracking-tighter">THAI_NLP_V2</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Analysis Bento Grid -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Live Analysis Area -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<!-- Text Highlighting Area -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_32px_32px_-4px_rgba(25,28,30,0.06)]">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline font-bold text-lg">Lexical Breakdown</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-sm bg-error-container border border-error/20"></span>
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Negation</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-sm bg-tertiary-fixed border border-on-tertiary-container/20"></span>
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Keyword</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-1 items-center py-12 border-y border-outline-variant/10">
+<span class="text-3xl font-headline px-2 py-1 text-ink">ผู้ป่วย</span>
+<span class="text-3xl font-headline px-3 py-1 bg-error-container text-on-error-container rounded-lg border-b-2 border-error/30 group relative">
+                                ไม่มี
+                                <span class="absolute -top-8 left-0 text-[10px] bg-slate-900 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Negation Marker</span>
+</span>
+<span class="text-3xl font-headline px-3 py-1 bg-tertiary-fixed text-on-tertiary-container rounded-lg border-b-2 border-on-tertiary-container/30 group relative">
+                                ความเครียดสะสม
+                                <span class="absolute -top-8 left-0 text-[10px] bg-slate-900 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Keyword: Chronic Stress</span>
+</span>
+</div>
+<div class="mt-8 flex items-start gap-4 p-4 bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-on-tertiary-container">info</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+<strong class="text-ink">Explanation:</strong> Negation detected within <span class="font-mono bg-white px-1 rounded">30-char window</span>. Polarity score for "ความเครียดสะสม" reduced by <span class="font-mono font-bold text-on-tertiary-container">NEG_LAMBDA=0.6</span>. The overall sentiment flipped from negative to neutral-positive.
+                            </p>
+</div>
+</div>
+<!-- Scan Visualization -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_32px_32px_-4px_rgba(25,28,30,0.06)] overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-bold text-lg">Visual Window Scan</h3>
+<span class="text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-[0.2em]">Live Stream Visualization</span>
+</div>
+<div class="relative h-24 flex items-center gap-1 mb-4">
+<!-- Background Grid -->
+<div class="absolute inset-0 grid grid-cols-30 h-full opacity-10">
+<div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div><div class="border-r border-ink h-full"></div>
+</div>
+<!-- Subject Gate Threshold -->
+<div class="absolute left-[85%] top-0 bottom-0 w-0.5 bg-error/40 flex flex-col justify-between items-center z-10">
+<span class="text-[8px] bg-error-container text-error px-1 font-bold -mt-3 rounded">GATE: 0.85</span>
+</div>
+<!-- Scan Bars -->
+<div class="h-12 w-4 bg-slate-200 rounded-full"></div>
+<div class="h-16 w-4 bg-slate-300 rounded-full"></div>
+<div class="h-20 w-4 bg-on-tertiary-container/30 rounded-full"></div>
+<div class="h-8 w-4 bg-slate-200 rounded-full"></div>
+<div class="h-24 w-4 bg-on-tertiary-container rounded-full"></div>
+<div class="h-14 w-4 bg-on-tertiary-container/60 rounded-full"></div>
+<div class="h-10 w-4 bg-slate-200 rounded-full"></div>
+<div class="h-18 w-4 bg-on-tertiary-container/40 rounded-full"></div>
+<div class="h-12 w-4 bg-slate-200 rounded-full"></div>
+<div class="h-8 w-4 bg-slate-200 rounded-full"></div>
+<div class="h-20 w-4 bg-error-container rounded-full"></div>
+<div class="h-14 w-4 bg-slate-200 rounded-full"></div>
+<div class="h-18 w-4 bg-slate-300 rounded-full"></div>
+<div class="h-12 w-4 bg-slate-200 rounded-full"></div>
+<div class="h-22 w-4 bg-slate-400 rounded-full"></div>
+</div>
+<div class="flex justify-between text-[10px] font-mono text-on-surface-variant font-medium">
+<span>0 CHARS</span>
+<span>WINDOW_OFFSET_X</span>
+<span>30 CHARS</span>
+</div>
+</div>
+</div>
+<!-- Live Metrics Area -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-primary-container p-8 rounded-xl text-white">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-tertiary-fixed-dim">speed</span>
+<h3 class="font-headline font-bold">Engine Metrics</h3>
+</div>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-xs font-medium mb-2 text-on-primary-container">
+<span>G_neg (Negation Factor)</span>
+<span class="text-white">0.60</span>
+</div>
+<div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-error w-[60%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-medium mb-2 text-on-primary-container">
+<span>G_len (Length Penalty)</span>
+<span class="text-white">0.92</span>
+</div>
+<div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-fixed-dim w-[92%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-medium mb-2 text-on-primary-container">
+<span>G_sub (Subject Score)</span>
+<span class="text-white">0.88</span>
+</div>
+<div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-fixed-dim w-[88%]"></div>
+</div>
+</div>
+<div class="pt-6 mt-6 border-t border-white/10">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-[10px] font-bold text-on-primary-container uppercase tracking-widest mb-1">Cumulative Total</p>
+<h4 class="text-4xl font-headline font-extrabold text-tertiary-fixed-dim">G_total: 0.49</h4>
+</div>
+<div class="bg-tertiary-fixed-dim/20 px-3 py-1 rounded text-[10px] font-bold text-tertiary-fixed-dim border border-tertiary-fixed-dim/30">
+                                        STABLE
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Parameter Config -->
+<div class="bg-surface-container-low p-6 rounded-xl space-y-4">
+<h4 class="font-headline font-bold text-sm text-ink mb-4">Engine Parameters</h4>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-xs text-on-surface-variant font-medium">NEG_LAMBDA</span>
+<span class="font-mono text-xs font-bold bg-white px-2 py-0.5 rounded shadow-sm">0.60</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-xs text-on-surface-variant font-medium">SCAN_WINDOW</span>
+<span class="font-mono text-xs font-bold bg-white px-2 py-0.5 rounded shadow-sm">30px</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
+<span class="text-xs text-on-surface-variant font-medium">SUBJECT_BIAS</span>
+<span class="font-mono text-xs font-bold bg-white px-2 py-0.5 rounded shadow-sm">1.15</span>
+</div>
+<button class="w-full text-xs font-bold text-on-tertiary-container hover:bg-on-tertiary-container/5 py-2 rounded transition-colors uppercase tracking-widest">
+                            Advanced Config
+                        </button>
+</div>
+</div>
+</div>
+<!-- Footer Meta -->
+<footer class="mt-20 flex flex-wrap justify-between items-center gap-6 py-8 border-t border-outline-variant/10">
+<div class="flex gap-12">
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Model Instance</p>
+<p class="text-sm font-semibold text-ink">h2l-sent-th-v4.2.1</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Latency</p>
+<p class="text-sm font-semibold text-ink">12ms <span class="text-on-tertiary-container font-medium ml-1">Excellent</span></p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs text-on-surface-variant/40 font-medium">Clinical academic data protocol v0.98 enabled</span>
+<button class="bg-white px-4 py-2 rounded-lg border border-outline-variant/30 text-xs font-bold shadow-sm hover:shadow-md transition-shadow">
+                        DOWNLOAD REPORT
+                    </button>
+</div>
+</footer>
+</div>
+</main>
+</body></html>

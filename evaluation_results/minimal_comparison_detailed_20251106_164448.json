@@ -1,0 +1,2562 @@
+[
+  {
+    "query_id": "q_001",
+    "query_text": "เครื่องมือ S.D.M.A. ใช้ในขั้นตอนใดของกระบวนการทางสังคมสงเคราะห์บ้าง",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.3086,
+        "num_docs": 15,
+        "avg_score": 0.7366700927416484,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.934,
+        "num_docs": 5,
+        "avg_score": 0.9373067140579223,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "dynamic": {
+        "retrieval_time_sec": 5.6513,
+        "num_docs": 20,
+        "avg_score": 0.6488380149006844,
+        "unique_sources": 3,
+        "entropy": 1.1812908992306925
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.0878,
+        "num_docs": 15,
+        "avg_score": 0.8124840299288432,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.9428,
+        "num_docs": 15,
+        "avg_score": 0.7366700927416484,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 5.6362,
+        "num_docs": 20,
+        "avg_score": 0.6488380149006844,
+        "unique_sources": 3,
+        "entropy": 1.1812908992306925
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 12.9842,
+        "num_docs": 15,
+        "avg_score": 0.8300066192944845,
+        "unique_sources": 3,
+        "entropy": 1.5655962303576019
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.0292,
+        "num_docs": 15,
+        "avg_score": 0.7366700927416484,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      }
+    }
+  },
+  {
+    "query_id": "q_002",
+    "query_text": "การเตรียมทักษะทางสังคมรายบุคคลก่อนส่งสถานสงเคราะห์มีวัตถุประสงค์เพื่ออะไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.1041,
+        "num_docs": 15,
+        "avg_score": 0.8048197706540425,
+        "unique_sources": 3,
+        "entropy": 0.9055872616982603
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.0028,
+        "num_docs": 5,
+        "avg_score": 0.9842000603675842,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.0801,
+        "num_docs": 10,
+        "avg_score": 0.9141299247741699,
+        "unique_sources": 3,
+        "entropy": 0.9219280948873623
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.8701,
+        "num_docs": 15,
+        "avg_score": 0.8614220937093099,
+        "unique_sources": 3,
+        "entropy": 0.9055872616982603
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.076,
+        "num_docs": 15,
+        "avg_score": 0.8048197706540425,
+        "unique_sources": 3,
+        "entropy": 0.9055872616982603
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.0878,
+        "num_docs": 10,
+        "avg_score": 0.9141299247741699,
+        "unique_sources": 3,
+        "entropy": 0.9219280948873623
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 13.0659,
+        "num_docs": 15,
+        "avg_score": 0.9332489252090455,
+        "unique_sources": 3,
+        "entropy": 0.6998428398862386
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.113,
+        "num_docs": 15,
+        "avg_score": 0.8048197706540425,
+        "unique_sources": 3,
+        "entropy": 0.9055872616982603
+      }
+    }
+  },
+  {
+    "query_id": "q_003",
+    "query_text": "การจัดทำแผนกิจกรรมการดูแลรายบุคคล (Social Care Plan) สำหรับผู้สูงอายุที่มีภาวะพึ่งพิงคืออะไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 2.8073,
+        "num_docs": 15,
+        "avg_score": 0.7916312535603841,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.6243,
+        "num_docs": 5,
+        "avg_score": 0.9772419571876526,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.2131,
+        "num_docs": 5,
+        "avg_score": 0.9772419571876526,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "multihop": {
+        "retrieval_time_sec": 5.6414,
+        "num_docs": 15,
+        "avg_score": 0.8293018062909444,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.6893,
+        "num_docs": 15,
+        "avg_score": 0.7916312535603841,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.1802,
+        "num_docs": 5,
+        "avg_score": 0.9772419571876526,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 11.8303,
+        "num_docs": 15,
+        "avg_score": 0.8583104650179545,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 2.7376,
+        "num_docs": 15,
+        "avg_score": 0.7916312535603841,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      }
+    }
+  },
+  {
+    "query_id": "q_004",
+    "query_text": "ผู้ป่วยต่างชาติที่ไม่มีหลักฐานการแสดงตนหรือเอกสารทางราชการจัดอยู่ในกลุ่มเป้าหมายใดตามคู่มือ S.D.M.A.",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.7102,
+        "num_docs": 15,
+        "avg_score": 0.15040403151263793,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.2255,
+        "num_docs": 10,
+        "avg_score": 0.21999785518273712,
+        "unique_sources": 3,
+        "entropy": 1.4854752972273344
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.2394,
+        "num_docs": 10,
+        "avg_score": 0.21999785518273712,
+        "unique_sources": 3,
+        "entropy": 1.4854752972273344
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.3592,
+        "num_docs": 15,
+        "avg_score": 0.15184093931068976,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.245,
+        "num_docs": 15,
+        "avg_score": 0.15040403151263793,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.2058,
+        "num_docs": 10,
+        "avg_score": 0.21999785518273712,
+        "unique_sources": 3,
+        "entropy": 1.4854752972273344
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 15.273,
+        "num_docs": 15,
+        "avg_score": 0.15265005839367707,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.5539,
+        "num_docs": 15,
+        "avg_score": 0.15040403151263793,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      }
+    }
+  },
+  {
+    "query_id": "q_005",
+    "query_text": "การให้การปรึกษารายบุคคล (Basic Counseling) มีกระบวนการอย่างไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 4.8602,
+        "num_docs": 15,
+        "avg_score": 0.28335358848174413,
+        "unique_sources": 2,
+        "entropy": 0.9182958340544896
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.0762,
+        "num_docs": 5,
+        "avg_score": 0.5453792572021484,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "dynamic": {
+        "retrieval_time_sec": 6.9921,
+        "num_docs": 20,
+        "avg_score": 0.24169034361839295,
+        "unique_sources": 3,
+        "entropy": 1.0762976257251988
+      },
+      "multihop": {
+        "retrieval_time_sec": 8.503,
+        "num_docs": 15,
+        "avg_score": 0.29916161199410757,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764646
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.8654,
+        "num_docs": 15,
+        "avg_score": 0.28335358848174413,
+        "unique_sources": 2,
+        "entropy": 0.9182958340544896
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 5.9104,
+        "num_docs": 20,
+        "avg_score": 0.24169034361839295,
+        "unique_sources": 3,
+        "entropy": 1.0762976257251988
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 12.7507,
+        "num_docs": 15,
+        "avg_score": 0.3196377411484718,
+        "unique_sources": 3,
+        "entropy": 1.2309595631140104
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 2.9078,
+        "num_docs": 15,
+        "avg_score": 0.28335358848174413,
+        "unique_sources": 2,
+        "entropy": 0.9182958340544896
+      }
+    }
+  },
+  {
+    "query_id": "q_006",
+    "query_text": "ผู้ป่วยเร่ร่อนที่ไม่มีญาติจัดอยู่ในกลุ่มปัญหาที่อยู่อาศัยรหัสใดตามแบบบัญชีปัญหาทางสังคม",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 7.0986,
+        "num_docs": 15,
+        "avg_score": 0.14810116328299044,
+        "unique_sources": 3,
+        "entropy": 1.272905595320056
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.7974,
+        "num_docs": 5,
+        "avg_score": 0.333817133307457,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.6777,
+        "num_docs": 10,
+        "avg_score": 0.20394727848470212,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.4058,
+        "num_docs": 15,
+        "avg_score": 0.15763629600405693,
+        "unique_sources": 3,
+        "entropy": 1.2866926683547546
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.675,
+        "num_docs": 15,
+        "avg_score": 0.14810116328299044,
+        "unique_sources": 3,
+        "entropy": 1.272905595320056
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.4948,
+        "num_docs": 10,
+        "avg_score": 0.20394727848470212,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 18.7826,
+        "num_docs": 15,
+        "avg_score": 0.16731893594066302,
+        "unique_sources": 3,
+        "entropy": 1.2866926683547546
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.9566,
+        "num_docs": 15,
+        "avg_score": 0.14810116328299044,
+        "unique_sources": 3,
+        "entropy": 1.272905595320056
+      }
+    }
+  },
+  {
+    "query_id": "q_007",
+    "query_text": "การพิทักษ์สิทธิผู้ป่วยตามกฎหมายเกี่ยวข้องกับการจัดหาและส่งต่อแหล่งทรัพยากรทางสังคมอย่างไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 4.2285,
+        "num_docs": 15,
+        "avg_score": 0.3036578314378858,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.8041,
+        "num_docs": 10,
+        "avg_score": 0.4395235780626535,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "dynamic": {
+        "retrieval_time_sec": 2.8145,
+        "num_docs": 10,
+        "avg_score": 0.4395235780626535,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "multihop": {
+        "retrieval_time_sec": 14.3224,
+        "num_docs": 15,
+        "avg_score": 0.32548050781091054,
+        "unique_sources": 3,
+        "entropy": 1.272905595320056
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.8687,
+        "num_docs": 15,
+        "avg_score": 0.3036578314378858,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 2.3837,
+        "num_docs": 10,
+        "avg_score": 0.4395235780626535,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 10.8486,
+        "num_docs": 15,
+        "avg_score": 0.3386326638360818,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 2.4322,
+        "num_docs": 15,
+        "avg_score": 0.3036578314378858,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      }
+    }
+  },
+  {
+    "query_id": "q_008",
+    "query_text": "การจัดการทรัพยากรทางสังคม (Social Resource Management) คืออะไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 2.8064,
+        "num_docs": 15,
+        "avg_score": 0.37307354509830476,
+        "unique_sources": 3,
+        "entropy": 1.103307408607834
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.6771,
+        "num_docs": 5,
+        "avg_score": 0.7502037167549134,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 2.2735,
+        "num_docs": 5,
+        "avg_score": 0.7193662106990815,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.3379,
+        "num_docs": 15,
+        "avg_score": 0.39442370732625326,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.7694,
+        "num_docs": 15,
+        "avg_score": 0.37307354509830476,
+        "unique_sources": 3,
+        "entropy": 1.103307408607834
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.4074,
+        "num_docs": 5,
+        "avg_score": 0.7193662106990815,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 13.4465,
+        "num_docs": 15,
+        "avg_score": 0.39442370732625326,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 2.8589,
+        "num_docs": 15,
+        "avg_score": 0.37307354509830476,
+        "unique_sources": 3,
+        "entropy": 1.103307408607834
+      }
+    }
+  },
+  {
+    "query_id": "q_009",
+    "query_text": "การสนับสนุนทางสังคม (Social Support) มีกี่รูปแบบ อะไรบ้าง",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.7774,
+        "num_docs": 15,
+        "avg_score": 0.3022439790268739,
+        "unique_sources": 3,
+        "entropy": 1.2866926683547546
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.3572,
+        "num_docs": 5,
+        "avg_score": 0.6681151926517487,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 5.0022,
+        "num_docs": 20,
+        "avg_score": 0.25759110022336246,
+        "unique_sources": 3,
+        "entropy": 1.2344977967946407
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.8769,
+        "num_docs": 15,
+        "avg_score": 0.4198654741048813,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.7933,
+        "num_docs": 15,
+        "avg_score": 0.3022439790268739,
+        "unique_sources": 3,
+        "entropy": 1.2866926683547546
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 5.1608,
+        "num_docs": 20,
+        "avg_score": 0.25759110022336246,
+        "unique_sources": 3,
+        "entropy": 1.2344977967946407
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 15.3286,
+        "num_docs": 15,
+        "avg_score": 0.48126299579938253,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 2.6003,
+        "num_docs": 15,
+        "avg_score": 0.3022439790268739,
+        "unique_sources": 3,
+        "entropy": 1.2866926683547546
+      }
+    }
+  },
+  {
+    "query_id": "q_010",
+    "query_text": "การประสานงานกับหน่วยงานภายนอกเพื่อหาบริการสนับสนุนเพิ่มเติมจัดอยู่ในขั้นตอนใดของการออกแบบบริการ",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 6.778,
+        "num_docs": 15,
+        "avg_score": 0.11211591524382432,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.1104,
+        "num_docs": 5,
+        "avg_score": 0.26480901688337327,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "dynamic": {
+        "retrieval_time_sec": 12.5085,
+        "num_docs": 20,
+        "avg_score": 0.12581314677372574,
+        "unique_sources": 3,
+        "entropy": 1.360964047443681
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.9922,
+        "num_docs": 15,
+        "avg_score": 0.3752390921115875,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.0188,
+        "num_docs": 15,
+        "avg_score": 0.11211591524382432,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 5.8202,
+        "num_docs": 20,
+        "avg_score": 0.12581314677372574,
+        "unique_sources": 3,
+        "entropy": 1.360964047443681
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 15.4303,
+        "num_docs": 15,
+        "avg_score": 0.6738062183062236,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.2201,
+        "num_docs": 15,
+        "avg_score": 0.11211591524382432,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      }
+    }
+  },
+  {
+    "query_id": "q_011",
+    "query_text": "การใช้เครื่องมือประเมิน S.D.M.A. กับผู้ป่วยเบาหวานที่ถูกตัดขาและปฏิเสธการรักษา",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.3405,
+        "num_docs": 15,
+        "avg_score": 0.07790720649063587,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.9688,
+        "num_docs": 10,
+        "avg_score": 0.10064325779676438,
+        "unique_sources": 3,
+        "entropy": 1.4854752972273344
+      },
+      "dynamic": {
+        "retrieval_time_sec": 2.9637,
+        "num_docs": 10,
+        "avg_score": 0.10064325779676438,
+        "unique_sources": 3,
+        "entropy": 1.4854752972273344
+      },
+      "multihop": {
+        "retrieval_time_sec": 8.4116,
+        "num_docs": 15,
+        "avg_score": 0.17776527603467304,
+        "unique_sources": 3,
+        "entropy": 1.565596230357602
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.2516,
+        "num_docs": 15,
+        "avg_score": 0.07790720649063587,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.0213,
+        "num_docs": 10,
+        "avg_score": 0.10064325779676438,
+        "unique_sources": 3,
+        "entropy": 1.4854752972273344
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 18.4124,
+        "num_docs": 15,
+        "avg_score": 0.6807703336079916,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764646
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.382,
+        "num_docs": 15,
+        "avg_score": 0.07790720649063587,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      }
+    }
+  },
+  {
+    "query_id": "q_012",
+    "query_text": "แนวทางการทำ Family Conference เพื่อจัดการความขัดแย้งของพ่อแม่ที่ไม่ยอมรับพัฒนาการล่าช้าของบุตร",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 10.2507,
+        "num_docs": 15,
+        "avg_score": 0.02182208312054475,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764644
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.1503,
+        "num_docs": 5,
+        "avg_score": 0.04635591208934784,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "dynamic": {
+        "retrieval_time_sec": 12.0557,
+        "num_docs": 20,
+        "avg_score": 0.02201684471219778,
+        "unique_sources": 3,
+        "entropy": 1.295461844238322
+      },
+      "multihop": {
+        "retrieval_time_sec": 8.7283,
+        "num_docs": 15,
+        "avg_score": 0.03605248586585124,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.2266,
+        "num_docs": 15,
+        "avg_score": 0.02182208312054475,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764644
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 8.1701,
+        "num_docs": 20,
+        "avg_score": 0.02201684471219778,
+        "unique_sources": 3,
+        "entropy": 1.295461844238322
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 14.3049,
+        "num_docs": 15,
+        "avg_score": 0.06372527163475752,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 4.9858,
+        "num_docs": 15,
+        "avg_score": 0.02182208312054475,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764644
+      }
+    }
+  },
+  {
+    "query_id": "q_013",
+    "query_text": "ระบบ PLATFORM SOCIAL TELECARE (PST) คืออะไร มีประโยชน์อย่างไรในการดูแลผู้ป่วยกลุ่มเปราะบาง",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 5.0796,
+        "num_docs": 15,
+        "avg_score": 0.6615439613660177,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.8106,
+        "num_docs": 5,
+        "avg_score": 0.9501107335090637,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.4426,
+        "num_docs": 5,
+        "avg_score": 0.9348796963691711,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "multihop": {
+        "retrieval_time_sec": 8.4768,
+        "num_docs": 15,
+        "avg_score": 0.7129408200581868,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.7027,
+        "num_docs": 15,
+        "avg_score": 0.6615439613660177,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.523,
+        "num_docs": 5,
+        "avg_score": 0.9348796963691711,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 19.6792,
+        "num_docs": 15,
+        "avg_score": 0.7421527067820232,
+        "unique_sources": 2,
+        "entropy": 0.35335933502142136
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 6.3213,
+        "num_docs": 15,
+        "avg_score": 0.6615439613660177,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      }
+    }
+  },
+  {
+    "query_id": "q_014",
+    "query_text": "ขั้นตอนการประเมินทางสังคม (Psychosocial Assessment) ผู้ป่วยจิตเภทขาดยาที่ครอบครัวต้องการส่งโรงพยาบาล",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 9.7084,
+        "num_docs": 15,
+        "avg_score": 0.43031136790911356,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.4695,
+        "num_docs": 5,
+        "avg_score": 0.6498385965824127,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 17.832,
+        "num_docs": 20,
+        "avg_score": 0.47870005294680595,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "multihop": {
+        "retrieval_time_sec": 18.2674,
+        "num_docs": 15,
+        "avg_score": 0.5360298097133637,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.3008,
+        "num_docs": 15,
+        "avg_score": 0.43031136790911356,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 17.9897,
+        "num_docs": 20,
+        "avg_score": 0.47870005294680595,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 24.9631,
+        "num_docs": 15,
+        "avg_score": 0.6575855612754822,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764646
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.7284,
+        "num_docs": 15,
+        "avg_score": 0.43031136790911356,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      }
+    }
+  },
+  {
+    "query_id": "q_015",
+    "query_text": "หลักการให้คำปรึกษาผู้ป่วยไตวายระยะสุดท้ายที่ปฏิเสธการฟอกไต (Refusal of Treatment)",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 6.6603,
+        "num_docs": 15,
+        "avg_score": 0.04008089145645499,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.5134,
+        "num_docs": 5,
+        "avg_score": 0.08455991446971893,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.1761,
+        "num_docs": 10,
+        "avg_score": 0.054986091516911986,
+        "unique_sources": 2,
+        "entropy": 0.4689955935892812
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.0039,
+        "num_docs": 15,
+        "avg_score": 0.23967039212584496,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.4927,
+        "num_docs": 15,
+        "avg_score": 0.04008089145645499,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.1655,
+        "num_docs": 10,
+        "avg_score": 0.054986091516911986,
+        "unique_sources": 2,
+        "entropy": 0.4689955935892812
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 14.8981,
+        "num_docs": 15,
+        "avg_score": 0.5882007360458374,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.6798,
+        "num_docs": 15,
+        "avg_score": 0.04008089145645499,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      }
+    }
+  },
+  {
+    "query_id": "q_016",
+    "query_text": "กระบวนการตามมาตรฐานเมื่อสงสัยกรณีเด็กถูกทำร้ายร่างกาย (Child Abuse)",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 14.248,
+        "num_docs": 15,
+        "avg_score": 0.04825594375530879,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.7464,
+        "num_docs": 5,
+        "avg_score": 0.12267551794648171,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "dynamic": {
+        "retrieval_time_sec": 34.9247,
+        "num_docs": 20,
+        "avg_score": 0.07303086917381733,
+        "unique_sources": 3,
+        "entropy": 1.1567796494470395
+      },
+      "multihop": {
+        "retrieval_time_sec": 24.975,
+        "num_docs": 15,
+        "avg_score": 0.1895861196021239,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 4.2326,
+        "num_docs": 15,
+        "avg_score": 0.04825594375530879,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 36.2052,
+        "num_docs": 20,
+        "avg_score": 0.07303086917381733,
+        "unique_sources": 3,
+        "entropy": 1.1567796494470395
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 29.2649,
+        "num_docs": 15,
+        "avg_score": 0.29868424832820895,
+        "unique_sources": 3,
+        "entropy": 1.2309595631140104
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 7.8914,
+        "num_docs": 15,
+        "avg_score": 0.04825594375530879,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      }
+    }
+  },
+  {
+    "query_id": "q_017",
+    "query_text": "การเชื่อมโยงข้อมูลระหว่าง PLATFORM SOCIAL TELECARE กับระบบ HOSXP ผ่าน API มีประโยชน์อย่างไรในการดูแลผู้ป่วยกลุ่มเปราะบาง",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 6.9125,
+        "num_docs": 15,
+        "avg_score": 0.521679479877154,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.9505,
+        "num_docs": 5,
+        "avg_score": 0.8243554115295411,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 2.9581,
+        "num_docs": 10,
+        "avg_score": 0.6760167062282563,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "multihop": {
+        "retrieval_time_sec": 9.8233,
+        "num_docs": 15,
+        "avg_score": 0.5555161873499552,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.097,
+        "num_docs": 15,
+        "avg_score": 0.521679479877154,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 2.6252,
+        "num_docs": 10,
+        "avg_score": 0.6760167062282563,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 22.2843,
+        "num_docs": 15,
+        "avg_score": 0.5997533023357391,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 6.7963,
+        "num_docs": 15,
+        "avg_score": 0.521679479877154,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      }
+    }
+  },
+  {
+    "query_id": "q_018",
+    "query_text": "แนวทางการสืบค้นและติดตามหาญาติผู้ป่วยฉุกเฉินที่ไม่ทราบชื่อตามมาตรฐาน",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 5.5114,
+        "num_docs": 15,
+        "avg_score": 0.05784144466742873,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.0557,
+        "num_docs": 10,
+        "avg_score": 0.08025714606046677,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 21.066,
+        "num_docs": 20,
+        "avg_score": 0.05285703185945749,
+        "unique_sources": 3,
+        "entropy": 1.236160254373812
+      },
+      "multihop": {
+        "retrieval_time_sec": 13.2244,
+        "num_docs": 15,
+        "avg_score": 0.25279886027177173,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.0165,
+        "num_docs": 15,
+        "avg_score": 0.05784144466742873,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 16.0496,
+        "num_docs": 20,
+        "avg_score": 0.05285703185945749,
+        "unique_sources": 3,
+        "entropy": 1.236160254373812
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 24.3136,
+        "num_docs": 15,
+        "avg_score": 0.3694056304792563,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.0206,
+        "num_docs": 15,
+        "avg_score": 0.05784144466742873,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      }
+    }
+  },
+  {
+    "query_id": "q_019",
+    "query_text": "เทคนิคการให้คำปรึกษา (Counseling Techniques) หญิงตั้งครรภ์ที่ติดเชื้อ HIV และกลัวการเปิดเผยผลเลือด",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.2489,
+        "num_docs": 15,
+        "avg_score": 0.08154426446805398,
+        "unique_sources": 2,
+        "entropy": 0.35335933502142136
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.0401,
+        "num_docs": 10,
+        "avg_score": 0.11552577503025532,
+        "unique_sources": 2,
+        "entropy": 0.4689955935892812
+      },
+      "dynamic": {
+        "retrieval_time_sec": 13.715,
+        "num_docs": 20,
+        "avg_score": 0.0645548707805574,
+        "unique_sources": 2,
+        "entropy": 0.28639695711595625
+      },
+      "multihop": {
+        "retrieval_time_sec": 15.5587,
+        "num_docs": 15,
+        "avg_score": 0.10883676838129759,
+        "unique_sources": 3,
+        "entropy": 0.9055872616982603
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 7.4004,
+        "num_docs": 15,
+        "avg_score": 0.08154426446805398,
+        "unique_sources": 2,
+        "entropy": 0.35335933502142136
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 15.1688,
+        "num_docs": 20,
+        "avg_score": 0.0645548707805574,
+        "unique_sources": 2,
+        "entropy": 0.28639695711595625
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 28.8412,
+        "num_docs": 15,
+        "avg_score": 0.16492548137903212,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 8.0619,
+        "num_docs": 15,
+        "avg_score": 0.08154426446805398,
+        "unique_sources": 2,
+        "entropy": 0.35335933502142136
+      }
+    }
+  },
+  {
+    "query_id": "q_020",
+    "query_text": "ขั้นตอนการวางแผนจำหน่าย (Discharge Planning) ผู้ป่วยโรคหลอดเลือดสมองกลับสู่ชุมชน",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 4.3993,
+        "num_docs": 15,
+        "avg_score": 0.23620038429896037,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.1999,
+        "num_docs": 5,
+        "avg_score": 0.3986895650625229,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "dynamic": {
+        "retrieval_time_sec": 7.9691,
+        "num_docs": 20,
+        "avg_score": 0.24596916362643242,
+        "unique_sources": 3,
+        "entropy": 1.278897902987479
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.4181,
+        "num_docs": 15,
+        "avg_score": 0.34377121229966484,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.942,
+        "num_docs": 15,
+        "avg_score": 0.23620038429896037,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 6.7315,
+        "num_docs": 20,
+        "avg_score": 0.24596916362643242,
+        "unique_sources": 3,
+        "entropy": 1.278897902987479
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 12.159,
+        "num_docs": 15,
+        "avg_score": 0.3541902412970861,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.0449,
+        "num_docs": 15,
+        "avg_score": 0.23620038429896037,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      }
+    }
+  },
+  {
+    "query_id": "q_021",
+    "query_text": "ขั้นตอน RAPID SCREENING IN SOCIAL DIAGNOSIS PROCESS ประกอบด้วยอะไรบ้าง",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.4774,
+        "num_docs": 15,
+        "avg_score": 0.18784686227639516,
+        "unique_sources": 3,
+        "entropy": 1.565596230357602
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.0465,
+        "num_docs": 5,
+        "avg_score": 0.420331797003746,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "dynamic": {
+        "retrieval_time_sec": 13.0878,
+        "num_docs": 20,
+        "avg_score": 0.2069737559184432,
+        "unique_sources": 3,
+        "entropy": 1.4577174691301482
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.1147,
+        "num_docs": 15,
+        "avg_score": 0.26311518450578053,
+        "unique_sources": 3,
+        "entropy": 1.1589385323502772
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.0467,
+        "num_docs": 15,
+        "avg_score": 0.18784686227639516,
+        "unique_sources": 3,
+        "entropy": 1.565596230357602
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 7.8087,
+        "num_docs": 20,
+        "avg_score": 0.2069737559184432,
+        "unique_sources": 3,
+        "entropy": 1.4577174691301482
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 14.6941,
+        "num_docs": 15,
+        "avg_score": 0.3374855160713196,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.0703,
+        "num_docs": 15,
+        "avg_score": 0.18784686227639516,
+        "unique_sources": 3,
+        "entropy": 1.565596230357602
+      }
+    }
+  },
+  {
+    "query_id": "q_022",
+    "query_text": "ขั้นตอนการประสานงานข้ามหน่วยงาน กรณีแรงงานข้ามชาติประสบอุบัติเหตุรุนแรงและต้องการส่งกลับประเทศ",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 2.9073,
+        "num_docs": 15,
+        "avg_score": 0.018963863234966995,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.5825,
+        "num_docs": 10,
+        "avg_score": 0.024643540475517513,
+        "unique_sources": 2,
+        "entropy": 0.8812908992306927
+      },
+      "dynamic": {
+        "retrieval_time_sec": 9.8468,
+        "num_docs": 20,
+        "avg_score": 0.022873234329745175,
+        "unique_sources": 2,
+        "entropy": 0.6098403047164004
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.2433,
+        "num_docs": 15,
+        "avg_score": 0.0264741533746322,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.6181,
+        "num_docs": 15,
+        "avg_score": 0.018963863234966995,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 6.0377,
+        "num_docs": 20,
+        "avg_score": 0.022873234329745175,
+        "unique_sources": 2,
+        "entropy": 0.6098403047164004
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 12.4499,
+        "num_docs": 15,
+        "avg_score": 0.037844304864605265,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.0327,
+        "num_docs": 15,
+        "avg_score": 0.018963863234966995,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      }
+    }
+  },
+  {
+    "query_id": "q_023",
+    "query_text": "วิธีการจัดการผู้ป่วยติดสารเสพติดที่มีพฤติกรรมคุกคามบุคลากรตามมาตรฐานโรงพยาบาล",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.0992,
+        "num_docs": 15,
+        "avg_score": 0.024912401878585417,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.5903,
+        "num_docs": 5,
+        "avg_score": 0.056256501376628874,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "dynamic": {
+        "retrieval_time_sec": 6.947,
+        "num_docs": 20,
+        "avg_score": 0.043119639670476315,
+        "unique_sources": 3,
+        "entropy": 1.2344977967946407
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.255,
+        "num_docs": 15,
+        "avg_score": 0.4064318830768267,
+        "unique_sources": 2,
+        "entropy": 0.9967916319816366
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.2617,
+        "num_docs": 15,
+        "avg_score": 0.024912401878585417,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 6.0516,
+        "num_docs": 20,
+        "avg_score": 0.043119639670476315,
+        "unique_sources": 3,
+        "entropy": 1.2344977967946407
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 13.6354,
+        "num_docs": 15,
+        "avg_score": 0.5047273327906926,
+        "unique_sources": 2,
+        "entropy": 0.9182958340544896
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 2.9623,
+        "num_docs": 15,
+        "avg_score": 0.024912401878585417,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      }
+    }
+  },
+  {
+    "query_id": "q_024",
+    "query_text": "กระบวนการคุ้มครองเด็กและการดำเนินงานร่วมกับทีมสหวิชาชีพในกรณีเด็กถูกล่วงละเมิดทางเพศในครอบครัว",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.259,
+        "num_docs": 15,
+        "avg_score": 0.28695154984792076,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.7904,
+        "num_docs": 15,
+        "avg_score": 0.28695154984792076,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "dynamic": {
+        "retrieval_time_sec": 8.5841,
+        "num_docs": 20,
+        "avg_score": 0.28839628472924234,
+        "unique_sources": 3,
+        "entropy": 1.278897902987479
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.8345,
+        "num_docs": 15,
+        "avg_score": 0.5808069785435994,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.3161,
+        "num_docs": 15,
+        "avg_score": 0.28695154984792076,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 5.833,
+        "num_docs": 20,
+        "avg_score": 0.28839628472924234,
+        "unique_sources": 3,
+        "entropy": 1.278897902987479
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 13.3115,
+        "num_docs": 15,
+        "avg_score": 0.6794099132219951,
+        "unique_sources": 2,
+        "entropy": 0.35335933502142136
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 2.965,
+        "num_docs": 15,
+        "avg_score": 0.28695154984792076,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      }
+    }
+  },
+  {
+    "query_id": "q_025",
+    "query_text": "การใช้หลักการดูแลแบบประคับประคอง (Palliative Care) กับผู้ป่วยจิตเวชเร่ร่อนที่ปฏิเสธการรักษา",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.1662,
+        "num_docs": 15,
+        "avg_score": 0.10577513401707013,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.0057,
+        "num_docs": 5,
+        "avg_score": 0.2082120507955551,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.0041,
+        "num_docs": 10,
+        "avg_score": 0.13509801998734475,
+        "unique_sources": 2,
+        "entropy": 0.8812908992306927
+      },
+      "multihop": {
+        "retrieval_time_sec": 7.8026,
+        "num_docs": 15,
+        "avg_score": 0.3694501747687658,
+        "unique_sources": 3,
+        "entropy": 1.2309595631140104
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.4505,
+        "num_docs": 15,
+        "avg_score": 0.10577513401707013,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.0625,
+        "num_docs": 10,
+        "avg_score": 0.13509801998734475,
+        "unique_sources": 2,
+        "entropy": 0.8812908992306927
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 14.9294,
+        "num_docs": 15,
+        "avg_score": 0.4684959550698598,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.4243,
+        "num_docs": 15,
+        "avg_score": 0.10577513401707013,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      }
+    }
+  },
+  {
+    "query_id": "q_026",
+    "query_text": "บทบาทนักสังคมสงเคราะห์ในการให้ข้อมูลและสนับสนุนการตัดสินใจตามมาตรา 12 (พ.ร.บ. สุขภาพแห่งชาติ) กรณีผู้ป่วยมะเร็งระยะสุดท้ายปฏิเสธการรักษา",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 5.2483,
+        "num_docs": 15,
+        "avg_score": 0.3629005581140518,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764646
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.9612,
+        "num_docs": 15,
+        "avg_score": 0.3629005581140518,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764646
+      },
+      "dynamic": {
+        "retrieval_time_sec": 2.6695,
+        "num_docs": 10,
+        "avg_score": 0.45994084179401395,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.2676,
+        "num_docs": 15,
+        "avg_score": 0.37113405267397565,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.7169,
+        "num_docs": 15,
+        "avg_score": 0.3629005581140518,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764646
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 2.6272,
+        "num_docs": 10,
+        "avg_score": 0.45994084179401395,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 12.1034,
+        "num_docs": 15,
+        "avg_score": 0.48064076602458955,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 2.927,
+        "num_docs": 15,
+        "avg_score": 0.3629005581140518,
+        "unique_sources": 3,
+        "entropy": 1.3382689280764646
+      }
+    }
+  },
+  {
+    "query_id": "q_027",
+    "query_text": "แนวทางการประเมินและช่วยเหลือผู้สูงอายุที่ถูกทารุณกรรม (Elder Abuse) โดยผู้ดูแลที่เป็นบุตร",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 4.6869,
+        "num_docs": 15,
+        "avg_score": 0.16827965254584948,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.8916,
+        "num_docs": 10,
+        "avg_score": 0.21653613671660424,
+        "unique_sources": 3,
+        "entropy": 1.295461844238322
+      },
+      "dynamic": {
+        "retrieval_time_sec": 8.7016,
+        "num_docs": 20,
+        "avg_score": 0.15418324042111636,
+        "unique_sources": 3,
+        "entropy": 1.4060075793123286
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.7139,
+        "num_docs": 15,
+        "avg_score": 0.3312116940816244,
+        "unique_sources": 3,
+        "entropy": 1.158938532350277
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.0174,
+        "num_docs": 15,
+        "avg_score": 0.16827965254584948,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 6.3556,
+        "num_docs": 20,
+        "avg_score": 0.15418324042111636,
+        "unique_sources": 3,
+        "entropy": 1.4060075793123286
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 14.6926,
+        "num_docs": 15,
+        "avg_score": 0.4885686159133911,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.1134,
+        "num_docs": 15,
+        "avg_score": 0.16827965254584948,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687
+      }
+    }
+  },
+  {
+    "query_id": "q_028",
+    "query_text": "การประเมินครอบครัว (Family Assessment) โดยใช้ Genogram/Ecomap ในเคสครอบครัวซับซ้อน (เด็กพิการซ้ำซ้อน, แม่ซึมเศร้า, พ่อติดการพนัน)",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 4.6893,
+        "num_docs": 15,
+        "avg_score": 0.3078389624754588,
+        "unique_sources": 3,
+        "entropy": 1.565596230357602
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.3376,
+        "num_docs": 5,
+        "avg_score": 0.5521273195743561,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.2741,
+        "num_docs": 10,
+        "avg_score": 0.381058070063591,
+        "unique_sources": 3,
+        "entropy": 1.4854752972273344
+      },
+      "multihop": {
+        "retrieval_time_sec": 8.6266,
+        "num_docs": 15,
+        "avg_score": 0.4914201041062673,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.4643,
+        "num_docs": 15,
+        "avg_score": 0.3078389624754588,
+        "unique_sources": 3,
+        "entropy": 1.565596230357602
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.076,
+        "num_docs": 10,
+        "avg_score": 0.381058070063591,
+        "unique_sources": 3,
+        "entropy": 1.4854752972273344
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 13.6861,
+        "num_docs": 15,
+        "avg_score": 0.5540916442871093,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.1167,
+        "num_docs": 15,
+        "avg_score": 0.3078389624754588,
+        "unique_sources": 3,
+        "entropy": 1.565596230357602
+      }
+    }
+  },
+  {
+    "query_id": "q_029",
+    "query_text": "ขั้นตอนการประเมินความเสี่ยงฆ่าตัวตายซ้ำและการวางแผนความปลอดภัย (Safety Planning) ในผู้ป่วยที่พยายามฆ่าตัวตาย",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.1871,
+        "num_docs": 15,
+        "avg_score": 0.09747467997173469,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.9985,
+        "num_docs": 10,
+        "avg_score": 0.1287280824035406,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 16.6327,
+        "num_docs": 20,
+        "avg_score": 0.12985213976353407,
+        "unique_sources": 2,
+        "entropy": 0.4689955935892812
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.7406,
+        "num_docs": 15,
+        "avg_score": 0.3400103727976481,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.0044,
+        "num_docs": 15,
+        "avg_score": 0.09747467997173469,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 6.7144,
+        "num_docs": 20,
+        "avg_score": 0.12985213976353407,
+        "unique_sources": 2,
+        "entropy": 0.4689955935892812
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 12.9705,
+        "num_docs": 15,
+        "avg_score": 0.3472563664118449,
+        "unique_sources": 2,
+        "entropy": 0.35335933502142136
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.2332,
+        "num_docs": 15,
+        "avg_score": 0.09747467997173469,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      }
+    }
+  },
+  {
+    "query_id": "q_030",
+    "query_text": "กระบวนการให้คำปรึกษาครอบครัว (Family Counseling) กรณีมีความขัดแย้งเรื่องการบริจาคอวัยวะจากผู้ป่วยสมองตาย",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.7928,
+        "num_docs": 15,
+        "avg_score": 0.09497088845819235,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.2129,
+        "num_docs": 5,
+        "avg_score": 0.20840571969747543,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "dynamic": {
+        "retrieval_time_sec": 27.2589,
+        "num_docs": 20,
+        "avg_score": 0.12115834914147854,
+        "unique_sources": 3,
+        "entropy": 1.4406454496153462
+      },
+      "multihop": {
+        "retrieval_time_sec": 24.5183,
+        "num_docs": 15,
+        "avg_score": 0.1268619385858377,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 9.7308,
+        "num_docs": 15,
+        "avg_score": 0.09497088845819235,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 24.3968,
+        "num_docs": 20,
+        "avg_score": 0.12115834914147854,
+        "unique_sources": 3,
+        "entropy": 1.4406454496153462
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 61.6606,
+        "num_docs": 15,
+        "avg_score": 0.1954041597743829,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 10.3962,
+        "num_docs": 15,
+        "avg_score": 0.09497088845819235,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      }
+    }
+  },
+  {
+    "query_id": "q_031",
+    "query_text": "หลักการและขั้นตอนการทำ Family Conference ตามแนวทางปฏิบัติ",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 2.1535,
+        "num_docs": 15,
+        "avg_score": 0.006507797818630934,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 1.159,
+        "num_docs": 10,
+        "avg_score": 0.00715326638892293,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 5.2686,
+        "num_docs": 20,
+        "avg_score": 0.010333436564542354,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.9874,
+        "num_docs": 15,
+        "avg_score": 0.07546739280223846,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 1.1647,
+        "num_docs": 15,
+        "avg_score": 0.006507797818630934,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.9368,
+        "num_docs": 20,
+        "avg_score": 0.010333436564542354,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 2.5372,
+        "num_docs": 15,
+        "avg_score": 0.144426987785846,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 1.1824,
+        "num_docs": 15,
+        "avg_score": 0.006507797818630934,
+        "unique_sources": 1,
+        "entropy": -0.0
+      }
+    }
+  },
+  {
+    "query_id": "q_032",
+    "query_text": "วิธีการใช้ Genogram และ Ecomap ในการวิเคราะห์โครงสร้างและพลวัตครอบครัว",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 3.0107,
+        "num_docs": 15,
+        "avg_score": 0.0047212825156748295,
+        "unique_sources": 3,
+        "entropy": 0.6998428398862386
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.7942,
+        "num_docs": 10,
+        "avg_score": 0.005323777906596661,
+        "unique_sources": 3,
+        "entropy": 0.9219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 7.7257,
+        "num_docs": 20,
+        "avg_score": 0.0052936240565031765,
+        "unique_sources": 3,
+        "entropy": 1.0540157730728
+      },
+      "multihop": {
+        "retrieval_time_sec": 5.4014,
+        "num_docs": 15,
+        "avg_score": 0.036959636863321065,
+        "unique_sources": 3,
+        "entropy": 0.9055872616982603
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.7255,
+        "num_docs": 15,
+        "avg_score": 0.0047212825156748295,
+        "unique_sources": 3,
+        "entropy": 0.6998428398862386
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 5.3964,
+        "num_docs": 20,
+        "avg_score": 0.0052936240565031765,
+        "unique_sources": 3,
+        "entropy": 1.0540157730728
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 9.2488,
+        "num_docs": 15,
+        "avg_score": 0.03706996934488416,
+        "unique_sources": 3,
+        "entropy": 0.9055872616982603
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.6704,
+        "num_docs": 15,
+        "avg_score": 0.0047212825156748295,
+        "unique_sources": 3,
+        "entropy": 0.6998428398862386
+      }
+    }
+  },
+  {
+    "query_id": "q_033",
+    "query_text": "การแปลผลและการนำคะแนน ADL/IADL ไปใช้ในการวางแผนช่วยเหลือผู้สูงอายุ",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 7.3081,
+        "num_docs": 15,
+        "avg_score": 0.10773708509902159,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.3685,
+        "num_docs": 10,
+        "avg_score": 0.147540320456028,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.0914,
+        "num_docs": 10,
+        "avg_score": 0.147540320456028,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.1115,
+        "num_docs": 15,
+        "avg_score": 0.12393705373009047,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.0053,
+        "num_docs": 15,
+        "avg_score": 0.10773708509902159,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 2.9907,
+        "num_docs": 10,
+        "avg_score": 0.147540320456028,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 16.6663,
+        "num_docs": 15,
+        "avg_score": 0.15488166809082032,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 3.3168,
+        "num_docs": 15,
+        "avg_score": 0.10773708509902159,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      }
+    }
+  },
+  {
+    "query_id": "q_034",
+    "query_text": "องค์ประกอบสำคัญที่ต้องมีในรายงาน Psychosocial Assessment",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 9.0415,
+        "num_docs": 15,
+        "avg_score": 0.0393912874472638,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      },
+      "adaptive": {
+        "retrieval_time_sec": 2.917,
+        "num_docs": 5,
+        "avg_score": 0.08798895329236985,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "dynamic": {
+        "retrieval_time_sec": 2.692,
+        "num_docs": 10,
+        "avg_score": 0.053599481005221605,
+        "unique_sources": 2,
+        "entropy": 0.8812908992306927
+      },
+      "multihop": {
+        "retrieval_time_sec": 5.9453,
+        "num_docs": 15,
+        "avg_score": 0.1279039217780034,
+        "unique_sources": 3,
+        "entropy": 1.103307408607834
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.8652,
+        "num_docs": 15,
+        "avg_score": 0.0393912874472638,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 2.6825,
+        "num_docs": 10,
+        "avg_score": 0.053599481005221605,
+        "unique_sources": 2,
+        "entropy": 0.8812908992306927
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 681.3689,
+        "num_docs": 15,
+        "avg_score": 0.41993855039278666,
+        "unique_sources": 2,
+        "entropy": 0.35335933502142136
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 12.6546,
+        "num_docs": 15,
+        "avg_score": 0.0393912874472638,
+        "unique_sources": 3,
+        "entropy": 1.3995812306460644
+      }
+    }
+  },
+  {
+    "query_id": "q_035",
+    "query_text": "ข้อควรปฏิบัติและจริยธรรมในการเยี่ยมบ้านผู้ป่วย (Home Visit Protocol)",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 18.614,
+        "num_docs": 15,
+        "avg_score": 0.2051848754286766,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "adaptive": {
+        "retrieval_time_sec": 4.0947,
+        "num_docs": 10,
+        "avg_score": 0.2658782169222832,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "dynamic": {
+        "retrieval_time_sec": 2.4128,
+        "num_docs": 10,
+        "avg_score": 0.2658782169222832,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "multihop": {
+        "retrieval_time_sec": 17.0352,
+        "num_docs": 15,
+        "avg_score": 0.3872216045856476,
+        "unique_sources": 3,
+        "entropy": 1.2419460322060458
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 8.7816,
+        "num_docs": 15,
+        "avg_score": 0.2051848754286766,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 2.6133,
+        "num_docs": 10,
+        "avg_score": 0.2658782169222832,
+        "unique_sources": 3,
+        "entropy": 1.3609640474436813
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 15.5731,
+        "num_docs": 15,
+        "avg_score": 0.4909746686617533,
+        "unique_sources": 3,
+        "entropy": 1.103307408607834
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 10.8433,
+        "num_docs": 15,
+        "avg_score": 0.2051848754286766,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      }
+    }
+  },
+  {
+    "query_id": "q_036",
+    "query_text": "รหัส ICD-10 กลุ่ม Z-codes ที่เกี่ยวข้องกับการวินิจฉัยทางสังคมที่พบบ่อยมีอะไรบ้าง",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 9.3527,
+        "num_docs": 15,
+        "avg_score": 0.4871891841292381,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.6385,
+        "num_docs": 5,
+        "avg_score": 0.9530102252960205,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 22.772,
+        "num_docs": 20,
+        "avg_score": 0.42076456770300863,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "multihop": {
+        "retrieval_time_sec": 24.628,
+        "num_docs": 15,
+        "avg_score": 0.5761674026648204,
+        "unique_sources": 3,
+        "entropy": 0.9055872616982603
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 4.0536,
+        "num_docs": 15,
+        "avg_score": 0.4871891841292381,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 20.2996,
+        "num_docs": 20,
+        "avg_score": 0.42076456770300863,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 41.1259,
+        "num_docs": 15,
+        "avg_score": 0.5778180092573166,
+        "unique_sources": 3,
+        "entropy": 0.6998428398862386
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 10.9608,
+        "num_docs": 15,
+        "avg_score": 0.4871891841292381,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      }
+    }
+  },
+  {
+    "query_id": "q_037",
+    "query_text": "รหัส ICF ที่เกี่ยวข้องกับการประเมินผู้ป่วยกลุ่มเปราะบางมีตัวอย่างอะไรบ้าง",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 4.6308,
+        "num_docs": 15,
+        "avg_score": 0.27646911578873795,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "adaptive": {
+        "retrieval_time_sec": 4.0219,
+        "num_docs": 5,
+        "avg_score": 0.5698258399963378,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 20.0654,
+        "num_docs": 20,
+        "avg_score": 0.24786108145490288,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "multihop": {
+        "retrieval_time_sec": 23.0971,
+        "num_docs": 15,
+        "avg_score": 0.3065150111913681,
+        "unique_sources": 2,
+        "entropy": 0.5665095065529053
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 4.2636,
+        "num_docs": 15,
+        "avg_score": 0.27646911578873795,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 20.0013,
+        "num_docs": 20,
+        "avg_score": 0.24786108145490288,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 37.5897,
+        "num_docs": 15,
+        "avg_score": 0.3486553023258845,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 8.1654,
+        "num_docs": 15,
+        "avg_score": 0.27646911578873795,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      }
+    }
+  },
+  {
+    "query_id": "q_038",
+    "query_text": "แนวทางการสร้างและติดตาม 'แผนการบริการเฉพาะราย' (Individualized Service Plan - ISP)",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 23.5981,
+        "num_docs": 15,
+        "avg_score": 0.25484750817219415,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "adaptive": {
+        "retrieval_time_sec": 9.2654,
+        "num_docs": 10,
+        "avg_score": 0.30810622721910474,
+        "unique_sources": 2,
+        "entropy": 0.8812908992306927
+      },
+      "dynamic": {
+        "retrieval_time_sec": 12.4708,
+        "num_docs": 20,
+        "avg_score": 0.24760668948292733,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "multihop": {
+        "retrieval_time_sec": 6.8943,
+        "num_docs": 15,
+        "avg_score": 0.5764506836732228,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 2.9987,
+        "num_docs": 15,
+        "avg_score": 0.25484750817219415,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 6.3049,
+        "num_docs": 20,
+        "avg_score": 0.24760668948292733,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 25.3907,
+        "num_docs": 15,
+        "avg_score": 0.8581043759981791,
+        "unique_sources": 1,
+        "entropy": -0.0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 10.4733,
+        "num_docs": 15,
+        "avg_score": 0.25484750817219415,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      }
+    }
+  },
+  {
+    "query_id": "q_039",
+    "query_text": "เครื่องมือ AUDIT ที่ใช้ประเมินปัญหากลุ่มเป้าหมายใด",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 13.964,
+        "num_docs": 15,
+        "avg_score": 0.2786144288877646,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "adaptive": {
+        "retrieval_time_sec": 5.655,
+        "num_docs": 5,
+        "avg_score": 0.5280818700790405,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 3.2803,
+        "num_docs": 10,
+        "avg_score": 0.382937116920948,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "multihop": {
+        "retrieval_time_sec": 10.1184,
+        "num_docs": 15,
+        "avg_score": 0.565674223502477,
+        "unique_sources": 3,
+        "entropy": 1.456564762130954
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.5019,
+        "num_docs": 15,
+        "avg_score": 0.2786144288877646,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 3.2533,
+        "num_docs": 10,
+        "avg_score": 0.382937116920948,
+        "unique_sources": 2,
+        "entropy": 0.9709505944546686
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 21.5628,
+        "num_docs": 15,
+        "avg_score": 0.7475822667280833,
+        "unique_sources": 3,
+        "entropy": 1.4294732983598406
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 9.4694,
+        "num_docs": 15,
+        "avg_score": 0.2786144288877646,
+        "unique_sources": 3,
+        "entropy": 1.5058231002082845
+      }
+    }
+  },
+  {
+    "query_id": "q_040",
+    "query_text": "ขั้นตอนการทำงานร่วมกับ 'ศูนย์พึ่งได้' (OSCC) ตาม พ.ร.บ. คุ้มครองผู้ถูกกระทำด้วยความรุนแรงฯ",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 10.1926,
+        "num_docs": 15,
+        "avg_score": 0.2801702946424484,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "adaptive": {
+        "retrieval_time_sec": 3.6567,
+        "num_docs": 5,
+        "avg_score": 0.5254353106021881,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "dynamic": {
+        "retrieval_time_sec": 13.2077,
+        "num_docs": 20,
+        "avg_score": 0.32776479944586756,
+        "unique_sources": 3,
+        "entropy": 1.278897902987479
+      },
+      "multihop": {
+        "retrieval_time_sec": 16.7306,
+        "num_docs": 15,
+        "avg_score": 0.541380446155866,
+        "unique_sources": 3,
+        "entropy": 1.0529815751302694
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 3.7418,
+        "num_docs": 15,
+        "avg_score": 0.2801702946424484,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 12.5831,
+        "num_docs": 20,
+        "avg_score": 0.32776479944586756,
+        "unique_sources": 3,
+        "entropy": 1.278897902987479
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 26.4853,
+        "num_docs": 15,
+        "avg_score": 0.6557895720005036,
+        "unique_sources": 2,
+        "entropy": 0.35335933502142136
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 7.8819,
+        "num_docs": 15,
+        "avg_score": 0.2801702946424484,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623
+      }
+    }
+  }
+]

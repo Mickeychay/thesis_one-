@@ -1,0 +1,422 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>H2L Research | Interactive Case Analysis Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#d6e4f9",
+                        "primary": "#000000",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#3a4859",
+                        "surface-dim": "#d8dadc",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed": "#00201d",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "on-tertiary-container": "#0c9488",
+                        "tertiary-fixed": "#89f5e7",
+                        "tertiary": "#000000",
+                        "primary-fixed-dim": "#bac8dc",
+                        "inverse-surface": "#2d3133",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-tint": "#525f71",
+                        "on-tertiary-fixed-variant": "#005049",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "surface": "#f7f9fb",
+                        "primary-container": "#0f1c2c",
+                        "secondary-fixed": "#d5e3fc",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#6bd8cb",
+                        "outline-variant": "#c4c6cc",
+                        "on-primary-container": "#778598",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "secondary-container": "#d5e3fc",
+                        "on-surface-variant": "#44474c",
+                        "inverse-primary": "#bac8dc",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed": "#0f1c2c",
+                        "surface-bright": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "outline": "#74777d",
+                        "on-secondary-container": "#57657a",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-container": "#00201d",
+                        "secondary": "#515f74"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .custom-glass { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e0e3e5; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="bg-slate-50/80 backdrop-blur-xl fixed top-0 w-full z-50 shadow-sm shadow-slate-200/20">
+<div class="flex justify-between items-center px-8 h-16 w-full max-w-[1920px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-slate-900 font-headline" style="">AI Social Differenctial Diagnosis</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="font-manrope tracking-tight font-semibold text-teal-600 border-b-2 border-teal-600 pb-1" href="#" style="">Dashboard</a>
+<a class="font-manrope tracking-tight font-semibold text-slate-500 hover:text-slate-700 transition-colors" href="#" style="">Pipeline</a>
+<a class="font-manrope tracking-tight font-semibold text-slate-500 hover:text-slate-700 transition-colors" href="#" style="">Metrics</a>
+<a class="font-manrope tracking-tight font-semibold text-slate-500 hover:text-slate-700 transition-colors" href="#" style="">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-100/50 rounded-full transition-colors" style="">
+<span class="material-symbols-outlined text-on-surface-variant" style="">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-100/50 rounded-full transition-colors" style="">
+<span class="material-symbols-outlined text-on-surface-variant" style="">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Researcher Profile" data-alt="close-up portrait of a professional clinical researcher in a minimalist laboratory setting with soft focus background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhPT4ZGUoavq6ZsIW8ds9C_-cJs3RKo9I10K1wPFsFVqv6ms8CmAHQuu2BUJ9czwJefAJCV7pbemdeyupkDvMJHqjz2A40qdbN_KohjvpjZAf2mjSYizmtSj12CHwopHzGTmy65JwGjgRgJGmrTwTz3Tf3qcqjAIeADFgXKBmauk-v4uPcS7MJAXgPoiz37rveettz-VzMOs7ZPbHRmB2hsCOM7oTbWPhw_94Ezruiv9FBOVFjK9NXk0zqpi39rCZvfIie54aMTQSD" class="" style="">
+</div>
+</div>
+</div>
+<div class="bg-slate-200/50 h-[1px]"></div>
+</header>
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-72 bg-slate-50 flex flex-col p-4 border-r-0">
+<div class="flex items-center gap-3 px-2 mb-8">
+<div class="h-10 w-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="">science</span>
+</div>
+<div>
+<h2 class="font-headline font-bold text-slate-900 leading-none" style="">H2L Research</h2>
+<p class="text-xs text-slate-500 mt-1" style="">Clinical Integrity Panel</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 bg-white text-teal-600 font-semibold shadow-sm rounded-xl hover:translate-x-1 transition-all duration-200" href="#" style="">
+<span class="material-symbols-outlined" style="">analytics</span>
+<span class="text-sm" style="">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-100 rounded-xl hover:translate-x-1 transition-all duration-200" href="#" style="">
+<span class="material-symbols-outlined" style="">account_tree</span>
+<span class="text-sm" style="">Logic Flow</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-100 rounded-xl hover:translate-x-1 transition-all duration-200" href="#" style="">
+<span class="material-symbols-outlined" style="">verified_user</span>
+<span class="text-sm" style="">Data Integrity</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-100 rounded-xl hover:translate-x-1 transition-all duration-200" href="#" style="">
+<span class="material-symbols-outlined" style="">history_edu</span>
+<span class="text-sm" style="">Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-slate-100 rounded-xl hover:translate-x-1 transition-all duration-200" href="#" style="">
+<span class="material-symbols-outlined" style="">ios_share</span>
+<span class="text-sm" style="">Export</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full py-3 bg-teal-600 text-white rounded-xl font-semibold shadow-sm hover:opacity-90 transition-opacity" style="">
+                Verify Dataset
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 text-sm hover:text-slate-900" href="#" style="">
+<span class="material-symbols-outlined text-lg" style="">help_outline</span>
+                    Support
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 text-sm hover:text-slate-900" href="#" style="">
+<span class="material-symbols-outlined text-lg" style="">description</span>
+                    Documentation
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-72 pt-20 p-8 min-h-screen">
+<!-- Header & Breadcrumbs -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<nav class="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
+<span class="" style="">Analysis Dashboard</span>
+<span class="material-symbols-outlined text-[14px]" style="">chevron_right</span>
+<span class="" style="">Case #4810-TH</span>
+</nav>
+<h1 class="text-3xl font-headline font-extrabold tracking-tight text-on-surface" style="">Interactive Case Analysis</h1>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-full bg-on-tertiary-container/10 text-on-tertiary-container text-[11px] font-bold tracking-wider uppercase" style="">Verified Case</span>
+<span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-[11px] font-bold tracking-wider uppercase" style="">Research Integrity A+</span>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-6">
+<!-- Left: Problem Code Drilldown (Bento Card) -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<section class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/20">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-lg" style="">Problem Code Analysis (รายการรหัสปัญหา)</h3>
+<div class="text-xs text-on-surface-variant bg-surface-container-high px-2 py-1 rounded" style="">Last Scanned: 2m ago</div>
+</div>
+<!-- Problem Cards Grid -->
+<div class="grid grid-cols-1 gap-4">
+<!-- Problem Card: Active/Expanded State -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border-l-4 border-teal-600 transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<span class="text-xl font-headline font-bold text-teal-600" style="">E11.9</span>
+<div>
+<h4 class="font-bold text-on-surface" style="">Diabetes mellitus type 2 (เบาหวานชนิดที่ 2)</h4>
+<p class="text-xs text-on-surface-variant" style="">Metabolic Disorders • Chronic Management</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<div class="text-[10px] uppercase font-bold text-on-surface-variant leading-none" style="">Confidence</div>
+<div class="text-lg font-headline font-bold text-on-tertiary-container" style="">98.2%</div>
+</div>
+<span class="material-symbols-outlined text-teal-600" style="">expand_less</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-6 pt-4 border-t border-surface-container-high">
+<div>
+<div class="text-[10px] uppercase font-bold text-on-surface-variant mb-1" style="">Severity Risk Scale</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-amber-500" style="width: 65%;"></div>
+</div>
+<div class="flex justify-between text-[10px] mt-1">
+<span class="" style="">Moderate</span>
+<span class="" style="">6.5/10</span>
+</div>
+</div>
+<div>
+<div class="text-[10px] uppercase font-bold text-on-surface-variant mb-1" style="">L1/L2 Validation</div>
+<div class="flex gap-1">
+<span class="px-2 py-0.5 bg-on-tertiary-container/10 text-on-tertiary-container text-[10px] rounded-full font-bold" style="">L1: Verified</span>
+<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[10px] rounded-full font-bold" style="">L2: Pending</span>
+</div>
+</div>
+<div>
+<div class="text-[10px] uppercase font-bold text-on-surface-variant mb-1" style="">Matched Keywords</div>
+<div class="flex flex-wrap gap-1">
+<span class="text-[10px] px-1.5 bg-surface-container text-on-surface rounded" style="">HbA1c &gt; 7.0</span>
+<span class="text-[10px] px-1.5 bg-surface-container text-on-surface rounded" style="">Metformin</span>
+</div>
+</div>
+</div>
+<div class="mt-6 p-4 bg-surface-container-low rounded-lg">
+<h5 class="text-xs font-bold text-teal-600 uppercase mb-2 flex items-center gap-1" style="">
+<span class="material-symbols-outlined text-sm" style="">psychology</span>
+                                    Validation Reason (เหตุผลการตรวจสอบ)
+                                </h5>
+<p class="text-sm text-on-surface-variant leading-relaxed" style="">
+                                    Multiple clinical indicators detected: Patient's laboratory report (Ref: LAB-992) shows an elevated HbA1c of 7.8% consistent with hyperglycemia. Physical examination notes polyuria and recurrent fatigue. Medication history confirms ongoing Metformin 500mg BID regimen. Semantic specificity for E11.9 matches ICD-10 clinical guidelines for Type 2 Diabetes without complications.
+                                </p>
+</div>
+</div>
+<!-- Problem Card: Collapsed -->
+<div class="bg-surface-container-lowest rounded-xl p-5 hover:bg-white cursor-pointer transition-all border border-transparent hover:border-outline-variant/30 group">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-4">
+<span class="text-xl font-headline font-bold text-on-surface-variant group-hover:text-teal-600" style="">I10</span>
+<div>
+<h4 class="font-bold text-on-surface" style="">Essential Hypertension (ความดันโลหิตสูง)</h4>
+<p class="text-xs text-on-surface-variant" style="">Cardiovascular • Routine Screening</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<div class="text-[10px] uppercase font-bold text-on-surface-variant leading-none" style="">Confidence</div>
+<div class="text-lg font-headline font-bold text-on-surface" style="">84.5%</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" style="">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Problem Card: Collapsed (Warning State) -->
+<div class="bg-surface-container-lowest rounded-xl p-5 hover:bg-white cursor-pointer transition-all border border-transparent hover:border-outline-variant/30 group">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-4">
+<span class="text-xl font-headline font-bold text-on-surface-variant group-hover:text-error" style="">K21.9</span>
+<div>
+<h4 class="font-bold text-on-surface" style="">GERD without esophagitis (โรคกรดไหลย้อน)</h4>
+<p class="text-xs text-on-surface-variant" style="">Gastrointestinal • Symptomatic Match</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<div class="text-[10px] uppercase font-bold text-on-surface-variant leading-none" style="">Confidence</div>
+<div class="text-lg font-headline font-bold text-on-surface" style="">62.1%</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" style="">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Retrieval Section (Document Linkage) -->
+<section class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/20">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-lg" style="">Evidence Retrieval (เอกสารอ้างอิง)</h3>
+<div class="flex gap-2">
+<button class="text-xs px-3 py-1 bg-teal-600 text-white rounded-full" style="">Source Documents (4)</button>
+<button class="text-xs px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full" style="">Lab Results (2)</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-on-tertiary-container/5 border border-on-tertiary-container/20 rounded-xl cursor-pointer ring-2 ring-teal-600 ring-offset-2 ring-offset-surface-container-low transition-all">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-teal-600 text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">description</span>
+<span class="text-xs font-bold text-on-surface" style="">Physician Progress Note</span>
+</div>
+<p class="text-[11px] text-on-surface-variant italic mb-2 line-clamp-2" style="">"...patient exhibits classic symptoms of hyperglycemia, metabolic syndrome suspected..."</p>
+<div class="flex justify-between items-center text-[10px]">
+<span class="text-teal-600 font-bold" style="">Matched E11.9</span>
+<span class="text-on-surface-variant" style="">Doc ID: #99021</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest border border-outline-variant/10 rounded-xl opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" style="">description</span>
+<span class="text-xs font-bold text-on-surface" style="">Nursing Assessment</span>
+</div>
+<p class="text-[11px] text-on-surface-variant italic mb-2 line-clamp-2" style="">"...stable vitals, complains of dry mouth and frequent urination during night..."</p>
+<div class="flex justify-between items-center text-[10px]">
+<span class="text-on-surface-variant" style="">General Intake</span>
+<span class="text-on-surface-variant" style="">Doc ID: #99025</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right: Score Breakdown Panel -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<section class="bg-slate-900 text-white rounded-xl p-6 h-full shadow-xl">
+<div class="flex items-center gap-2 mb-8">
+<span class="material-symbols-outlined text-teal-400" style="">bar_chart</span>
+<h3 class="font-headline font-bold text-lg" style="">Score Breakdown Panel</h3>
+</div>
+<div class="mb-10">
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest" style="">Aggregate Integrity Score</span>
+<span class="text-4xl font-headline font-extrabold text-teal-400" style="">92.4</span>
+</div>
+<!-- Stacked Bar Visualization -->
+<div class="w-full h-8 flex rounded-md overflow-hidden bg-slate-800">
+<div class="h-full bg-teal-500" style="width: 35%;" title="S_rerank: 35%"></div>
+<div class="h-full bg-teal-400/80" style="width: 25%;" title="Detection Confidence: 25%"></div>
+<div class="h-full bg-teal-300/60" style="width: 20%;" title="Semantic Match: 20%"></div>
+<div class="h-full bg-teal-200/40" style="width: 12%;" title="Specificity: 12%"></div>
+<div class="h-full bg-error" style="width: 8%;" title="Polarity Gate Impact: -8%"></div>
+</div>
+</div>
+<div class="space-y-6">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 text-xs font-bold text-slate-300" style="">
+<div class="h-2 w-2 rounded-full bg-teal-500"></div>
+                                    S_rerank
+                                </div>
+<p class="text-[10px] text-slate-500 mt-1 max-w-[180px]" style="">Re-ranking weight based on historical dataset correlation.</p>
+</div>
+<span class="text-sm font-headline font-bold" style="">+32.4</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 text-xs font-bold text-slate-300" style="">
+<div class="h-2 w-2 rounded-full bg-teal-400/80"></div>
+                                    Detection Confidence
+                                </div>
+<p class="text-[10px] text-slate-500 mt-1 max-w-[180px]" style="">Raw AI confidence from the extraction layer.</p>
+</div>
+<span class="text-sm font-headline font-bold" style="">+23.1</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 text-xs font-bold text-slate-300" style="">
+<div class="h-2 w-2 rounded-full bg-teal-300/60"></div>
+                                    Semantic Match
+                                </div>
+<p class="text-[10px] text-slate-500 mt-1 max-w-[180px]" style="">Distance vector in clinical embedding space.</p>
+</div>
+<span class="text-sm font-headline font-bold" style="">+18.5</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 text-xs font-bold text-slate-300" style="">
+<div class="h-2 w-2 rounded-full bg-teal-200/40"></div>
+                                    Specificity
+                                </div>
+<p class="text-[10px] text-slate-500 mt-1 max-w-[180px]" style="">How precisely the text refers to this specific code.</p>
+</div>
+<span class="text-sm font-headline font-bold" style="">+11.1</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 text-xs font-bold text-error" style="">
+<div class="h-2 w-2 rounded-full bg-error"></div>
+                                    Polarity Gate
+                                </div>
+<p class="text-[10px] text-slate-500 mt-1 max-w-[180px]" style="">Impact of negation detection (e.g. "no diabetes").</p>
+</div>
+<span class="text-sm font-headline font-bold text-error" style="">-7.3</span>
+</div>
+</div>
+<div class="mt-12 pt-8 border-t border-slate-800">
+<div class="flex items-center gap-3 p-4 bg-slate-800/50 rounded-xl">
+<span class="material-symbols-outlined text-amber-400" style="">gavel</span>
+<div class="text-[10px] text-slate-300 leading-relaxed italic" style="">
+<strong class="text-white block not-italic mb-1">Clinical Decision Support Disclaimer:</strong>
+                                This AI analysis is for research and audit purposes only. Final clinical decisions must be made by qualified medical personnel.
+                            </div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Footer / Action Area -->
+<footer class="mt-12 flex justify-between items-center py-6 border-t border-surface-container">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-2">
+<div class="h-8 w-8 rounded-full border-2 border-white bg-teal-100 flex items-center justify-center text-[10px] font-bold text-teal-700" style="">JS</div>
+<div class="h-8 w-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-700" style="">AK</div>
+<div class="h-8 w-8 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[10px] font-bold text-primary" style="">DR</div>
+</div>
+<p class="text-xs text-on-surface-variant font-medium" style="">Collaborators currently viewing this case.</p>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-2.5 rounded-xl border border-outline-variant text-sm font-bold text-on-surface hover:bg-surface-container-low transition-colors" style="">Request Secondary Audit</button>
+<button class="px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-bold shadow-lg hover:opacity-90 transition-opacity" style="">Finalize &amp; Sign Off Case</button>
+</div>
+</footer>
+</main>
+<!-- FAB (Suppressed on Details Screen as per mandate, but present if context shifts) -->
+</body></html>

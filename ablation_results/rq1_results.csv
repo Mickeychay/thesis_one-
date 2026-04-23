@@ -1,0 +1,7 @@
+variant,case_id,complexity,P@5,R@5,F1@5,nDCG@5,MAP,MRR
+Full (L1+L2),CHILD_001,moderate,0.0,0.0,0.0,0.0,0.0,0.0
+Full (L1+L2),CHILD_002,complex,0.6,0.6,0.6,0.43062490815403953,0.8761904761904761,1.0
+Full (L1+L2),CHILD_003,simple,0.0,0.0,0.0,0.0,0.0,0.0
+L1 Only (no L2),CHILD_001,moderate,0.0,0.0,0.0,0.0,0.0,0.0
+L1 Only (no L2),CHILD_002,complex,0.6,0.6,0.6,0.43062490815403953,0.8761904761904761,1.0
+L1 Only (no L2),CHILD_003,simple,0.0,0.0,0.0,0.0,0.0,0.0

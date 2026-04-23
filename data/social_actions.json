@@ -1,0 +1,167 @@
+{
+  "ตัดเอง": {
+    "domain": "self_harm",
+    "pattern": "self",
+    "normalized": "ตัดเอง"
+  },
+  "กรีดข้อมือ": {
+    "domain": "self_harm",
+    "pattern": "self",
+    "normalized": "กรีดข้อมือ"
+  },
+  "กรีด": {
+    "domain": "self_harm",
+    "pattern": "self_or_harm",
+    "normalized": "กรีด"
+  },
+  "รอยกรีด": {
+    "domain": "injury_evidence",
+    "pattern": "evidence_mark",
+    "normalized": "รอยกรีด"
+  },
+  "ทำร้ายตัวเอง": {
+    "domain": "self_harm",
+    "pattern": "self",
+    "normalized": "ทำร้ายตัวเอง"
+  },
+  "กินยาเกินขนาด": {
+    "domain": "self_harm",
+    "pattern": "self",
+    "normalized": "กินยาเกินขนาด"
+  },
+  "รังแก": {
+    "domain": "bullying",
+    "pattern": "agent_action_target",
+    "normalized": "รังแก"
+  },
+  "กลั่นแกล้ง": {
+    "domain": "bullying",
+    "pattern": "agent_action_target",
+    "normalized": "กลั่นแกล้ง"
+  },
+  "ด่าว่า": {
+    "domain": "emotional_abuse",
+    "pattern": "agent_action_target",
+    "normalized": "ด่าว่า"
+  },
+  "ดุด่า": {
+    "domain": "emotional_abuse",
+    "pattern": "agent_action_target",
+    "normalized": "ดุด่า"
+  },
+  "ล้อเลียน": {
+    "domain": "bullying",
+    "pattern": "agent_action_target",
+    "normalized": "ล้อเลียน"
+  },
+  "โพสต์รูปล้อเลียน": {
+    "domain": "cyberbullying",
+    "pattern": "agent_action_target",
+    "normalized": "โพสต์รูปล้อเลียน"
+  },
+  "ประจาน": {
+    "domain": "cyberbullying",
+    "pattern": "agent_action_target",
+    "normalized": "ประจาน"
+  },
+  "ข่มขู่": {
+    "domain": "emotional_abuse",
+    "pattern": "agent_action_target",
+    "normalized": "ข่มขู่"
+  },
+  "กดดัน": {
+    "domain": "emotional_abuse",
+    "pattern": "agent_action_target",
+    "normalized": "กดดัน"
+  },
+  "เหยียด": {
+    "domain": "emotional_abuse",
+    "pattern": "agent_action_target",
+    "normalized": "เหยียด"
+  },
+  "ทำร้าย": {
+    "domain": "violence",
+    "pattern": "agent_action_target",
+    "normalized": "ทำร้าย"
+  },
+  "ทุบตี": {
+    "domain": "violence",
+    "pattern": "agent_action_target",
+    "normalized": "ทุบตี"
+  },
+  "ตี": {
+    "domain": "violence",
+    "pattern": "agent_action_target",
+    "normalized": "ตี"
+  },
+  "ตบ": {
+    "domain": "violence",
+    "pattern": "agent_action_target",
+    "normalized": "ตบ"
+  },
+  "เตะ": {
+    "domain": "violence",
+    "pattern": "agent_action_target",
+    "normalized": "เตะ"
+  },
+  "ล่วงละเมิด": {
+    "domain": "sexual_abuse",
+    "pattern": "agent_action_target",
+    "normalized": "ล่วงละเมิด"
+  },
+  "คุกคามทางเพศ": {
+    "domain": "sexual_abuse",
+    "pattern": "agent_action_target",
+    "normalized": "คุกคามทางเพศ"
+  },
+  "บังคับมีเพศสัมพันธ์": {
+    "domain": "sexual_abuse",
+    "pattern": "agent_action_target",
+    "normalized": "บังคับมีเพศสัมพันธ์"
+  },
+  "ทอดทิ้ง": {
+    "domain": "neglect",
+    "pattern": "agent_action_target",
+    "normalized": "ทอดทิ้ง"
+  },
+  "ไม่ดูแล": {
+    "domain": "neglect",
+    "pattern": "agent_action_target",
+    "normalized": "ไม่ดูแล"
+  },
+  "ปล่อยปละละเลย": {
+    "domain": "neglect",
+    "pattern": "agent_action_target",
+    "normalized": "ปล่อยปละละเลย"
+  },
+  "กักขัง": {
+    "domain": "deprivation",
+    "pattern": "agent_action_target",
+    "normalized": "กักขัง"
+  },
+  "บังคับ": {
+    "domain": "coercion",
+    "pattern": "agent_action_target",
+    "normalized": "บังคับ"
+  },
+  "ไม่ให้กิน": {
+    "domain": "deprivation",
+    "pattern": "agent_action_target",
+    "normalized": "ไม่ให้กิน"
+  },
+  "ไม่ให้เรียน": {
+    "domain": "deprivation",
+    "pattern": "agent_action_target",
+    "normalized": "ไม่ให้เรียน"
+  },
+  "ทะเลาะ": {
+    "domain": "conflict",
+    "pattern": "mutual",
+    "normalized": "ทะเลาะ"
+  },
+  "ไม่รู้เรื่อง": {
+    "domain": "family_context",
+    "pattern": "context_only",
+    "normalized": "ไม่รู้เรื่อง"
+  }
+}

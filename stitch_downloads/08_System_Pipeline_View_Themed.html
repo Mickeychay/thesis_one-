@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>H2L Clinical Research - System Pipeline View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dde9ff",
+                        "on-secondary-container": "#006f66",
+                        "on-secondary-fixed": "#00201d",
+                        "secondary": "#0d9488",
+                        "on-secondary-fixed-variant": "#005049",
+                        "surface-bright": "#f8f9ff",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#dae2fd",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "background": "#f8f9ff",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#131b2e",
+                        "surface-container-highest": "#d5e3fd",
+                        "tertiary-container": "#002113",
+                        "secondary-fixed": "#89f5e7",
+                        "on-primary-container": "#7c839b",
+                        "secondary-container": "#86f2e4",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-surface": "#0d1c2f",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#d5e3fd",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#233144",
+                        "on-background": "#0d1c2f",
+                        "tertiary": "#000000",
+                        "on-tertiary-container": "#009668",
+                        "inverse-primary": "#bec6e0",
+                        "primary": "#000000",
+                        "primary-fixed-dim": "#bec6e0",
+                        "inverse-on-surface": "#ebf1ff",
+                        "surface-container": "#e6eeff",
+                        "on-surface-variant": "#45464d",
+                        "on-primary-fixed": "#131b2e",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#ccdbf4",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "tertiary-fixed": "#6ffbbe",
+                        "outline": "#76777d",
+                        "outline-variant": "#c6c6cd",
+                        "surface-container-low": "#eff4ff",
+                        "surface": "#f8f9ff",
+                        "on-tertiary-fixed": "#002113"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .pipeline-bg {
+            background: linear-gradient(135deg, #0F172A 0%, #131B2E 100%);
+        }
+        .pipeline-bg-dark {
+            background: linear-gradient(135deg, #020617 0%, #0D1B2A 100%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .node-active {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-[#f8f9ff] dark:bg-[#0D1B2A] font-body text-on-surface dark:text-slate-100 flex h-screen overflow-hidden">
+<!-- SideNavBar (Using COMPONENTS_9 spec) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-slate-50 dark:bg-[#0D1B2A] flex flex-col p-4 gap-2 z-20 shrink-0 border-r border-slate-200/50 dark:border-slate-800/50">
+<div class="px-3 mb-8">
+<h1 class="font-['Manrope'] font-black text-lg text-[#0D1B2A] dark:text-white tracking-tighter">H2L Research</h1>
+<p class="font-['Inter'] text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-teal-400">Integrity-First Analysis</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard Tab -->
+<div class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl flex items-center gap-3 px-4 py-3 transition-transform duration-200 hover:translate-x-1 cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="font-['Inter'] text-sm font-medium">Dashboard</span>
+</div>
+<!-- Active Tab: Pipeline -->
+<div class="bg-white dark:bg-slate-800/50 text-teal-600 dark:text-teal-300 rounded-xl shadow-sm flex items-center gap-3 px-4 py-3 cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">analytics</span>
+<span class="font-['Inter'] text-sm font-bold">Pipeline</span>
+</div>
+<!-- Explainability Tab -->
+<div class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl flex items-center gap-3 px-4 py-3 transition-transform duration-200 hover:translate-x-1 cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">psychology</span>
+<span class="font-['Inter'] text-sm font-medium">Explainability</span>
+</div>
+<!-- Polarity Analyzer Tab -->
+<div class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl flex items-center gap-3 px-4 py-3 transition-transform duration-200 hover:translate-x-1 cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">biotech</span>
+<span class="font-['Inter'] text-sm font-medium">Polarity Analyzer</span>
+</div>
+<!-- Benchmark Tab -->
+<div class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl flex items-center gap-3 px-4 py-3 transition-transform duration-200 hover:translate-x-1 cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">query_stats</span>
+<span class="font-['Inter'] text-sm font-medium">Benchmark</span>
+</div>
+</nav>
+<div class="mt-4 px-2">
+<button class="w-full bg-[#0D1B2A] dark:bg-teal-500 text-white dark:text-[#0D1B2A] py-3 rounded-xl font-headline font-bold text-xs uppercase tracking-widest shadow-lg hover:opacity-90 active:scale-[0.98] transition-all">
+                New Research Project
+            </button>
+</div>
+<div class="mt-auto border-t border-slate-200/50 dark:border-slate-800/50 pt-4 space-y-1">
+<div class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl flex items-center gap-3 px-4 py-3 transition-transform duration-200 hover:translate-x-1 cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="font-['Inter'] text-sm font-medium">Settings</span>
+</div>
+<div class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl flex items-center gap-3 px-4 py-3 transition-transform duration-200 hover:translate-x-1 cursor-pointer">
+<span class="material-symbols-outlined text-[22px]">help_outline</span>
+<span class="font-['Inter'] text-sm font-medium">Support</span>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0 ml-64">
+<!-- TopNavBar (Using COMPONENTS_9 spec) -->
+<header class="fixed top-0 right-0 left-64 bg-white/80 dark:bg-[#0D1B2A]/80 backdrop-blur-xl flex justify-between items-center px-8 h-16 z-10 shadow-[0_32px_32px_-4px_rgba(25,28,30,0.06)] border-b border-slate-100/50 dark:border-slate-800/50">
+<div class="flex items-center gap-4">
+<span class="font-['Manrope'] tracking-tight font-bold text-xl text-[#0D1B2A] dark:text-slate-100">System Pipeline View</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 font-['Inter'] text-[11px] tracking-widest font-semibold uppercase">
+<span class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-300 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-lg">verified_user</span> RESEARCH INTEGRITY
+                    </span>
+<span class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-300 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-lg">science</span> CLINICAL MODE
+                    </span>
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 cursor-pointer hover:text-teal-500 transition-colors" onclick="document.documentElement.classList.toggle('dark')">dark_mode</span>
+</div>
+<div class="h-9 w-9 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-800">
+<img alt="Researcher Profile Avatar" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7BEt5O1axgvA4dm0t43aCSS9YLIXvxBKWrJVE3ETKIL4_PBt8xg9EHWHRhh91xVvEYqfi0tPYZdLJe-VCjR3SaXE-OZfTA436qPI9q69gMN6VtcLUrQy4qmejy9ppGjvqihV7CfcMyWy4WzyTstWGr2P-fWXJH9F6fm1n4RiYS1rWT1VIaCCDk7JXqLJ7fbSp3xsdNW_51xjRksGVw1RUiq0JnqTlFunJ11c5dy0a_YnZ7TyjmtAQ6RyD9v5tOoUVcBEDI4-iWCEz"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-auto bg-slate-50/50 dark:bg-[#081018] mt-16 p-8 flex flex-col gap-8">
+<!-- Parameters Overlay -->
+<div class="grid grid-cols-4 gap-6">
+<div class="bg-white dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm flex flex-col justify-between h-28">
+<p class="font-['Inter'] text-[10px] uppercase font-bold tracking-widest text-slate-500 dark:text-slate-400 mb-2">Confidence Threshold</p>
+<div class="flex items-end justify-between">
+<span class="font-headline text-3xl font-extrabold text-[#0D1B2A] dark:text-white">0.30</span>
+<span class="text-teal-600 dark:text-teal-400 material-symbols-outlined text-3xl">tune</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm flex flex-col justify-between h-28">
+<p class="font-['Inter'] text-[10px] uppercase font-bold tracking-widest text-slate-500 dark:text-slate-400 mb-2">NEG_LAMBDA</p>
+<div class="flex items-end justify-between">
+<span class="font-headline text-3xl font-extrabold text-[#0D1B2A] dark:text-white">0.60</span>
+<span class="text-red-500 dark:text-red-400 material-symbols-outlined text-3xl">calculate</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm flex flex-col justify-between h-28">
+<p class="font-['Inter'] text-[10px] uppercase font-bold tracking-widest text-slate-500 dark:text-slate-400 mb-2">TOP_K Ranking</p>
+<div class="flex items-end justify-between">
+<span class="font-headline text-3xl font-extrabold text-[#0D1B2A] dark:text-white">10</span>
+<span class="text-slate-600 dark:text-slate-300 material-symbols-outlined text-3xl">list_alt</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm flex flex-col justify-between h-28">
+<p class="font-['Inter'] text-[10px] uppercase font-bold tracking-widest text-slate-500 dark:text-slate-400 mb-2">System Throughput</p>
+<div class="flex items-end justify-between">
+<span class="font-headline text-3xl font-extrabold text-[#0D1B2A] dark:text-white">420ms</span>
+<span class="text-amber-500 material-symbols-outlined text-3xl">bolt</span>
+</div>
+</div>
+</div>
+<!-- Pipeline Visual Flow Diagram -->
+<div class="flex-1 pipeline-bg dark:pipeline-bg-dark rounded-[2rem] relative overflow-hidden flex flex-col p-10 shadow-2xl">
+<div class="absolute inset-0 opacity-[0.05] dark:opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 40px 40px;"></div>
+<div class="z-10 flex items-center justify-between mb-16">
+<div>
+<h2 class="font-headline font-extrabold text-white text-2xl tracking-tight">ผังการทำงานของระบบ (System Workflow)</h2>
+<p class="text-slate-400 text-sm mt-1">Real-time Clinical Data Processing Architecture</p>
+</div>
+<div class="glass-panel px-5 py-2.5 rounded-2xl flex items-center gap-3">
+<div class="flex items-center gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse"></div>
+<span class="text-[10px] text-white uppercase font-black tracking-widest">System Live</span>
+</div>
+</div>
+</div>
+<!-- Pipeline Nodes -->
+<div class="flex-1 flex items-center justify-between gap-4 relative">
+<div class="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-teal-500/0 via-teal-500/20 to-teal-500/0 top-1/2 -translate-y-1/2 -z-0"></div>
+<!-- Node 1: Case Text -->
+<div class="relative group cursor-pointer z-10">
+<div class="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-teal-500/50 border-2 node-active transition-all group-hover:scale-105">
+<span class="material-symbols-outlined text-white text-4xl">description</span>
+</div>
+<div class="absolute top-full mt-6 left-1/2 -translate-x-1/2 text-center w-36">
+<p class="text-white font-bold text-xs">Case Text</p>
+<p class="text-slate-400 text-[10px] mt-1">ป้อนข้อมูลผู้ป่วย</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500/50 text-xl font-light">arrow_forward_ios</span>
+<!-- Node 2: L1 Detection -->
+<div class="relative group cursor-pointer z-10">
+<div class="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-white/10 hover:border-teal-500/40 transition-all hover:scale-105">
+<span class="material-symbols-outlined text-white/80 text-4xl">find_in_page</span>
+</div>
+<div class="absolute top-full mt-6 left-1/2 -translate-x-1/2 text-center w-36">
+<p class="text-white font-bold text-xs">L1 Detection</p>
+<p class="text-slate-400 text-[10px] mt-1">Keyword / Context</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500/50 text-xl font-light">arrow_forward_ios</span>
+<!-- Node 3: L2 Validation -->
+<div class="relative group cursor-pointer z-10">
+<div class="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-white/10 hover:border-teal-500/40 transition-all hover:scale-105">
+<span class="material-symbols-outlined text-white/80 text-4xl">fact_check</span>
+</div>
+<div class="absolute top-full mt-6 left-1/2 -translate-x-1/2 text-center w-36">
+<p class="text-white font-bold text-xs">L2 Validation</p>
+<p class="text-slate-400 text-[10px] mt-1">LLM Verification</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500/50 text-xl font-light">arrow_forward_ios</span>
+<!-- Node 4: Problem Set -->
+<div class="relative group cursor-pointer z-10">
+<div class="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-white/10 hover:border-teal-500/40 transition-all hover:scale-105">
+<span class="material-symbols-outlined text-white/80 text-4xl">pest_control</span>
+</div>
+<div class="absolute top-full mt-6 left-1/2 -translate-x-1/2 text-center w-36">
+<p class="text-white font-bold text-xs">Problem Set</p>
+<p class="text-slate-400 text-[10px] mt-1">ชุดปัญหาที่ตรวจพบ</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500/50 text-xl font-light">arrow_forward_ios</span>
+<!-- Node 5: Retrieval -->
+<div class="relative group cursor-pointer z-10">
+<div class="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-white/10 hover:border-teal-500/40 transition-all hover:scale-105">
+<span class="material-symbols-outlined text-white/80 text-4xl">database</span>
+</div>
+<div class="absolute top-full mt-6 left-1/2 -translate-x-1/2 text-center w-36">
+<p class="text-white font-bold text-xs">Retrieval Pipeline</p>
+<p class="text-slate-400 text-[10px] mt-1">สืบค้นข้อมูลอ้างอิง</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500/50 text-xl font-light">arrow_forward_ios</span>
+<!-- Node 6: H2L Scoring -->
+<div class="relative group cursor-pointer z-10">
+<div class="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-white/10 hover:border-teal-500/40 transition-all hover:scale-105">
+<span class="material-symbols-outlined text-white/80 text-4xl">analytics</span>
+</div>
+<div class="absolute top-full mt-6 left-1/2 -translate-x-1/2 text-center w-36">
+<p class="text-white font-bold text-xs">H2L Scoring</p>
+<p class="text-slate-400 text-[10px] mt-1">Augmentation Analysis</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500/50 text-xl font-light">arrow_forward_ios</span>
+<!-- Node 7: Final Output -->
+<div class="relative group cursor-pointer z-10">
+<div class="w-20 h-20 rounded-2xl bg-teal-500 dark:bg-teal-400 flex items-center justify-center shadow-[0_0_30px_rgba(20,184,166,0.5)] transition-all hover:scale-110">
+<span class="material-symbols-outlined text-[#0D1B2A] text-4xl font-bold">output</span>
+</div>
+<div class="absolute top-full mt-6 left-1/2 -translate-x-1/2 text-center w-36">
+<p class="text-teal-400 font-black text-xs">Final Output</p>
+<p class="text-slate-400 text-[10px] mt-1">ผลลัพธ์การวินิจฉัย</p>
+</div>
+</div>
+</div>
+<!-- Logic Inspector -->
+<div class="mt-28 grid grid-cols-3 gap-8">
+<div class="glass-panel p-6 rounded-2xl">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-teal-400 text-lg">info</span>
+<h4 class="text-white font-black text-[10px] uppercase tracking-[0.2em]">Logic Context</h4>
+</div>
+<p class="text-slate-300 text-xs leading-relaxed">ระบบกำลังประมวลผลผ่าน L2 Validation โดยใช้พารามิเตอร์ λ=0.6 เพื่อคัดกรองสัญญาณรบกวน (Noise) และตรวจสอบความถูกต้องเชิงคลินิกผ่านโมเดล LLM เฉพาะทาง</p>
+</div>
+<div class="glass-panel p-6 rounded-2xl">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-teal-400 text-lg">view_list</span>
+<h4 class="text-white font-black text-[10px] uppercase tracking-[0.2em]">Polarity Gates</h4>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-slate-400">
+<span>Positive Correlation</span>
+<span class="text-teal-400">84%</span>
+</div>
+<div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+<div class="bg-teal-400 h-full shadow-[0_0_10px_rgba(45,212,191,0.5)]" style="width: 84%"></div>
+</div>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-2xl border-dashed border-red-500/30">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-red-400 text-lg">warning</span>
+<h4 class="text-white font-black text-[10px] uppercase tracking-[0.2em]">Boundary Conditions</h4>
+</div>
+<p class="text-slate-400 text-[11px] leading-relaxed italic">"หากค่าความเชื่อมั่นต่ำกว่า 0.30 ระบบจะทำการ Re-queue ไปยัง Pipeline สำรองโดยอัตโนมัติ"</p>
+</div>
+</div>
+</div>
+<!-- Footer Meta -->
+<div class="flex justify-between items-center bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2.5">
+<span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Model:</span>
+<span class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-[#0D1B2A] dark:text-slate-200 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">Clinical-v4.2-Turbo</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Data Integrity:</span>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-teal-500"></div>
+<span class="text-xs font-bold text-[#0D1B2A] dark:text-slate-200">Verified</span>
+</div>
+</div>
+</div>
+<button class="bg-[#0D1B2A] dark:bg-teal-500 text-white dark:text-[#0D1B2A] px-8 py-3 rounded-xl font-headline text-xs font-black uppercase tracking-[0.15em] flex items-center gap-2.5 shadow-lg active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg">refresh</span>
+                    RE-RUN PIPELINE
+                </button>
+</div>
+</main>
+<!-- Footer (Shared) -->
+<footer class="bg-white dark:bg-[#0D1B2A] text-slate-400 dark:text-slate-500 flex justify-between items-center w-full px-8 py-4 text-[11px] shrink-0 border-t border-slate-100 dark:border-slate-800/50">
+<div class="font-medium tracking-wide">v1.2.4-stable | AI Support Tool Only. Not for final clinical diagnosis.</div>
+<div class="flex gap-8 font-bold uppercase tracking-widest text-[10px]">
+<a class="no-underline hover:text-teal-600 dark:hover:text-teal-400 transition-colors" href="#">Research Context</a>
+<a class="no-underline hover:text-teal-600 dark:hover:text-teal-400 transition-colors" href="#">Integrity Policy</a>
+<a class="no-underline hover:text-teal-600 dark:hover:text-teal-400 transition-colors" href="#">System Status</a>
+</div>
+</footer>
+</div>
+</body></html>

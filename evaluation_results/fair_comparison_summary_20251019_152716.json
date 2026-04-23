@@ -1,0 +1,146 @@
+{
+  "basic": {
+    "total_queries": 30,
+    "successful_queries": 30,
+    "avg_time": 5.8343,
+    "avg_quality": 0.1845,
+    "avg_unique_sources": 2.73,
+    "avg_entropy": 1.1815,
+    "avg_high_relevance_docs": 0.0,
+    "avg_docs_retrieved": 15.0,
+    "by_complexity": {
+      "Simple": {
+        "avg_time": 4.5158,
+        "avg_quality": 0.1858,
+        "avg_unique_sources": 2.75,
+        "avg_entropy": 1.19
+      },
+      "Moderate": {
+        "avg_time": 5.1807,
+        "avg_quality": 0.2076,
+        "avg_unique_sources": 2.88,
+        "avg_entropy": 1.3368
+      },
+      "Complex": {
+        "avg_time": 8.5622,
+        "avg_quality": 0.1897,
+        "avg_unique_sources": 2.86,
+        "avg_entropy": 1.214
+      },
+      "Domain_specific": {
+        "avg_time": 5.36,
+        "avg_quality": 0.1514,
+        "avg_unique_sources": 2.43,
+        "avg_entropy": 0.9616
+      }
+    }
+  },
+  "dynamic": {
+    "total_queries": 30,
+    "successful_queries": 30,
+    "avg_time": 5.3706,
+    "avg_quality": 0.1687,
+    "avg_unique_sources": 2.57,
+    "avg_entropy": 1.0757,
+    "avg_high_relevance_docs": 0.0,
+    "avg_docs_retrieved": 12.0,
+    "by_complexity": {
+      "Simple": {
+        "avg_time": 3.0672,
+        "avg_quality": 0.1635,
+        "avg_unique_sources": 2.5,
+        "avg_entropy": 1.0389
+      },
+      "Moderate": {
+        "avg_time": 3.7999,
+        "avg_quality": 0.2006,
+        "avg_unique_sources": 2.88,
+        "avg_entropy": 1.2892
+      },
+      "Complex": {
+        "avg_time": 4.3473,
+        "avg_quality": 0.1656,
+        "avg_unique_sources": 2.43,
+        "avg_entropy": 1.0544
+      },
+      "Domain_specific": {
+        "avg_time": 10.8213,
+        "avg_quality": 0.1414,
+        "avg_unique_sources": 2.43,
+        "avg_entropy": 0.895
+      }
+    }
+  },
+  "multihop": {
+    "total_queries": 30,
+    "successful_queries": 30,
+    "avg_time": 9.5655,
+    "avg_quality": 0.1819,
+    "avg_unique_sources": 2.77,
+    "avg_entropy": 1.1622,
+    "avg_high_relevance_docs": 0.0,
+    "avg_docs_retrieved": 15.0,
+    "by_complexity": {
+      "Simple": {
+        "avg_time": 6.1923,
+        "avg_quality": 0.1881,
+        "avg_unique_sources": 2.75,
+        "avg_entropy": 1.2037
+      },
+      "Moderate": {
+        "avg_time": 8.0533,
+        "avg_quality": 0.1852,
+        "avg_unique_sources": 2.88,
+        "avg_entropy": 1.1849
+      },
+      "Complex": {
+        "avg_time": 11.011,
+        "avg_quality": 0.197,
+        "avg_unique_sources": 2.86,
+        "avg_entropy": 1.2611
+      },
+      "Domain_specific": {
+        "avg_time": 13.7035,
+        "avg_quality": 0.1558,
+        "avg_unique_sources": 2.57,
+        "avg_entropy": 0.9902
+      }
+    }
+  },
+  "adaptive": {
+    "total_queries": 30,
+    "successful_queries": 30,
+    "avg_time": 5.1745,
+    "avg_quality": 0.1709,
+    "avg_unique_sources": 2.6,
+    "avg_entropy": 1.0901,
+    "avg_high_relevance_docs": 0.0,
+    "avg_docs_retrieved": 11.5,
+    "by_complexity": {
+      "Simple": {
+        "avg_time": 3.0248,
+        "avg_quality": 0.1635,
+        "avg_unique_sources": 2.5,
+        "avg_entropy": 1.0389
+      },
+      "Moderate": {
+        "avg_time": 3.952,
+        "avg_quality": 0.2006,
+        "avg_unique_sources": 2.88,
+        "avg_entropy": 1.2892
+      },
+      "Complex": {
+        "avg_time": 5.4205,
+        "avg_quality": 0.1656,
+        "avg_unique_sources": 2.43,
+        "avg_entropy": 1.0544
+      },
+      "Domain_specific": {
+        "avg_time": 8.7824,
+        "avg_quality": 0.1507,
+        "avg_unique_sources": 2.57,
+        "avg_entropy": 0.9567
+      }
+    }
+  }
+}

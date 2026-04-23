@@ -1,0 +1,794 @@
+{
+  "time": {
+    "metric_name": "Average Retrieval Time (seconds)",
+    "descriptive_stats": {
+      "N": {
+        "BASIC": 40,
+        "ADAPTIVE": 40,
+        "DYNAMIC": 40,
+        "MULTIHOP": 40,
+        "H2L_BASIC": 40,
+        "H2L_DYNAMIC": 40,
+        "H2L_MULTIHOP": 40,
+        "H2L_ADAPTIVE": 40
+      },
+      "Mean": {
+        "BASIC": 7.35496,
+        "ADAPTIVE": 3.72328,
+        "DYNAMIC": 8.8631875,
+        "MULTIHOP": 11.662429999999999,
+        "H2L_BASIC": 7.4924425,
+        "H2L_DYNAMIC": 14.949602500000001,
+        "H2L_MULTIHOP": 26.254767500000003,
+        "H2L_ADAPTIVE": 5.7649925
+      },
+      "Std": {
+        "BASIC": 4.439234261920081,
+        "ADAPTIVE": 1.8492822865877399,
+        "DYNAMIC": 7.354922933870421,
+        "MULTIHOP": 8.422620985429957,
+        "H2L_BASIC": 6.337850925130148,
+        "H2L_DYNAMIC": 14.5688630957361,
+        "H2L_MULTIHOP": 18.540045679242645,
+        "H2L_ADAPTIVE": 5.394493275287476
+      },
+      "Min": {
+        "BASIC": 1.6765,
+        "ADAPTIVE": 1.1773,
+        "DYNAMIC": 1.2007,
+        "MULTIHOP": 3.3309,
+        "H2L_BASIC": 1.1883,
+        "H2L_DYNAMIC": 1.4232,
+        "H2L_MULTIHOP": 2.7873,
+        "H2L_ADAPTIVE": 0.2569
+      },
+      "25%": {
+        "BASIC": 3.474675,
+        "ADAPTIVE": 2.988225,
+        "DYNAMIC": 3.2304,
+        "MULTIHOP": 6.445775,
+        "H2L_BASIC": 3.039625,
+        "H2L_DYNAMIC": 4.55245,
+        "H2L_MULTIHOP": 13.166450000000001,
+        "H2L_ADAPTIVE": 2.608525
+      },
+      "Median": {
+        "BASIC": 6.3443,
+        "ADAPTIVE": 3.11625,
+        "DYNAMIC": 6.755050000000001,
+        "MULTIHOP": 7.6798,
+        "H2L_BASIC": 4.3224,
+        "H2L_DYNAMIC": 10.65015,
+        "H2L_MULTIHOP": 21.53175,
+        "H2L_ADAPTIVE": 3.3283
+      },
+      "75%": {
+        "BASIC": 10.065875,
+        "ADAPTIVE": 3.5827999999999998,
+        "DYNAMIC": 13.590525,
+        "MULTIHOP": 13.021775,
+        "H2L_BASIC": 11.6036,
+        "H2L_DYNAMIC": 20.309375000000003,
+        "H2L_MULTIHOP": 32.1703,
+        "H2L_ADAPTIVE": 8.684249999999999
+      },
+      "Max": {
+        "BASIC": 22.3016,
+        "ADAPTIVE": 9.4261,
+        "DYNAMIC": 36.655,
+        "MULTIHOP": 38.2857,
+        "H2L_BASIC": 27.5375,
+        "H2L_DYNAMIC": 64.3722,
+        "H2L_MULTIHOP": 111.0476,
+        "H2L_ADAPTIVE": 24.0805
+      }
+    },
+    "anova": {
+      "f_statistic": 21.206968778653206,
+      "p_value": 2.4588638184489614e-23
+    },
+    "pairwise_t_test": {
+      "basic": {
+        "basic": 1.0,
+        "adaptive": 1.1953242285004123e-06,
+        "dynamic": 0.2282525184497076,
+        "multihop": 0.0018796197777125024,
+        "h2l_basic": 0.8983858744411197,
+        "h2l_dynamic": 0.0016935839007088855,
+        "h2l_multihop": 1.0891851123832753e-07,
+        "h2l_adaptive": 0.12198735442881982
+      },
+      "adaptive": {
+        "basic": 1.1953242285004123e-06,
+        "adaptive": 1.0,
+        "dynamic": 4.7049489335005495e-05,
+        "multihop": 2.7809362021071133e-07,
+        "h2l_basic": 0.0005999529172633178,
+        "h2l_dynamic": 1.425605693622132e-05,
+        "h2l_multihop": 1.6444341047202716e-09,
+        "h2l_adaptive": 0.017697752966271633
+      },
+      "dynamic": {
+        "basic": 0.2282525184497076,
+        "adaptive": 4.7049489335005495e-05,
+        "dynamic": 1.0,
+        "multihop": 0.002505096658010268,
+        "h2l_basic": 0.2977041681544328,
+        "h2l_dynamic": 0.003291882039129059,
+        "h2l_multihop": 1.1457657126437748e-07,
+        "h2l_adaptive": 0.009935731724598138
+      },
+      "multihop": {
+        "basic": 0.0018796197777125024,
+        "adaptive": 2.7809362021071133e-07,
+        "dynamic": 0.002505096658010268,
+        "multihop": 1.0,
+        "h2l_basic": 0.0009065474475265535,
+        "h2l_dynamic": 0.07773106616789853,
+        "h2l_multihop": 1.4713230423399257e-07,
+        "h2l_adaptive": 2.363254809188368e-06
+      },
+      "h2l_basic": {
+        "basic": 0.8983858744411197,
+        "adaptive": 0.0005999529172633178,
+        "dynamic": 0.2977041681544328,
+        "multihop": 0.0009065474475265535,
+        "h2l_basic": 1.0,
+        "h2l_dynamic": 0.00010413225701715493,
+        "h2l_multihop": 4.0688367794839123e-10,
+        "h2l_adaptive": 0.0665681224622684
+      },
+      "h2l_dynamic": {
+        "basic": 0.0016935839007088855,
+        "adaptive": 1.425605693622132e-05,
+        "dynamic": 0.003291882039129059,
+        "multihop": 0.07773106616789853,
+        "h2l_basic": 0.00010413225701715493,
+        "h2l_dynamic": 1.0,
+        "h2l_multihop": 1.883700452815565e-08,
+        "h2l_adaptive": 8.32484478218509e-06
+      },
+      "h2l_multihop": {
+        "basic": 1.0891851123832753e-07,
+        "adaptive": 1.6444341047202716e-09,
+        "dynamic": 1.1457657126437748e-07,
+        "multihop": 1.4713230423399257e-07,
+        "h2l_basic": 4.0688367794839123e-10,
+        "h2l_dynamic": 1.883700452815565e-08,
+        "h2l_multihop": 1.0,
+        "h2l_adaptive": 1.327445444193089e-10
+      },
+      "h2l_adaptive": {
+        "basic": 0.12198735442881982,
+        "adaptive": 0.017697752966271633,
+        "dynamic": 0.009935731724598138,
+        "multihop": 2.363254809188368e-06,
+        "h2l_basic": 0.0665681224622684,
+        "h2l_dynamic": 8.32484478218509e-06,
+        "h2l_multihop": 1.327445444193089e-10,
+        "h2l_adaptive": 1.0
+      }
+    }
+  },
+  "quality": {
+    "metric_name": "Average Quality Score",
+    "descriptive_stats": {
+      "N": {
+        "BASIC": 40,
+        "ADAPTIVE": 40,
+        "DYNAMIC": 40,
+        "MULTIHOP": 40,
+        "H2L_BASIC": 40,
+        "H2L_DYNAMIC": 40,
+        "H2L_MULTIHOP": 40,
+        "H2L_ADAPTIVE": 40
+      },
+      "Mean": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Std": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Min": {
+        "BASIC": 0,
+        "ADAPTIVE": 0,
+        "DYNAMIC": 0,
+        "MULTIHOP": 0,
+        "H2L_BASIC": 0,
+        "H2L_DYNAMIC": 0,
+        "H2L_MULTIHOP": 0,
+        "H2L_ADAPTIVE": 0
+      },
+      "25%": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Median": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "75%": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Max": {
+        "BASIC": 0,
+        "ADAPTIVE": 0,
+        "DYNAMIC": 0,
+        "MULTIHOP": 0,
+        "H2L_BASIC": 0,
+        "H2L_DYNAMIC": 0,
+        "H2L_MULTIHOP": 0,
+        "H2L_ADAPTIVE": 0
+      }
+    },
+    "anova": {
+      "f_statistic": null,
+      "p_value": null
+    },
+    "pairwise_t_test": null
+  },
+  "unique_sources": {
+    "metric_name": "Average Number of Unique Sources",
+    "descriptive_stats": {
+      "N": {
+        "BASIC": 40,
+        "ADAPTIVE": 40,
+        "DYNAMIC": 40,
+        "MULTIHOP": 40,
+        "H2L_BASIC": 40,
+        "H2L_DYNAMIC": 40,
+        "H2L_MULTIHOP": 40,
+        "H2L_ADAPTIVE": 40
+      },
+      "Mean": {
+        "BASIC": 2.75,
+        "ADAPTIVE": 2.275,
+        "DYNAMIC": 2.6,
+        "MULTIHOP": 2.7,
+        "H2L_BASIC": 2.75,
+        "H2L_DYNAMIC": 2.675,
+        "H2L_MULTIHOP": 2.65,
+        "H2L_ADAPTIVE": 2.35
+      },
+      "Std": {
+        "BASIC": 0.49354811679282456,
+        "ADAPTIVE": 0.6400120191179105,
+        "DYNAMIC": 0.5453768398418634,
+        "MULTIHOP": 0.6076436202501999,
+        "H2L_BASIC": 0.49354811679282456,
+        "H2L_DYNAMIC": 0.5256253906367645,
+        "H2L_MULTIHOP": 0.5795665931516721,
+        "H2L_ADAPTIVE": 0.8022404524765275
+      },
+      "Min": {
+        "BASIC": 1,
+        "ADAPTIVE": 1,
+        "DYNAMIC": 1,
+        "MULTIHOP": 1,
+        "H2L_BASIC": 1,
+        "H2L_DYNAMIC": 1,
+        "H2L_MULTIHOP": 1,
+        "H2L_ADAPTIVE": 1
+      },
+      "25%": {
+        "BASIC": 3.0,
+        "ADAPTIVE": 2.0,
+        "DYNAMIC": 2.0,
+        "MULTIHOP": 3.0,
+        "H2L_BASIC": 3.0,
+        "H2L_DYNAMIC": 2.0,
+        "H2L_MULTIHOP": 2.0,
+        "H2L_ADAPTIVE": 2.0
+      },
+      "Median": {
+        "BASIC": 3.0,
+        "ADAPTIVE": 2.0,
+        "DYNAMIC": 3.0,
+        "MULTIHOP": 3.0,
+        "H2L_BASIC": 3.0,
+        "H2L_DYNAMIC": 3.0,
+        "H2L_MULTIHOP": 3.0,
+        "H2L_ADAPTIVE": 3.0
+      },
+      "75%": {
+        "BASIC": 3.0,
+        "ADAPTIVE": 3.0,
+        "DYNAMIC": 3.0,
+        "MULTIHOP": 3.0,
+        "H2L_BASIC": 3.0,
+        "H2L_DYNAMIC": 3.0,
+        "H2L_MULTIHOP": 3.0,
+        "H2L_ADAPTIVE": 3.0
+      },
+      "Max": {
+        "BASIC": 3,
+        "ADAPTIVE": 3,
+        "DYNAMIC": 3,
+        "MULTIHOP": 3,
+        "H2L_BASIC": 3,
+        "H2L_DYNAMIC": 3,
+        "H2L_MULTIHOP": 3,
+        "H2L_ADAPTIVE": 3
+      }
+    },
+    "anova": {
+      "f_statistic": 3.7446891444162933,
+      "p_value": 0.0006524030238221351
+    },
+    "pairwise_t_test": {
+      "basic": {
+        "basic": 1.0,
+        "adaptive": 3.288483708117103e-06,
+        "dynamic": 0.05669100677848826,
+        "multihop": 0.5338939001152949,
+        "h2l_basic": 1.0,
+        "h2l_dynamic": 0.2620346280225958,
+        "h2l_multihop": 0.2532350854256507,
+        "h2l_adaptive": 0.002366200331287212
+      },
+      "adaptive": {
+        "basic": 3.288483708117103e-06,
+        "adaptive": 1.0,
+        "dynamic": 0.0003574861719440604,
+        "multihop": 0.000289422878638183,
+        "h2l_basic": 1.1811122375219857e-05,
+        "h2l_dynamic": 3.888472442678895e-05,
+        "h2l_multihop": 0.0010139249935793384,
+        "h2l_adaptive": 0.6279450610053138
+      },
+      "dynamic": {
+        "basic": 0.05669100677848826,
+        "adaptive": 0.0003574861719440604,
+        "dynamic": 1.0,
+        "multihop": 0.2532350854256507,
+        "h2l_basic": 0.08316048921733507,
+        "h2l_dynamic": 0.08316048921733507,
+        "h2l_multihop": 0.5702839158682146,
+        "h2l_adaptive": 0.08636524860566636
+      },
+      "multihop": {
+        "basic": 0.5338939001152949,
+        "adaptive": 0.000289422878638183,
+        "dynamic": 0.2532350854256507,
+        "multihop": 1.0,
+        "h2l_basic": 0.5993269211024361,
+        "h2l_dynamic": 0.7672414557706502,
+        "h2l_multihop": 0.4211369313239446,
+        "h2l_adaptive": 0.008777294856356027
+      },
+      "h2l_basic": {
+        "basic": 1.0,
+        "adaptive": 1.1811122375219857e-05,
+        "dynamic": 0.08316048921733507,
+        "multihop": 0.5993269211024361,
+        "h2l_basic": 1.0,
+        "h2l_dynamic": 0.32347494517138353,
+        "h2l_multihop": 0.290749133760195,
+        "h2l_adaptive": 0.002366200331287212
+      },
+      "h2l_dynamic": {
+        "basic": 0.2620346280225958,
+        "adaptive": 3.888472442678895e-05,
+        "dynamic": 0.08316048921733507,
+        "multihop": 0.7672414557706502,
+        "h2l_basic": 0.32347494517138353,
+        "h2l_dynamic": 1.0,
+        "h2l_multihop": 0.7434672032976994,
+        "h2l_adaptive": 0.017531842641843542
+      },
+      "h2l_multihop": {
+        "basic": 0.2532350854256507,
+        "adaptive": 0.0010139249935793384,
+        "dynamic": 0.5702839158682146,
+        "multihop": 0.4211369313239446,
+        "h2l_basic": 0.290749133760195,
+        "h2l_dynamic": 0.7434672032976994,
+        "h2l_multihop": 1.0,
+        "h2l_adaptive": 0.02650636682460734
+      },
+      "h2l_adaptive": {
+        "basic": 0.002366200331287212,
+        "adaptive": 0.6279450610053138,
+        "dynamic": 0.08636524860566636,
+        "multihop": 0.008777294856356027,
+        "h2l_basic": 0.002366200331287212,
+        "h2l_dynamic": 0.017531842641843542,
+        "h2l_multihop": 0.02650636682460734,
+        "h2l_adaptive": 1.0
+      }
+    }
+  },
+  "entropy": {
+    "metric_name": "Source Diversity (Entropy)",
+    "descriptive_stats": {
+      "N": {
+        "BASIC": 40,
+        "ADAPTIVE": 40,
+        "DYNAMIC": 40,
+        "MULTIHOP": 40,
+        "H2L_BASIC": 40,
+        "H2L_DYNAMIC": 40,
+        "H2L_MULTIHOP": 40,
+        "H2L_ADAPTIVE": 40
+      },
+      "Mean": {
+        "BASIC": 1.1554038294152613,
+        "ADAPTIVE": 0.9547373227726659,
+        "DYNAMIC": 1.067684406649143,
+        "MULTIHOP": 1.0863698273188558,
+        "H2L_BASIC": 1.1576713176183429,
+        "H2L_DYNAMIC": 1.0775481994243823,
+        "H2L_MULTIHOP": 1.0356848740488762,
+        "H2L_ADAPTIVE": 0.9242902684654141
+      },
+      "Std": {
+        "BASIC": 0.38536592281142573,
+        "ADAPTIVE": 0.44499584813448,
+        "DYNAMIC": 0.3777973134632404,
+        "MULTIHOP": 0.4182200468085351,
+        "H2L_BASIC": 0.3872860503341472,
+        "H2L_DYNAMIC": 0.3788407936953387,
+        "H2L_MULTIHOP": 0.4375294186967782,
+        "H2L_ADAPTIVE": 0.5361851993205857
+      },
+      "Min": {
+        "BASIC": -0.0,
+        "ADAPTIVE": -0.0,
+        "DYNAMIC": -0.0,
+        "MULTIHOP": -0.0,
+        "H2L_BASIC": -0.0,
+        "H2L_DYNAMIC": -0.0,
+        "H2L_MULTIHOP": -0.0,
+        "H2L_ADAPTIVE": -0.0
+      },
+      "25%": {
+        "BASIC": 0.9151186909654323,
+        "ADAPTIVE": 0.7219280948873623,
+        "DYNAMIC": 0.7219280948873623,
+        "MULTIHOP": 0.9055872616982603,
+        "H2L_BASIC": 0.9151186909654323,
+        "H2L_DYNAMIC": 0.8338926002616969,
+        "H2L_MULTIHOP": 0.6998428398862386,
+        "H2L_ADAPTIVE": 0.6830734478037481
+      },
+      "Median": {
+        "BASIC": 1.3124807982156095,
+        "ADAPTIVE": 0.9709505944546686,
+        "DYNAMIC": 1.2078943480126667,
+        "MULTIHOP": 1.2364527976600281,
+        "H2L_BASIC": 1.2866926683547546,
+        "H2L_DYNAMIC": 1.2082649455427956,
+        "H2L_MULTIHOP": 1.1311229704790555,
+        "H2L_ADAPTIVE": 1.0781444918690517
+      },
+      "75%": {
+        "BASIC": 1.436246164302619,
+        "ADAPTIVE": 1.363460684196428,
+        "DYNAMIC": 1.3609640474436813,
+        "MULTIHOP": 1.4294732983598406,
+        "H2L_BASIC": 1.436246164302619,
+        "H2L_DYNAMIC": 1.360964047443681,
+        "H2L_MULTIHOP": 1.4294732983598406,
+        "H2L_ADAPTIVE": 1.363460684196428
+      },
+      "Max": {
+        "BASIC": 1.565596230357602,
+        "ADAPTIVE": 1.5219280948873621,
+        "DYNAMIC": 1.5219280948873621,
+        "MULTIHOP": 1.565596230357602,
+        "H2L_BASIC": 1.565596230357602,
+        "H2L_DYNAMIC": 1.584962500721156,
+        "H2L_MULTIHOP": 1.5655962303576019,
+        "H2L_ADAPTIVE": 1.565596230357602
+      }
+    },
+    "anova": {
+      "f_statistic": 1.582761616637616,
+      "p_value": 0.1397604270812593
+    },
+    "pairwise_t_test": null
+  },
+  "docs_retrieved": {
+    "metric_name": "Average Documents Retrieved",
+    "descriptive_stats": {
+      "N": {
+        "BASIC": 40,
+        "ADAPTIVE": 40,
+        "DYNAMIC": 40,
+        "MULTIHOP": 40,
+        "H2L_BASIC": 40,
+        "H2L_DYNAMIC": 40,
+        "H2L_MULTIHOP": 40,
+        "H2L_ADAPTIVE": 40
+      },
+      "Mean": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Std": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Min": {
+        "BASIC": 0,
+        "ADAPTIVE": 0,
+        "DYNAMIC": 0,
+        "MULTIHOP": 0,
+        "H2L_BASIC": 0,
+        "H2L_DYNAMIC": 0,
+        "H2L_MULTIHOP": 0,
+        "H2L_ADAPTIVE": 0
+      },
+      "25%": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Median": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "75%": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Max": {
+        "BASIC": 0,
+        "ADAPTIVE": 0,
+        "DYNAMIC": 0,
+        "MULTIHOP": 0,
+        "H2L_BASIC": 0,
+        "H2L_DYNAMIC": 0,
+        "H2L_MULTIHOP": 0,
+        "H2L_ADAPTIVE": 0
+      }
+    },
+    "anova": {
+      "f_statistic": null,
+      "p_value": null
+    },
+    "pairwise_t_test": null
+  },
+  "problem_coverage": {
+    "metric_name": "Problem Coverage Score",
+    "descriptive_stats": {
+      "N": {
+        "BASIC": 40,
+        "ADAPTIVE": 40,
+        "DYNAMIC": 40,
+        "MULTIHOP": 40,
+        "H2L_BASIC": 40,
+        "H2L_DYNAMIC": 40,
+        "H2L_MULTIHOP": 40,
+        "H2L_ADAPTIVE": 40
+      },
+      "Mean": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Std": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Min": {
+        "BASIC": 0,
+        "ADAPTIVE": 0,
+        "DYNAMIC": 0,
+        "MULTIHOP": 0,
+        "H2L_BASIC": 0,
+        "H2L_DYNAMIC": 0,
+        "H2L_MULTIHOP": 0,
+        "H2L_ADAPTIVE": 0
+      },
+      "25%": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Median": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "75%": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Max": {
+        "BASIC": 0,
+        "ADAPTIVE": 0,
+        "DYNAMIC": 0,
+        "MULTIHOP": 0,
+        "H2L_BASIC": 0,
+        "H2L_DYNAMIC": 0,
+        "H2L_MULTIHOP": 0,
+        "H2L_ADAPTIVE": 0
+      }
+    },
+    "anova": {
+      "f_statistic": null,
+      "p_value": null
+    },
+    "pairwise_t_test": null
+  },
+  "high_relevance": {
+    "metric_name": "High Relevance Documents Count",
+    "descriptive_stats": {
+      "N": {
+        "BASIC": 40,
+        "ADAPTIVE": 40,
+        "DYNAMIC": 40,
+        "MULTIHOP": 40,
+        "H2L_BASIC": 40,
+        "H2L_DYNAMIC": 40,
+        "H2L_MULTIHOP": 40,
+        "H2L_ADAPTIVE": 40
+      },
+      "Mean": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Std": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Min": {
+        "BASIC": 0,
+        "ADAPTIVE": 0,
+        "DYNAMIC": 0,
+        "MULTIHOP": 0,
+        "H2L_BASIC": 0,
+        "H2L_DYNAMIC": 0,
+        "H2L_MULTIHOP": 0,
+        "H2L_ADAPTIVE": 0
+      },
+      "25%": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Median": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "75%": {
+        "BASIC": 0.0,
+        "ADAPTIVE": 0.0,
+        "DYNAMIC": 0.0,
+        "MULTIHOP": 0.0,
+        "H2L_BASIC": 0.0,
+        "H2L_DYNAMIC": 0.0,
+        "H2L_MULTIHOP": 0.0,
+        "H2L_ADAPTIVE": 0.0
+      },
+      "Max": {
+        "BASIC": 0,
+        "ADAPTIVE": 0,
+        "DYNAMIC": 0,
+        "MULTIHOP": 0,
+        "H2L_BASIC": 0,
+        "H2L_DYNAMIC": 0,
+        "H2L_MULTIHOP": 0,
+        "H2L_ADAPTIVE": 0
+      }
+    },
+    "anova": {
+      "f_statistic": null,
+      "p_value": null
+    },
+    "pairwise_t_test": null
+  }
+}

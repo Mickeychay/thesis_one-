@@ -1,0 +1,74 @@
+{
+  "basic": {
+    "total_queries": 40,
+    "successful_queries": 40,
+    "avg_time": 7.355,
+    "avg_score": 0.2445,
+    "avg_docs_retrieved": 15.0,
+    "avg_unique_sources": 2.75,
+    "avg_entropy": 1.1554
+  },
+  "adaptive": {
+    "total_queries": 40,
+    "successful_queries": 40,
+    "avg_time": 3.7233,
+    "avg_score": 0.3839,
+    "avg_docs_retrieved": 7.12,
+    "avg_unique_sources": 2.28,
+    "avg_entropy": 0.9547
+  },
+  "dynamic": {
+    "total_queries": 40,
+    "successful_queries": 40,
+    "avg_time": 8.8632,
+    "avg_score": 0.2876,
+    "avg_docs_retrieved": 15.38,
+    "avg_unique_sources": 2.6,
+    "avg_entropy": 1.0677
+  },
+  "multihop": {
+    "total_queries": 40,
+    "successful_queries": 40,
+    "avg_time": 11.6624,
+    "avg_score": 0.3601,
+    "avg_docs_retrieved": 15.0,
+    "avg_unique_sources": 2.7,
+    "avg_entropy": 1.0864
+  },
+  "h2l_basic": {
+    "total_queries": 40,
+    "successful_queries": 40,
+    "avg_time": 7.4924,
+    "avg_score": 0.3423,
+    "avg_docs_retrieved": 15.0,
+    "avg_unique_sources": 2.75,
+    "avg_entropy": 1.1577
+  },
+  "h2l_dynamic": {
+    "total_queries": 40,
+    "successful_queries": 40,
+    "avg_time": 14.9496,
+    "avg_score": 0.2851,
+    "avg_docs_retrieved": 21.25,
+    "avg_unique_sources": 2.68,
+    "avg_entropy": 1.0775
+  },
+  "h2l_multihop": {
+    "total_queries": 40,
+    "successful_queries": 40,
+    "avg_time": 26.2548,
+    "avg_score": 0.4985,
+    "avg_docs_retrieved": 15.0,
+    "avg_unique_sources": 2.65,
+    "avg_entropy": 1.0357
+  },
+  "h2l_adaptive": {
+    "total_queries": 40,
+    "successful_queries": 40,
+    "avg_time": 5.765,
+    "avg_score": 0.1311,
+    "avg_docs_retrieved": 11.52,
+    "avg_unique_sources": 2.35,
+    "avg_entropy": 0.9243
+  }
+}

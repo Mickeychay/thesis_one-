@@ -1,0 +1,79 @@
+% Table 1: Template (run evaluation first)
+
+\begin{table*}[t]
+\centering
+\caption{Retrieval Quality Comparison Across Strategies}
+\label{tab:main_comparison}
+\begin{tabular}{lcccccc}
+\toprule
+Strategy & nDCG@5 & P@5 & MAP & MRR & F1@5 & Time (s) \\
+\midrule
+basic & \textbf{0.0000 ± 0.0000} & -- & -- & -- & -- & -- \\
+\midrule
+h2l-hybrid & 0.0000 ± 0.0000 & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+
+% Table 2: Ablation Study
+
+\begin{table}[t]
+\centering
+\caption{Ablation Study Results}
+\label{tab:ablation}
+\begin{tabular}{lccc}
+\toprule
+Configuration & nDCG@5 & P@5 & MAP \\
+\midrule
+H2L V3 (Full) & -- & -- & -- \\
+\quad w/o L2 Filtering & -- & -- & -- \\
+\quad w/o Severity Prior & -- & -- & -- \\
+\quad w/o Semantic Matching & -- & -- & -- \\
+\quad $\alpha = 0$ (No Problem Scoring) & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\vspace{1mm}
+\footnotesize{Values marked with -- to be filled after running updated ablation.}
+\end{table}
+
+
+
+% Table 3: Statistical Significance
+
+\begin{table}[t]
+\centering
+\caption{Pairwise Statistical Comparison (nDCG@5)}
+\label{tab:significance}
+\begin{tabular}{lcccc}
+\toprule
+Comparison & $p$-value & Cohen's $d$ & Effect & Sig. \\
+\midrule
+\multicolumn{5}{c}{\textit{Run evaluation to populate}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+% Table 4: Human Evaluation
+
+\begin{table}[t]
+\centering
+\caption{Human Evaluation by Domain Experts ($n$ evaluators)}
+\label{tab:human_eval}
+\begin{tabular}{lccc}
+\toprule
+System & Relevance & Completeness & Usefulness \\
+\midrule
+Baseline (Hybrid) & -- & -- & -- \\
+H2L-Hybrid & -- & -- & -- \\
+H2L-Adaptive & -- & -- & -- \\
+\midrule
+\multicolumn{4}{l}{Krippendorff's $\alpha$: --} \\
+\bottomrule
+\end{tabular}
+\vspace{1mm}
+\footnotesize{Scores on 1--5 Likert scale. Values to be filled after expert evaluation.}
+\end{table}

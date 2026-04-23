@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>H2L Clinical Research - Benchmark &amp; Evaluation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dde9ff",
+                        "on-secondary-container": "#006f66",
+                        "on-secondary-fixed": "#00201d",
+                        "secondary": "#006a61",
+                        "on-secondary-fixed-variant": "#005049",
+                        "surface-bright": "#f8f9ff",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#dae2fd",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "background": "#f8f9ff",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#131b2e",
+                        "surface-container-highest": "#d5e3fd",
+                        "tertiary-container": "#002113",
+                        "secondary-fixed": "#89f5e7",
+                        "on-primary-container": "#7c839b",
+                        "secondary-container": "#86f2e4",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-surface": "#0d1c2f",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#d5e3fd",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#233144",
+                        "on-background": "#0d1c2f",
+                        "tertiary": "#000000",
+                        "on-tertiary-container": "#009668",
+                        "inverse-primary": "#bec6e0",
+                        "primary": "#000000",
+                        "primary-fixed-dim": "#bec6e0",
+                        "inverse-on-surface": "#ebf1ff",
+                        "surface-container": "#e6eeff",
+                        "on-surface-variant": "#45464d",
+                        "on-primary-fixed": "#131b2e",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#ccdbf4",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "tertiary-fixed": "#6ffbbe",
+                        "outline": "#76777d",
+                        "outline-variant": "#c6c6cd",
+                        "surface-container-low": "#eff4ff",
+                        "surface": "#f8f9ff",
+                        "on-tertiary-fixed": "#002113",
+                        "brand-navy": "#0D1B2A"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .headline { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .label-sm-caps { font-family: 'Inter'; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface dark:bg-brand-navy text-on-surface dark:text-slate-100 flex min-h-screen overflow-hidden transition-colors duration-300">
+<!-- SideNavBar: Applying shared component {{DATA:COMPONENTS:COMPONENTS_9}} style -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-slate-50 dark:bg-brand-navy p-4 gap-2 border-r border-slate-200/50 dark:border-slate-800/50 shrink-0">
+<div class="mb-8 px-4 flex items-center gap-3">
+<div class="w-10 h-10 bg-brand-navy dark:bg-white rounded-lg flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-white dark:text-brand-navy text-xl" data-icon="science">science</span>
+</div>
+<div>
+<h1 class="font-['Manrope'] font-black text-lg text-brand-navy dark:text-white leading-tight">H2L Research</h1>
+<p class="text-[10px] text-slate-500 dark:text-teal-400 font-medium uppercase tracking-wider">Integrity-First Analysis</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="analytics">analytics</span>
+<span class="text-sm font-medium">Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="psychology">psychology</span>
+<span class="text-sm font-medium">Explainability</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="biotech">biotech</span>
+<span class="text-sm font-medium">Polarity Analyzer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 bg-white dark:bg-slate-800/50 text-teal-600 dark:text-teal-300 font-bold rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="query_stats">query_stats</span>
+<span class="text-sm font-medium">Benchmark</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-slate-200/20 dark:border-slate-800/20 pt-4">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help_outline">help_outline</span>
+<span class="text-sm font-medium">Support</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+<!-- TopNavBar: Applying shared component {{DATA:COMPONENTS:COMPONENTS_9}} style -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-8 h-16 bg-white/80 dark:bg-brand-navy/80 backdrop-blur-xl border-b border-slate-100/50 dark:border-slate-800/50 shadow-[0_32px_32px_-4px_rgba(25,28,30,0.06)]">
+<div class="flex items-center gap-4">
+<h2 class="text-xl font-extrabold tracking-tighter text-brand-navy dark:text-white font-['Manrope']">Benchmark &amp; Evaluation</h2>
+<div class="hidden lg:flex items-center gap-8 ml-8">
+<span class="text-brand-navy dark:text-teal-400 font-bold border-b-2 border-teal-500 h-16 flex items-center px-1 text-sm">การประเมินประสิทธิภาพ</span>
+<span class="text-slate-500 dark:text-slate-400 font-medium hover:text-teal-600 dark:hover:text-teal-300 transition-colors h-16 flex items-center px-1 text-sm cursor-pointer">รายงานผลการวิจัย</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
+<span class="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[18px]" data-icon="verified_user">verified_user</span>
+<span class="label-sm-caps text-slate-700 dark:text-slate-300">Integrity Verified</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 hover:text-brand-navy dark:hover:text-white cursor-pointer" data-icon="notifications">notifications</span>
+<img alt="Researcher Profile Avatar" class="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ1LoLbmzdtS576NiFtJleFi6w2L8Ti4M2EU-fcoB_y15qBCSX3sJQu7nz30kejs0jRgBRxKlFSL85PpBhkjo3SepoI3ZbFZHKx88XdHS_9TTv5AtzbaGL6FeL3PT2SaqRE_8rzJ_c-us-uS0sMGT3a4Eg54EeGJTArK19rYkuAHI6SnvvYX7OYv3t41wcQMtV87Yo8gHeX8AhODhezPjRHwX7ZcyLEZrliurdXo1pRLxQyQaIu148F6rcFUyDAF07RlmNEFZ5fltx"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-8 space-y-8 bg-surface dark:bg-brand-navy/50 scroll-hide">
+<!-- Research Integrity Guardrail (Notice) -->
+<div class="relative overflow-hidden p-6 rounded-2xl bg-brand-navy dark:bg-slate-900 border border-slate-800 text-white flex items-center justify-between group">
+<div class="z-10">
+<h3 class="text-lg font-bold headline mb-1">Statistical Analysis Guardrail</h3>
+<p class="text-slate-400 text-sm italic">Real Evaluation Artifacts Only — Demo-only: Synthetic stats disabled สำหรับเวอร์ชันทดสอบเท่านั้น</p>
+</div>
+<div class="flex gap-4 z-10">
+<div class="px-4 py-2 bg-teal-600 hover:bg-teal-500 transition-colors cursor-pointer rounded-lg text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="verified">verified</span>
+                    PROD_ENV_STABLE
+                </div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-br from-teal-900/40 via-transparent to-transparent opacity-50 pointer-events-none group-hover:opacity-70 transition-opacity"></div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Strategy Comparison Table -->
+<div class="xl:col-span-2 space-y-6">
+<div class="bg-surface-container-low dark:bg-slate-800/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
+<div class="flex justify-between items-end mb-6">
+<div>
+<h3 class="headline text-lg font-bold text-brand-navy dark:text-white">Strategy Comparison Table</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm">การเปรียบเทียบกลยุทธ์การสืบค้นข้อมูลทางคลินิก (Retrieval Strategies)</p>
+</div>
+<button class="text-teal-600 dark:text-teal-400 text-xs font-bold label-sm-caps hover:underline transition-all">Export Full Data</button>
+</div>
+<div class="bg-white dark:bg-brand-navy/60 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-800/80">
+<tr>
+<th class="px-6 py-4 label-sm-caps text-slate-500 dark:text-slate-400">Strategy ID</th>
+<th class="px-4 py-4 label-sm-caps text-slate-500 dark:text-slate-400 text-right">nDCG@10</th>
+<th class="px-4 py-4 label-sm-caps text-slate-500 dark:text-slate-400 text-right">MAP</th>
+<th class="px-4 py-4 label-sm-caps text-slate-500 dark:text-slate-400 text-right">MRR</th>
+<th class="px-4 py-4 label-sm-caps text-slate-500 dark:text-slate-400 text-right">Precision</th>
+<th class="px-4 py-4 label-sm-caps text-slate-500 dark:text-slate-400 text-right">Recall</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+<td class="px-6 py-4">
+<span class="text-sm font-semibold block text-brand-navy dark:text-slate-100">bm25_only</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">Baseline Keyword Retrieval</span>
+</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.421</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.388</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.456</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.312</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.512</td>
+</tr>
+<tr class="bg-teal-50/30 dark:bg-teal-900/10 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors border-l-4 border-teal-500">
+<td class="px-6 py-4">
+<span class="text-sm font-bold block text-teal-900 dark:text-teal-400">h2l-bm25</span>
+<span class="text-[10px] text-teal-600 uppercase font-bold tracking-widest">Enhanced</span>
+</td>
+<td class="px-4 py-4 text-right font-body text-sm font-bold text-teal-700 dark:text-teal-300">0.684</td>
+<td class="px-4 py-4 text-right font-body text-sm font-bold text-teal-700 dark:text-teal-300">0.642</td>
+<td class="px-4 py-4 text-right font-body text-sm font-bold text-teal-700 dark:text-teal-300">0.712</td>
+<td class="px-4 py-4 text-right font-body text-sm font-bold text-teal-700 dark:text-teal-300">0.584</td>
+<td class="px-4 py-4 text-right font-body text-sm font-bold text-teal-700 dark:text-teal-300">0.792</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+<td class="px-6 py-4">
+<span class="text-sm font-semibold block text-brand-navy dark:text-slate-100">h2l-dense_hybrid</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">Neural + Keyword</span>
+</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.652</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.611</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.684</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.556</td>
+<td class="px-4 py-4 text-right font-body text-sm text-slate-600 dark:text-slate-400">0.741</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Paired Comparison View -->
+<div class="bg-surface-container-low dark:bg-slate-800/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-teal-600 dark:text-teal-400" data-icon="compare_arrows">compare_arrows</span>
+<h3 class="headline text-lg font-bold text-brand-navy dark:text-white">Paired Comparison View</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 relative">
+<!-- Baseline -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<span class="label-sm-caps text-slate-500 dark:text-slate-400">Baseline Retriever</span>
+<span class="text-xs font-mono text-slate-400">v0.4.1</span>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<div class="flex justify-between text-xs mb-1">
+<span class="text-slate-500 dark:text-slate-400">Query Precision</span>
+<span class="font-bold text-slate-700 dark:text-slate-300">31%</span>
+</div>
+<div class="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full flex overflow-hidden">
+<div class="h-full bg-slate-400 dark:bg-slate-500" style="width: 31%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs mb-1">
+<span class="text-slate-500 dark:text-slate-400">Retrieval Latency</span>
+<span class="font-bold text-slate-700 dark:text-slate-300">142ms</span>
+</div>
+<div class="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full flex overflow-hidden">
+<div class="h-full bg-slate-400 dark:bg-slate-500" style="width: 65%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-[1px] bg-slate-200/50 dark:bg-slate-700/50 -translate-x-1/2"></div>
+<!-- H2L Enhanced -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<span class="label-sm-caps text-teal-600 dark:text-teal-400 font-bold">H2L-Enhanced System</span>
+<span class="px-2 py-0.5 bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 rounded text-[10px] font-bold">ACTIVE</span>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<div class="flex justify-between text-xs mb-1">
+<span class="text-brand-navy dark:text-slate-300 font-medium">Query Precision</span>
+<span class="font-bold text-teal-600 dark:text-teal-400">58% (+87%)</span>
+</div>
+<div class="h-2 w-full bg-teal-100 dark:bg-teal-900/20 rounded-full flex overflow-hidden">
+<div class="h-full bg-teal-600 dark:bg-teal-500" style="width: 58%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs mb-1">
+<span class="text-brand-navy dark:text-slate-300 font-medium">Retrieval Latency</span>
+<span class="font-bold text-teal-600 dark:text-teal-400">88ms (-38%)</span>
+</div>
+<div class="h-2 w-full bg-teal-100 dark:bg-teal-900/20 rounded-full flex overflow-hidden">
+<div class="h-full bg-teal-600 dark:bg-teal-500" style="width: 40%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Column -->
+<div class="space-y-8">
+<!-- Overall Performance Bento -->
+<div class="bg-brand-navy dark:bg-slate-900 text-white p-8 rounded-2xl relative overflow-hidden shadow-xl border border-slate-800">
+<h4 class="label-sm-caps text-slate-400 mb-4">Overall Performance Score</h4>
+<div class="text-6xl font-black font-['Manrope'] mb-2 tracking-tighter">0.712</div>
+<p class="text-sm text-slate-400 leading-relaxed">System-wide nDCG@10 across clinical trial clusters. Target: 0.750</p>
+<div class="mt-8 flex gap-1.5">
+<div class="h-2.5 w-full bg-teal-600"></div>
+<div class="h-2.5 w-full bg-teal-600"></div>
+<div class="h-2.5 w-full bg-teal-600"></div>
+<div class="h-2.5 w-full bg-teal-600"></div>
+<div class="h-2.5 w-full bg-teal-600"></div>
+<div class="h-2.5 w-full bg-teal-600"></div>
+<div class="h-2.5 w-full bg-teal-600"></div>
+<div class="h-2.5 w-full bg-slate-800"></div>
+<div class="h-2.5 w-full bg-slate-800"></div>
+<div class="h-2.5 w-full bg-slate-800"></div>
+</div>
+<div class="mt-3 text-[10px] text-slate-500 font-bold flex justify-between uppercase tracking-widest">
+<span>CURRENT STATUS</span>
+<span>RESEARCH TARGET</span>
+</div>
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl"></div>
+</div>
+<!-- Empty State -->
+<div class="bg-white dark:bg-slate-800/20 p-8 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-3xl" data-icon="cloud_off">cloud_off</span>
+</div>
+<h4 class="headline text-base font-bold text-brand-navy dark:text-white mb-2">Ground Truth Data Missing</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+                        ไม่มีข้อมูลอ้างอิง (Ground Truth) สำหรับ 'Rare_Disease_Set_04'. กรุณาอัปโหลดไฟล์ QREL เพื่อเริ่มประเมิน
+                    </p>
+<button class="w-full px-6 py-3 bg-brand-navy dark:bg-slate-100 dark:text-brand-navy text-white rounded-xl text-xs font-bold label-sm-caps hover:bg-teal-700 dark:hover:bg-teal-400 transition-colors shadow-lg shadow-brand-navy/10">
+                        Upload QREL File
+                    </button>
+</div>
+<!-- Seal of Integrity -->
+<div class="p-6 rounded-2xl bg-white dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 shadow-sm flex items-start gap-4">
+<div class="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-teal-600 dark:text-teal-400" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<div class="w-2 h-2 rounded-full bg-teal-500"></div>
+<span class="label-sm-caps text-slate-800 dark:text-slate-300">Seal of Integrity</span>
+</div>
+<p class="text-sm font-bold text-brand-navy dark:text-white">Real Evaluation Artifacts</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">อ้างอิงจากข้อมูลทางคลินิกจริง (Validated Clinical Data)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="flex justify-between items-center w-full px-8 py-4 bg-white dark:bg-brand-navy shrink-0 border-t border-slate-100 dark:border-slate-800/50">
+<div class="text-[11px] font-label text-slate-500 dark:text-slate-400 italic">
+            v1.2.4-stable | AI Support Tool Only. Not for final clinical diagnosis.
+        </div>
+<div class="flex gap-8">
+<a class="text-[11px] font-bold label-sm-caps text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors" href="#">Research Context</a>
+<a class="text-[11px] font-bold label-sm-caps text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors" href="#">Integrity Policy</a>
+<a class="text-[11px] font-bold label-sm-caps text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors" href="#">System Status</a>
+</div>
+</footer>
+</main>
+<script>
+    // Theme toggle helper (for manual testing if needed)
+    function toggleTheme() {
+        document.documentElement.classList.toggle('dark');
+    }
+</script>
+</body></html>

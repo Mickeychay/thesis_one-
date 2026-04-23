@@ -1,15 +1,48 @@
-# Minimal dependencies for LINE RAG Bot
+# SocThaiRAG Dependencies
 
-pinecone[grpc]>=7.3.0
-sentence-transformers>=2.3.0
+# --- Core Infrastructure ---
 python-dotenv>=1.0.0
+numpy>=1.24.0
+tqdm>=4.65.0
+rich>=13.0.0
+
+# --- NLP, Embeddings & AI Models ---
+sentence-transformers>=2.3.0
+transformers>=4.41.0
+torch>=2.0.0
+einops>=0.8.0
+
+# ✨ เพิ่มสำหรับ Local LLM
+accelerate>=0.20.0
+bitsandbytes>=0.41.0  # สำหรับ quantization (8bit/4bit)
+sentencepiece>=0.1.99  # สำหรับบาง tokenizers
+protobuf>=3.20.0
+
+# --- Vector Databases (Install what you use) ---
+faiss-cpu>=1.7.4
+chromadb>=0.4.0
+lancedb>=0.3.0
+# pinecone-client>=3.0.0  # Uncomment if using Pinecone
+
+# --- Lexical Search ---
+rank-bm25>=0.2.2
+
+# --- Document Processing ---
+pdfplumber>=0.10.0
 requests>=2.31.0
-flask>=2.3.0
-line-bot-sdk>=3.5.0
-pdfplumber>=0.11.0 
-pdf2image>=1.17.0
-pytesseract>=0.3.12
-pythainlp>=5.1.2
-openpyxl>=3.1.5
-xlsxwriter>=3.2.9
-tqdm>=4.67.1
+pythainlp>=5.1.0
+
+# --- Web Framework & LINE Bot ---
+Flask>=3.0.0
+line-bot-sdk<=3.0.0
+
+# --- Development & Code Quality (Optional) ---
+pytest>=7.4.0
+black>=23.0.0
+flake8>=6.0.0
+
+# --- Visualization (for evaluation) ---
+matplotlib>=3.5.0
+seaborn>=0.12.0
+pandas>=1.5.0
+gradio>=4.0.0

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>H2L Clinical Research | Sentence Polarity Analyzer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dde9ff",
+                        "on-secondary-container": "#006f66",
+                        "on-secondary-fixed": "#00201d",
+                        "secondary": "#006a61",
+                        "on-secondary-fixed-variant": "#005049",
+                        "surface-bright": "#f8f9ff",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#dae2fd",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "background": "#f8f9ff",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#131b2e",
+                        "surface-container-highest": "#d5e3fd",
+                        "tertiary-container": "#002113",
+                        "secondary-fixed": "#89f5e7",
+                        "on-primary-container": "#7c839b",
+                        "secondary-container": "#86f2e4",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-surface": "#0d1c2f",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#d5e3fd",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#233144",
+                        "on-background": "#0d1c2f",
+                        "tertiary": "#000000",
+                        "on-tertiary-container": "#009668",
+                        "inverse-primary": "#bec6e0",
+                        "primary": "#000000",
+                        "primary-fixed-dim": "#bec6e0",
+                        "inverse-on-surface": "#ebf1ff",
+                        "surface-container": "#e6eeff",
+                        "on-surface-variant": "#45464d",
+                        "on-primary-fixed": "#131b2e",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#ccdbf4",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "tertiary-fixed": "#6ffbbe",
+                        "outline": "#76777d",
+                        "outline-variant": "#c6c6cd",
+                        "surface-container-low": "#eff4ff",
+                        "surface": "#f8f9ff",
+                        "on-tertiary-fixed": "#002113"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .segmented-bar div { height: 12px; border-radius: 2px; }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .label-sm-caps { font-family: 'Inter', sans-serif; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface dark:bg-[#0D1B2A] dark:text-slate-100 flex min-h-screen">
+<!-- SideNavBar: Implementation based on DATA:COMPONENTS:COMPONENTS_9 -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-slate-50 dark:bg-[#0D1B2A] flex flex-col p-4 gap-2 hidden md:flex shrink-0 z-40 border-r border-slate-200/50 dark:border-slate-800/50">
+<div class="px-2 pb-6 space-y-1">
+<h1 class="font-['Manrope'] font-black text-lg text-[#0D1B2A] dark:text-white">H2L Research</h1>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Integrity-First Analysis</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl hover:translate-x-1 transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl hover:translate-x-1 transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-['Inter'] text-sm font-medium">Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl hover:translate-x-1 transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-['Inter'] text-sm font-medium">Explainability</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800/50 text-teal-600 dark:text-teal-300 rounded-xl shadow-sm hover:translate-x-1 transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+<span class="font-['Inter'] text-sm font-bold">Polarity Analyzer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl hover:translate-x-1 transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-['Inter'] text-sm font-medium">Benchmark</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-800/50 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl hover:translate-x-1 transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-sm font-medium">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/30 rounded-xl hover:translate-x-1 transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-['Inter'] text-sm font-medium">Support</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0 md:pl-64">
+<!-- TopNavBar: Implementation based on DATA:COMPONENTS:COMPONENTS_9 -->
+<header class="fixed top-0 right-0 left-0 md:left-64 z-50 h-16 bg-white/80 dark:bg-[#0D1B2A]/80 backdrop-blur-xl flex justify-between items-center px-8 shadow-[0_32px_32px_-4px_rgba(25,28,30,0.06)] border-b border-slate-100/50 dark:border-slate-800/50">
+<div class="flex items-center gap-4">
+<span class="md:hidden material-symbols-outlined cursor-pointer text-[#0D1B2A] dark:text-white" data-icon="menu">menu</span>
+<div class="text-xl font-extrabold tracking-tighter text-[#0D1B2A] dark:text-white font-['Manrope']">Clinical Academic Excellence</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="hidden lg:flex items-center gap-6">
+<span class="text-[#0D1B2A] dark:text-teal-400 font-bold border-b-2 border-teal-500 py-1 cursor-pointer font-['Manrope'] tracking-tight headline-sm">Analyzer</span>
+<span class="text-slate-500 dark:text-slate-400 font-medium hover:text-teal-600 dark:hover:text-teal-300 transition-colors cursor-pointer font-['Manrope'] tracking-tight headline-sm">Documentation</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 px-2">
+<span class="material-symbols-outlined text-slate-500 hover:text-teal-500 transition-colors cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-teal-600 dark:text-teal-400" data-icon="verified_user">verified_user</span>
+</div>
+<div class="w-9 h-9 rounded-full overflow-hidden border-2 border-teal-500/20 active:opacity-80 transition-all cursor-pointer">
+<img alt="Researcher Profile Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyB0p5-nteYE1DMZ2ahS5LcP3uB22yaCSvP7mzycF0ePzHpg9B7yrs4eTT7bOmlzgBypWU0UbOPIEMtunBApJ-s-qT3VGp79at0xQcTGx45P5iO9poD8yRVQ8GGuf6EOYZZhK4Sz0dhBUkQZa3xpLx_DsdhBBffaQpAKKg7TUMJq9vSLTABPP4yYnnpzw_RRwlKzdKj8NJmuSuzS9diCB1hfZnDWh0hC2XZen6qoURHSR93rmjkUbO5eI5FFWXv6an4ziAaCXHBWlG"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="p-8 pt-24 space-y-8 max-w-7xl mx-auto w-full">
+<!-- Hero Header Section -->
+<section class="space-y-2">
+<div class="label-sm-caps text-teal-600 dark:text-teal-400">Laboratory Tool</div>
+<h2 class="text-3xl font-bold tracking-tight text-on-surface dark:text-white">Sentence Polarity Analyzer</h2>
+<p class="text-on-primary-container dark:text-slate-400 max-w-2xl">เครื่องมือวิเคราะห์ขั้วประโยคระดับละเอียดสำหรับงานวิจัยทางคลินิก ใช้ตรรกะการตรวจสอบ Negation Markers และ Subject Gates เพื่อระบุสภาวะที่แท้จริง</p>
+</section>
+<!-- Analysis Input (Bento Row 1) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 bg-surface-container-low dark:bg-slate-800/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 space-y-4 shadow-sm">
+<div class="flex justify-between items-center">
+<h3 class="font-semibold text-lg flex items-center gap-2 dark:text-slate-100">
+<span class="material-symbols-outlined text-teal-600 dark:text-teal-400" data-icon="edit_note">edit_note</span>
+                        Input Sentence (ข้อความตรวจวัด)
+                    </h3>
+<span class="label-sm-caps bg-surface-container-high dark:bg-slate-700 px-2 py-1 rounded text-teal-700 dark:text-teal-300">Clinical Context</span>
+</div>
+<div class="relative">
+<textarea class="w-full h-32 bg-surface-container-lowest dark:bg-slate-900 border-slate-200/50 dark:border-slate-700 rounded-xl p-4 text-lg font-body focus:ring-2 focus:ring-secondary dark:focus:ring-teal-500 transition-all shadow-inner text-on-surface dark:text-slate-100" placeholder="ระบุประโยคที่ต้องการวิเคราะห์ เช่น 'ผู้ป่วยไม่มีความเครียดสะสม'">ผู้ป่วยไม่มีความเครียดสะสม</textarea>
+<button class="absolute bottom-4 right-4 bg-teal-600 dark:bg-teal-500 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-teal-700 dark:hover:bg-teal-400 transition-colors shadow-lg active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="auto_awesome">auto_awesome</span>
+                        Analyze
+                    </button>
+</div>
+</div>
+<div class="bg-surface-container-low dark:bg-slate-800/40 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 flex flex-col justify-between shadow-sm">
+<div class="space-y-4">
+<h3 class="label-sm-caps text-on-primary-container dark:text-slate-400">Teaching Mode Parameters</h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium dark:text-slate-200">NEG_LAMBDA (Weight)</span>
+<span class="font-mono text-teal-600 dark:text-teal-400 font-bold">0.60</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+<div class="bg-teal-600 dark:bg-teal-500 h-full rounded-full" style="width: 60%"></div>
+</div>
+<div class="flex justify-between items-center mt-4">
+<span class="text-sm font-medium dark:text-slate-200">Subject Gate (Threshold)</span>
+<span class="font-mono text-teal-600 dark:text-teal-400 font-bold">0.85</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+<div class="bg-teal-600 dark:bg-teal-500 h-full rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md rounded-xl border border-white/20 dark:border-slate-700/30 mt-6 italic text-xs text-on-primary-container dark:text-slate-400 leading-relaxed">
+                    "The higher the Subject Gate, the more sensitive the model is to specific noun phrases in negation contexts."
+                </div>
+</div>
+</div>
+<!-- Visual Analysis (Bento Row 2) -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+<!-- Visual Negation Window -->
+<div class="lg:col-span-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800 p-8 rounded-2xl space-y-6 shadow-sm">
+<div class="flex items-center justify-between">
+<h3 class="font-semibold text-lg dark:text-slate-100">Visual Negation Window (30-char scan)</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5">
+<div class="w-3 h-3 bg-red-100 dark:bg-red-900/40 border border-red-200 dark:border-red-800 rounded-sm"></div>
+<span class="text-[10px] label-sm-caps dark:text-slate-400">Marker</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-3 h-3 bg-teal-100 dark:bg-teal-900/40 border border-teal-200 dark:border-teal-800 rounded-sm"></div>
+<span class="text-[10px] label-sm-caps dark:text-slate-400">Keyword</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 text-2xl font-body items-center bg-slate-50 dark:bg-slate-800/20 p-8 rounded-xl border border-slate-100 dark:border-slate-800/50">
+<span class="px-2 py-1 dark:text-slate-300">ผู้ป่วย</span>
+<span class="px-4 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/50 rounded-lg ring-4 ring-red-50 dark:ring-red-900/10 font-bold" title="Negation Marker (NEG)">ไม่มี</span>
+<span class="px-2 py-1 dark:text-slate-300">ความ</span>
+<span class="px-4 py-1.5 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800/50 rounded-lg ring-4 ring-teal-50 dark:ring-teal-900/10 font-bold" title="Detected Problem (KEYWORD)">เครียดสะสม</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+<div class="space-y-1">
+<div class="label-sm-caps text-on-primary-container dark:text-slate-500">Detected Problem</div>
+<div class="font-semibold text-lg flex items-center gap-2 dark:text-slate-100">
+<span class="material-symbols-outlined text-error dark:text-red-400" data-icon="error">error</span>
+                            ความเครียดสะสม
+                        </div>
+</div>
+<div class="space-y-1">
+<div class="label-sm-caps text-on-primary-container dark:text-slate-500">Status</div>
+<div class="bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-3 py-1 rounded-lg inline-block font-bold text-xs uppercase tracking-wider">NEGATED (Confirmed)</div>
+</div>
+<div class="space-y-1">
+<div class="label-sm-caps text-on-primary-container dark:text-slate-500">Integrity Check</div>
+<div class="flex items-center gap-2 text-teal-600 dark:text-teal-400 font-semibold italic text-sm">
+<span class="material-symbols-outlined text-sm fill-current" data-icon="verified">verified</span>
+                            Real Evaluation
+                        </div>
+</div>
+</div>
+</div>
+<!-- Polarity Metrics -->
+<div class="bg-white dark:bg-[#0D1B2A] border border-slate-200/50 dark:border-slate-800 p-6 rounded-2xl space-y-6 shadow-sm">
+<h3 class="label-sm-caps text-on-primary-container dark:text-slate-500 text-center">Polarity Metrics</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-end border-b border-slate-100 dark:border-slate-800 pb-2">
+<span class="text-xs font-medium text-on-primary-container dark:text-slate-400">G_neg</span>
+<span class="text-xl font-headline font-bold dark:text-slate-100">0.92</span>
+</div>
+<div class="flex justify-between items-end border-b border-slate-100 dark:border-slate-800 pb-2">
+<span class="text-xs font-medium text-on-primary-container dark:text-slate-400">G_len</span>
+<span class="text-xl font-headline font-bold dark:text-slate-100">18</span>
+</div>
+<div class="flex justify-between items-end border-b border-slate-100 dark:border-slate-800 pb-2">
+<span class="text-xs font-medium text-on-primary-container dark:text-slate-400">G_sub</span>
+<span class="text-xl font-headline font-bold dark:text-slate-100">0.88</span>
+</div>
+<div class="pt-2">
+<div class="label-sm-caps text-center text-teal-600 dark:text-teal-400 mb-2">Final Polarity (G_total)</div>
+<div class="text-5xl text-center font-headline font-extrabold text-[#0D1B2A] dark:text-teal-300">-1.00</div>
+<div class="text-[10px] text-center text-slate-500 dark:text-slate-400 mt-2 uppercase tracking-widest font-bold">Pure Negative</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Logic Explanation (Teaching Mode) -->
+<section class="bg-surface-container-low dark:bg-slate-800/40 p-8 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center shadow-sm border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-teal-600 dark:text-teal-400" data-icon="school">school</span>
+</div>
+<div>
+<h3 class="font-bold text-xl dark:text-white">Logic Walkthrough (สรุปตรรกะการประมวลผล)</h3>
+<p class="text-sm text-on-primary-container dark:text-slate-400">Step-by-step breakdown of how the engine derived the result.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<div class="space-y-6">
+<div class="flex gap-4">
+<span class="text-teal-600 dark:text-teal-400 font-bold font-headline text-lg italic">01</span>
+<div>
+<h4 class="font-bold text-on-surface dark:text-slate-100">Negation Mapping (การจับคู่ค่านิเสธ)</h4>
+<p class="text-sm leading-relaxed text-on-primary-container dark:text-slate-400">ระบบตรวจพบคำว่า <span class="font-bold text-on-surface dark:text-slate-200">"ไม่มี"</span> ในฐานข้อมูล <span class="bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-[11px] font-mono">Markers-TH</span> ซึ่งทำหน้าที่ลดค่าความเป็นบวกหรือสลับขั้วความหมาย โดยมีค่า Lambda Weight ที่ 0.6</p>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="text-teal-600 dark:text-teal-400 font-bold font-headline text-lg italic">02</span>
+<div>
+<h4 class="font-bold text-on-surface dark:text-slate-100">Subject Gating (การคัดกรองประธาน)</h4>
+<p class="text-sm leading-relaxed text-on-primary-container dark:text-slate-400">ตรวจสอบคำนามหลัก <span class="font-bold text-on-surface dark:text-slate-200">"ผู้ป่วย"</span> ผ่านตัวกรอง Subject Gate (0.85) พบว่ามีความสัมพันธ์สูงกับปัญหาทางคลินิก จึงยอมรับผลการวิเคราะห์ขั้วความหมายนี้</p>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="p-6 bg-white dark:bg-slate-900 rounded-xl border-l-4 border-teal-600 dark:border-teal-500 shadow-sm">
+<div class="label-sm-caps text-teal-600 dark:text-teal-400 mb-3">Equation Preview</div>
+<code class="text-sm font-mono block text-on-surface dark:text-slate-300 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg overflow-x-auto">
+                            Polarity = Sign(G_total) * (G_neg * NEG_LAMBDA) / Math.sqrt(G_len)
+                        </code>
+<div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-2">
+<span class="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">Research Grade</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">V1.0 Engine</span>
+</div>
+</div>
+<p class="text-[11px] text-slate-500 dark:text-slate-500 italic leading-normal">หมายเหตุ: ข้อมูลนี้ถูกประมวลผลเพื่อการวิจัยเท่านั้น ไม่สามารถนำไปใช้ในการวินิจฉัยโรคขั้นสุดท้ายโดยปราศจากการตรวจสอบจากแพทย์ผู้เชี่ยวชาญ</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-4 gap-4 bg-slate-50 dark:bg-[#0D1B2A] border-t border-slate-200/50 dark:border-slate-800/50 mt-auto">
+<div class="text-slate-500 dark:text-slate-400 text-[11px] font-label">v1.2.4-stable | AI Support Tool Only. Not for final clinical diagnosis.</div>
+<div class="flex gap-6">
+<a class="text-slate-500 dark:text-slate-400 text-[11px] font-label hover:text-teal-600 dark:hover:text-teal-400 no-underline transition-colors" href="#">Research Context</a>
+<a class="text-slate-500 dark:text-slate-400 text-[11px] font-label hover:text-teal-600 dark:hover:text-teal-400 no-underline transition-colors" href="#">Integrity Policy</a>
+<a class="text-slate-500 dark:text-slate-400 text-[11px] font-label hover:text-teal-600 dark:hover:text-teal-400 no-underline transition-colors" href="#">System Status</a>
+</div>
+</footer>
+</div>
+<script>
+    // Simple toggle for testing light/dark mode during development
+    // document.documentElement.classList.add('dark');
+</script>
+</body></html>

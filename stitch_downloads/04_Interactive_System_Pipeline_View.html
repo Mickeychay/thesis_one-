@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clinical Academic Excellence - H2L Research Pipeline</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#d6e4f9",
+                        "primary": "#000000",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#3a4859",
+                        "surface-dim": "#d8dadc",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed": "#00201d",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "on-tertiary-container": "#0c9488",
+                        "tertiary-fixed": "#89f5e7",
+                        "tertiary": "#000000",
+                        "primary-fixed-dim": "#bac8dc",
+                        "inverse-surface": "#2d3133",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-tint": "#525f71",
+                        "on-tertiary-fixed-variant": "#005049",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "surface": "#f7f9fb",
+                        "primary-container": "#0f1c2c",
+                        "secondary-fixed": "#d5e3fc",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#6bd8cb",
+                        "outline-variant": "#c4c6cc",
+                        "on-primary-container": "#778598",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "secondary-container": "#d5e3fc",
+                        "on-surface-variant": "#44474c",
+                        "inverse-primary": "#bac8dc",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed": "#0f1c2c",
+                        "surface-bright": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "outline": "#74777d",
+                        "on-secondary-container": "#57657a",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-container": "#00201d",
+                        "secondary": "#515f74"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pipeline-connector {
+            background: linear-gradient(90deg, transparent, #0c9488 50%, transparent);
+            height: 2px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm shadow-slate-200/20 dark:shadow-none h-16 border-b border-slate-200/50">
+<div class="flex justify-between items-center px-8 h-full w-full max-w-[1920px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50 font-headline">Clinical Academic Excellence</span>
+<nav class="hidden md:flex gap-6 font-manrope tracking-tight font-semibold">
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors" href="#">Dashboard</a>
+<a class="text-teal-600 dark:text-teal-400 border-b-2 border-teal-600 pb-1" href="#">Pipeline</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors" href="#">Metrics</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/20">
+<img alt="Researcher Profile" data-alt="close-up portrait of a professional academic researcher in a clinical setting with soft natural lighting and medical equipment background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzlYFIIFOPmvWzfkx8AKtqNVWmJ0AXuz7GnMIup4kt3jj9eQ58YdjrI6WrGgDQPtqy4jkBc5ZPuR_bwNorp2Cb2IefTGpJ3vNI2rpJn3S3uM5PviYI5O_5WZ7avbGtQWl0bOAEKJPzeLnANsGPHR02J--dka-d1Km9GHmtHcO4ac_GK5tviY5v7iH-tfbbeoRxBNurDnB2I2TDiyNiwZlx_h_WeWxOWHGqieY8cYFzl3bXBks6EKB2q-_ducaDvMS_3PZIg5iIUFz-"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNav -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-72 bg-slate-50 dark:bg-slate-900 flex flex-col p-4 border-r border-slate-200/50">
+<div class="mb-8 px-2">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+</div>
+<div>
+<h2 class="font-manrope font-bold text-slate-900 dark:text-slate-50 text-base leading-tight">H2L Research</h2>
+<p class="text-xs text-slate-500">Clinical Integrity Panel</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:translate-x-1 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-inter text-sm antialiased">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-teal-600 dark:text-teal-400 font-semibold shadow-sm rounded-xl" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+<span class="font-inter text-sm antialiased">Logic Flow</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:translate-x-1 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-inter text-sm antialiased">Data Integrity</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:translate-x-1 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-inter text-sm antialiased">Audit Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:translate-x-1 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">ios_share</span>
+<span class="font-inter text-sm antialiased">Export</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-slate-200/50">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold text-sm mb-4">Verify Dataset</button>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 text-sm hover:text-slate-700" href="#">
+<span class="material-symbols-outlined text-lg">help_outline</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 text-sm hover:text-slate-700" href="#">
+<span class="material-symbols-outlined text-lg">description</span>
+<span>Documentation</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-72 mt-16 p-8 min-h-[calc(100vh-64px)] flex flex-col gap-8">
+<!-- Header Section -->
+<div class="flex justify-between items-end">
+<div>
+<nav class="flex items-center gap-2 text-sm text-on-surface-variant mb-2">
+<span>Clinical Research</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span>System Pipeline</span>
+</nav>
+<h1 class="text-4xl font-headline font-extrabold tracking-tight text-on-surface">System Pipeline View</h1>
+<p class="text-on-surface-variant mt-1">การจำลองกระบวนการวิเคราะห์ข้อมูลและตรวจสอบความถูกต้องเชิงวิชาการ</p>
+</div>
+<div class="flex gap-3">
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-xl border border-outline-variant/10">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+<span class="text-sm font-semibold text-on-tertiary-container">Live Instance: H2L-X9</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8 flex-1">
+<!-- Pipeline Flow Diagram Area -->
+<div class="col-span-8 space-y-12 py-12 px-6 bg-surface-container-low rounded-3xl relative overflow-hidden">
+<!-- Background Decorative Pattern -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, #000 1px, transparent 0); background-size: 24px 24px;"></div>
+<div class="flex flex-col gap-16 relative z-10">
+<!-- Row 1 -->
+<div class="flex items-center justify-between gap-4">
+<!-- Node: Case Text -->
+<div class="flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-20 h-20 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm flex items-center justify-center transition-all group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl text-secondary">description</span>
+</div>
+<div class="text-center">
+<p class="text-xs font-bold text-secondary tracking-widest uppercase">Input</p>
+<p class="font-headline font-bold text-on-surface">Case Text</p>
+</div>
+</div>
+<div class="flex-1 h-[2px] bg-outline-variant/20 relative">
+<div class="absolute inset-0 pipeline-connector"></div>
+</div>
+<!-- Node: L1 Detection -->
+<div class="flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-20 h-20 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm flex items-center justify-center transition-all group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl text-secondary">search_check</span>
+</div>
+<div class="text-center">
+<p class="text-xs font-bold text-secondary tracking-widest uppercase">Step 01</p>
+<p class="font-headline font-bold text-on-surface">L1 Detection</p>
+</div>
+</div>
+<div class="flex-1 h-[2px] bg-outline-variant/20 relative">
+<div class="absolute inset-0 pipeline-connector"></div>
+</div>
+<!-- Node: L2 Validation (Active) -->
+<div class="flex flex-col items-center gap-3 relative">
+<div class="absolute -top-4 -right-4 bg-on-tertiary-container text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-lg shadow-on-tertiary-container/20">SELECTED</div>
+<div class="w-24 h-24 rounded-3xl bg-primary-container border-4 border-on-tertiary-container shadow-2xl shadow-on-tertiary-container/20 flex items-center justify-center transform scale-110">
+<span class="material-symbols-outlined text-4xl text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">rule</span>
+</div>
+<div class="text-center">
+<p class="text-xs font-bold text-on-tertiary-container tracking-widest uppercase">Step 02</p>
+<p class="font-headline font-bold text-on-surface text-lg">L2 Validation</p>
+</div>
+</div>
+<div class="flex-1 h-[2px] bg-outline-variant/20 relative">
+<div class="absolute inset-0 pipeline-connector"></div>
+</div>
+<!-- Node: Problem Set -->
+<div class="flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-20 h-20 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm flex items-center justify-center transition-all group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl text-secondary">quiz</span>
+</div>
+<div class="text-center">
+<p class="text-xs font-bold text-secondary tracking-widest uppercase">Step 03</p>
+<p class="font-headline font-bold text-on-surface">Problem Set</p>
+</div>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex items-center justify-between gap-4 pl-12 pr-12">
+<!-- Node: Retrieval -->
+<div class="flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-20 h-20 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm flex items-center justify-center transition-all group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl text-secondary">database</span>
+</div>
+<div class="text-center">
+<p class="text-xs font-bold text-secondary tracking-widest uppercase">Step 04</p>
+<p class="font-headline font-bold text-on-surface">Retrieval</p>
+</div>
+</div>
+<div class="flex-1 h-[2px] bg-outline-variant/20 relative">
+<div class="absolute inset-0 pipeline-connector"></div>
+</div>
+<!-- Node: H2L Scoring -->
+<div class="flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-20 h-20 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm flex items-center justify-center transition-all group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl text-secondary">analytics</span>
+</div>
+<div class="text-center">
+<p class="text-xs font-bold text-secondary tracking-widest uppercase">Step 05</p>
+<p class="font-headline font-bold text-on-surface">H2L Scoring</p>
+</div>
+</div>
+<div class="flex-1 h-[2px] bg-outline-variant/20 relative">
+<div class="absolute inset-0 pipeline-connector"></div>
+</div>
+<!-- Node: Polarity Gates -->
+<div class="flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-20 h-20 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm flex items-center justify-center transition-all group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl text-secondary">door_open</span>
+</div>
+<div class="text-center">
+<p class="text-xs font-bold text-secondary tracking-widest uppercase">Step 06</p>
+<p class="font-headline font-bold text-on-surface">Polarity Gates</p>
+</div>
+</div>
+<div class="flex-1 h-[2px] bg-outline-variant/20 relative">
+<div class="absolute inset-0 pipeline-connector"></div>
+</div>
+<!-- Node: Final Output -->
+<div class="flex flex-col items-center gap-3 group cursor-pointer">
+<div class="w-24 h-24 rounded-full bg-on-tertiary-container shadow-xl flex items-center justify-center transition-all group-hover:rotate-12">
+<span class="material-symbols-outlined text-4xl text-white">verified</span>
+</div>
+<div class="text-center">
+<p class="text-xs font-bold text-on-tertiary-container tracking-widest uppercase">Final</p>
+<p class="font-headline font-bold text-on-surface">Final Output</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Explanation Panel -->
+<div class="col-span-4 bg-surface-container-lowest rounded-3xl border border-outline-variant/10 shadow-2xl flex flex-col h-full overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-low/30">
+<div>
+<h3 class="text-lg font-headline font-bold text-on-surface">Explanation Panel</h3>
+<p class="text-xs text-on-surface-variant font-medium">รายละเอียดขั้นตอน: L2 Validation</p>
+</div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-tertiary-container text-on-tertiary-container tracking-wider">REAL EVALUATION</span>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<!-- Logic Rationale -->
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container text-xl">psychology</span>
+<h4 class="font-headline font-bold text-on-surface">Logic Rationale</h4>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<p class="text-sm leading-relaxed text-on-surface-variant">
+                                ระบบทำการตรวจสอบ <span class="font-bold text-on-surface">Cross-reference Validation</span> เพื่อยืนยันความถูกต้องของข้อมูลที่ตรวจพบในขั้น L1 โดยใช้โมเดล NLP เฉพาะทาง เพื่อลดอัตรา <span class="italic">False Positive</span> ก่อนเข้าสู่กระบวนการสร้างโจทย์วิจัย
+                            </p>
+</div>
+</section>
+<!-- Thresholds -->
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container text-xl">speed</span>
+<h4 class="font-headline font-bold text-on-surface">Mathematical Thresholds</h4>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 rounded-2xl bg-surface-container border border-outline-variant/20">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">Confidence</p>
+<p class="text-2xl font-headline font-extrabold text-on-tertiary-container">≥ 0.30</p>
+</div>
+<div class="p-4 rounded-2xl bg-surface-container border border-outline-variant/20">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-1">Entropy Gap</p>
+<p class="text-2xl font-headline font-extrabold text-on-tertiary-container">&lt; 1.25</p>
+</div>
+</div>
+</section>
+<!-- Input / Output -->
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container text-xl">swap_horiz</span>
+<h4 class="font-headline font-bold text-on-surface">Data Flow (I/O)</h4>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase px-2">Input Source (L1 Output)</label>
+<div class="bg-primary-container p-3 rounded-xl">
+<code class="text-xs text-on-primary-container font-mono block">
+                                        { "detected_entities": ["Cardiac", "Arrest"], "base_score": 0.88 }
+                                    </code>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase px-2">Validation Result</label>
+<div class="bg-surface-container-high p-3 rounded-xl border-l-4 border-on-tertiary-container">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-on-tertiary-container text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-xs font-bold text-on-surface">STATUS: VERIFIED</span>
+</div>
+<code class="text-xs text-on-surface-variant font-mono block">
+                                        { "integrity_rank": "A+", "validation_token": "H2L-88392" }
+                                    </code>
+</div>
+</div>
+</div>
+</section>
+<!-- Integrity Badge Large -->
+<div class="relative group mt-8">
+<div class="absolute inset-0 bg-on-tertiary-container/5 rounded-2xl blur-xl group-hover:bg-on-tertiary-container/10 transition-all"></div>
+<div class="relative p-6 border-2 border-dashed border-on-tertiary-container/30 rounded-2xl flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-4xl text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div>
+<h5 class="font-headline font-bold text-on-surface">Research Integrity Verified</h5>
+<p class="text-[10px] text-on-surface-variant max-w-[200px] mx-auto">This node has passed the Clinical Academic Excellence integrity protocol with 99.8% precision.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 bg-surface-container border-t border-outline-variant/10">
+<button class="w-full bg-on-tertiary-container text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:shadow-on-tertiary-container/30 active:scale-[0.98]">
+<span class="material-symbols-outlined text-lg">download</span>
+<span>Download Logic Log (JSON)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- System Stats Footer (Bento Style) -->
+<div class="grid grid-cols-4 gap-6">
+<div class="bg-surface-container-low p-6 rounded-3xl flex flex-col justify-between border border-outline-variant/5">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">Throughput</p>
+<div>
+<h4 class="text-3xl font-headline font-extrabold text-on-surface">1.2M</h4>
+<p class="text-xs text-on-tertiary-container font-semibold mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +14.2% today
+                    </p>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-3xl flex flex-col justify-between border border-outline-variant/5">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">Avg. Validation Time</p>
+<div>
+<h4 class="text-3xl font-headline font-extrabold text-on-surface">450ms</h4>
+<p class="text-xs text-on-surface-variant font-medium mt-1">Optimization: Target 400ms</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-3xl flex flex-col justify-between border border-outline-variant/5">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">Accuracy Index</p>
+<div>
+<h4 class="text-3xl font-headline font-extrabold text-on-surface">99.98%</h4>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-2">
+<div class="bg-on-tertiary-container h-full rounded-full w-[99.98%] shadow-[0_0_8px_rgba(12,148,136,0.5)]"></div>
+</div>
+</div>
+</div>
+<div class="bg-primary-container p-6 rounded-3xl flex flex-col justify-between border border-outline-variant/5 overflow-hidden relative">
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-8xl text-white">science</span>
+</div>
+<p class="text-xs font-bold text-on-primary-container uppercase tracking-tighter relative z-10">System Status</p>
+<div class="relative z-10">
+<h4 class="text-2xl font-headline font-extrabold text-white">Optimized</h4>
+<p class="text-xs text-on-primary-container font-medium mt-1 italic">Ready for High-Density Data</p>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB Suppression: Not rendered as per shell rules for task-focused detail view -->
+</body></html>

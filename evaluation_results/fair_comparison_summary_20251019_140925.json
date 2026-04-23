@@ -1,0 +1,98 @@
+{
+  "basic": {
+    "total_queries": 2,
+    "successful_queries": 2,
+    "avg_time": 3.6368,
+    "avg_quality": 0.2034,
+    "avg_unique_sources": 3.0,
+    "avg_entropy": 1.3125,
+    "avg_high_relevance_docs": 0.0,
+    "avg_docs_retrieved": 15.0,
+    "by_complexity": {
+      "Simple": {
+        "avg_time": 3.6103,
+        "avg_quality": 0.2068,
+        "avg_unique_sources": 3.0,
+        "avg_entropy": 1.3383
+      },
+      "Complex": {
+        "avg_time": 3.6634,
+        "avg_quality": 0.2,
+        "avg_unique_sources": 3.0,
+        "avg_entropy": 1.2867
+      }
+    }
+  },
+  "dynamic": {
+    "total_queries": 2,
+    "successful_queries": 2,
+    "avg_time": 3.3052,
+    "avg_quality": 0.17,
+    "avg_unique_sources": 2.5,
+    "avg_entropy": 1.0884,
+    "avg_high_relevance_docs": 0.0,
+    "avg_docs_retrieved": 10.0,
+    "by_complexity": {
+      "Simple": {
+        "avg_time": 3.1141,
+        "avg_quality": 0.138,
+        "avg_unique_sources": 2.0,
+        "avg_entropy": 0.8813
+      },
+      "Complex": {
+        "avg_time": 3.4964,
+        "avg_quality": 0.2019,
+        "avg_unique_sources": 3.0,
+        "avg_entropy": 1.2955
+      }
+    }
+  },
+  "multihop": {
+    "total_queries": 2,
+    "successful_queries": 2,
+    "avg_time": 5.8357,
+    "avg_quality": 0.1651,
+    "avg_unique_sources": 3.0,
+    "avg_entropy": 1.053,
+    "avg_high_relevance_docs": 0.0,
+    "avg_docs_retrieved": 15.0,
+    "by_complexity": {
+      "Simple": {
+        "avg_time": 5.1445,
+        "avg_quality": 0.1658,
+        "avg_unique_sources": 3.0,
+        "avg_entropy": 1.053
+      },
+      "Complex": {
+        "avg_time": 6.5269,
+        "avg_quality": 0.1644,
+        "avg_unique_sources": 3.0,
+        "avg_entropy": 1.053
+      }
+    }
+  },
+  "adaptive": {
+    "total_queries": 2,
+    "successful_queries": 2,
+    "avg_time": 3.32,
+    "avg_quality": 0.17,
+    "avg_unique_sources": 2.5,
+    "avg_entropy": 1.0884,
+    "avg_high_relevance_docs": 0.0,
+    "avg_docs_retrieved": 10.0,
+    "by_complexity": {
+      "Simple": {
+        "avg_time": 3.0865,
+        "avg_quality": 0.138,
+        "avg_unique_sources": 2.0,
+        "avg_entropy": 0.8813
+      },
+      "Complex": {
+        "avg_time": 3.5535,
+        "avg_quality": 0.2019,
+        "avg_unique_sources": 3.0,
+        "avg_entropy": 1.2955
+      }
+    }
+  }
+}

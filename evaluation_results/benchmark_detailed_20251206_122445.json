@@ -1,0 +1,3842 @@
+[
+  {
+    "query_id": "q_001",
+    "query_text": "เครื่องมือ S.D.M.A. ใช้ในขั้นตอนใดของกระบวนการทางสังคมสงเคราะห์บ้าง",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 1.286618947982788,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.5418350681623754e-05,
+        "quality_score": 0.09696969696969698,
+        "unique_sources": 9,
+        "entropy": 2.7395722619867224,
+        "problem_coverage_score": 0.09696969696969698,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6366579532623291,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 3.9947023105924016e-05,
+        "quality_score": 0.07272727272727272,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687,
+        "problem_coverage_score": 0.07272727272727272,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.2800889015197754,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 2.5827747413131875e-05,
+        "quality_score": 0.07272727272727272,
+        "unique_sources": 9,
+        "entropy": 2.8464393446710154,
+        "problem_coverage_score": 0.07272727272727272,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3738701343536377,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002722736968280515,
+        "quality_score": 0.11515151515151517,
+        "unique_sources": 6,
+        "entropy": 2.206238928653389,
+        "problem_coverage_score": 0.11515151515151517,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6370439529418945,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.5418350681623754e-05,
+        "quality_score": 0.09696969696969698,
+        "unique_sources": 9,
+        "entropy": 2.7395722619867224,
+        "problem_coverage_score": 0.09696969696969698,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.4055240154266357,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 2.5827747413131875e-05,
+        "quality_score": 0.07272727272727272,
+        "unique_sources": 9,
+        "entropy": 2.8464393446710154,
+        "problem_coverage_score": 0.07272727272727272,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.5535411834716797,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002510160427239801,
+        "quality_score": 0.10909090909090911,
+        "unique_sources": 8,
+        "entropy": 2.555913095175825,
+        "problem_coverage_score": 0.10909090909090911,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.7199962139129639,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.5418350681623754e-05,
+        "quality_score": 0.09696969696969698,
+        "unique_sources": 9,
+        "entropy": 2.7395722619867224,
+        "problem_coverage_score": 0.09696969696969698,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_002",
+    "query_text": "การเตรียมทักษะทางสังคมรายบุคคลก่อนส่งสถานสงเคราะห์มีวัตถุประสงค์เพื่ออะไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.8582241535186768,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.000113060011305303,
+        "quality_score": 0.22777777777777772,
+        "unique_sources": 8,
+        "entropy": 2.7329145639793975,
+        "problem_coverage_score": 0.22777777777777772,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6715550422668457,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.0003057445748709142,
+        "quality_score": 0.3,
+        "unique_sources": 5,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.3,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.6101272106170654,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0001615399891306879,
+        "quality_score": 0.24999999999999994,
+        "unique_sources": 6,
+        "entropy": 2.4464393446710155,
+        "problem_coverage_score": 0.24999999999999994,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.2935161590576172,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00019762791368217828,
+        "quality_score": 0.21666666666666667,
+        "unique_sources": 7,
+        "entropy": 2.422579761842491,
+        "problem_coverage_score": 0.21666666666666667,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.5962831974029541,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.000113060011305303,
+        "quality_score": 0.22777777777777772,
+        "unique_sources": 8,
+        "entropy": 2.7329145639793975,
+        "problem_coverage_score": 0.22777777777777772,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.5959768295288086,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0001615399891306879,
+        "quality_score": 0.24999999999999994,
+        "unique_sources": 6,
+        "entropy": 2.4464393446710155,
+        "problem_coverage_score": 0.24999999999999994,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.2920238971710205,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00012206265091663226,
+        "quality_score": 0.2111111111111111,
+        "unique_sources": 7,
+        "entropy": 2.739572261986723,
+        "problem_coverage_score": 0.2111111111111111,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6014647483825684,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.000113060011305303,
+        "quality_score": 0.22777777777777772,
+        "unique_sources": 8,
+        "entropy": 2.7329145639793975,
+        "problem_coverage_score": 0.22777777777777772,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_003",
+    "query_text": "การจัดทำแผนกิจกรรมการดูแลรายบุคคล (Social Care Plan) สำหรับผู้สูงอายุที่มีภาวะพึ่งพิงคืออะไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7355978488922119,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00022349021649764229,
+        "quality_score": 0.15925925925925927,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.15925925925925927,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.7205319404602051,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.00046840699505992236,
+        "quality_score": 0.18888888888888888,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621,
+        "problem_coverage_score": 0.18888888888888888,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.39562296867370605,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.00031536835740553215,
+        "quality_score": 0.18888888888888888,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.18888888888888888,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.7058639526367188,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002493171433646542,
+        "quality_score": 0.15555555555555553,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.15555555555555553,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.7187168598175049,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00022349021649764229,
+        "quality_score": 0.15925925925925927,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.15925925925925927,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.3722381591796875,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.00031536835740553215,
+        "quality_score": 0.18888888888888888,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.18888888888888888,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.4952712059020996,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00035430654825177046,
+        "quality_score": 0.15185185185185182,
+        "unique_sources": 7,
+        "entropy": 2.4225797618424916,
+        "problem_coverage_score": 0.15185185185185182,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.7138240337371826,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00022349021649764229,
+        "quality_score": 0.15925925925925927,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.15925925925925927,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_004",
+    "query_text": "ผู้ป่วยต่างชาติที่ไม่มีหลักฐานการแสดงตนหรือเอกสารทางราชการจัดอยู่ในกลุ่มเป้าหมายใดตามคู่มือ S.D.M.A.",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.9929640293121338,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.9797445070774604e-05,
+        "quality_score": 0.2666666666666666,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.2666666666666666,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6809561252593994,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 3.593795227061491e-05,
+        "quality_score": 0.24736842105263152,
+        "unique_sources": 4,
+        "entropy": 1.7609640474436812,
+        "problem_coverage_score": 0.24736842105263152,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.6745090484619141,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 3.593795227061491e-05,
+        "quality_score": 0.24736842105263152,
+        "unique_sources": 4,
+        "entropy": 1.7609640474436812,
+        "problem_coverage_score": 0.24736842105263152,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.4758548736572266,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00011868435843401434,
+        "quality_score": 0.2210526315789473,
+        "unique_sources": 5,
+        "entropy": 2.0922718656836103,
+        "problem_coverage_score": 0.2210526315789473,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6986720561981201,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.9797445070774604e-05,
+        "quality_score": 0.2666666666666666,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.2666666666666666,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.684406042098999,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 3.593795227061491e-05,
+        "quality_score": 0.24736842105263152,
+        "unique_sources": 4,
+        "entropy": 1.7609640474436812,
+        "problem_coverage_score": 0.24736842105263152,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.4704656600952148,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 9.070612844273759e-05,
+        "quality_score": 0.23508771929824554,
+        "unique_sources": 4,
+        "entropy": 1.965596230357602,
+        "problem_coverage_score": 0.23508771929824554,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6913762092590332,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.9797445070774604e-05,
+        "quality_score": 0.2666666666666666,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.2666666666666666,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_005",
+    "query_text": "การให้การปรึกษารายบุคคล (Basic Counseling) มีกระบวนการอย่างไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6052341461181641,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.0738967092862972e-05,
+        "quality_score": 0.2518518518518519,
+        "unique_sources": 9,
+        "entropy": 3.0062389286533895,
+        "problem_coverage_score": 0.2518518518518519,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6011137962341309,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 2.8358820418361575e-05,
+        "quality_score": 0.2666666666666667,
+        "unique_sources": 5,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.2666666666666667,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.3251888751983643,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 2.0550332374114076e-05,
+        "quality_score": 0.22777777777777777,
+        "unique_sources": 10,
+        "entropy": 3.1464393446710153,
+        "problem_coverage_score": 0.22777777777777777,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.4113311767578125,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.012113872087259855,
+        "quality_score": 0.2,
+        "unique_sources": 8,
+        "entropy": 2.789898095464287,
+        "problem_coverage_score": 0.2,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.5973470211029053,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.0738967092862972e-05,
+        "quality_score": 0.2518518518518519,
+        "unique_sources": 9,
+        "entropy": 3.0062389286533895,
+        "problem_coverage_score": 0.2518518518518519,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.2682721614837646,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 2.0550332374114076e-05,
+        "quality_score": 0.22777777777777777,
+        "unique_sources": 10,
+        "entropy": 3.1464393446710153,
+        "problem_coverage_score": 0.22777777777777777,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.3065340518951416,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.07162082309757e-05,
+        "quality_score": 0.21481481481481482,
+        "unique_sources": 9,
+        "entropy": 3.1068905956085184,
+        "problem_coverage_score": 0.21481481481481482,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.5961849689483643,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.0738967092862972e-05,
+        "quality_score": 0.2518518518518519,
+        "unique_sources": 9,
+        "entropy": 3.0062389286533895,
+        "problem_coverage_score": 0.2518518518518519,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_006",
+    "query_text": "ผู้ป่วยเร่ร่อนที่ไม่มีญาติจัดอยู่ในกลุ่มปัญหาที่อยู่อาศัยรหัสใดตามแบบบัญชีปัญหาทางสังคม",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6685700416564941,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00025872652149701026,
+        "quality_score": 0.2518518518518518,
+        "unique_sources": 5,
+        "entropy": 2.1492553971685,
+        "problem_coverage_score": 0.2518518518518518,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6655020713806152,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.0006071016774512828,
+        "quality_score": 0.24444444444444446,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621,
+        "problem_coverage_score": 0.24444444444444446,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.6782100200653076,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0003720538294146536,
+        "quality_score": 0.26666666666666666,
+        "unique_sources": 4,
+        "entropy": 1.8464393446710154,
+        "problem_coverage_score": 0.26666666666666666,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3909587860107422,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00036176505600451494,
+        "quality_score": 0.2518518518518518,
+        "unique_sources": 6,
+        "entropy": 2.332914563979398,
+        "problem_coverage_score": 0.2518518518518518,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.7072770595550537,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00025872652149701026,
+        "quality_score": 0.2518518518518518,
+        "unique_sources": 5,
+        "entropy": 2.1492553971685,
+        "problem_coverage_score": 0.2518518518518518,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.6929030418395996,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0003720538294146536,
+        "quality_score": 0.26666666666666666,
+        "unique_sources": 4,
+        "entropy": 1.8464393446710154,
+        "problem_coverage_score": 0.26666666666666666,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.379796028137207,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00036267442313449766,
+        "quality_score": 0.23703703703703702,
+        "unique_sources": 6,
+        "entropy": 2.332914563979398,
+        "problem_coverage_score": 0.23703703703703702,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6824891567230225,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00025872652149701026,
+        "quality_score": 0.2518518518518518,
+        "unique_sources": 5,
+        "entropy": 2.1492553971685,
+        "problem_coverage_score": 0.2518518518518518,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_007",
+    "query_text": "การพิทักษ์สิทธิผู้ป่วยตามกฎหมายเกี่ยวข้องกับการจัดหาและส่งต่อแหล่งทรัพยากรทางสังคมอย่างไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6623690128326416,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.0921211034874432e-05,
+        "quality_score": 0.15238095238095237,
+        "unique_sources": 7,
+        "entropy": 2.6062389286533896,
+        "problem_coverage_score": 0.15238095238095237,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6737089157104492,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 2.3101011902326717e-05,
+        "quality_score": 0.11428571428571428,
+        "unique_sources": 6,
+        "entropy": 2.4464393446710155,
+        "problem_coverage_score": 0.11428571428571428,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.6793558597564697,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 2.3101011902326717e-05,
+        "quality_score": 0.11428571428571428,
+        "unique_sources": 6,
+        "entropy": 2.4464393446710155,
+        "problem_coverage_score": 0.11428571428571428,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.4286210536956787,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.9768215608783066e-05,
+        "quality_score": 0.1333333333333333,
+        "unique_sources": 8,
+        "entropy": 2.789898095464287,
+        "problem_coverage_score": 0.1333333333333333,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6527218818664551,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.0921211034874432e-05,
+        "quality_score": 0.15238095238095237,
+        "unique_sources": 7,
+        "entropy": 2.6062389286533896,
+        "problem_coverage_score": 0.15238095238095237,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.640329122543335,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 2.3101011902326717e-05,
+        "quality_score": 0.11428571428571428,
+        "unique_sources": 6,
+        "entropy": 2.4464393446710155,
+        "problem_coverage_score": 0.11428571428571428,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.3282642364501953,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.505804538183535e-05,
+        "quality_score": 0.10952380952380951,
+        "unique_sources": 8,
+        "entropy": 2.7898980954642867,
+        "problem_coverage_score": 0.10952380952380951,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6275372505187988,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.0921211034874432e-05,
+        "quality_score": 0.15238095238095237,
+        "unique_sources": 7,
+        "entropy": 2.6062389286533896,
+        "problem_coverage_score": 0.15238095238095237,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_008",
+    "query_text": "การจัดการทรัพยากรทางสังคม (Social Resource Management) คืออะไร",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6897211074829102,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.9832991155368898e-05,
+        "quality_score": 0.10370370370370371,
+        "unique_sources": 8,
+        "entropy": 2.872905595320056,
+        "problem_coverage_score": 0.10370370370370371,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.5717489719390869,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 4.302417510189116e-05,
+        "quality_score": 0.13333333333333336,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687,
+        "problem_coverage_score": 0.13333333333333336,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.31237101554870605,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 3.703067195601761e-05,
+        "quality_score": 0.11111111111111112,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.11111111111111112,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.2300889492034912,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 6.611666055202173e-05,
+        "quality_score": 0.09629629629629631,
+        "unique_sources": 7,
+        "entropy": 2.573557262275185,
+        "problem_coverage_score": 0.09629629629629631,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.5837078094482422,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.9832991155368898e-05,
+        "quality_score": 0.10370370370370371,
+        "unique_sources": 8,
+        "entropy": 2.872905595320056,
+        "problem_coverage_score": 0.10370370370370371,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.2942042350769043,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 3.703067195601761e-05,
+        "quality_score": 0.11111111111111112,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.11111111111111112,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.2485291957855225,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00035556802176870404,
+        "quality_score": 0.09629629629629631,
+        "unique_sources": 7,
+        "entropy": 2.573557262275185,
+        "problem_coverage_score": 0.09629629629629631,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.5746951103210449,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.9832991155368898e-05,
+        "quality_score": 0.10370370370370371,
+        "unique_sources": 8,
+        "entropy": 2.872905595320056,
+        "problem_coverage_score": 0.10370370370370371,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_009",
+    "query_text": "การสนับสนุนทางสังคม (Social Support) มีกี่รูปแบบ อะไรบ้าง",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6266708374023438,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.636978205274014e-05,
+        "quality_score": 0.18666666666666668,
+        "unique_sources": 8,
+        "entropy": 2.8225797618424915,
+        "problem_coverage_score": 0.18666666666666668,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.577845573425293,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 7.36570935259806e-05,
+        "quality_score": 0.18,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.18,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.2076640129089355,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 3.213840755051933e-05,
+        "quality_score": 0.16500000000000004,
+        "unique_sources": 8,
+        "entropy": 2.8464393446710154,
+        "problem_coverage_score": 0.16500000000000004,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.249648094177246,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00021002493861791056,
+        "quality_score": 0.18000000000000005,
+        "unique_sources": 7,
+        "entropy": 2.656564762130954,
+        "problem_coverage_score": 0.18000000000000005,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.5865199565887451,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.636978205274014e-05,
+        "quality_score": 0.18666666666666668,
+        "unique_sources": 8,
+        "entropy": 2.8225797618424915,
+        "problem_coverage_score": 0.18666666666666668,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.162851095199585,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 3.213840755051933e-05,
+        "quality_score": 0.16500000000000004,
+        "unique_sources": 8,
+        "entropy": 2.8464393446710154,
+        "problem_coverage_score": 0.16500000000000004,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.245577096939087,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 8.962000926355055e-05,
+        "quality_score": 0.17333333333333337,
+        "unique_sources": 7,
+        "entropy": 2.6892464285091577,
+        "problem_coverage_score": 0.17333333333333337,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.5824892520904541,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.636978205274014e-05,
+        "quality_score": 0.18666666666666668,
+        "unique_sources": 8,
+        "entropy": 2.8225797618424915,
+        "problem_coverage_score": 0.18666666666666668,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_010",
+    "query_text": "การประสานงานกับหน่วยงานภายนอกเพื่อหาบริการสนับสนุนเพิ่มเติมจัดอยู่ในขั้นตอนใดของการออกแบบบริการ",
+    "complexity": "Simple",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.636073112487793,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.6119174567090037e-05,
+        "quality_score": 0.14117647058823526,
+        "unique_sources": 11,
+        "entropy": 3.3735572622751855,
+        "problem_coverage_score": 0.14117647058823526,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6096498966217041,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 1.6262343706330284e-05,
+        "quality_score": 0.12941176470588234,
+        "unique_sources": 5,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.12941176470588234,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.3317320346832275,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 1.6188242989301215e-05,
+        "quality_score": 0.13235294117647053,
+        "unique_sources": 10,
+        "entropy": 3.1464393446710153,
+        "problem_coverage_score": 0.13235294117647053,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.327214002609253,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.8938024358164208e-05,
+        "quality_score": 0.10588235294117648,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.10588235294117648,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6214940547943115,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.6119174567090037e-05,
+        "quality_score": 0.14117647058823526,
+        "unique_sources": 11,
+        "entropy": 3.3735572622751855,
+        "problem_coverage_score": 0.14117647058823526,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.3380680084228516,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 1.6188242989301215e-05,
+        "quality_score": 0.13235294117647053,
+        "unique_sources": 10,
+        "entropy": 3.1464393446710153,
+        "problem_coverage_score": 0.13235294117647053,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.351517915725708,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.0296907678130083e-05,
+        "quality_score": 0.1411764705882353,
+        "unique_sources": 10,
+        "entropy": 3.1395722619867223,
+        "problem_coverage_score": 0.1411764705882353,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6415481567382812,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.6119174567090037e-05,
+        "quality_score": 0.14117647058823526,
+        "unique_sources": 11,
+        "entropy": 3.3735572622751855,
+        "problem_coverage_score": 0.14117647058823526,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_011",
+    "query_text": "การใช้เครื่องมือประเมิน S.D.M.A. กับผู้ป่วยเบาหวานที่ถูกตัดขาและปฏิเสธการรักษา",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7023942470550537,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0019081730316732623,
+        "quality_score": 0.26666666666666666,
+        "unique_sources": 6,
+        "entropy": 2.3898980954642877,
+        "problem_coverage_score": 0.26666666666666666,
+        "high_relevance_count": 1
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6773350238800049,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.002847629342431901,
+        "quality_score": 0.24,
+        "unique_sources": 6,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.24,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.6828248500823975,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.002847629342431901,
+        "quality_score": 0.24,
+        "unique_sources": 6,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.24,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.6402649879455566,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.014404019086214248,
+        "quality_score": 0.23111111111111113,
+        "unique_sources": 7,
+        "entropy": 2.4225797618424916,
+        "problem_coverage_score": 0.23111111111111113,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6706480979919434,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0019081730316732623,
+        "quality_score": 0.26666666666666666,
+        "unique_sources": 6,
+        "entropy": 2.3898980954642877,
+        "problem_coverage_score": 0.26666666666666666,
+        "high_relevance_count": 1
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.6519289016723633,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.002847629342431901,
+        "quality_score": 0.24,
+        "unique_sources": 6,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.24,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.3587901592254639,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0020183935875441724,
+        "quality_score": 0.26222222222222225,
+        "unique_sources": 6,
+        "entropy": 2.3329145639793976,
+        "problem_coverage_score": 0.26222222222222225,
+        "high_relevance_count": 1
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.7389030456542969,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0019081730316732623,
+        "quality_score": 0.26666666666666666,
+        "unique_sources": 6,
+        "entropy": 2.3898980954642877,
+        "problem_coverage_score": 0.26666666666666666,
+        "high_relevance_count": 1
+      }
+    }
+  },
+  {
+    "query_id": "q_012",
+    "query_text": "แนวทางการทำ Family Conference เพื่อจัดการความขัดแย้งของพ่อแม่ที่ไม่ยอมรับพัฒนาการล่าช้าของบุตร",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.86989426612854,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.473391805329205e-05,
+        "quality_score": 0.2125,
+        "unique_sources": 10,
+        "entropy": 3.1898980954642875,
+        "problem_coverage_score": 0.2125,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.788032054901123,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.0001266376264538849,
+        "quality_score": 0.25,
+        "unique_sources": 5,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.25,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.5508460998535156,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 4.722290259451256e-05,
+        "quality_score": 0.20625,
+        "unique_sources": 10,
+        "entropy": 3.0841837197791886,
+        "problem_coverage_score": 0.20625,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.6541099548339844,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00023322376158224262,
+        "quality_score": 0.20416666666666666,
+        "unique_sources": 12,
+        "entropy": 3.5068905956085183,
+        "problem_coverage_score": 0.20416666666666666,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6662111282348633,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.473391805329205e-05,
+        "quality_score": 0.2125,
+        "unique_sources": 10,
+        "entropy": 3.1898980954642875,
+        "problem_coverage_score": 0.2125,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.3111302852630615,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 4.722290259451256e-05,
+        "quality_score": 0.20625,
+        "unique_sources": 10,
+        "entropy": 3.0841837197791886,
+        "problem_coverage_score": 0.20625,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.363887071609497,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.6205132204922846e-05,
+        "quality_score": 0.20833333333333334,
+        "unique_sources": 9,
+        "entropy": 3.056564762130954,
+        "problem_coverage_score": 0.20833333333333334,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6728267669677734,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.473391805329205e-05,
+        "quality_score": 0.2125,
+        "unique_sources": 10,
+        "entropy": 3.1898980954642875,
+        "problem_coverage_score": 0.2125,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_013",
+    "query_text": "ระบบ PLATFORM SOCIAL TELECARE (PST) คืออะไร มีประโยชน์อย่างไรในการดูแลผู้ป่วยกลุ่มเปราะบาง",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6718337535858154,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 8.546782300982159e-05,
+        "quality_score": 0.12000000000000001,
+        "unique_sources": 6,
+        "entropy": 2.0634582986483037,
+        "problem_coverage_score": 0.12000000000000001,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6430280208587646,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.0001551552675664425,
+        "quality_score": 0.13333333333333333,
+        "unique_sources": 2,
+        "entropy": 0.7219280948873623,
+        "problem_coverage_score": 0.13333333333333333,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.504054069519043,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.00010357168066548184,
+        "quality_score": 0.10666666666666666,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687,
+        "problem_coverage_score": 0.10666666666666666,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3999240398406982,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00016695287680098167,
+        "quality_score": 0.11111111111111112,
+        "unique_sources": 6,
+        "entropy": 2.2892464285091583,
+        "problem_coverage_score": 0.11111111111111112,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6394312381744385,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 8.546782300982159e-05,
+        "quality_score": 0.12000000000000001,
+        "unique_sources": 6,
+        "entropy": 2.0634582986483037,
+        "problem_coverage_score": 0.12000000000000001,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.3485677242279053,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.00010357168066548184,
+        "quality_score": 0.10666666666666666,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687,
+        "problem_coverage_score": 0.10666666666666666,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.3649330139160156,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00039888437410506107,
+        "quality_score": 0.10222222222222221,
+        "unique_sources": 6,
+        "entropy": 2.206238928653389,
+        "problem_coverage_score": 0.10222222222222221,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6518940925598145,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 8.546782300982159e-05,
+        "quality_score": 0.12000000000000001,
+        "unique_sources": 6,
+        "entropy": 2.0634582986483037,
+        "problem_coverage_score": 0.12000000000000001,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_014",
+    "query_text": "ขั้นตอนการประเมินทางสังคม (Psychosocial Assessment) ผู้ป่วยจิตเภทขาดยาที่ครอบครัวต้องการส่งโรงพยาบาล",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7092397212982178,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.009589359144835422,
+        "quality_score": 0.16666666666666663,
+        "unique_sources": 10,
+        "entropy": 3.189898095464287,
+        "problem_coverage_score": 0.16666666666666663,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6519150733947754,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.02743496079929173,
+        "quality_score": 0.18571428571428572,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.18571428571428572,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.3977391719818115,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.008418343073572032,
+        "quality_score": 0.17500000000000002,
+        "unique_sources": 10,
+        "entropy": 3.170950594454669,
+        "problem_coverage_score": 0.17500000000000002,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.4263041019439697,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.06284479710351056,
+        "quality_score": 0.16666666666666663,
+        "unique_sources": 9,
+        "entropy": 3.006238928653389,
+        "problem_coverage_score": 0.16666666666666663,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6497280597686768,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.009589359144835422,
+        "quality_score": 0.16666666666666663,
+        "unique_sources": 10,
+        "entropy": 3.189898095464287,
+        "problem_coverage_score": 0.16666666666666663,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.2731430530548096,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.008418343073572032,
+        "quality_score": 0.17500000000000002,
+        "unique_sources": 10,
+        "entropy": 3.170950594454669,
+        "problem_coverage_score": 0.17500000000000002,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.448538064956665,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.052911658977003145,
+        "quality_score": 0.18095238095238095,
+        "unique_sources": 9,
+        "entropy": 2.973557262275185,
+        "problem_coverage_score": 0.18095238095238095,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6481931209564209,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.009589359144835422,
+        "quality_score": 0.16666666666666663,
+        "unique_sources": 10,
+        "entropy": 3.189898095464287,
+        "problem_coverage_score": 0.16666666666666663,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_015",
+    "query_text": "หลักการให้คำปรึกษาผู้ป่วยไตวายระยะสุดท้ายที่ปฏิเสธการฟอกไต (Refusal of Treatment)",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7319340705871582,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.011042305803857743,
+        "quality_score": 0.17142857142857143,
+        "unique_sources": 6,
+        "entropy": 2.2825887305018333,
+        "problem_coverage_score": 0.17142857142857143,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6765079498291016,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.03269357741810382,
+        "quality_score": 0.22857142857142856,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621,
+        "problem_coverage_score": 0.22857142857142856,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.663013219833374,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.01651988282101229,
+        "quality_score": 0.1928571428571428,
+        "unique_sources": 5,
+        "entropy": 2.1709505944546685,
+        "problem_coverage_score": 0.1928571428571428,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.5808696746826172,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.014767899150804927,
+        "quality_score": 0.16190476190476188,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.16190476190476188,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.677819013595581,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.011042305803857743,
+        "quality_score": 0.17142857142857143,
+        "unique_sources": 6,
+        "entropy": 2.2825887305018333,
+        "problem_coverage_score": 0.17142857142857143,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.6799921989440918,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.01651988282101229,
+        "quality_score": 0.1928571428571428,
+        "unique_sources": 5,
+        "entropy": 2.1709505944546685,
+        "problem_coverage_score": 0.1928571428571428,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.384443998336792,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.013277919450774788,
+        "quality_score": 0.16190476190476188,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.16190476190476188,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6590089797973633,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.011042305803857743,
+        "quality_score": 0.17142857142857143,
+        "unique_sources": 6,
+        "entropy": 2.2825887305018333,
+        "problem_coverage_score": 0.17142857142857143,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_016",
+    "query_text": "กระบวนการตามมาตรฐานเมื่อสงสัยกรณีเด็กถูกทำร้ายร่างกาย (Child Abuse)",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7051899433135986,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00814335350538992,
+        "quality_score": 0.14545454545454545,
+        "unique_sources": 7,
+        "entropy": 2.739572261986723,
+        "problem_coverage_score": 0.14545454545454545,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6234328746795654,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.022786653833463788,
+        "quality_score": 0.18181818181818182,
+        "unique_sources": 3,
+        "entropy": 1.5219280948873621,
+        "problem_coverage_score": 0.18181818181818182,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.2297768592834473,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.006117202616769646,
+        "quality_score": 0.13636363636363633,
+        "unique_sources": 7,
+        "entropy": 2.690468570732828,
+        "problem_coverage_score": 0.13636363636363633,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.308624029159546,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.008410064159155203,
+        "quality_score": 0.1515151515151515,
+        "unique_sources": 7,
+        "entropy": 2.606238928653389,
+        "problem_coverage_score": 0.1515151515151515,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6019508838653564,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00814335350538992,
+        "quality_score": 0.14545454545454545,
+        "unique_sources": 7,
+        "entropy": 2.739572261986723,
+        "problem_coverage_score": 0.14545454545454545,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.1208720207214355,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.006117202616769646,
+        "quality_score": 0.13636363636363633,
+        "unique_sources": 7,
+        "entropy": 2.690468570732828,
+        "problem_coverage_score": 0.13636363636363633,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.280264139175415,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.008209129662524598,
+        "quality_score": 0.15757575757575756,
+        "unique_sources": 7,
+        "entropy": 2.5492553971684995,
+        "problem_coverage_score": 0.15757575757575756,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6073729991912842,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00814335350538992,
+        "quality_score": 0.14545454545454545,
+        "unique_sources": 7,
+        "entropy": 2.739572261986723,
+        "problem_coverage_score": 0.14545454545454545,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_017",
+    "query_text": "การเชื่อมโยงข้อมูลระหว่าง PLATFORM SOCIAL TELECARE กับระบบ HOSXP ผ่าน API มีประโยชน์อย่างไรในการดูแลผู้ป่วยกลุ่มเปราะบาง",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6922187805175781,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 4.4016553753560096e-05,
+        "quality_score": 0.11929824561403508,
+        "unique_sources": 6,
+        "entropy": 2.289246428509158,
+        "problem_coverage_score": 0.11929824561403508,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6695060729980469,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 8.202062817872502e-05,
+        "quality_score": 0.13684210526315788,
+        "unique_sources": 1,
+        "entropy": -0.0,
+        "problem_coverage_score": 0.13684210526315788,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.6962900161743164,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 5.581815712503157e-05,
+        "quality_score": 0.12631578947368421,
+        "unique_sources": 3,
+        "entropy": 1.295461844238322,
+        "problem_coverage_score": 0.12631578947368421,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.4657559394836426,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00023596736476368582,
+        "quality_score": 0.10877192982456138,
+        "unique_sources": 5,
+        "entropy": 1.93012496531497,
+        "problem_coverage_score": 0.10877192982456138,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6967530250549316,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 4.4016553753560096e-05,
+        "quality_score": 0.11929824561403508,
+        "unique_sources": 6,
+        "entropy": 2.289246428509158,
+        "problem_coverage_score": 0.11929824561403508,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.6911687850952148,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 5.581815712503157e-05,
+        "quality_score": 0.12631578947368421,
+        "unique_sources": 3,
+        "entropy": 1.295461844238322,
+        "problem_coverage_score": 0.12631578947368421,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.4588019847869873,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0003949133076578922,
+        "quality_score": 0.11929824561403507,
+        "unique_sources": 5,
+        "entropy": 1.962806631693174,
+        "problem_coverage_score": 0.11929824561403507,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.7176899909973145,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 4.4016553753560096e-05,
+        "quality_score": 0.11929824561403508,
+        "unique_sources": 6,
+        "entropy": 2.289246428509158,
+        "problem_coverage_score": 0.11929824561403508,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_018",
+    "query_text": "แนวทางการสืบค้นและติดตามหาญาติผู้ป่วยฉุกเฉินที่ไม่ทราบชื่อตามมาตรฐาน",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7593519687652588,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00013119120327852822,
+        "quality_score": 0.24000000000000005,
+        "unique_sources": 5,
+        "entropy": 2.1492553971685,
+        "problem_coverage_score": 0.24000000000000005,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6822810173034668,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0001831254721764708,
+        "quality_score": 0.24666666666666667,
+        "unique_sources": 5,
+        "entropy": 2.1219280948873624,
+        "problem_coverage_score": 0.24666666666666667,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.3902418613433838,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.00012448299285097164,
+        "quality_score": 0.24,
+        "unique_sources": 6,
+        "entropy": 2.3904685707328284,
+        "problem_coverage_score": 0.24,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3662340641021729,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0018270331619229788,
+        "quality_score": 0.22666666666666668,
+        "unique_sources": 5,
+        "entropy": 1.8565647621309542,
+        "problem_coverage_score": 0.22666666666666668,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6449508666992188,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00013119120327852822,
+        "quality_score": 0.24000000000000005,
+        "unique_sources": 5,
+        "entropy": 2.1492553971685,
+        "problem_coverage_score": 0.24000000000000005,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.2487092018127441,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.00012448299285097164,
+        "quality_score": 0.24,
+        "unique_sources": 6,
+        "entropy": 2.3904685707328284,
+        "problem_coverage_score": 0.24,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.3136372566223145,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0005122025720387076,
+        "quality_score": 0.2177777777777778,
+        "unique_sources": 6,
+        "entropy": 2.2892464285091583,
+        "problem_coverage_score": 0.2177777777777778,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6297948360443115,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00013119120327852822,
+        "quality_score": 0.24000000000000005,
+        "unique_sources": 5,
+        "entropy": 2.1492553971685,
+        "problem_coverage_score": 0.24000000000000005,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_019",
+    "query_text": "เทคนิคการให้คำปรึกษา (Counseling Techniques) หญิงตั้งครรภ์ที่ติดเชื้อ HIV และกลัวการเปิดเผยผลเลือด",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6548581123352051,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.07783552485707332,
+        "quality_score": 0.29777777777777786,
+        "unique_sources": 10,
+        "entropy": 3.1068905956085184,
+        "problem_coverage_score": 0.29777777777777786,
+        "high_relevance_count": 1
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6417350769042969,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.11673040112509625,
+        "quality_score": 0.33333333333333337,
+        "unique_sources": 6,
+        "entropy": 2.3219280948873626,
+        "problem_coverage_score": 0.33333333333333337,
+        "high_relevance_count": 1
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.2824928760528564,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0583922253919809,
+        "quality_score": 0.2966666666666667,
+        "unique_sources": 13,
+        "entropy": 3.4414460711655215,
+        "problem_coverage_score": 0.2966666666666667,
+        "high_relevance_count": 1
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.4711768627166748,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.07784245233196999,
+        "quality_score": 0.3022222222222223,
+        "unique_sources": 10,
+        "entropy": 2.999581230646064,
+        "problem_coverage_score": 0.3022222222222223,
+        "high_relevance_count": 1
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6715803146362305,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.07783552485707332,
+        "quality_score": 0.29777777777777786,
+        "unique_sources": 10,
+        "entropy": 3.1068905956085184,
+        "problem_coverage_score": 0.29777777777777786,
+        "high_relevance_count": 1
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.2305090427398682,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0583922253919809,
+        "quality_score": 0.2966666666666667,
+        "unique_sources": 13,
+        "entropy": 3.4414460711655215,
+        "problem_coverage_score": 0.2966666666666667,
+        "high_relevance_count": 1
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.328423023223877,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.07789632010086886,
+        "quality_score": 0.30222222222222234,
+        "unique_sources": 10,
+        "entropy": 3.1068905956085184,
+        "problem_coverage_score": 0.30222222222222234,
+        "high_relevance_count": 1
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6667022705078125,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.07783552485707332,
+        "quality_score": 0.29777777777777786,
+        "unique_sources": 10,
+        "entropy": 3.1068905956085184,
+        "problem_coverage_score": 0.29777777777777786,
+        "high_relevance_count": 1
+      }
+    }
+  },
+  {
+    "query_id": "q_020",
+    "query_text": "ขั้นตอนการวางแผนจำหน่าย (Discharge Planning) ผู้ป่วยโรคหลอดเลือดสมองกลับสู่ชุมชน",
+    "complexity": "Moderate",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7030649185180664,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0014612205415081311,
+        "quality_score": 0.17222222222222222,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.17222222222222222,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.632335901260376,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.004316310764988884,
+        "quality_score": 0.25,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.25,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.243433952331543,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0011065256949223112,
+        "quality_score": 0.15,
+        "unique_sources": 7,
+        "entropy": 2.5282129458410014,
+        "problem_coverage_score": 0.15,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.5255329608917236,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.005472640146035701,
+        "quality_score": 0.14444444444444443,
+        "unique_sources": 5,
+        "entropy": 1.7382689280764647,
+        "problem_coverage_score": 0.14444444444444443,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6455309391021729,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0014612205415081311,
+        "quality_score": 0.17222222222222222,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.17222222222222222,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.4261019229888916,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0011065256949223112,
+        "quality_score": 0.15,
+        "unique_sources": 7,
+        "entropy": 2.5282129458410014,
+        "problem_coverage_score": 0.15,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.7232372760772705,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0018687314419366884,
+        "quality_score": 0.15555555555555553,
+        "unique_sources": 7,
+        "entropy": 2.4225797618424916,
+        "problem_coverage_score": 0.15555555555555553,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.695763111114502,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0014612205415081311,
+        "quality_score": 0.17222222222222222,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.17222222222222222,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_021",
+    "query_text": "ขั้นตอน RAPID SCREENING IN SOCIAL DIAGNOSIS PROCESS ประกอบด้วยอะไรบ้าง",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.716681957244873,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 4.731094729019484e-05,
+        "quality_score": 0.04666666666666666,
+        "unique_sources": 8,
+        "entropy": 2.7898980954642867,
+        "problem_coverage_score": 0.04666666666666666,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6475651264190674,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 7.518851634813473e-05,
+        "quality_score": 0.0,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687,
+        "problem_coverage_score": 0.0,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.467878818511963,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 5.1702363361982864e-05,
+        "quality_score": 0.02,
+        "unique_sources": 9,
+        "entropy": 2.9659573209491747,
+        "problem_coverage_score": 0.02,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3994240760803223,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00033794220956527473,
+        "quality_score": 0.013333333333333334,
+        "unique_sources": 8,
+        "entropy": 2.6825887305018328,
+        "problem_coverage_score": 0.013333333333333334,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6361548900604248,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 4.731094729019484e-05,
+        "quality_score": 0.04666666666666666,
+        "unique_sources": 8,
+        "entropy": 2.7898980954642867,
+        "problem_coverage_score": 0.04666666666666666,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.2971677780151367,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 5.1702363361982864e-05,
+        "quality_score": 0.02,
+        "unique_sources": 9,
+        "entropy": 2.9659573209491747,
+        "problem_coverage_score": 0.02,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.604316234588623,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0005888627832367396,
+        "quality_score": 0.006666666666666667,
+        "unique_sources": 7,
+        "entropy": 2.5492553971684995,
+        "problem_coverage_score": 0.006666666666666667,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.7216520309448242,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 4.731094729019484e-05,
+        "quality_score": 0.04666666666666666,
+        "unique_sources": 8,
+        "entropy": 2.7898980954642867,
+        "problem_coverage_score": 0.04666666666666666,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_022",
+    "query_text": "ขั้นตอนการประสานงานข้ามหน่วยงาน กรณีแรงงานข้ามชาติประสบอุบัติเหตุรุนแรงและต้องการส่งกลับประเทศ",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.8575429916381836,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00025995692934278246,
+        "quality_score": 0.10256410256410256,
+        "unique_sources": 7,
+        "entropy": 2.4662478973127313,
+        "problem_coverage_score": 0.10256410256410256,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.7235419750213623,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0003802762381383218,
+        "quality_score": 0.08461538461538462,
+        "unique_sources": 6,
+        "entropy": 2.3709505944546683,
+        "problem_coverage_score": 0.08461538461538462,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.7591187953948975,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0002057953587609518,
+        "quality_score": 0.09230769230769231,
+        "unique_sources": 7,
+        "entropy": 2.585475297227334,
+        "problem_coverage_score": 0.09230769230769231,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.7630789279937744,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0007524545784690417,
+        "quality_score": 0.08717948717948716,
+        "unique_sources": 9,
+        "entropy": 2.9232314287976204,
+        "problem_coverage_score": 0.08717948717948716,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.740929126739502,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00025995692934278246,
+        "quality_score": 0.10256410256410256,
+        "unique_sources": 7,
+        "entropy": 2.4662478973127313,
+        "problem_coverage_score": 0.10256410256410256,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.4352710247039795,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0002057953587609518,
+        "quality_score": 0.09230769230769231,
+        "unique_sources": 7,
+        "entropy": 2.585475297227334,
+        "problem_coverage_score": 0.09230769230769231,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.662226915359497,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002804360284547632,
+        "quality_score": 0.07692307692307691,
+        "unique_sources": 8,
+        "entropy": 2.7898980954642867,
+        "problem_coverage_score": 0.07692307692307691,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.781825065612793,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00025995692934278246,
+        "quality_score": 0.10256410256410256,
+        "unique_sources": 7,
+        "entropy": 2.4662478973127313,
+        "problem_coverage_score": 0.10256410256410256,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_023",
+    "query_text": "วิธีการจัดการผู้ป่วยติดสารเสพติดที่มีพฤติกรรมคุกคามบุคลากรตามมาตรฐานโรงพยาบาล",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7454736232757568,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002644405895504557,
+        "quality_score": 0.20512820512820518,
+        "unique_sources": 10,
+        "entropy": 3.189898095464287,
+        "problem_coverage_score": 0.20512820512820518,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6758439540863037,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.0006910368159878999,
+        "quality_score": 0.18461538461538463,
+        "unique_sources": 5,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.18461538461538463,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.3916232585906982,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.00021501154733414297,
+        "quality_score": 0.2076923076923077,
+        "unique_sources": 13,
+        "entropy": 3.621928094887362,
+        "problem_coverage_score": 0.2076923076923077,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3516480922698975,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0003387937375615972,
+        "quality_score": 0.18974358974358976,
+        "unique_sources": 11,
+        "entropy": 3.373557262275185,
+        "problem_coverage_score": 0.18974358974358976,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.640366792678833,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002644405895504557,
+        "quality_score": 0.20512820512820518,
+        "unique_sources": 10,
+        "entropy": 3.189898095464287,
+        "problem_coverage_score": 0.20512820512820518,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.2490160465240479,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.00021501154733414297,
+        "quality_score": 0.2076923076923077,
+        "unique_sources": 13,
+        "entropy": 3.621928094887362,
+        "problem_coverage_score": 0.2076923076923077,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.3543376922607422,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00031168297961509475,
+        "quality_score": 0.18974358974358976,
+        "unique_sources": 12,
+        "entropy": 3.506890595608518,
+        "problem_coverage_score": 0.18974358974358976,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6365859508514404,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002644405895504557,
+        "quality_score": 0.20512820512820518,
+        "unique_sources": 10,
+        "entropy": 3.189898095464287,
+        "problem_coverage_score": 0.20512820512820518,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_024",
+    "query_text": "กระบวนการคุ้มครองเด็กและการดำเนินงานร่วมกับทีมสหวิชาชีพในกรณีเด็กถูกล่วงละเมิดทางเพศในครอบครัว",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6758229732513428,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.003024748257545677,
+        "quality_score": 0.2125,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.2125,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6462810039520264,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.003024748257545677,
+        "quality_score": 0.2125,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.2125,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.236116886138916,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.002289499305697973,
+        "quality_score": 0.190625,
+        "unique_sources": 9,
+        "entropy": 2.9659573209491747,
+        "problem_coverage_score": 0.190625,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3584718704223633,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.003078079792370166,
+        "quality_score": 0.20416666666666666,
+        "unique_sources": 7,
+        "entropy": 2.573557262275185,
+        "problem_coverage_score": 0.20416666666666666,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6367430686950684,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.003024748257545677,
+        "quality_score": 0.2125,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.2125,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.17966890335083,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.002289499305697973,
+        "quality_score": 0.190625,
+        "unique_sources": 9,
+        "entropy": 2.9659573209491747,
+        "problem_coverage_score": 0.190625,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.4117789268493652,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0030578418000610933,
+        "quality_score": 0.20416666666666666,
+        "unique_sources": 7,
+        "entropy": 2.4662478973127313,
+        "problem_coverage_score": 0.20416666666666666,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6664330959320068,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.003024748257545677,
+        "quality_score": 0.2125,
+        "unique_sources": 7,
+        "entropy": 2.498929563690935,
+        "problem_coverage_score": 0.2125,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_025",
+    "query_text": "การใช้หลักการดูแลแบบประคับประคอง (Palliative Care) กับผู้ป่วยจิตเวชเร่ร่อนที่ปฏิเสธการรักษา",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.694166898727417,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0016290212569098608,
+        "quality_score": 0.19555555555555554,
+        "unique_sources": 8,
+        "entropy": 2.8225797618424915,
+        "problem_coverage_score": 0.19555555555555554,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6596429347991943,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.0043441291898489,
+        "quality_score": 0.2666666666666667,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.2666666666666667,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.663355827331543,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0024010002714931035,
+        "quality_score": 0.2,
+        "unique_sources": 7,
+        "entropy": 2.6464393446710153,
+        "problem_coverage_score": 0.2,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.6652588844299316,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0038860576760877544,
+        "quality_score": 0.19555555555555557,
+        "unique_sources": 7,
+        "entropy": 2.6565647621309534,
+        "problem_coverage_score": 0.19555555555555557,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.7004859447479248,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0016290212569098608,
+        "quality_score": 0.19555555555555554,
+        "unique_sources": 8,
+        "entropy": 2.8225797618424915,
+        "problem_coverage_score": 0.19555555555555554,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.6707499027252197,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0024010002714931035,
+        "quality_score": 0.2,
+        "unique_sources": 7,
+        "entropy": 2.6464393446710153,
+        "problem_coverage_score": 0.2,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.413356065750122,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0036764607328223066,
+        "quality_score": 0.18666666666666673,
+        "unique_sources": 7,
+        "entropy": 2.656564762130954,
+        "problem_coverage_score": 0.18666666666666673,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6602523326873779,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0016290212569098608,
+        "quality_score": 0.19555555555555554,
+        "unique_sources": 8,
+        "entropy": 2.8225797618424915,
+        "problem_coverage_score": 0.19555555555555554,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_026",
+    "query_text": "บทบาทนักสังคมสงเคราะห์ในการให้ข้อมูลและสนับสนุนการตัดสินใจตามมาตรา 12 (พ.ร.บ. สุขภาพแห่งชาติ) กรณีผู้ป่วยมะเร็งระยะสุดท้ายปฏิเสธการรักษา",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7221791744232178,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0017422629360225983,
+        "quality_score": 0.1727272727272727,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.1727272727272727,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.7009909152984619,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0017422629360225983,
+        "quality_score": 0.1727272727272727,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.1727272727272727,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.6974086761474609,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.002584127552108839,
+        "quality_score": 0.19090909090909092,
+        "unique_sources": 6,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.19090909090909092,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.8951539993286133,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.004614889105626693,
+        "quality_score": 0.1515151515151515,
+        "unique_sources": 5,
+        "entropy": 1.822815600352516,
+        "problem_coverage_score": 0.1515151515151515,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.7457451820373535,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0017422629360225983,
+        "quality_score": 0.1727272727272727,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.1727272727272727,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.6947581768035889,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.002584127552108839,
+        "quality_score": 0.19090909090909092,
+        "unique_sources": 6,
+        "entropy": 2.321928094887362,
+        "problem_coverage_score": 0.19090909090909092,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.5085010528564453,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0021056811082720136,
+        "quality_score": 0.1727272727272727,
+        "unique_sources": 7,
+        "entropy": 2.5735572622751857,
+        "problem_coverage_score": 0.1727272727272727,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.7716391086578369,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0017422629360225983,
+        "quality_score": 0.1727272727272727,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.1727272727272727,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_027",
+    "query_text": "แนวทางการประเมินและช่วยเหลือผู้สูงอายุที่ถูกทารุณกรรม (Elder Abuse) โดยผู้ดูแลที่เป็นบุตร",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 1.2824690341949463,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0012544468894096401,
+        "quality_score": 0.18095238095238092,
+        "unique_sources": 7,
+        "entropy": 2.5735572622751848,
+        "problem_coverage_score": 0.18095238095238092,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.8173580169677734,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0017747549805790185,
+        "quality_score": 0.19285714285714284,
+        "unique_sources": 5,
+        "entropy": 2.1709505944546685,
+        "problem_coverage_score": 0.19285714285714284,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.5416059494018555,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0009880132824036992,
+        "quality_score": 0.16785714285714287,
+        "unique_sources": 8,
+        "entropy": 2.665957320949175,
+        "problem_coverage_score": 0.16785714285714287,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.9782929420471191,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.003881268067440639,
+        "quality_score": 0.19047619047619052,
+        "unique_sources": 5,
+        "entropy": 2.1735572622751853,
+        "problem_coverage_score": 0.19047619047619052,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.7660050392150879,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0012544468894096401,
+        "quality_score": 0.18095238095238092,
+        "unique_sources": 7,
+        "entropy": 2.5735572622751848,
+        "problem_coverage_score": 0.18095238095238092,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.429621934890747,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0009880132824036992,
+        "quality_score": 0.16785714285714287,
+        "unique_sources": 8,
+        "entropy": 2.665957320949175,
+        "problem_coverage_score": 0.16785714285714287,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.577739953994751,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.008500653796363621,
+        "quality_score": 0.2142857142857143,
+        "unique_sources": 7,
+        "entropy": 2.5492553971685,
+        "problem_coverage_score": 0.2142857142857143,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.719763994216919,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0012544468894096401,
+        "quality_score": 0.18095238095238092,
+        "unique_sources": 7,
+        "entropy": 2.5735572622751848,
+        "problem_coverage_score": 0.18095238095238092,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_028",
+    "query_text": "การประเมินครอบครัว (Family Assessment) โดยใช้ Genogram/Ecomap ในเคสครอบครัวซับซ้อน (เด็กพิการซ้ำซ้อน, แม่ซึมเศร้า, พ่อติดการพนัน)",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7845780849456787,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.005759162727432946,
+        "quality_score": 0.09629629629629631,
+        "unique_sources": 9,
+        "entropy": 2.9232314287976204,
+        "problem_coverage_score": 0.09629629629629631,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.7315239906311035,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.014677527919411659,
+        "quality_score": 0.06666666666666668,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.06666666666666668,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.8124909400939941,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.008505082316696643,
+        "quality_score": 0.07777777777777779,
+        "unique_sources": 6,
+        "entropy": 2.3709505944546687,
+        "problem_coverage_score": 0.07777777777777779,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.6309068202972412,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.021783889705936112,
+        "quality_score": 0.0740740740740741,
+        "unique_sources": 8,
+        "entropy": 2.923231428797621,
+        "problem_coverage_score": 0.0740740740740741,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.7283382415771484,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.005759162727432946,
+        "quality_score": 0.09629629629629631,
+        "unique_sources": 9,
+        "entropy": 2.9232314287976204,
+        "problem_coverage_score": 0.09629629629629631,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.7915220260620117,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.008505082316696643,
+        "quality_score": 0.07777777777777779,
+        "unique_sources": 6,
+        "entropy": 2.3709505944546687,
+        "problem_coverage_score": 0.07777777777777779,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.6104378700256348,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.01586343674765279,
+        "quality_score": 0.09259259259259262,
+        "unique_sources": 8,
+        "entropy": 2.8729055953200557,
+        "problem_coverage_score": 0.09259259259259262,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.7219820022583008,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.005759162727432946,
+        "quality_score": 0.09629629629629631,
+        "unique_sources": 9,
+        "entropy": 2.9232314287976204,
+        "problem_coverage_score": 0.09629629629629631,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_029",
+    "query_text": "ขั้นตอนการประเมินความเสี่ยงฆ่าตัวตายซ้ำและการวางแผนความปลอดภัย (Safety Planning) ในผู้ป่วยที่พยายามฆ่าตัวตาย",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.681459903717041,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.004749910108512267,
+        "quality_score": 0.18571428571428575,
+        "unique_sources": 6,
+        "entropy": 2.440223928941852,
+        "problem_coverage_score": 0.18571428571428575,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6466362476348877,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0070890543327550406,
+        "quality_score": 0.19285714285714284,
+        "unique_sources": 5,
+        "entropy": 2.1709505944546685,
+        "problem_coverage_score": 0.19285714285714284,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.2269930839538574,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0035942473919931216,
+        "quality_score": 0.1642857142857143,
+        "unique_sources": 8,
+        "entropy": 2.8464393446710154,
+        "problem_coverage_score": 0.1642857142857143,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.359786033630371,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.004805892371708372,
+        "quality_score": 0.19047619047619044,
+        "unique_sources": 7,
+        "entropy": 2.573557262275185,
+        "problem_coverage_score": 0.19047619047619044,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6795668601989746,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.004749910108512267,
+        "quality_score": 0.18571428571428575,
+        "unique_sources": 6,
+        "entropy": 2.440223928941852,
+        "problem_coverage_score": 0.18571428571428575,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.2039258480072021,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0035942473919931216,
+        "quality_score": 0.1642857142857143,
+        "unique_sources": 8,
+        "entropy": 2.8464393446710154,
+        "problem_coverage_score": 0.1642857142857143,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.365203857421875,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0049097182394082966,
+        "quality_score": 0.1904761904761905,
+        "unique_sources": 8,
+        "entropy": 2.789898095464287,
+        "problem_coverage_score": 0.1904761904761905,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6502089500427246,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.004749910108512267,
+        "quality_score": 0.18571428571428575,
+        "unique_sources": 6,
+        "entropy": 2.440223928941852,
+        "problem_coverage_score": 0.18571428571428575,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_030",
+    "query_text": "กระบวนการให้คำปรึกษาครอบครัว (Family Counseling) กรณีมีความขัดแย้งเรื่องการบริจาคอวัยวะจากผู้ป่วยสมองตาย",
+    "complexity": "Complex",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7030541896820068,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0010621618578928367,
+        "quality_score": 0.20888888888888893,
+        "unique_sources": 7,
+        "entropy": 2.33012496531497,
+        "problem_coverage_score": 0.20888888888888893,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6867859363555908,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.0029432542622089388,
+        "quality_score": 0.16,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687,
+        "problem_coverage_score": 0.16,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.6646668910980225,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0010008156479671016,
+        "quality_score": 0.2,
+        "unique_sources": 6,
+        "entropy": 2.1414460711655217,
+        "problem_coverage_score": 0.2,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.5441269874572754,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0025200180263103295,
+        "quality_score": 0.18666666666666665,
+        "unique_sources": 5,
+        "entropy": 1.7382689280764647,
+        "problem_coverage_score": 0.18666666666666665,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6915650367736816,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0010621618578928367,
+        "quality_score": 0.20888888888888893,
+        "unique_sources": 7,
+        "entropy": 2.33012496531497,
+        "problem_coverage_score": 0.20888888888888893,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.4312829971313477,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.0010008156479671016,
+        "quality_score": 0.2,
+        "unique_sources": 6,
+        "entropy": 2.1414460711655217,
+        "problem_coverage_score": 0.2,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.5292489528656006,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0038482996998936867,
+        "quality_score": 0.18666666666666668,
+        "unique_sources": 5,
+        "entropy": 1.8565647621309542,
+        "problem_coverage_score": 0.18666666666666668,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6857521533966064,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0010621618578928367,
+        "quality_score": 0.20888888888888893,
+        "unique_sources": 7,
+        "entropy": 2.33012496531497,
+        "problem_coverage_score": 0.20888888888888893,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_031",
+    "query_text": "หลักการและขั้นตอนการทำ Family Conference ตามแนวทางปฏิบัติ",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.8956606388092041,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.632723300038682e-05,
+        "quality_score": 0.17333333333333337,
+        "unique_sources": 10,
+        "entropy": 3.139572261986723,
+        "problem_coverage_score": 0.17333333333333337,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.5226898193359375,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 1.648419274715707e-05,
+        "quality_score": 0.19,
+        "unique_sources": 7,
+        "entropy": 2.6464393446710157,
+        "problem_coverage_score": 0.19,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.24406099319458,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 1.6510631394339725e-05,
+        "quality_score": 0.19,
+        "unique_sources": 13,
+        "entropy": 3.546439344671015,
+        "problem_coverage_score": 0.19,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.1619713306427002,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 7.646343462207976e-05,
+        "quality_score": 0.18666666666666668,
+        "unique_sources": 10,
+        "entropy": 3.189898095464287,
+        "problem_coverage_score": 0.18666666666666668,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.5287871360778809,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.632723300038682e-05,
+        "quality_score": 0.17333333333333337,
+        "unique_sources": 10,
+        "entropy": 3.139572261986723,
+        "problem_coverage_score": 0.17333333333333337,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.1595160961151123,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 1.6510631394339725e-05,
+        "quality_score": 0.19,
+        "unique_sources": 13,
+        "entropy": 3.546439344671015,
+        "problem_coverage_score": 0.19,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.1621150970458984,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.6339615467586554e-05,
+        "quality_score": 0.19333333333333338,
+        "unique_sources": 9,
+        "entropy": 3.006238928653389,
+        "problem_coverage_score": 0.19333333333333338,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6251897811889648,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.632723300038682e-05,
+        "quality_score": 0.17333333333333337,
+        "unique_sources": 10,
+        "entropy": 3.139572261986723,
+        "problem_coverage_score": 0.17333333333333337,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_032",
+    "query_text": "วิธีการใช้ Genogram และ Ecomap ในการวิเคราะห์โครงสร้างและพลวัตครอบครัว",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 1.0256237983703613,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.8758964627825966e-05,
+        "quality_score": 0.206060606060606,
+        "unique_sources": 10,
+        "entropy": 3.106890595608518,
+        "problem_coverage_score": 0.206060606060606,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6220870018005371,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 2.0114400831516833e-05,
+        "quality_score": 0.23636363636363633,
+        "unique_sources": 7,
+        "entropy": 2.5219280948873624,
+        "problem_coverage_score": 0.23636363636363633,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.2573001384735107,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 1.8589128740131854e-05,
+        "quality_score": 0.17727272727272725,
+        "unique_sources": 11,
+        "entropy": 3.221928094887362,
+        "problem_coverage_score": 0.17727272727272725,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3205161094665527,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.5468017944755654e-05,
+        "quality_score": 0.21212121212121204,
+        "unique_sources": 10,
+        "entropy": 3.0565647621309537,
+        "problem_coverage_score": 0.21212121212121204,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6101148128509521,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.8758964627825966e-05,
+        "quality_score": 0.206060606060606,
+        "unique_sources": 10,
+        "entropy": 3.106890595608518,
+        "problem_coverage_score": 0.206060606060606,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.1760449409484863,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 1.8589128740131854e-05,
+        "quality_score": 0.17727272727272725,
+        "unique_sources": 11,
+        "entropy": 3.221928094887362,
+        "problem_coverage_score": 0.17727272727272725,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.2516028881072998,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.9065443484578282e-05,
+        "quality_score": 0.18787878787878784,
+        "unique_sources": 9,
+        "entropy": 2.973557262275185,
+        "problem_coverage_score": 0.18787878787878784,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.5983748435974121,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.8758964627825966e-05,
+        "quality_score": 0.206060606060606,
+        "unique_sources": 10,
+        "entropy": 3.106890595608518,
+        "problem_coverage_score": 0.206060606060606,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_033",
+    "query_text": "การแปลผลและการนำคะแนน ADL/IADL ไปใช้ในการวางแผนช่วยเหลือผู้สูงอายุ",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7482829093933105,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00011331870712941358,
+        "quality_score": 0.15238095238095237,
+        "unique_sources": 8,
+        "entropy": 2.822579761842491,
+        "problem_coverage_score": 0.15238095238095237,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.7084219455718994,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.00015993868255463893,
+        "quality_score": 0.1571428571428571,
+        "unique_sources": 6,
+        "entropy": 2.4464393446710155,
+        "problem_coverage_score": 0.1571428571428571,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.7034862041473389,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.00015993868255463893,
+        "quality_score": 0.1571428571428571,
+        "unique_sources": 6,
+        "entropy": 2.4464393446710155,
+        "problem_coverage_score": 0.1571428571428571,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.5359256267547607,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.000541551347123459,
+        "quality_score": 0.1476190476190476,
+        "unique_sources": 7,
+        "entropy": 2.606238928653389,
+        "problem_coverage_score": 0.1476190476190476,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.7235162258148193,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00011331870712941358,
+        "quality_score": 0.15238095238095237,
+        "unique_sources": 8,
+        "entropy": 2.822579761842491,
+        "problem_coverage_score": 0.15238095238095237,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.8009219169616699,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.00015993868255463893,
+        "quality_score": 0.1571428571428571,
+        "unique_sources": 6,
+        "entropy": 2.4464393446710155,
+        "problem_coverage_score": 0.1571428571428571,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.9466602802276611,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0013452002807753161,
+        "quality_score": 0.1714285714285714,
+        "unique_sources": 8,
+        "entropy": 2.7898980954642867,
+        "problem_coverage_score": 0.1714285714285714,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.7737181186676025,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00011331870712941358,
+        "quality_score": 0.15238095238095237,
+        "unique_sources": 8,
+        "entropy": 2.822579761842491,
+        "problem_coverage_score": 0.15238095238095237,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_034",
+    "query_text": "องค์ประกอบสำคัญที่ต้องมีในรายงาน Psychosocial Assessment",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.674217939376831,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.405198185646441e-05,
+        "quality_score": 0.24444444444444446,
+        "unique_sources": 7,
+        "entropy": 2.5492553971684995,
+        "problem_coverage_score": 0.24444444444444446,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6319630146026611,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 6.269305376918055e-05,
+        "quality_score": 0.26666666666666666,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.26666666666666666,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.601658821105957,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 4.272638161637587e-05,
+        "quality_score": 0.2111111111111111,
+        "unique_sources": 6,
+        "entropy": 2.5219280948873624,
+        "problem_coverage_score": 0.2111111111111111,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3122062683105469,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.055333144456380975,
+        "quality_score": 0.2,
+        "unique_sources": 8,
+        "entropy": 2.923231428797621,
+        "problem_coverage_score": 0.2,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6199891567230225,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.405198185646441e-05,
+        "quality_score": 0.24444444444444446,
+        "unique_sources": 7,
+        "entropy": 2.5492553971684995,
+        "problem_coverage_score": 0.24444444444444446,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.5977511405944824,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 4.272638161637587e-05,
+        "quality_score": 0.2111111111111111,
+        "unique_sources": 6,
+        "entropy": 2.5219280948873624,
+        "problem_coverage_score": 0.2111111111111111,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.2579998970031738,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.9331960680234865e-05,
+        "quality_score": 0.21481481481481485,
+        "unique_sources": 10,
+        "entropy": 3.2402239289418517,
+        "problem_coverage_score": 0.21481481481481485,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6497030258178711,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.405198185646441e-05,
+        "quality_score": 0.24444444444444446,
+        "unique_sources": 7,
+        "entropy": 2.5492553971684995,
+        "problem_coverage_score": 0.24444444444444446,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_035",
+    "query_text": "ข้อควรปฏิบัติและจริยธรรมในการเยี่ยมบ้านผู้ป่วย (Home Visit Protocol)",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7631711959838867,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002519169139607887,
+        "quality_score": 0.1866666666666667,
+        "unique_sources": 6,
+        "entropy": 2.50558726169826,
+        "problem_coverage_score": 0.1866666666666667,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.694634199142456,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.0003559398661309388,
+        "quality_score": 0.21000000000000002,
+        "unique_sources": 5,
+        "entropy": 2.2464393446710154,
+        "problem_coverage_score": 0.21000000000000002,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.889909029006958,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.00035380201952648347,
+        "quality_score": 0.2,
+        "unique_sources": 5,
+        "entropy": 2.2464393446710154,
+        "problem_coverage_score": 0.2,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.4139070510864258,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0036488143656849084,
+        "quality_score": 0.17333333333333337,
+        "unique_sources": 6,
+        "entropy": 2.50558726169826,
+        "problem_coverage_score": 0.17333333333333337,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6260411739349365,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002519169139607887,
+        "quality_score": 0.1866666666666667,
+        "unique_sources": 6,
+        "entropy": 2.50558726169826,
+        "problem_coverage_score": 0.1866666666666667,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.614778995513916,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 0.00035380201952648347,
+        "quality_score": 0.2,
+        "unique_sources": 5,
+        "entropy": 2.2464393446710154,
+        "problem_coverage_score": 0.2,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.3106679916381836,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0009982225097094973,
+        "quality_score": 0.17333333333333334,
+        "unique_sources": 6,
+        "entropy": 2.5055872616982606,
+        "problem_coverage_score": 0.17333333333333334,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6136581897735596,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0002519169139607887,
+        "quality_score": 0.1866666666666667,
+        "unique_sources": 6,
+        "entropy": 2.50558726169826,
+        "problem_coverage_score": 0.1866666666666667,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_036",
+    "query_text": "รหัส ICD-10 กลุ่ม Z-codes ที่เกี่ยวข้องกับการวินิจฉัยทางสังคมที่พบบ่อยมีอะไรบ้าง",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7274069786071777,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.862470512103755e-05,
+        "quality_score": 0.19111111111111115,
+        "unique_sources": 6,
+        "entropy": 2.440223928941852,
+        "problem_coverage_score": 0.19111111111111115,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6925759315490723,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 5.6347133795497936e-05,
+        "quality_score": 0.24,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.24,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.4685990810394287,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 3.9028241189953405e-05,
+        "quality_score": 0.18666666666666668,
+        "unique_sources": 8,
+        "entropy": 2.8659573209491747,
+        "problem_coverage_score": 0.18666666666666668,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.4677212238311768,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.003264355038360615,
+        "quality_score": 0.16444444444444442,
+        "unique_sources": 8,
+        "entropy": 2.789898095464287,
+        "problem_coverage_score": 0.16444444444444442,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6842279434204102,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.862470512103755e-05,
+        "quality_score": 0.19111111111111115,
+        "unique_sources": 6,
+        "entropy": 2.440223928941852,
+        "problem_coverage_score": 0.19111111111111115,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.4825739860534668,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 3.9028241189953405e-05,
+        "quality_score": 0.18666666666666668,
+        "unique_sources": 8,
+        "entropy": 2.8659573209491747,
+        "problem_coverage_score": 0.18666666666666668,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.4256107807159424,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0003027657005683674,
+        "quality_score": 0.1955555555555556,
+        "unique_sources": 9,
+        "entropy": 3.0062389286533895,
+        "problem_coverage_score": 0.1955555555555556,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6680221557617188,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 3.862470512103755e-05,
+        "quality_score": 0.19111111111111115,
+        "unique_sources": 6,
+        "entropy": 2.440223928941852,
+        "problem_coverage_score": 0.19111111111111115,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_037",
+    "query_text": "รหัส ICF ที่เกี่ยวข้องกับการประเมินผู้ป่วยกลุ่มเปราะบางมีตัวอย่างอะไรบ้าง",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.7010369300842285,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.1800615377336116e-05,
+        "quality_score": 0.2102564102564103,
+        "unique_sources": 6,
+        "entropy": 2.332914563979398,
+        "problem_coverage_score": 0.2102564102564103,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6887421607971191,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 8.782262302702293e-05,
+        "quality_score": 0.21538461538461542,
+        "unique_sources": 3,
+        "entropy": 1.3709505944546687,
+        "problem_coverage_score": 0.21538461538461542,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.4644250869750977,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 4.8963170866045405e-05,
+        "quality_score": 0.18846153846153849,
+        "unique_sources": 8,
+        "entropy": 2.55887184844536,
+        "problem_coverage_score": 0.18846153846153849,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.5216166973114014,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0022232642896900263,
+        "quality_score": 0.1794871794871795,
+        "unique_sources": 7,
+        "entropy": 2.422579761842491,
+        "problem_coverage_score": 0.1794871794871795,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6917710304260254,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.1800615377336116e-05,
+        "quality_score": 0.2102564102564103,
+        "unique_sources": 6,
+        "entropy": 2.332914563979398,
+        "problem_coverage_score": 0.2102564102564103,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.2360687255859375,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 4.8963170866045405e-05,
+        "quality_score": 0.18846153846153849,
+        "unique_sources": 8,
+        "entropy": 2.55887184844536,
+        "problem_coverage_score": 0.18846153846153849,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.478543996810913,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00322838518647283,
+        "quality_score": 0.1897435897435897,
+        "unique_sources": 7,
+        "entropy": 2.422579761842491,
+        "problem_coverage_score": 0.1897435897435897,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6783418655395508,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 5.1800615377336116e-05,
+        "quality_score": 0.2102564102564103,
+        "unique_sources": 6,
+        "entropy": 2.332914563979398,
+        "problem_coverage_score": 0.2102564102564103,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_038",
+    "query_text": "แนวทางการสร้างและติดตาม 'แผนการบริการเฉพาะราย' (Individualized Service Plan - ISP)",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6486210823059082,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.393705702464407e-05,
+        "quality_score": 0.06666666666666667,
+        "unique_sources": 7,
+        "entropy": 2.599581230646064,
+        "problem_coverage_score": 0.06666666666666667,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6215617656707764,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 2.6436015286890324e-05,
+        "quality_score": 0.049999999999999996,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.049999999999999996,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.3187549114227295,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 2.7839059112011454e-05,
+        "quality_score": 0.06666666666666665,
+        "unique_sources": 8,
+        "entropy": 2.6016094970590276,
+        "problem_coverage_score": 0.06666666666666665,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.314729928970337,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.005661719015915878,
+        "quality_score": 0.044444444444444446,
+        "unique_sources": 7,
+        "entropy": 2.6389205950315935,
+        "problem_coverage_score": 0.044444444444444446,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6110367774963379,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.393705702464407e-05,
+        "quality_score": 0.06666666666666667,
+        "unique_sources": 7,
+        "entropy": 2.599581230646064,
+        "problem_coverage_score": 0.06666666666666667,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.25917387008667,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 2.7839059112011454e-05,
+        "quality_score": 0.06666666666666665,
+        "unique_sources": 8,
+        "entropy": 2.6016094970590276,
+        "problem_coverage_score": 0.06666666666666665,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.325981855392456,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.00551553138102463,
+        "quality_score": 0.06666666666666667,
+        "unique_sources": 8,
+        "entropy": 2.6825887305018337,
+        "problem_coverage_score": 0.06666666666666667,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.623729944229126,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 2.393705702464407e-05,
+        "quality_score": 0.06666666666666667,
+        "unique_sources": 7,
+        "entropy": 2.599581230646064,
+        "problem_coverage_score": 0.06666666666666667,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_039",
+    "query_text": "เครื่องมือ AUDIT ที่ใช้ประเมินปัญหากลุ่มเป้าหมายใด",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6152489185333252,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.6514572295515487e-05,
+        "quality_score": 0.14166666666666666,
+        "unique_sources": 10,
+        "entropy": 3.1395722619867223,
+        "problem_coverage_score": 0.14166666666666666,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.5860748291015625,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 1.7137895702035168e-05,
+        "quality_score": 0.225,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.225,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 0.5789580345153809,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 1.671005356911337e-05,
+        "quality_score": 0.15,
+        "unique_sources": 7,
+        "entropy": 2.6464393446710153,
+        "problem_coverage_score": 0.15,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.2610466480255127,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.004143731004902899,
+        "quality_score": 0.13333333333333333,
+        "unique_sources": 8,
+        "entropy": 2.5995812306460646,
+        "problem_coverage_score": 0.13333333333333333,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.5830309391021729,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.6514572295515487e-05,
+        "quality_score": 0.14166666666666666,
+        "unique_sources": 10,
+        "entropy": 3.1395722619867223,
+        "problem_coverage_score": 0.14166666666666666,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 0.5915839672088623,
+        "num_docs": 10,
+        "num_docs_retrieved": 10,
+        "avg_score": 1.671005356911337e-05,
+        "quality_score": 0.15,
+        "unique_sources": 7,
+        "entropy": 2.6464393446710153,
+        "problem_coverage_score": 0.15,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.243933916091919,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 9.973914420697838e-05,
+        "quality_score": 0.13333333333333333,
+        "unique_sources": 9,
+        "entropy": 3.006238928653389,
+        "problem_coverage_score": 0.13333333333333333,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.5819437503814697,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 1.6514572295515487e-05,
+        "quality_score": 0.14166666666666666,
+        "unique_sources": 10,
+        "entropy": 3.1395722619867223,
+        "problem_coverage_score": 0.14166666666666666,
+        "high_relevance_count": 0
+      }
+    }
+  },
+  {
+    "query_id": "q_040",
+    "query_text": "ขั้นตอนการทำงานร่วมกับ 'ศูนย์พึ่งได้' (OSCC) ตาม พ.ร.บ. คุ้มครองผู้ถูกกระทำด้วยความรุนแรงฯ",
+    "complexity": "Domain_specific",
+    "detected_problems": [],
+    "strategy_results": {
+      "basic": {
+        "retrieval_time_sec": 0.6833400726318359,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0003175950264752222,
+        "quality_score": 0.09743589743589741,
+        "unique_sources": 8,
+        "entropy": 2.822579761842491,
+        "problem_coverage_score": 0.09743589743589741,
+        "high_relevance_count": 0
+      },
+      "adaptive": {
+        "retrieval_time_sec": 0.6499371528625488,
+        "num_docs": 5,
+        "num_docs_retrieved": 5,
+        "avg_score": 0.0006994367286097258,
+        "quality_score": 0.06153846153846154,
+        "unique_sources": 4,
+        "entropy": 1.9219280948873623,
+        "problem_coverage_score": 0.06153846153846154,
+        "high_relevance_count": 0
+      },
+      "dynamic": {
+        "retrieval_time_sec": 1.4269599914550781,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.000317870738581405,
+        "quality_score": 0.08076923076923076,
+        "unique_sources": 7,
+        "entropy": 2.7086949695628415,
+        "problem_coverage_score": 0.08076923076923076,
+        "high_relevance_count": 0
+      },
+      "multihop": {
+        "retrieval_time_sec": 1.3757288455963135,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.015230443024969039,
+        "quality_score": 0.06666666666666665,
+        "unique_sources": 10,
+        "entropy": 3.1898980954642866,
+        "problem_coverage_score": 0.06666666666666665,
+        "high_relevance_count": 0
+      },
+      "h2l_basic": {
+        "retrieval_time_sec": 0.6510400772094727,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0003175950264752222,
+        "quality_score": 0.09743589743589741,
+        "unique_sources": 8,
+        "entropy": 2.822579761842491,
+        "problem_coverage_score": 0.09743589743589741,
+        "high_relevance_count": 0
+      },
+      "h2l_dynamic": {
+        "retrieval_time_sec": 1.3788342475891113,
+        "num_docs": 20,
+        "num_docs_retrieved": 20,
+        "avg_score": 0.000317870738581405,
+        "quality_score": 0.08076923076923076,
+        "unique_sources": 7,
+        "entropy": 2.7086949695628415,
+        "problem_coverage_score": 0.08076923076923076,
+        "high_relevance_count": 0
+      },
+      "h2l_multihop": {
+        "retrieval_time_sec": 1.3615622520446777,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0007714931174026182,
+        "quality_score": 0.07179487179487179,
+        "unique_sources": 9,
+        "entropy": 3.00623892865339,
+        "problem_coverage_score": 0.07179487179487179,
+        "high_relevance_count": 0
+      },
+      "h2l_adaptive": {
+        "retrieval_time_sec": 0.6880459785461426,
+        "num_docs": 15,
+        "num_docs_retrieved": 15,
+        "avg_score": 0.0003175950264752222,
+        "quality_score": 0.09743589743589741,
+        "unique_sources": 8,
+        "entropy": 2.822579761842491,
+        "problem_coverage_score": 0.09743589743589741,
+        "high_relevance_count": 0
+      }
+    }
+  }
+]

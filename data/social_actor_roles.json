@@ -1,0 +1,192 @@
+{
+  "[person]": {
+    "roles": ["target"],
+    "group": "client",
+    "normalized": "ผู้รับบริการ/เด็ก"
+  },
+  "ผู้รับบริการ": {
+    "roles": ["target"],
+    "group": "client",
+    "normalized": "ผู้รับบริการ"
+  },
+  "ผู้ป่วย": {
+    "roles": ["target"],
+    "group": "client",
+    "normalized": "ผู้ป่วย"
+  },
+  "เด็ก": {
+    "roles": ["target"],
+    "group": "child",
+    "normalized": "ผู้รับบริการ/เด็ก"
+  },
+  "เด็กหญิง": {
+    "roles": ["target"],
+    "group": "child",
+    "normalized": "ผู้รับบริการ/เด็ก"
+  },
+  "เด็กชาย": {
+    "roles": ["target"],
+    "group": "child",
+    "normalized": "ผู้รับบริการ/เด็ก"
+  },
+  "นักเรียน": {
+    "roles": ["target"],
+    "group": "school",
+    "normalized": "ผู้รับบริการ/เด็ก"
+  },
+  "เยาวชน": {
+    "roles": ["target"],
+    "group": "child",
+    "normalized": "ผู้รับบริการ/เด็ก"
+  },
+  "วัยรุ่น": {
+    "roles": ["target"],
+    "group": "child",
+    "normalized": "ผู้รับบริการ/เด็ก"
+  },
+  "ลูก": {
+    "roles": ["agent", "target"],
+    "group": "family",
+    "normalized": "ลูก"
+  },
+  "บุตร": {
+    "roles": ["target"],
+    "group": "family",
+    "normalized": "ลูก"
+  },
+  "บิดา": {
+    "roles": ["agent", "target", "context"],
+    "group": "family",
+    "normalized": "บิดา"
+  },
+  "มารดา": {
+    "roles": ["agent", "target", "context"],
+    "group": "family",
+    "normalized": "มารดา"
+  },
+  "พ่อ": {
+    "roles": ["agent", "target", "context"],
+    "group": "family",
+    "normalized": "พ่อ"
+  },
+  "แม่": {
+    "roles": ["agent", "target", "context"],
+    "group": "family",
+    "normalized": "แม่"
+  },
+  "ผู้ปกครอง": {
+    "roles": ["agent", "context"],
+    "group": "family",
+    "normalized": "ผู้ปกครอง"
+  },
+  "พ่อเลี้ยง": {
+    "roles": ["agent", "context"],
+    "group": "family",
+    "normalized": "พ่อเลี้ยง"
+  },
+  "แม่เลี้ยง": {
+    "roles": ["agent", "context"],
+    "group": "family",
+    "normalized": "แม่เลี้ยง"
+  },
+  "สามี": {
+    "roles": ["agent", "target"],
+    "group": "partner",
+    "normalized": "สามี"
+  },
+  "ภรรยา": {
+    "roles": ["agent", "target"],
+    "group": "partner",
+    "normalized": "ภรรยา"
+  },
+  "แฟน": {
+    "roles": ["agent", "target"],
+    "group": "partner",
+    "normalized": "แฟน"
+  },
+  "คู่รัก": {
+    "roles": ["agent", "target"],
+    "group": "partner",
+    "normalized": "คู่รัก"
+  },
+  "เพื่อน": {
+    "roles": ["agent", "target"],
+    "group": "peer",
+    "normalized": "เพื่อน"
+  },
+  "เพื่อนร่วมชั้น": {
+    "roles": ["agent", "target"],
+    "group": "peer",
+    "normalized": "เพื่อนร่วมชั้น"
+  },
+  "ครู": {
+    "roles": ["agent", "context"],
+    "group": "school",
+    "normalized": "ครู"
+  },
+  "ครูฝึก": {
+    "roles": ["agent", "context"],
+    "group": "school",
+    "normalized": "ครูฝึก"
+  },
+  "รุ่นพี่": {
+    "roles": ["agent", "target"],
+    "group": "school",
+    "normalized": "รุ่นพี่"
+  },
+  "ผู้สูงอายุ": {
+    "roles": ["target"],
+    "group": "elder",
+    "normalized": "ผู้สูงอายุ"
+  },
+  "ผู้พิการ": {
+    "roles": ["target"],
+    "group": "disability",
+    "normalized": "ผู้พิการ"
+  },
+  "ผู้ดูแล": {
+    "roles": ["agent", "context"],
+    "group": "caregiver",
+    "normalized": "ผู้ดูแล"
+  },
+  "ญาติ": {
+    "roles": ["agent", "target", "context"],
+    "group": "relative",
+    "normalized": "ญาติ"
+  },
+  "นายจ้าง": {
+    "roles": ["agent"],
+    "group": "work",
+    "normalized": "นายจ้าง"
+  },
+  "หัวหน้า": {
+    "roles": ["agent"],
+    "group": "work",
+    "normalized": "หัวหน้า"
+  },
+  "ลูกจ้าง": {
+    "roles": ["agent", "target"],
+    "group": "work",
+    "normalized": "ลูกจ้าง"
+  },
+  "เพื่อนร่วมงาน": {
+    "roles": ["agent", "target"],
+    "group": "work",
+    "normalized": "เพื่อนร่วมงาน"
+  },
+  "เพื่อนบ้าน": {
+    "roles": ["agent", "target"],
+    "group": "community",
+    "normalized": "เพื่อนบ้าน"
+  },
+  "เจ้าหนี้": {
+    "roles": ["agent"],
+    "group": "finance",
+    "normalized": "เจ้าหนี้"
+  },
+  "คนแปลกหน้า": {
+    "roles": ["agent"],
+    "group": "community",
+    "normalized": "คนแปลกหน้า"
+  }
+}
