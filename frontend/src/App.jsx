@@ -5548,6 +5548,17 @@ export default function App() {
   const selectedStrategy = selectedMode === 'baseline' ? selectedPair.baseline : selectedPair.enhanced;
 
   useEffect(() => {
+    const runtimeDefault = runtimeStatus?.default_strategy;
+    if (!runtimeDefault || runtimeDefault === selectedStrategy) return;
+
+    const defaultPair = strategyPairs.find((pair) => pair.baseline === runtimeDefault || pair.enhanced === runtimeDefault);
+    if (!defaultPair) return;
+
+    setSelectedFamily(defaultPair.family);
+    setSelectedMode(defaultPair.baseline === runtimeDefault ? 'baseline' : 'enhanced');
+  }, [runtimeStatus?.default_strategy, selectedStrategy, strategyPairs]);
+
+  useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('h2l-theme', theme);
   }, [theme]);

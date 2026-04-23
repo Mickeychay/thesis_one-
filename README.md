@@ -25,6 +25,11 @@ For cloud/runtime deployment, install from `requirements.txt` and start with:
 uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}
 ```
 
+Hosted runtimes start in `H2L_SAFE_START=true` via `Procfile` so the API can answer
+health checks with BM25/detector even on small machines. Set
+`ENABLE_DENSE_RUNTIME=true USE_RERANK=true` only on hosts with enough RAM for
+embedding and reranker models.
+
 Do not run Vite for the full demo. `npm run dev` is only for frontend-only development.
 
 ## Readiness Endpoints

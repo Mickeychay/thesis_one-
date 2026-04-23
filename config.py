@@ -37,6 +37,19 @@ def _default_device() -> str:
 
     return "cpu"
 
+def _looks_like_cloud_runtime() -> bool:
+    """Detect common hosted runtimes where loading large ML models can kill the process."""
+    cloud_markers = [
+        "DYNO",
+        "FLY_APP_NAME",
+        "K_SERVICE",
+        "RAILWAY_ENVIRONMENT",
+        "RENDER",
+        "SPACE_ID",
+        "VERCEL",
+    ]
+    return any(os.getenv(marker) for marker in cloud_markers)
+
 class Config:
     """Main configuration class"""
     
@@ -64,6 +77,8 @@ class Config:
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "intfloat/multilingual-e5-base")
     RERANK_MODEL = os.getenv("RERANK_MODEL", "BAAI/bge-reranker-v2-m3")
     DEVICE = _default_device()
+    SAFE_START = _as_bool(os.getenv("H2L_SAFE_START"), default=_looks_like_cloud_runtime())
+    ENABLE_DENSE_RUNTIME = _as_bool(os.getenv("ENABLE_DENSE_RUNTIME"), default=not SAFE_START)
 
     # =========================================================================
     # LLM Configuration
@@ -79,7 +94,7 @@ class Config:
     # Retrieval Strategy Configuration
     # =========================================================================
     RETRIEVAL_STRATEGY = os.getenv("RETRIEVAL_STRATEGY", "orchestrator")
-    USE_RERANK = _as_bool(os.getenv("USE_RERANK", "true"), default=True)
+    USE_RERANK = _as_bool(os.getenv("USE_RERANK"), default=not SAFE_START)
     TOP_K = int(os.getenv("TOP_K", "10"))
     BM25_K = int(os.getenv("BM25_K", "25"))
     FUSION_K = int(os.getenv("FUSION_K", "30"))

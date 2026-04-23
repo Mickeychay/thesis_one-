@@ -116,6 +116,16 @@ VALID_STRATEGIES = {
     for pair in STRATEGY_PAIRS
     for strategy in (pair["baseline"], pair["enhanced"])
 }
+STRATEGY_REQUIRED_COMPONENTS = {
+    "bm25_only": ["bm25"],
+    "h2l-bm25": ["bm25"],
+    "naive_rag": ["vector_index", "embedding_model"],
+    "h2l-naive_rag": ["vector_index", "embedding_model"],
+    "hyde": ["vector_index", "embedding_model"],
+    "h2l-hyde": ["vector_index", "embedding_model"],
+    "basic": ["bm25", "vector_index", "embedding_model"],
+    "h2l-hybrid": ["bm25", "vector_index", "embedding_model"],
+}
 STRATEGY_ALIASES = {
     "detector-local": "h2l-hybrid",
     "h2l_basic": "h2l-hybrid",
@@ -307,7 +317,13 @@ CASE_CACHE: Dict[str, Dict[str, Any]] = {}
 FINALIZED_CASES: Dict[str, Dict[str, Any]] = {}
 
 
-def _strategy_options() -> List[Dict[str, Any]]:
+def _strategy_available(strategy: str, components: Optional[Dict[str, bool]] = None) -> bool:
+    if components is None:
+        return True
+    return all(components.get(name) for name in STRATEGY_REQUIRED_COMPONENTS.get(strategy, []))
+
+
+def _strategy_options(components: Optional[Dict[str, bool]] = None) -> List[Dict[str, Any]]:
     options = []
     for pair in STRATEGY_PAIRS:
         options.append({
@@ -318,7 +334,7 @@ def _strategy_options() -> List[Dict[str, Any]]:
             "paired_with": pair["enhanced"],
             "runtime": "live-runtime",
             "description": pair["description"],
-            "available": True,
+            "available": _strategy_available(pair["baseline"], components),
         })
         options.append({
             "id": pair["enhanced"],
@@ -328,9 +344,19 @@ def _strategy_options() -> List[Dict[str, Any]]:
             "paired_with": pair["baseline"],
             "runtime": "live-runtime",
             "description": f"H2L scoring/gating เพิ่มบน {pair['label']}",
-            "available": True,
+            "available": _strategy_available(pair["enhanced"], components),
         })
     return options
+
+
+def _default_strategy_for_components(components: Optional[Dict[str, bool]] = None) -> str:
+    if _strategy_available(DEFAULT_STRATEGY, components):
+        return DEFAULT_STRATEGY
+    if _strategy_available("h2l-bm25", components):
+        return "h2l-bm25"
+    if _strategy_available("bm25_only", components):
+        return "bm25_only"
+    return DEFAULT_STRATEGY
 
 
 def _normalize_strategy(strategy: str | None) -> str:
@@ -418,6 +444,9 @@ class RuntimeManager:
                     "vector_backend": getattr(config, "DB_TYPE", None),
                     "vector_path": getattr(config, "DB_PATH", None),
                     "metadata_store": getattr(config, "METADATA_STORE", None),
+                    "safe_start": getattr(config, "SAFE_START", False),
+                    "dense_runtime": getattr(config, "ENABLE_DENSE_RUNTIME", True),
+                    "use_rerank": getattr(config, "USE_RERANK", False),
                 })
 
             self._set_stage("Loading H2L detector and taxonomy")
@@ -447,7 +476,7 @@ class RuntimeManager:
                 retrieval_ready = bool(self.shared and self.components["documents"] and (self.components["bm25"] or self.components["vector_index"]))
                 self.components["h2l_scoring"] = retrieval_ready
                 self.ready_at = time.time()
-                self.status = "ready" if retrieval_ready and self.l2_ready else "degraded"
+                self.status = "ready" if retrieval_ready and self.l2_ready and not self.errors else "degraded"
                 self.stage = "ready" if self.status == "ready" else "degraded"
         except Exception as exc:
             logger.exception("Runtime warmup failed")
@@ -485,13 +514,19 @@ class RuntimeManager:
         except Exception as exc:
             self._add_error("bm25", exc)
 
-        try:
-            dense_retriever = DenseIndex(config.DB_TYPE, str(config.DB_PATH), config.EMBEDDING_MODEL, config.DEVICE)
-            with self._lock:
-                self.components["embedding_model"] = bool(getattr(dense_retriever, "embedder", None))
-                self.components["vector_index"] = bool(getattr(dense_retriever, "index", None))
-        except Exception as exc:
-            self._add_error("embedding/vector_index", exc)
+        if getattr(config, "ENABLE_DENSE_RUNTIME", True):
+            try:
+                dense_retriever = DenseIndex(config.DB_TYPE, str(config.DB_PATH), config.EMBEDDING_MODEL, config.DEVICE)
+                with self._lock:
+                    self.components["embedding_model"] = bool(getattr(dense_retriever, "embedder", None))
+                    self.components["vector_index"] = bool(getattr(dense_retriever, "index", None))
+            except Exception as exc:
+                self._add_error("embedding/vector_index", exc)
+        else:
+            self._add_error(
+                "embedding/vector_index",
+                "Dense runtime disabled by H2L_SAFE_START/ENABLE_DENSE_RUNTIME; BM25 runtime remains available.",
+            )
 
         if getattr(config, "USE_RERANK", False):
             try:
@@ -514,16 +549,7 @@ class RuntimeManager:
             }
 
     def _strategy_dependencies_ready(self, strategy: str) -> tuple[bool, List[str]]:
-        required = {
-            "bm25_only": ["bm25"],
-            "h2l-bm25": ["bm25"],
-            "naive_rag": ["vector_index", "embedding_model"],
-            "h2l-naive_rag": ["vector_index", "embedding_model"],
-            "hyde": ["vector_index", "embedding_model"],
-            "h2l-hyde": ["vector_index", "embedding_model"],
-            "basic": ["bm25", "vector_index", "embedding_model"],
-            "h2l-hybrid": ["bm25", "vector_index", "embedding_model"],
-        }.get(strategy, [])
+        required = STRATEGY_REQUIRED_COMPONENTS.get(strategy, [])
         missing = [name for name in required if not self.components.get(name)]
         return not missing, missing
 
@@ -570,14 +596,15 @@ class RuntimeManager:
     def payload(self) -> Dict[str, Any]:
         with self._lock:
             now = time.time()
+            components = dict(self.components)
             return {
                 "status": self.status,
                 "stage": self.stage,
-                "components": dict(self.components),
+                "components": components,
                 "models": dict(self.models),
                 "strategy_pairs": STRATEGY_PAIRS,
-                "strategy_options": _strategy_options(),
-                "default_strategy": DEFAULT_STRATEGY,
+                "strategy_options": _strategy_options(components),
+                "default_strategy": _default_strategy_for_components(components),
                 "l2_ready": self.l2_ready,
                 "errors": list(self.errors),
                 "started_at": self.started_at,
@@ -3727,9 +3754,24 @@ def analyze_case(req: CaseRequest):
             },
         )
 
+    effective_strategy = requested_strategy
+    ready, missing = runtime_manager._strategy_dependencies_ready(effective_strategy)
+    if not ready:
+        fallback_strategy = _normalize_strategy(runtime.get("default_strategy"))
+        fallback_ready, _ = runtime_manager._strategy_dependencies_ready(fallback_strategy)
+        if fallback_ready:
+            effective_strategy = fallback_strategy
+        else:
+            raise HTTPException(
+                status_code=503,
+                detail={
+                    "message": f"Selected strategy '{requested_strategy}' is unavailable because components are missing: {', '.join(missing)}",
+                    "runtime_status": runtime,
+                },
+            )
+
     # Determine if this is an H2L-Enhanced strategy
-    requested_strategy = _normalize_strategy(req.strategy)
-    is_h2l_strategy = requested_strategy.startswith("h2l-")
+    is_h2l_strategy = effective_strategy.startswith("h2l-")
     
     # Research Integrity: Force L2 OFF for baseline strategies
     # Even if the user sends enable_l2=True, if they picked a baseline strategy, we must disable it
@@ -3789,7 +3831,7 @@ def analyze_case(req: CaseRequest):
     retrieval_started_perf = time.perf_counter()
 
     try:
-        retriever = runtime_manager.get_retriever(requested_strategy)
+        retriever = runtime_manager.get_retriever(effective_strategy)
         try:
             retrieval_results = retriever.retrieve(
                 query=case_description,
@@ -3825,12 +3867,13 @@ def analyze_case(req: CaseRequest):
         "status": "ok",
         "mode": "runtime-rag-h2l",
         "requested_strategy": requested_strategy,
+        "effective_strategy": effective_strategy,
         "requested_top_k": req.top_k,
         "top_k": requested_top_k,
         "doc_scaling": _doc_scaling_guidance(requested_top_k),
-        "strategy_profile": _strategy_profile(requested_strategy),
+        "strategy_profile": _strategy_profile(effective_strategy),
         "strategy_note": (
-            "This request used live runtime retrieval. If runtime is degraded, the response includes explicit errors and does not claim unavailable components ran successfully."
+            "This request used live runtime retrieval. If runtime is degraded, unavailable strategies fall back to the runtime default and the response does not claim unavailable components ran successfully."
         ),
         "case_id": case_id,
         "case_description": case_description,
@@ -3870,7 +3913,7 @@ def analyze_case(req: CaseRequest):
         "candidate_trace": candidate_trace,
         "retrieved_docs_count": len(retrieved_docs),
         "retrieved_docs": retrieved_docs,
-        "retrieval_trace": _retrieval_trace(requested_strategy, retrieved_docs, retrieval_errors, retriever, requested_top_k),
+        "retrieval_trace": _retrieval_trace(effective_strategy, retrieved_docs, retrieval_errors, retriever, requested_top_k),
         "h2l_scoring_trace": _h2l_scoring_trace(retrieved_docs),
         "runtime_status": runtime_status_after,
         "pii_redacted_count": pii_redacted_count,
