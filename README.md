@@ -4,33 +4,32 @@ This repository runs the thesis dashboard as a single local FastAPI app. The sam
 
 ## Run The Full Web App
 
-Build the frontend once, then start the single server from the repository root:
+The simplest way to run the system is using the unified launcher script:
 
 ```bash
-cd frontend
-npm run build
-cd ..
-python api.py
+python start.py
 ```
 
-Open:
+This will automatically:
+1. Clean up stale processes on ports 8000/5173.
+2. Initialize the Backend (FastAPI) and serve the UI.
+3. Display Local and Network (Public) access links.
 
-```text
-http://127.0.0.1:8000/
-```
+### Advanced Usage
 
-For cloud/runtime deployment, install from `requirements.txt` and start with:
+- **Developer Mode**: To run with Hot Module Replacement (Vite) for UI development:
+  ```bash
+  python start.py --dev
+  ```
+- **Manual Build**: If you prefer the legacy manual method:
+  ```bash
+  cd frontend && npm run build && cd ..
+  python api.py
+  ```
 
-```bash
-uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}
-```
-
-Hosted runtimes start in `H2L_SAFE_START=true` via `Procfile` so the API can answer
-health checks with BM25/detector even on small machines. Set
-`ENABLE_DENSE_RUNTIME=true USE_RERANK=true` only on hosts with enough RAM for
-embedding and reranker models.
-
-Do not run Vite for the full demo. `npm run dev` is only for frontend-only development.
+### Deployment Configuration
+The system defaults to `H2L_SAFE_START=false` (Full RAG) in `start.py`. To run on low-resource machines, you can manually set `H2L_SAFE_START=true` to skip heavy model loading.
+- `ENABLE_DENSE_RUNTIME=true` and `USE_RERANK=true` are enabled by default in `start.py` for maximum research fidelity.
 
 ## Readiness Endpoints
 

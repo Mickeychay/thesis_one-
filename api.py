@@ -1,4 +1,5 @@
 import csv
+import difflib
 import json
 import logging
 import math
@@ -11,7 +12,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -152,6 +153,7 @@ NEGATION_MARKERS = [
 POLARITY_SCOPE_BREAKERS = [
     ",", "，", ".", "。", ";", "；", "\n",
     " แต่", " ทว่า", " อย่างไรก็ตาม", " แล้ว", " จึง",
+    " เลย", " เพราะ", " เนื่องจาก", " ทำให้", " ส่งผลให้",
     " ยอมรับ", " พบว่า", " ระบุว่า", " บอกว่า",
 ]
 POLARITY_NEGATION_GATE = 0.4
@@ -244,6 +246,7 @@ class CaseRequest(BaseModel):
     strategy: str = DEFAULT_STRATEGY
     enable_l2: bool = True
     top_k: int = Field(DEFAULT_DOC_TOP_K, ge=min(DOC_SCALING_OPTIONS), le=max(DOC_SCALING_OPTIONS))
+    user_adjusted_spans: List[Dict[str, Any]] = Field(default_factory=list)
 
 
 class AuditRequest(BaseModel):
@@ -286,6 +289,117 @@ def _sanitize_pii(text: str) -> tuple[str, int]:
     # Mask Locations/Institutions
     text, n3 = re.subn(r'(รพ\.|โรงพยาบาล|รร\.|โรงเรียน|คลินิก)\s*[ก-๙a-zA-Z0-9]+', '[LOCATION]', text)
     return text, n1 + n2 + n3
+
+
+def _remap_boundary_from_diff(
+    opcodes: List[Tuple[str, int, int, int, int]],
+    index: int,
+    original_length: int,
+    sanitized_length: int,
+    *,
+    prefer_end: bool,
+) -> int:
+    bounded = max(0, min(int(index), original_length))
+    if bounded == original_length:
+        return sanitized_length
+    for tag, i1, i2, j1, j2 in opcodes:
+        if tag == "insert":
+            if bounded == i1:
+                return j2 if prefer_end else j1
+            continue
+        if i1 <= bounded < i2:
+            if tag == "equal":
+                return j1 + (bounded - i1)
+            return j2 if prefer_end else j1
+    return sanitized_length
+
+
+def _best_text_span_near_hint(text: str, needle: str, hint_start: int) -> Tuple[int, int]:
+    text_lower = text.lower()
+    needle_lower = needle.lower().strip()
+    if not needle_lower:
+        return (-1, -1)
+    spans = _find_term_spans(text_lower, needle_lower)
+    if not spans:
+        return (-1, -1)
+    return min(spans, key=lambda span: (abs(span[0] - hint_start), span[0]))
+
+
+def _normalize_user_adjusted_spans(
+    raw_spans: Any,
+    original_text: str,
+    sanitized_text: str,
+) -> List[Dict[str, Any]]:
+    if not raw_spans:
+        return []
+
+    matcher = difflib.SequenceMatcher(a=original_text, b=sanitized_text, autojunk=False)
+    opcodes = matcher.get_opcodes()
+    normalized: List[Dict[str, Any]] = []
+
+    for raw in raw_spans:
+        if isinstance(raw, BaseModel):
+            raw = raw.model_dump()
+        if not isinstance(raw, dict):
+            continue
+
+        start = int(raw.get("start", -1) or -1)
+        end = int(raw.get("end", -1) or -1)
+        if start < 0 or end <= start or end > len(original_text):
+            continue
+
+        original_span_text = str(raw.get("text", "") or original_text[start:end])
+        keyword = str(raw.get("keyword", "") or original_span_text).lower().strip()
+        remapped_start = _remap_boundary_from_diff(
+            opcodes,
+            start,
+            len(original_text),
+            len(sanitized_text),
+            prefer_end=False,
+        )
+        remapped_end = _remap_boundary_from_diff(
+            opcodes,
+            end,
+            len(original_text),
+            len(sanitized_text),
+            prefer_end=True,
+        )
+
+        if remapped_end <= remapped_start and original_span_text.strip():
+            fallback_start, fallback_end = _best_text_span_near_hint(
+                sanitized_text,
+                original_span_text,
+                remapped_start,
+            )
+            if fallback_end > fallback_start:
+                remapped_start, remapped_end = fallback_start, fallback_end
+
+        if remapped_start < 0 or remapped_end <= remapped_start or remapped_end > len(sanitized_text):
+            continue
+
+        normalized.append({
+            "keyword": keyword or sanitized_text[remapped_start:remapped_end].lower().strip(),
+            "start": remapped_start,
+            "end": remapped_end,
+            "scope": str(raw.get("scope", "") or "match"),
+            "text": sanitized_text[remapped_start:remapped_end],
+            "position_source": "user_adjusted",
+            "user_adjusted": True,
+            "original_start": start,
+            "original_end": end,
+            "original_text": original_span_text,
+        })
+
+    normalized.sort(key=lambda item: (int(item["start"]), int(item["end"])))
+    deduped: List[Dict[str, Any]] = []
+    seen: Set[Tuple[int, int, str]] = set()
+    for span in normalized:
+        key = (int(span["start"]), int(span["end"]), str(span.get("keyword", "")))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(span)
+    return deduped
 
 class FinalizeRequest(BaseModel):
     case_id: str
@@ -854,6 +968,13 @@ def _sentence_profile(text: str) -> Dict:
         "คนดังกล่าว": {"roles": [], "group": "reference", "normalized": "คนดังกล่าว", "is_reference": True},
         "คนเดิม": {"roles": [], "group": "reference", "normalized": "คนเดิม", "is_reference": True},
     }
+    guarded_boundary_markers = {"และ", "โดย", "ว่า", "ส่วน"}
+    boundary_follow_cues = tuple(sorted({
+        *actor_terms,
+        *action_terms,
+        *reference_terms.keys(),
+        "ไม่", "ไม่ได้", "ไม่เคย", "เคย", "ผู้ป่วย", "ผู้รับบริการ", "เด็ก", "[person]",
+    }, key=len, reverse=True))
 
     def find_mentions(terms: List[str]) -> List[Dict]:
         mentions = []
@@ -904,6 +1025,43 @@ def _sentence_profile(text: str) -> Dict:
     def unique(values: List[str]) -> List[str]:
         return [value for value in dict.fromkeys(values) if value]
 
+    def scan_boundaries(
+        position: int,
+        markers: List[str],
+        *,
+        marker_end_left: bool = True,
+    ) -> Tuple[int, int]:
+        left_boundaries = [0]
+        right_boundaries = [len(text_lower)]
+
+        def marker_is_boundary(found: int, marker: str) -> bool:
+            if marker not in guarded_boundary_markers:
+                return True
+            marker_end = found + len(marker)
+            prev_window = text_lower[max(0, found - 18):found]
+            next_window = text_lower[marker_end:min(len(text_lower), marker_end + 18)]
+            if marker == "ว่า":
+                return any(cue in prev_window for cue in ("บอก", "ระบุ", "แจ้ง", "เล่า", "ยืนยัน"))
+            return any(cue in next_window for cue in boundary_follow_cues)
+
+        for marker in markers:
+            search_at = 0
+            while True:
+                found = text_lower.find(marker, search_at)
+                if found < 0:
+                    break
+                marker_end = found + len(marker)
+                if not marker_is_boundary(found, marker):
+                    search_at = marker_end
+                    continue
+                left_value = marker_end if marker_end_left else found
+                if marker_end <= position:
+                    left_boundaries.append(left_value)
+                elif found >= position:
+                    right_boundaries.append(found)
+                search_at = marker_end
+        return max(left_boundaries), min(right_boundaries)
+
     def sentence_bounds(position: int) -> Tuple[int, int]:
         left = 0
         right = len(text_lower)
@@ -924,26 +1082,14 @@ def _sentence_profile(text: str) -> Dict:
         return left, right
 
     def reference_clause_bounds(position: int) -> Tuple[int, int]:
-        left_boundaries = [0]
-        right_boundaries = [len(text_lower)]
         boundary_markers = [
             ",", "，", ".", "。", ";", "；", "\n", "(", ")",
             " แต่", " แล้ว", " จึง", " จน", " เพราะ", " เนื่องจาก",
             " อย่างไรก็ตาม", " ขณะเดียวกัน", " ส่วน", " อีกทั้ง", " โดย", " และ", " ว่า", "ว่า",
+            "แต่", "แล้ว", "จึง", "จน", "เพราะ", "เนื่องจาก",
+            "อย่างไรก็ตาม", "ขณะเดียวกัน", "ส่วน", "อีกทั้ง", "โดย", "และ",
         ]
-        for marker in boundary_markers:
-            search_at = 0
-            while True:
-                found = text_lower.find(marker, search_at)
-                if found < 0:
-                    break
-                marker_end = found + len(marker)
-                if marker_end <= position:
-                    left_boundaries.append(marker_end)
-                elif found >= position:
-                    right_boundaries.append(found)
-                search_at = marker_end
-        return max(left_boundaries), min(right_boundaries)
+        return scan_boundaries(position, boundary_markers)
 
     def resolve_actor_references(mentions: List[Dict]) -> List[Dict]:
         pronoun_refs = {"เขา", "เธอ"}
@@ -1017,12 +1163,71 @@ def _sentence_profile(text: str) -> Dict:
                     "is_reference": True,
                     "resolved_from": mention["text"],
                     "antecedent": antecedent.get("normalized", antecedent.get("text", "")),
+                    "antecedent_start": antecedent.get("start"),
+                    "antecedent_end": antecedent.get("end"),
                 }
                 resolved.append(resolved_mention)
                 continue
 
             resolved.append(mention)
         return resolved
+
+    def assign_actor_instance_ids(mentions: List[Dict]) -> List[Dict]:
+        counters: Dict[str, int] = {}
+        entity_by_span: Dict[Tuple[int, int], str] = {}
+        enriched: List[Dict] = []
+        for index, mention in enumerate(sorted(mentions, key=lambda item: (item["start"], -(item["end"] - item["start"]))), start=1):
+            antecedent_start = mention.get("antecedent_start", -1)
+            antecedent_end = mention.get("antecedent_end", -1)
+            antecedent_span = (
+                int(-1 if antecedent_start is None else antecedent_start),
+                int(-1 if antecedent_end is None else antecedent_end),
+            )
+            entity_instance_id = ""
+            if mention.get("is_reference") and antecedent_span in entity_by_span:
+                entity_instance_id = entity_by_span[antecedent_span]
+            else:
+                base = str(mention.get("normalized") or mention.get("text") or "entity")
+                counters[base] = counters.get(base, 0) + 1
+                entity_instance_id = f"{base}#{counters[base]}"
+            entity_by_span[(int(mention["start"]), int(mention["end"]))] = entity_instance_id
+            enriched.append({
+                **mention,
+                "mention_id": f"m{index}",
+                "entity_instance_id": entity_instance_id,
+                "mention_text": text[max(0, int(mention["start"])):min(len(text), int(mention["end"]))],
+            })
+        return enriched
+
+    def assign_action_ids(mentions: List[Dict]) -> List[Dict]:
+        enriched: List[Dict] = []
+        for index, mention in enumerate(sorted(mentions, key=lambda item: (item["start"], -(item["end"] - item["start"]))), start=1):
+            enriched.append({
+                **mention,
+                "action_id": f"a{index}",
+                "mention_text": text[max(0, int(mention["start"])):min(len(text), int(mention["end"]))],
+            })
+        return enriched
+
+    def mention_gap_text(left: Dict[str, Any], right: Dict[str, Any]) -> str:
+        start = int(left.get("end", 0) or 0)
+        end = int(right.get("start", start) or start)
+        return text_lower[start:end]
+
+    def contiguous_actor_cluster(mentions: List[Dict[str, Any]], *, reverse: bool) -> List[Dict[str, Any]]:
+        if not mentions:
+            return []
+        ordered = sorted(mentions, key=lambda item: int(item["start"]), reverse=reverse)
+        cluster = [ordered[0]]
+        allowed_connectors = ("และ", "กับ", "และก็", "รวมทั้ง")
+        for mention in ordered[1:]:
+            gap = mention_gap_text(mention, cluster[-1]) if reverse else mention_gap_text(cluster[-1], mention)
+            if len(gap) > 10:
+                break
+            if gap.strip() and not any(connector in gap for connector in allowed_connectors):
+                break
+            cluster.append(mention)
+        return sorted(cluster, key=lambda item: int(item["start"]))
 
     def passive_clause_end(start: int) -> int:
         boundary_candidates = [len(text_lower)]
@@ -1041,6 +1246,15 @@ def _sentence_profile(text: str) -> Dict:
             " เพิ่ง",
             " ช็อก",
             " เข้ารักษา",
+            "ไม่อยาก",
+            "ไม่รู้",
+            "แต่",
+            "แล้ว",
+            "จึง",
+            "จน",
+            "เพิ่ง",
+            "ช็อก",
+            "เข้ารักษา",
         ]
         for marker in punctuation + boundary_phrases:
             found = text_lower.find(marker, start)
@@ -1049,26 +1263,15 @@ def _sentence_profile(text: str) -> Dict:
         return min(boundary_candidates)
 
     def clause_bounds(position: int) -> Tuple[int, int]:
-        left_boundaries = [0]
-        right_boundaries = [len(text_lower)]
         boundary_markers = [
             ",", "，", ".", "。", ";", "；", "\n", "(", ")",
             " แต่", " แล้ว", " จึง", " จน", " เพราะ", " เนื่องจาก", " ว่า", "ว่า",
             " ถูก", " โดน", " ไม่อยาก", " ไม่รู้", " เพิ่ง", " ช็อก",
+            "แต่", "แล้ว", "จึง", "จน", "เพราะ", "เนื่องจาก", "ว่า",
+            "ถูก", "โดน", "ไม่อยาก", "ไม่รู้", "เพิ่ง", "ช็อก",
+            "อย่างไรก็ตาม", "ขณะเดียวกัน", "ส่วน", "อีกทั้ง", "โดย", "และ",
         ]
-        for marker in boundary_markers:
-            search_at = 0
-            while True:
-                found = text_lower.find(marker, search_at)
-                if found < 0:
-                    break
-                marker_end = found + len(marker)
-                if marker_end <= position:
-                    left_boundaries.append(marker_end)
-                elif found >= position:
-                    right_boundaries.append(found)
-                search_at = marker_end
-        return max(left_boundaries), min(right_boundaries)
+        return scan_boundaries(position, boundary_markers)
 
     def inferred_case_subject() -> str:
         subject_signals = ["[person]", "เด็ก", "เด็กหญิง", "เด็กชาย", "14 ปี", "ม.2", "ตัดเอง", "รอยกรีด"]
@@ -1081,7 +1284,8 @@ def _sentence_profile(text: str) -> Dict:
 
     actor_mentions = enrich_actor_mentions(find_mentions(actor_terms + sorted(reference_terms.keys(), key=len, reverse=True)))
     actor_mentions = resolve_actor_references(actor_mentions)
-    action_mentions = enrich_action_mentions(find_mentions(action_terms))
+    actor_mentions = assign_actor_instance_ids(actor_mentions)
+    action_mentions = assign_action_ids(enrich_action_mentions(find_mentions(action_terms)))
     passive_markers = find_mentions(["ถูก", "โดน"])
     actors = unique(mention["text"] for mention in actor_mentions)
     events: List[Dict[str, Any]] = []
@@ -1099,13 +1303,33 @@ def _sentence_profile(text: str) -> Dict:
         pattern: str,
         note: str = "",
         context_actors: Optional[List[str]] = None,
+        agent_mentions: Optional[List[Dict[str, Any]]] = None,
+        target_mentions: Optional[List[Dict[str, Any]]] = None,
+        action_mentions_meta: Optional[List[Dict[str, Any]]] = None,
     ) -> None:
         clean_agents = unique(agents)
         clean_targets = unique(targets)
         clean_actions = unique(actions)
         if not (clean_agents or clean_targets or clean_actions or context_actors):
             return
+        support_spans: List[Dict[str, Any]] = []
+
+        def add_support(kind: str, entries: List[Dict[str, Any]], *, id_key: str, label_key: str) -> None:
+            for entry in entries:
+                support_spans.append({
+                    "kind": kind,
+                    "id": entry.get(id_key),
+                    "label": entry.get(label_key) or entry.get("normalized") or entry.get("text"),
+                    "start": int(entry.get("start", 0) or 0),
+                    "end": int(entry.get("end", 0) or 0),
+                })
+
+        add_support("agent", agent_mentions or [], id_key="mention_id", label_key="mention_text")
+        add_support("target", target_mentions or [], id_key="mention_id", label_key="mention_text")
+        add_support("action", action_mentions_meta or [], id_key="action_id", label_key="mention_text")
+
         events.append({
+            "event_id": f"evt{len(events) + 1}",
             "event_type": event_type,
             "agents": clean_agents,
             "targets": clean_targets,
@@ -1119,6 +1343,38 @@ def _sentence_profile(text: str) -> Dict:
             "evidence_span": evidence_span(span_start, span_end),
             "span_start": span_start,
             "span_end": span_end,
+            "clause_id": f"clause:{span_start}-{span_end}",
+            "agent_mentions": [
+                {
+                    "mention_id": mention.get("mention_id"),
+                    "entity_instance_id": mention.get("entity_instance_id"),
+                    "label": mention.get("normalized") or mention.get("text"),
+                    "start": mention.get("start"),
+                    "end": mention.get("end"),
+                }
+                for mention in (agent_mentions or [])
+            ],
+            "target_mentions": [
+                {
+                    "mention_id": mention.get("mention_id"),
+                    "entity_instance_id": mention.get("entity_instance_id"),
+                    "label": mention.get("normalized") or mention.get("text"),
+                    "start": mention.get("start"),
+                    "end": mention.get("end"),
+                }
+                for mention in (target_mentions or [])
+            ],
+            "action_mentions": [
+                {
+                    "action_id": mention.get("action_id"),
+                    "label": mention.get("normalized") or mention.get("text"),
+                    "start": mention.get("start"),
+                    "end": mention.get("end"),
+                    "domain": mention.get("domain"),
+                }
+                for mention in (action_mentions_meta or [])
+            ],
+            "support_spans": support_spans,
             "context_actors": unique(context_actors or []),
             "note": note,
         })
@@ -1143,8 +1399,13 @@ def _sentence_profile(text: str) -> Dict:
                 for mention in action_mentions
                 if passive["end"] <= mention["start"] < clause_end and mention["pattern"] != "context_only"
             ]
-            passive_targets = [normalize_actor(mention) for mention in before_passive[-2:]]
-            passive_agents = [normalize_actor(mention) for mention in in_clause_actors if has_role(mention, "agent")]
+            selected_passive_targets = contiguous_actor_cluster(before_passive, reverse=True)
+            selected_passive_agents = contiguous_actor_cluster(
+                [mention for mention in in_clause_actors if has_role(mention, "agent")],
+                reverse=False,
+            )
+            passive_targets = [normalize_actor(mention) for mention in selected_passive_targets]
+            passive_agents = [normalize_actor(mention) for mention in selected_passive_agents]
             passive_actions = [mention["normalized"] for mention in in_clause_actions]
             inferred_subject = inferred_case_subject()
             if not passive_targets and inferred_subject:
@@ -1161,6 +1422,9 @@ def _sentence_profile(text: str) -> Dict:
                     confidence=0.88 if passive_agents and passive_targets and passive_actions else 0.62,
                     pattern="passive",
                     note="passive marker จำกัดขอบเขตด้วย clause boundary",
+                    agent_mentions=selected_passive_agents,
+                    target_mentions=selected_passive_targets,
+                    action_mentions_meta=in_clause_actions,
                 )
 
     for action in action_mentions:
@@ -1183,6 +1447,8 @@ def _sentence_profile(text: str) -> Dict:
             confidence=0.9 if targets or inferred_subject else 0.68,
             pattern="self",
             note="self-harm pattern จาก action ที่อ้างถึงตนเอง",
+            target_mentions=[mention for mention in actor_mentions if start <= mention["start"] <= action["start"] and has_role(mention, "target")],
+            action_mentions_meta=[action],
         )
 
     for action in action_mentions:
@@ -1201,17 +1467,22 @@ def _sentence_profile(text: str) -> Dict:
             for mention in actor_mentions
             if action["end"] <= mention["start"] < end and has_role(mention, "target")
         ]
-        if before_action and after_action:
+        selected_before_action = contiguous_actor_cluster(before_action, reverse=True)
+        selected_after_action = contiguous_actor_cluster(after_action, reverse=False)
+        if selected_before_action and selected_after_action:
             append_event(
                 event_type=action["domain"],
-                agents=[normalize_actor(mention) for mention in before_action[-2:]],
-                targets=[normalize_actor(mention) for mention in after_action[:2]],
+                agents=[normalize_actor(mention) for mention in selected_before_action],
+                targets=[normalize_actor(mention) for mention in selected_after_action],
                 actions=[action["normalized"]],
                 span_start=start,
                 span_end=end,
                 confidence=0.86,
                 pattern="active",
                 note="active pattern: ผู้กระทำ action ผู้ถูกกระทำ",
+                agent_mentions=selected_before_action,
+                target_mentions=selected_after_action,
+                action_mentions_meta=[action],
             )
 
     for action in action_mentions:
@@ -1235,6 +1506,7 @@ def _sentence_profile(text: str) -> Dict:
                 pattern="context_only",
                 note="context-only mention ไม่ถือเป็นผู้กระทำหรือผู้ถูกกระทำ",
                 context_actors=[normalize_actor(mention) for mention in context_mentions],
+                action_mentions_meta=[action],
             )
 
     role_events = [event for event in events if event["pattern"] != "context_only"]
@@ -1291,27 +1563,60 @@ def _find_term_spans(text_lower: str, term: str) -> List[Tuple[int, int]]:
     return spans
 
 
-def _clause_bounds_for_text(text_lower: str, position: int) -> Tuple[int, int]:
+_GLOBAL_GUARDED_BOUNDARY_MARKERS = {"และ", "โดย", "ว่า", "ส่วน"}
+_GLOBAL_BOUNDARY_FOLLOW_CUES = (
+    "ไม่", "ไม่ได้", "ไม่เคย", "ถูก", "โดน", "เด็ก", "บุตร", "ลูก",
+    "ผู้ป่วย", "ผู้รับบริการ", "พ่อ", "แม่", "บิดา", "มารดา",
+    "สามี", "ภรรยา", "แฟน", "เพื่อน", "ญาติ", "ครู",
+    "ตี", "ดุด่า", "ทำร้าย", "ทุบตี", "รังแก", "ทอดทิ้ง",
+)
+
+
+def _scan_text_boundaries(
+    text_lower: str,
+    position: int,
+    markers: List[str],
+) -> Tuple[int, int]:
     left_boundaries = [0]
     right_boundaries = [len(text_lower)]
-    boundary_markers = [
-        ",", "，", ".", "。", ";", "；", "\n", "(", ")",
-        " แต่", " แล้ว", " จึง", " จน", " เพราะ", " เนื่องจาก",
-        " อย่างไรก็ตาม", " ขณะเดียวกัน", " ส่วน", " อีกทั้ง", " โดย",
-    ]
-    for marker in boundary_markers:
+
+    def marker_is_boundary(found: int, marker: str) -> bool:
+        if marker not in _GLOBAL_GUARDED_BOUNDARY_MARKERS:
+            return True
+        marker_end = found + len(marker)
+        prev_window = text_lower[max(0, found - 18):found]
+        next_window = text_lower[marker_end:min(len(text_lower), marker_end + 18)]
+        if marker == "ว่า":
+            return any(cue in prev_window for cue in ("บอก", "ระบุ", "แจ้ง", "เล่า", "ยืนยัน"))
+        return any(cue in next_window for cue in _GLOBAL_BOUNDARY_FOLLOW_CUES)
+
+    for marker in markers:
         search_at = 0
         while True:
             found = text_lower.find(marker, search_at)
             if found < 0:
                 break
             marker_end = found + len(marker)
+            if not marker_is_boundary(found, marker):
+                search_at = marker_end
+                continue
             if marker_end <= position:
                 left_boundaries.append(marker_end)
             elif found >= position:
                 right_boundaries.append(found)
             search_at = marker_end
     return max(left_boundaries), min(right_boundaries)
+
+
+def _clause_bounds_for_text(text_lower: str, position: int) -> Tuple[int, int]:
+    boundary_markers = [
+        ",", "，", ".", "。", ";", "；", "\n", "(", ")",
+        " แต่", " แล้ว", " จึง", " จน", " เพราะ", " เนื่องจาก",
+        " อย่างไรก็ตาม", " ขณะเดียวกัน", " ส่วน", " อีกทั้ง", " โดย",
+        "แต่", "แล้ว", "จึง", "จน", "เพราะ", "เนื่องจาก",
+        "อย่างไรก็ตาม", "ขณะเดียวกัน", "ส่วน", "อีกทั้ง", "โดย", "และ",
+    ]
+    return _scan_text_boundaries(text_lower, position, boundary_markers)
 
 
 def _candidate_terms(item: Dict[str, Any]) -> List[str]:
@@ -1321,11 +1626,185 @@ def _candidate_terms(item: Dict[str, Any]) -> List[str]:
     return [term.lower().strip() for term in raw_terms if isinstance(term, str) and term.strip()]
 
 
-def _candidate_term_spans(item: Dict[str, Any], case_text: str) -> List[Tuple[int, int]]:
+def _normalize_span_records(raw_spans: Any, text_lower: str, *, keyword_fallback: str = "") -> List[Dict[str, Any]]:
+    normalized: List[Dict[str, Any]] = []
+    for raw in raw_spans or []:
+        if not isinstance(raw, dict):
+            continue
+        start = int(raw.get("start", -1) or -1)
+        end = int(raw.get("end", -1) or -1)
+        if start < 0 or end <= start or end > len(text_lower):
+            continue
+        keyword = str(raw.get("keyword", "") or keyword_fallback or text_lower[start:end]).lower().strip()
+        scope = str(raw.get("scope", "") or "")
+        text = str(raw.get("text", "") or text_lower[start:end])
+        normalized.append({
+            "keyword": keyword,
+            "start": start,
+            "end": end,
+            "scope": scope,
+            "text": text,
+            "position_source": str(raw.get("position_source", "") or ("user_adjusted" if raw.get("user_adjusted") else "provided")),
+            "user_adjusted": bool(raw.get("user_adjusted", False) or raw.get("position_source") == "user_adjusted"),
+        })
+    normalized.sort(
+        key=lambda item: (
+            0 if bool(item.get("user_adjusted")) or str(item.get("position_source", "")) == "user_adjusted" else 1,
+            0 if str(item.get("scope", "")) == "anchor" else 1,
+            int(item["start"]),
+            -(int(item["end"]) - int(item["start"])),
+        )
+    )
+    return normalized
+
+
+def _derive_evidence_spans_from_match_spans(match_spans: List[Dict[str, Any]], case_text: str) -> List[Dict[str, Any]]:
     text_lower = case_text.lower()
-    spans: List[Tuple[int, int]] = []
+    spans: List[Dict[str, Any]] = []
+    for match in match_spans:
+        if bool(match.get("user_adjusted")) or str(match.get("position_source", "")) == "user_adjusted":
+            spans.append({
+                "keyword": str(match.get("keyword", "") or ""),
+                "start": int(match["start"]),
+                "end": int(match["end"]),
+                "scope": "anchor",
+                "text": case_text[int(match["start"]):int(match["end"])].strip(),
+                "position_source": "user_adjusted",
+                "user_adjusted": True,
+            })
+        clause_start, clause_end = _clause_bounds_for_text(text_lower, int(match["start"]))
+        spans.append({
+            "keyword": str(match.get("keyword", "") or ""),
+            "start": clause_start,
+            "end": clause_end,
+            "scope": "clause",
+            "text": case_text[clause_start:clause_end].strip(),
+            "position_source": str(match.get("position_source", "") or "derived"),
+            "user_adjusted": bool(match.get("user_adjusted", False)),
+        })
+    deduped: List[Dict[str, Any]] = []
+    seen: Set[Tuple[int, int, str]] = set()
+    for span in spans:
+        key = (int(span["start"]), int(span["end"]), str(span.get("scope", "")))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(span)
+    return deduped
+
+
+def _manual_span_matches_candidate(
+    item: Dict[str, Any],
+    manual_span: Dict[str, Any],
+    case_text: str,
+    existing_match_spans: List[Dict[str, Any]],
+) -> bool:
+    manual_range = (int(manual_span["start"]), int(manual_span["end"]))
+    for existing in existing_match_spans:
+        if _spans_overlap(manual_range, (int(existing["start"]), int(existing["end"]))):
+            return True
+
+    manual_keyword = str(manual_span.get("keyword", "") or "").lower().strip()
+    manual_text = str(manual_span.get("text", "") or "").lower().strip()
+    candidate_terms = _candidate_terms(item)
+    return any(
+        candidate_term
+        and (
+            (manual_keyword and (manual_keyword in candidate_term or candidate_term in manual_keyword))
+            or (manual_text and (manual_text in candidate_term or candidate_term in manual_text))
+        )
+        for candidate_term in candidate_terms
+    )
+
+
+def _apply_user_adjusted_spans_to_candidates(
+    items: List[Dict[str, Any]],
+    case_text: str,
+    user_adjusted_spans: List[Dict[str, Any]],
+) -> int:
+    if not items or not user_adjusted_spans:
+        return 0
+
+    applied_count = 0
+    for item in items:
+        base_match_spans = _candidate_match_spans(item, case_text)
+        relevant_manual_spans = [
+            dict(span)
+            for span in user_adjusted_spans
+            if _manual_span_matches_candidate(item, span, case_text, base_match_spans)
+        ]
+        if not relevant_manual_spans:
+            continue
+        applied_count += 1
+        item["matched_spans"] = relevant_manual_spans
+        item["evidence_spans"] = _derive_evidence_spans_from_match_spans(relevant_manual_spans, case_text)
+        item["position_source"] = "user_adjusted"
+        item["user_adjusted_spans_applied"] = True
+    return applied_count
+
+
+def _candidate_match_spans(item: Dict[str, Any], case_text: str) -> List[Dict[str, Any]]:
+    text_lower = case_text.lower()
+    provided = _normalize_span_records(item.get("matched_spans", []), text_lower)
+    if provided:
+        return provided
+
+    spans: List[Dict[str, Any]] = []
     for term in _candidate_terms(item):
-        spans.extend(_find_term_spans(text_lower, term))
+        for start, end in _find_term_spans(text_lower, term):
+            spans.append({
+                "keyword": term,
+                "start": start,
+                "end": end,
+                "scope": "match",
+                "text": case_text[start:end],
+                "position_source": "derived",
+                "user_adjusted": False,
+            })
+    spans.sort(key=lambda item: (int(item["start"]), -(int(item["end"]) - int(item["start"]))))
+    return spans
+
+
+def _candidate_evidence_spans(item: Dict[str, Any], case_text: str) -> List[Dict[str, Any]]:
+    provided = _normalize_span_records(item.get("evidence_spans", []), case_text.lower())
+    if provided:
+        return provided
+
+    match_spans = _candidate_match_spans(item, case_text)
+    return _derive_evidence_spans_from_match_spans(match_spans, case_text)
+
+
+def _candidate_term_spans(item: Dict[str, Any], case_text: str) -> List[Tuple[int, int]]:
+    spans: List[Tuple[int, int]] = []
+    for span in _candidate_match_spans(item, case_text):
+        spans.append((int(span["start"]), int(span["end"])))
+    return spans
+
+
+def _spans_overlap(left: Tuple[int, int], right: Tuple[int, int]) -> bool:
+    return left[0] < right[1] and right[0] < left[1]
+
+
+def _span_distance(left: Tuple[int, int], right: Tuple[int, int]) -> int:
+    if _spans_overlap(left, right):
+        return 0
+    if left[1] <= right[0]:
+        return right[0] - left[1]
+    return left[0] - right[1]
+
+
+def _event_support_spans(event: Dict[str, Any]) -> List[Tuple[int, int]]:
+    spans: List[Tuple[int, int]] = []
+    for support in event.get("support_spans", []) or []:
+        if not isinstance(support, dict):
+            continue
+        start = int(support.get("start", -1) or -1)
+        end = int(support.get("end", -1) or -1)
+        if start < 0 or end <= start:
+            continue
+        spans.append((start, end))
+    if not spans and event.get("span_start") is not None and event.get("span_end") is not None:
+        spans.append((int(event.get("span_start", 0) or 0), int(event.get("span_end", 0) or 0)))
     return spans
 
 
@@ -1348,40 +1827,99 @@ def _positive_hardship_patterns(item: Dict[str, Any]) -> List[str]:
     return []
 
 
+def _candidate_allows_actor_relation(item: Dict[str, Any]) -> bool:
+    """Only interpersonal/violence candidates should inherit actor-target-action events."""
+    code = str(item.get("code") or "")
+    category = str(item.get("category") or "")
+    name = str(item.get("name") or "")
+    terms = " ".join(_candidate_terms(item))
+    relation_text = " ".join([code, category, name, terms])
+    relation_markers = [
+        "ความรุนแรง", "ทารุณ", "ทำร้าย", "ดุด่า", "ตี", "ทุบตี",
+        "ล่วงละเมิด", "ขัดแย้ง", "ทะเลาะ", "ความสัมพันธ์",
+        "บิดา", "มารดา", "บุตร", "คู่สมรส", "ครอบครัว",
+    ]
+    if code in {"0101", "0102", "0201", "0206", "0401", "0502", "0901"}:
+        return True
+    if code.startswith(("01", "02", "04", "05", "09")) and any(marker in relation_text for marker in relation_markers):
+        return True
+    return any(marker in terms for marker in relation_markers[:7])
+
+
+def _candidate_event_action_matches(item: Dict[str, Any], event: Dict[str, Any]) -> bool:
+    terms = _candidate_terms(item)
+    actions = [
+        str(action).lower().strip()
+        for action in (event.get("actions") or [event.get("action")])
+        if str(action or "").strip() and str(action or "").strip() != "ไม่ชัดเจน"
+    ]
+    return any(action in term or term in action for action in actions for term in terms)
+
+
 def _candidate_relation(item: Dict[str, Any], case_text: str, sentence_profile: Dict[str, Any]) -> Dict[str, str]:
-    spans = _candidate_term_spans(item, case_text)
+    match_spans = _candidate_match_spans(item, case_text)
+    evidence_spans = _candidate_evidence_spans(item, case_text)
     events = sentence_profile.get("events", []) or []
-    if not spans or not events:
+    if not match_spans or not events or not _candidate_allows_actor_relation(item):
         return {
             "actor": "ไม่ชัดเจน",
             "target": "ไม่ชัดเจน",
             "action": "ไม่ชัดเจน",
             "relation": "ไม่พบบทบาทผู้กระทำ/ผู้ถูกกระทำชัดเจน",
+            "event_id": "",
+            "event_span": "",
         }
 
     best_event = None
-    best_distance = None
+    best_score = None
     for event in events:
         event_start = int(event.get("span_start", 0) or 0)
         event_end = int(event.get("span_end", 0) or 0)
-        for start, end in spans:
-            if event_start <= start and end <= event_end:
-                best_event = event
-                best_distance = 0
-                break
-            distance = min(abs(start - event_end), abs(event_start - end))
-            if best_distance is None or distance < best_distance:
-                best_event = event
-                best_distance = distance
-        if best_distance == 0:
-            break
+        event_span = (event_start, event_end)
+        support_spans = _event_support_spans(event)
+        if not _candidate_event_action_matches(item, event):
+            continue
 
-    if not best_event or (best_distance is not None and best_distance > 18):
+        local_score = None
+        for span in evidence_spans + match_spans:
+            candidate_span = (int(span["start"]), int(span["end"]))
+            distance = _span_distance(candidate_span, event_span)
+            score = max(0, 220 - distance)
+            if bool(span.get("user_adjusted")) or str(span.get("position_source", "")) == "user_adjusted":
+                score += 260
+            if str(span.get("scope", "")) == "anchor":
+                score += 180
+            if event_start <= candidate_span[0] and candidate_span[1] <= event_end:
+                score += 240
+            elif _spans_overlap(candidate_span, event_span):
+                score += 180
+
+            support_distance = min(_span_distance(candidate_span, support_span) for support_span in support_spans) if support_spans else None
+            if support_distance == 0:
+                score += 320
+            elif support_distance is not None:
+                score += max(0, 120 - support_distance)
+
+            if span in evidence_spans:
+                score += 30
+
+            if local_score is None or score > local_score:
+                local_score = score
+
+        if local_score is None:
+            continue
+        if best_score is None or local_score > best_score:
+            best_event = event
+            best_score = local_score
+
+    if not best_event or (best_score is not None and best_score < 200):
         return {
             "actor": "ไม่ชัดเจน",
             "target": "ไม่ชัดเจน",
             "action": "ไม่ชัดเจน",
             "relation": "ไม่พบบทบาทผู้กระทำ/ผู้ถูกกระทำชัดเจน",
+            "event_id": "",
+            "event_span": "",
         }
 
     actor = best_event.get("agent") or "ไม่ชัดเจน"
@@ -1398,6 +1936,8 @@ def _candidate_relation(item: Dict[str, Any], case_text: str, sentence_profile: 
         "target": target,
         "action": action,
         "relation": relation,
+        "event_id": str(best_event.get("event_id") or ""),
+        "event_span": f"{best_event.get('span_start', 0)}-{best_event.get('span_end', 0)}",
     }
 
 
@@ -1408,10 +1948,10 @@ def _candidate_polarity_signal(
 ) -> Dict[str, Any]:
     text_lower = case_text.lower()
     negation_markers = sentence_profile.get("negation_markers", []) or []
-    candidate_terms = _candidate_terms(item)
+    match_spans = _candidate_match_spans(item, case_text)
     negated_terms: List[str] = []
 
-    if not text_lower or not negation_markers or not candidate_terms:
+    if not text_lower or not negation_markers or not match_spans:
         return {
             "gate": 1.0,
             "negated": False,
@@ -1425,28 +1965,25 @@ def _candidate_polarity_signal(
             marker_spans.append((start, end, marker))
 
     hardship_patterns = _positive_hardship_patterns(item)
-    for term in candidate_terms:
-        for term_start, term_end in _find_term_spans(text_lower, term):
-            clause_start, clause_end = _clause_bounds_for_text(text_lower, term_start)
-            clause_text = text_lower[clause_start:clause_end]
-            matched = False
-            for marker_start, marker_end, _marker in marker_spans:
-                if marker_start < clause_start or marker_end > clause_end:
-                    continue
-                if term_start < marker_end:
-                    continue
-                if term_start - marker_end > 28:
-                    continue
-                between = text_lower[marker_end:term_start]
-                if any(breaker in between for breaker in POLARITY_SCOPE_BREAKERS):
-                    continue
-                if hardship_patterns and any(pattern in clause_text for pattern in hardship_patterns):
-                    continue
-                negated_terms.append(term)
-                matched = True
-                break
-            if matched:
-                break
+    for span in match_spans:
+        term = str(span.get("keyword", "") or "").lower().strip()
+        term_start = int(span["start"])
+        clause_start, clause_end = _clause_bounds_for_text(text_lower, term_start)
+        clause_text = text_lower[clause_start:clause_end]
+        for marker_start, marker_end, _marker in marker_spans:
+            if marker_start < clause_start or marker_end > clause_end:
+                continue
+            if term_start < marker_end:
+                continue
+            if term_start - marker_end > 28:
+                continue
+            between = text_lower[marker_end:term_start]
+            if any(breaker in between for breaker in POLARITY_SCOPE_BREAKERS):
+                continue
+            if hardship_patterns and any(pattern in clause_text for pattern in hardship_patterns):
+                continue
+            negated_terms.append(term or case_text[term_start:int(span["end"])])
+            break
 
     negated_terms = list(dict.fromkeys(negated_terms))
     if negated_terms:
@@ -1493,6 +2030,8 @@ def _apply_polarity_gate(
             "polarity_target": relation["target"],
             "polarity_action": relation["action"],
             "polarity_relation": relation["relation"],
+            "polarity_event_id": relation["event_id"],
+            "polarity_event_span": relation["event_span"],
         }
 
     for item in problems:
@@ -1975,6 +2514,9 @@ def _polarity_effect(problems: List[Dict], filtered_out: List[Dict], sentence_pr
             "actor": item.get("polarity_actor") or "ไม่ชัดเจน",
             "target": item.get("polarity_target") or "ไม่ชัดเจน",
             "action": item.get("polarity_action") or "ไม่ชัดเจน",
+            "event_id": item.get("polarity_event_id") or "",
+            "event_span": item.get("polarity_event_span") or "",
+            "trigger_terms": negated_terms,
             "explanation": (
                 f"polarity gate อ่านความสัมพันธ์ '{relation}'"
                 + (f" และลดน้ำหนักเพราะ negation ครอบคำ {', '.join(negated_terms[:3])}" if gate < 1 and negated_terms else "")
@@ -3724,12 +4266,18 @@ def thesis_status():
 
 @app.post("/analyze")
 def analyze_case(req: CaseRequest):
-    case_description = req.case_description.strip()
+    raw_case_description = str(req.case_description or "")
+    case_description = raw_case_description.strip()
     if not case_description:
         raise HTTPException(status_code=422, detail="case_description is required")
 
     request_started_perf = time.perf_counter()
     case_description, pii_redacted_count = _sanitize_pii(case_description)
+    user_adjusted_spans = _normalize_user_adjusted_spans(
+        req.user_adjusted_spans,
+        raw_case_description,
+        case_description,
+    )
 
     start_time = time.time()
     requested_strategy = _normalize_strategy(req.strategy)
@@ -3800,6 +4348,16 @@ def analyze_case(req: CaseRequest):
     problems = detection.get("problems", [])
     filtered_out = detection.get("filtered_out", [])
     metadata = detection.get("metadata", {})
+    user_adjusted_problem_count = _apply_user_adjusted_spans_to_candidates(
+        problems,
+        case_description,
+        user_adjusted_spans,
+    )
+    user_adjusted_filtered_count = _apply_user_adjusted_spans_to_candidates(
+        filtered_out,
+        case_description,
+        user_adjusted_spans,
+    )
     detection_timings = metadata.get("timings_ms", {}) if isinstance(metadata, dict) else {}
     case_input_ms = round((time.perf_counter() - request_started_perf) * 1000, 2)
 
@@ -3917,6 +4475,12 @@ def analyze_case(req: CaseRequest):
         "h2l_scoring_trace": _h2l_scoring_trace(retrieved_docs),
         "runtime_status": runtime_status_after,
         "pii_redacted_count": pii_redacted_count,
+        "user_adjusted_spans": user_adjusted_spans,
+        "user_adjusted_span_count": len(user_adjusted_spans),
+        "user_adjusted_spans_applied_to": {
+            "problems": user_adjusted_problem_count,
+            "filtered_out": user_adjusted_filtered_count,
+        },
     }
     result = _json_safe(result)
     CASE_CACHE[case_id] = result

@@ -118,6 +118,14 @@ class TestContextRulesExpansion(unittest.TestCase):
         self.assertIn("Z59.0", filtered_by_code)
         self.assertIn("ประเด็นเดียวกัน", filtered_by_code["Z59.0"]["reasoning"])
 
+    def test_public_space_sleeping_triggers_homelessness_without_exact_no_home_phrase(self):
+        text = "ครอบครัวพักในที่สาธารณะนานมากกว่า 10 วัน และกลางคืนนอนท้ายกระบะรถบริเวณใกล้เคียง"
+
+        result = self.detector.detect_with_metadata(text, use_l2=True)
+        codes = {problem["code"] for problem in result["problems"]}
+
+        self.assertIn("0801", codes)
+
     def test_partner_mention_and_non_romantic_conflict_do_not_cross_contaminate(self):
         text = "ผู้รับบริการมีแฟนคบกันมานาน. ผู้รับบริการทะเลาะกับเจ้าหนี้เรื่องหนี้สินและค่าเช่าห้อง"
 
@@ -233,7 +241,28 @@ class TestContextRulesExpansion(unittest.TestCase):
         by_code = {problem["code"]: problem for problem in result["problems"]}
 
         self.assertIn("0206", by_code)
-        self.assertIn("ตี", by_code["0206"]["matched_keywords"])
+        self.assertTrue(any("ตี" in keyword for keyword in by_code["0206"]["matched_keywords"]))
+        self.assertTrue(by_code["0206"]["matched_spans"])
+        self.assertTrue(by_code["0206"]["evidence_spans"])
+        self.assertTrue(any("ตี" in span["keyword"] for span in by_code["0206"]["matched_spans"]))
+        self.assertEqual(by_code["0206"]["evidence_spans"][0]["scope"], "clause")
+
+    def test_self_harm_local_evidence_is_not_invalidated_by_later_parent_mention(self):
+        text = "ผู้ป่วยกรีดข้อมือตัวเองเพราะเครียด มารดามาเยี่ยมภายหลัง"
+
+        result = self.detector.detect_with_metadata(text, use_l2=True)
+        codes = {problem["code"] for problem in result["problems"]}
+
+        self.assertIn("X60-X84", codes)
+
+    def test_overlapping_keywords_keep_single_longest_matched_span(self):
+        text = "มารดาตีเด็กหลายครั้งเพราะเครียด"
+
+        result = self.detector.detect_with_metadata(text, use_l2=True)
+        problem = next(problem for problem in result["problems"] if problem["code"] == "0206")
+
+        same_start_spans = [span for span in problem["matched_spans"] if span["start"] == problem["matched_spans"][0]["start"]]
+        self.assertEqual(len(same_start_spans), 1)
 
     def test_document_heavy_filtered_code_gets_verify_documents_status(self):
         text = "มารดาทำอาหารแกงลาวขายหน้าวัด"

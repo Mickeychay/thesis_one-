@@ -110,6 +110,51 @@ class TestSentenceProfile(unittest.TestCase):
         self.assertEqual(roles["targets"], ["ผู้รับบริการ/เด็ก"])
         self.assertIn("ดุด่า", roles["actions"])
 
+    def test_repeated_parent_mentions_do_not_merge_into_same_abuse_event(self):
+        text = (
+            "มารดามีโรคประจำตัว มารดาเคยตีเด็กหลายครั้งเพราะเครียด "
+            "มารดาคนที่สามมาดูแลเรื่องอาหารและไม่เคยกล่าวถึงการตีเด็ก"
+        )
+
+        profile = _sentence_profile(text)
+        roles = profile["actor_roles"]
+        violence_events = [event for event in profile["events"] if event["event_type"] == "violence"]
+
+        self.assertEqual(roles["agents"], ["มารดา"])
+        self.assertEqual(roles["targets"], ["ผู้รับบริการ/เด็ก"])
+        self.assertIn("ตี", roles["actions"])
+        self.assertEqual(len(violence_events), 1)
+        self.assertEqual(violence_events[0]["target"], "ผู้รับบริการ/เด็ก")
+
+    def test_actor_mentions_track_distinct_entity_instances_and_reference_links(self):
+        profile = _sentence_profile("มารดาเครียดมาก. เขาดุด่าเด็กเป็นประจำ มารดาคนถัดมามาเยี่ยม")
+        mentions = profile["actor_roles"]["mentions"]
+
+        first_mother = next(mention for mention in mentions if mention["text"] == "มารดา" and mention["start"] == 0)
+        pronoun = next(mention for mention in mentions if mention["text"] == "เขา")
+        later_mother = next(mention for mention in mentions if mention["text"] == "มารดา" and mention["start"] > pronoun["start"])
+
+        self.assertEqual(pronoun["entity_instance_id"], first_mother["entity_instance_id"])
+        self.assertNotEqual(later_mother["entity_instance_id"], first_mother["entity_instance_id"])
+        self.assertTrue(first_mother["mention_id"].startswith("m"))
+        self.assertTrue(later_mother["mention_id"].startswith("m"))
+
+    def test_event_keeps_support_mentions_and_action_spans(self):
+        profile = _sentence_profile("มารดาดุด่าเด็กเป็นประจำ")
+        event = next(event for event in profile["events"] if event["event_type"] == "emotional_abuse")
+
+        self.assertEqual(event["agent_mentions"][0]["label"], "มารดา")
+        self.assertEqual(event["target_mentions"][0]["label"], "ผู้รับบริการ/เด็ก")
+        self.assertEqual(event["action_mentions"][0]["label"], "ดุด่า")
+        self.assertTrue(any(span["kind"] == "action" for span in event["support_spans"]))
+
+    def test_connected_parent_cluster_is_kept_without_pulling_earlier_unrelated_actor(self):
+        profile = _sentence_profile("ยายมาหา พ่อกับแม่ดุด่าเด็กเป็นประจำ")
+        event = next(event for event in profile["events"] if event["event_type"] == "emotional_abuse")
+
+        self.assertEqual(event["agents"], ["พ่อ", "แม่"])
+        self.assertEqual([mention["label"] for mention in event["agent_mentions"]], ["พ่อ", "แม่"])
+
 
 if __name__ == "__main__":
     unittest.main()

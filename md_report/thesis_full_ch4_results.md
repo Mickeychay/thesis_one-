@@ -183,10 +183,10 @@
 งานรุ่นปัจจุบันไม่ได้พึ่งการอธิบายผลด้วยมุมมอง 3D เพียงอย่างเดียวอีกต่อไป แต่ขยายสู่ชุดเครื่องมือเชิงโต้ตอบที่ช่วยให้ตีความผลของคำถามวิจัยทั้งสองข้อได้ง่ายกว่าเดิม กล่าวคือช่วยอธิบายว่าทำไม H2L จึงเปลี่ยนอันดับเอกสารจาก baseline และช่วยตรวจสอบว่ากลไก polarity ลดหรือคง candidate ใดไว้ด้วยเหตุผลอะไร เครื่องมือสำคัญประกอบด้วย
 
 1. **Analyzed Case Text**
-   แสดงคำหรือวลีที่ตรวจจับได้จริง พร้อม matched keywords และการเชื่อมโยงกับ problem candidates
+   แสดงคำหรือวลีที่ตรวจจับได้จริงในระดับ occurrence พร้อม matched keywords, polarity rows, support spans และการเชื่อมโยงกับ problem candidates ทำให้คำที่ซ้ำกันหลายตำแหน่ง เช่น `มารดา` ใน clause เรื่องหนี้สินและ `มารดา` ใน clause เรื่องตีเด็ก ถูกแยกเป็นคนละ token และชี้ไปยัง event frame คนละตัว
 
 2. **Event Frames**
-   แสดง actor, action, target และ evidence span ในรูปแบบที่ผู้ใช้คลิกดูรายละเอียดได้
+   แสดง actor, action, target และ evidence span ในรูปแบบที่ผู้ใช้คลิกดูรายละเอียดได้ โดยแต่ละ event ถูกผูกกับ `span_start/span_end`, `mention_id`, `action_id` และ support mentions ทำให้ตรวจสอบย้อนหลังได้ว่าบทบาทใดมาจากคำ occurrence ใดในข้อความจริง
 
 3. **Live Execution Path**
    แยก phase ของระบบ เช่น case preparation, L1 detection, L2 validation, polarity effect และ retrieval พร้อมระบุเวลาของแต่ละ phase
@@ -209,7 +209,7 @@
 9. **Evidence Scaling by Top-K, Comparison Bar Chart, Scatter Plot, Live Evaluation Progress และ System Evaluation Status**
    ใช้ตอบคำถามเชิงงานทดลองว่า H2L มีผลต่อ retrieval quality, latency, ความคงเส้นคงวาตาม top-k, สถานะการรัน evaluator และความพร้อมของ benchmark artifacts อย่างไร โดยอ้างอิงจาก stable latest/checkpoint aliases และ progress artifacts จริง
 
-นอกจากนี้ dashboard รุ่นล่าสุดยังสะท้อน refinement เชิงตรรกะของ detector โดยตรง เช่น การจับ evidence แบบ sentence-bound, การใช้ coreference สำหรับตัวอ้างอิงในประโยคถัดไป, การยุบรหัสซ้ำเชิงประเด็น เช่น `0801` กับ `Z59.0`, และการแยกเคสที่ควรเป็น `verify_documents` แทนการสรุปเป็นปัญหายืนยัน การเพิ่มความละเอียดระดับนี้มีผลมากต่อคุณภาพของ runtime case review แม้จะไม่ถูกสรุปเป็นตัวเลข retrieval metric โดยตรง
+นอกจากนี้ dashboard รุ่นล่าสุดยังสะท้อน refinement เชิงตรรกะของ detector โดยตรง เช่น การจับ evidence แบบ sentence-bound, การใช้ coreference สำหรับตัวอ้างอิงในประโยคถัดไป, การยุบรหัสซ้ำเชิงประเด็น เช่น `0801` กับ `Z59.0`, การแยกเคสที่ควรเป็น `verify_documents` แทนการสรุปเป็นปัญหายืนยัน และการรองรับ `user-adjusted span anchor` ที่ผู้ใช้เลือกเองเพื่อบังคับให้ polarity และ event binding อ้างอิง occurrence เดียวกับที่ผู้ใช้ตรวจแล้วว่าถูกต้อง การเพิ่มความละเอียดระดับนี้มีผลมากต่อคุณภาพของ runtime case review แม้จะไม่ถูกสรุปเป็นตัวเลข retrieval metric โดยตรง
 
 ผลเชิง explainability จึงไม่ควรถูกมองเป็นเพียงส่วนแสดงผลของหน้าเว็บ แต่เป็นองค์ประกอบสำคัญที่ช่วยรองรับการตีความผลของ RQ1 และ RQ2 เพราะทำให้ระบบสามารถถูก audit ได้ทั้งในระดับเคสและระดับเอกสารหลักฐาน ซึ่งมีความสำคัญต่อการนำเสนอในวิทยานิพนธ์และต่อการตรวจสอบโดยผู้เชี่ยวชาญ
 

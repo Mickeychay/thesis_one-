@@ -24,7 +24,7 @@ import logging
 import re
 import time
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple, Set
+from typing import Any, List, Dict, Optional, Tuple, Set
 from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
@@ -395,6 +395,8 @@ class DetectedProblem:
     detection_level: str  # "L1", "L1-NeedsValidation", "L2"
     reasoning: str
     matched_keywords: List[str] = field(default_factory=list)
+    matched_spans: List[Dict] = field(default_factory=list)
+    evidence_spans: List[Dict] = field(default_factory=list)
     context_valid: bool = True
     validation_notes: str = ""
 
@@ -467,6 +469,103 @@ class L1ContextAwareDetector:
                 if kw_lower not in self.keyword_to_codes:
                     self.keyword_to_codes[kw_lower] = []
                 self.keyword_to_codes[kw_lower].append(code)
+
+    def _boundary_follow_cues(self) -> Tuple[str, ...]:
+        return tuple(sorted({
+            *self._actor_lexicon(),
+            *REFERENCE_TERMS,
+            "ไม่", "ไม่ได้", "ไม่เคย", "ถูก", "โดน",
+            "ตี", "ดุด่า", "ทำร้าย", "ทุบตี", "รังแก", "ทอดทิ้ง",
+            "ดูแล", "กรีด", "ตัดเอง",
+        }, key=len, reverse=True))
+
+    def _scan_boundaries(
+        self,
+        text_lower: str,
+        position: int,
+        markers: List[str],
+    ) -> Tuple[int, int]:
+        left_boundaries = [0]
+        right_boundaries = [len(text_lower)]
+        guarded_markers = {"และ", "โดย", "ว่า", "ส่วน"}
+        follow_cues = self._boundary_follow_cues()
+
+        def marker_is_boundary(found: int, marker: str) -> bool:
+            if marker not in guarded_markers:
+                return True
+            marker_end = found + len(marker)
+            prev_window = text_lower[max(0, found - 18):found]
+            next_window = text_lower[marker_end:min(len(text_lower), marker_end + 18)]
+            if marker == "ว่า":
+                return any(cue in prev_window for cue in ("บอก", "ระบุ", "แจ้ง", "เล่า", "ยืนยัน"))
+            return any(cue in next_window for cue in follow_cues)
+
+        for marker in markers:
+            search_at = 0
+            while True:
+                found = text_lower.find(marker, search_at)
+                if found < 0:
+                    break
+                marker_end = found + len(marker)
+                if not marker_is_boundary(found, marker):
+                    search_at = marker_end
+                    continue
+                if marker_end <= position:
+                    left_boundaries.append(marker_end)
+                elif found >= position:
+                    right_boundaries.append(found)
+                search_at = marker_end
+        return max(left_boundaries), min(right_boundaries)
+
+    def _find_keyword_occurrences(self, text_lower: str, keywords: List[str]) -> List[Dict[str, int | str]]:
+        occurrences: List[Dict[str, int | str]] = []
+        for keyword in keywords:
+            if not keyword:
+                continue
+            start = text_lower.find(keyword)
+            while start >= 0:
+                occurrences.append({
+                    "keyword": keyword,
+                    "start": start,
+                    "end": start + len(keyword),
+                })
+                start = text_lower.find(keyword, start + len(keyword))
+        occurrences.sort(key=lambda item: (int(item["start"]), -(int(item["end"]) - int(item["start"]))))
+        filtered: List[Dict[str, int | str]] = []
+        for occurrence in occurrences:
+            overlaps = any(
+                int(occurrence["start"]) < int(existing["end"]) and int(existing["start"]) < int(occurrence["end"])
+                for existing in filtered
+            )
+            if not overlaps:
+                filtered.append(occurrence)
+        return filtered
+
+    def _coerce_match_spans(
+        self,
+        text_lower: str,
+        matched_keywords: List[str],
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
+    ) -> List[Dict[str, int | str]]:
+        if matched_spans:
+            normalized: List[Dict[str, int | str]] = []
+            for span in matched_spans:
+                keyword = str(span.get("keyword", "") or "").lower()
+                start = int(span.get("start", -1) or -1)
+                end = int(span.get("end", -1) or -1)
+                if not keyword or start < 0 or end <= start:
+                    continue
+                normalized.append({
+                    "keyword": keyword,
+                    "start": start,
+                    "end": end,
+                    "position_source": str(span.get("position_source", "") or ("user_adjusted" if span.get("user_adjusted") else "provided")),
+                    "user_adjusted": bool(span.get("user_adjusted", False) or span.get("position_source") == "user_adjusted"),
+                })
+            if normalized:
+                normalized.sort(key=lambda item: (int(item["start"]), -(int(item["end"]) - int(item["start"]))))
+                return normalized
+        return self._find_keyword_occurrences(text_lower, matched_keywords)
     
     def _get_category_prefix(self, code: str) -> str:
         """ดึง prefix ของ category (2 ตัวแรก)"""
@@ -481,7 +580,8 @@ class L1ContextAwareDetector:
         self, 
         code: str, 
         text: str, 
-        matched_keywords: List[str]
+        matched_keywords: List[str],
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
         """
         ตรวจสอบว่า context ถูกต้องหรือไม่ โดยให้เหตุผลที่เป็นมาตรฐานวิชาการ
@@ -499,14 +599,15 @@ class L1ContextAwareDetector:
         # 1. Check specific code rules first
         if code in SPECIFIC_CODE_RULES:
             rule = SPECIFIC_CODE_RULES[code]
+            local_contexts = self._keyword_windows(text_lower, matched_keywords, radius=40, matched_spans=matched_spans)
             
             # Check self-reference requirement
             if rule.get("requires_self_reference", False):
                 self_indicators = rule.get("self_indicators", [])
-                has_self = any(ind in text_lower for ind in self_indicators)
+                has_self = any(any(ind in context for ind in self_indicators) for context in local_contexts)
                 
-                # Check if there's NO mention of another person
-                other_person_mentioned = self._has_other_person_mention(text_lower)
+                # Check if there's NO mention of another person near the matched evidence
+                other_person_mentioned = self._has_other_person_mention(local_contexts)
                 
                 if has_self and not other_person_mentioned:
                     return True, 1.0, f"ตรวจพบการระบุถึงตนเอง (Self-reference) ซึ่งสอดคล้องกับนิยามของ {code_name}"
@@ -525,31 +626,31 @@ class L1ContextAwareDetector:
 
             # Check distress-context requirement for broad mental-health terms
             if rule.get("requires_distress_context", False):
-                return self._check_distress_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_distress_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_financial_context", False):
-                return self._check_financial_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_financial_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_occupation_problem_context", False):
-                return self._check_occupation_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_occupation_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_education_problem_context", False):
-                return self._check_education_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_education_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_caregiver_burden_context", False):
-                return self._check_caregiver_burden_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_caregiver_burden_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_external_relationship_context", False):
-                return self._check_external_relationship_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_external_relationship_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_external_harm_context", False):
-                return self._check_external_harm_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_external_harm_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_romantic_context", False):
-                return self._check_romantic_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_romantic_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_education_impairment_context", False):
-                return self._check_education_impairment_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_education_impairment_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
             if rule.get("requires_labor_rights_context", False):
                 return self._check_issue_context(
@@ -557,6 +658,7 @@ class L1ContextAwareDetector:
                     text_lower,
                     matched_keywords,
                     rule,
+                    matched_spans=matched_spans,
                     positive_label="ข้อพิพาทหรือการถูกปฏิเสธสิทธิแรงงาน/ประกันสังคม",
                     neutral_label="การกล่าวถึงสิทธิแรงงานหรือประกันสังคมทั่วไป",
                 )
@@ -567,6 +669,7 @@ class L1ContextAwareDetector:
                     text_lower,
                     matched_keywords,
                     rule,
+                    matched_spans=matched_spans,
                     positive_label="ปัญหาการใช้สิทธิรักษาหรือการถูกปฏิเสธสิทธิจริง",
                     neutral_label="การกล่าวถึงสิทธิการรักษาทั่วไป",
                 )
@@ -577,12 +680,13 @@ class L1ContextAwareDetector:
                     text_lower,
                     matched_keywords,
                     rule,
+                    matched_spans=matched_spans,
                     positive_label="ข้อพิพาทหรือเหตุทางกฎหมายที่เป็นปัญหาจริง",
                     neutral_label="การกล่าวถึงคำว่ากฎหมายทั่วไป",
                 )
 
             if rule.get("requires_migration_context", False):
-                return self._check_migration_context(code_name, text_lower, matched_keywords, rule)
+                return self._check_migration_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
         
         # 2. Check category-level rules
         prefix = self._get_category_prefix(code)
@@ -590,8 +694,8 @@ class L1ContextAwareDetector:
         if prefix in CATEGORY_CONTEXT_RULES:
             rule = CATEGORY_CONTEXT_RULES[prefix]
             required_actors = rule.get("required_actors", [])
-            local_contexts = self._evidence_segments(text_lower, matched_keywords)
-            local_contexts.extend(self._keyword_windows(text_lower, matched_keywords, radius=48))
+            local_contexts = self._evidence_segments(text_lower, matched_keywords, matched_spans=matched_spans)
+            local_contexts.extend(self._keyword_windows(text_lower, matched_keywords, radius=48, matched_spans=matched_spans))
             
             # If no required actors, context is valid based on lexical match
             if not required_actors:
@@ -623,19 +727,17 @@ class L1ContextAwareDetector:
         matched_keywords: List[str],
         *,
         radius: int = 28,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> List[str]:
         windows: List[str] = []
-        for keyword in matched_keywords:
-            if not keyword:
-                continue
-            start = text_lower.find(keyword)
-            while start >= 0:
-                sentence_left, sentence_right = self._sentence_bounds(text_lower, start)
-                clause_left, clause_right = self._clause_bounds(text_lower, start)
-                left = max(sentence_left, clause_left, start - radius)
-                right = min(sentence_right, clause_right, start + len(keyword) + radius)
-                windows.append(self._resolve_references_in_span(text_lower, left, right))
-                start = text_lower.find(keyword, start + len(keyword))
+        for span in self._coerce_match_spans(text_lower, matched_keywords, matched_spans):
+            start = int(span["start"])
+            end = int(span["end"])
+            sentence_left, sentence_right = self._sentence_bounds(text_lower, start)
+            clause_left, clause_right = self._clause_bounds(text_lower, start)
+            left = max(sentence_left, clause_left, start - radius)
+            right = min(sentence_right, clause_right, end + radius)
+            windows.append(self._resolve_references_in_span(text_lower, left, right))
         return windows or [text_lower]
 
     def _sentence_bounds(self, text_lower: str, position: int) -> Tuple[int, int]:
@@ -658,43 +760,64 @@ class L1ContextAwareDetector:
         return left, right
 
     def _clause_bounds(self, text_lower: str, position: int) -> Tuple[int, int]:
-        left_boundaries = [0]
-        right_boundaries = [len(text_lower)]
         boundary_markers = [
             ",", "，", ".", "。", ";", "；", "\n", "(", ")",
             " แต่", " แล้ว", " จึง", " จน", " เพราะ", " เนื่องจาก",
             " อย่างไรก็ตาม", " ขณะเดียวกัน", " ส่วน", " อีกทั้ง", " โดย", " และ", " ว่า", "ว่า",
+            "แต่", "แล้ว", "จึง", "จน", "เพราะ", "เนื่องจาก",
+            "อย่างไรก็ตาม", "ขณะเดียวกัน", "ส่วน", "อีกทั้ง", "โดย", "และ",
         ]
-        for marker in boundary_markers:
-            search_at = 0
-            while True:
-                found = text_lower.find(marker, search_at)
-                if found < 0:
-                    break
-                marker_end = found + len(marker)
-                if marker_end <= position:
-                    left_boundaries.append(marker_end)
-                elif found >= position:
-                    right_boundaries.append(found)
-                search_at = marker_end
-        return max(left_boundaries), min(right_boundaries)
+        return self._scan_boundaries(text_lower, position, boundary_markers)
 
-    def _evidence_segments(self, text_lower: str, matched_keywords: List[str]) -> List[str]:
+    def _evidence_segments(
+        self,
+        text_lower: str,
+        matched_keywords: List[str],
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
+    ) -> List[str]:
         segments: List[str] = []
         seen: Set[Tuple[int, int]] = set()
-        for keyword in matched_keywords:
-            if not keyword:
-                continue
-            start = text_lower.find(keyword)
-            while start >= 0:
-                bounds = self._sentence_bounds(text_lower, start)
-                if bounds not in seen:
-                    seen.add(bounds)
-                    segment = self._resolve_references_in_span(text_lower, bounds[0], bounds[1]).strip()
-                    if segment:
-                        segments.append(segment)
-                start = text_lower.find(keyword, start + len(keyword))
+        for span in self._coerce_match_spans(text_lower, matched_keywords, matched_spans):
+            start = int(span["start"])
+            bounds = self._sentence_bounds(text_lower, start)
+            if bounds not in seen:
+                seen.add(bounds)
+                segment = self._resolve_references_in_span(text_lower, bounds[0], bounds[1]).strip()
+                if segment:
+                    segments.append(segment)
         return segments or [text_lower]
+
+    def _evidence_span_records(
+        self,
+        text: str,
+        matched_keywords: List[str],
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
+    ) -> List[Dict[str, Any]]:
+        text_lower = text.lower()
+        spans = self._coerce_match_spans(text_lower, matched_keywords, matched_spans)
+        seen: Set[Tuple[str, int, int]] = set()
+        records: List[Dict[str, Any]] = []
+        for span in spans:
+            start = int(span["start"])
+            sentence_left, sentence_right = self._sentence_bounds(text_lower, start)
+            clause_left, clause_right = self._clause_bounds(text_lower, start)
+            for scope, left, right in (
+                ("clause", clause_left, clause_right),
+                ("sentence", sentence_left, sentence_right),
+            ):
+                key = (scope, left, right)
+                if key in seen:
+                    continue
+                seen.add(key)
+                records.append({
+                    "scope": scope,
+                    "start": left,
+                    "end": right,
+                    "text": text[max(0, left):min(len(text), right)].strip(),
+                })
+        return records
 
     def _actor_lexicon(self) -> List[str]:
         actors: Set[str] = set()
@@ -711,26 +834,14 @@ class L1ContextAwareDetector:
         return sorted((actor for actor in actors if actor), key=len, reverse=True)
 
     def _reference_clause_bounds(self, text_lower: str, position: int) -> Tuple[int, int]:
-        left_boundaries = [0]
-        right_boundaries = [len(text_lower)]
         boundary_markers = [
             ",", "，", ".", "。", ";", "；", "\n", "(", ")",
             " แต่", " แล้ว", " จึง", " จน", " เพราะ", " เนื่องจาก",
             " อย่างไรก็ตาม", " ขณะเดียวกัน", " ส่วน", " อีกทั้ง", " โดย", " และ", " ว่า", "ว่า",
+            "แต่", "แล้ว", "จึง", "จน", "เพราะ", "เนื่องจาก",
+            "อย่างไรก็ตาม", "ขณะเดียวกัน", "ส่วน", "อีกทั้ง", "โดย", "และ",
         ]
-        for marker in boundary_markers:
-            search_at = 0
-            while True:
-                found = text_lower.find(marker, search_at)
-                if found < 0:
-                    break
-                marker_end = found + len(marker)
-                if marker_end <= position:
-                    left_boundaries.append(marker_end)
-                elif found >= position:
-                    right_boundaries.append(found)
-                search_at = marker_end
-        return max(left_boundaries), min(right_boundaries)
+        return self._scan_boundaries(text_lower, position, boundary_markers)
 
     def _explicit_actor_mentions_before(self, text_lower: str, position: int) -> List[Dict[str, int | str]]:
         mentions: List[Dict[str, int | str]] = []
@@ -819,10 +930,12 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=36)
-        segments = self._evidence_segments(text_lower, matched_keywords)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=36, matched_spans=matched_spans)
+        segments = self._evidence_segments(text_lower, matched_keywords, matched_spans=matched_spans)
         denial_indicators = rule.get("denial_indicators", [])
         problem_indicators = rule.get("problem_indicators", [])
 
@@ -839,9 +952,11 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=36)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=36, matched_spans=matched_spans)
         problem_indicators = rule.get("problem_indicators", [])
         neutral_indicators = rule.get("neutral_indicators", [])
 
@@ -858,9 +973,11 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=36)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=36, matched_spans=matched_spans)
         problem_indicators = rule.get("problem_indicators", [])
         neutral_indicators = rule.get("neutral_indicators", [])
 
@@ -877,9 +994,11 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=40)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=40, matched_spans=matched_spans)
         problem_indicators = rule.get("problem_indicators", [])
         neutral_indicators = rule.get("neutral_indicators", [])
         caregiving_terms = ["ดูแล", "ผู้ดูแล", "ช่วยดูแล", "เฝ้าไข้", "พาไปโรงพยาบาล", "ดูแลมารดา", "ดูแลบิดา"]
@@ -897,9 +1016,11 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=40)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=40, matched_spans=matched_spans)
         external_terms = rule.get("external_terms", [])
         problem_indicators = rule.get("problem_indicators", [])
         neutral_indicators = rule.get("neutral_indicators", [])
@@ -917,9 +1038,11 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=40)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=40, matched_spans=matched_spans)
         external_terms = rule.get("external_terms", [])
         problem_indicators = rule.get("problem_indicators", [])
         if self._cooccurs_in_window(windows, external_terms, problem_indicators):
@@ -931,9 +1054,11 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=36)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=36, matched_spans=matched_spans)
         partner_terms = rule.get("partner_terms", [])
         problem_indicators = rule.get("problem_indicators", [])
         neutral_indicators = rule.get("neutral_indicators", [])
@@ -951,9 +1076,11 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=36)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=36, matched_spans=matched_spans)
         learning_indicators = rule.get("learning_indicators", [])
         impairment_indicators = rule.get("impairment_indicators", [])
         has_local_joint_context = self._cooccurs_in_window(windows, learning_indicators, impairment_indicators)
@@ -970,10 +1097,11 @@ class L1ContextAwareDetector:
         matched_keywords: List[str],
         rule: Dict,
         *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
         positive_label: str,
         neutral_label: str,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=40)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=40, matched_spans=matched_spans)
         issue_indicators = rule.get("issue_indicators", [])
         neutral_indicators = rule.get("neutral_indicators", [])
 
@@ -990,9 +1118,11 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
-        windows = self._keyword_windows(text_lower, matched_keywords, radius=24)
+        windows = self._keyword_windows(text_lower, matched_keywords, radius=24, matched_spans=matched_spans)
         migration_indicators = rule.get("migration_indicators", [])
         country_terms = set(rule.get("country_terms", []))
         non_migration_contexts = rule.get("non_migration_contexts", [])
@@ -1013,10 +1143,12 @@ class L1ContextAwareDetector:
         code_name: str,
         text_lower: str,
         matched_keywords: List[str],
-        rule: Dict
+        rule: Dict,
+        *,
+        matched_spans: Optional[List[Dict[str, int | str]]] = None,
     ) -> Tuple[bool, float, str]:
         """Validate broad distress terms with intensity, stressor, or daily-life impact."""
-        segments = self._evidence_segments(text_lower, matched_keywords)
+        segments = self._evidence_segments(text_lower, matched_keywords, matched_spans=matched_spans)
         distress_terms = rule.get("distress_indicators", [])
         impact_terms = rule.get("impact_indicators", [])
         stressor_terms = rule.get("stressor_indicators", [])
@@ -1104,13 +1236,15 @@ class L1ContextAwareDetector:
         final_confidence = raw_confidence * confidence_multiplier
         return round(max(0.05, min(0.95, final_confidence)), 4)
     
-    def _has_other_person_mention(self, text: str) -> bool:
+    def _has_other_person_mention(self, text: Any) -> bool:
         """ตรวจสอบว่ามีการกล่าวถึงบุคคลอื่นหรือไม่"""
         other_person_words = [
             "สามี", "ภรรยา", "แฟน", "พ่อ", "แม่", "ลูก", 
             "พี่", "น้อง", "เพื่อน", "คนอื่น", "ใคร" ,"เขา", "ญาติ","กิ๊ก","ชู้" , "หลาน", "ปู่ย่าตายาย", "คุณครู", "ครู", "ครูฝึก", "ครูฝึกสอน","นายจ้าง","ลูกจ้าง","เพื่อนบ้าน","เพื่อนร่วมงาน","เพื่อนสมัยเรียน"
         ]
-        return any(word in text for word in other_person_words)
+        if isinstance(text, list):
+            return any(any(word in segment for word in other_person_words) for segment in text if isinstance(segment, str))
+        return any(word in str(text) for word in other_person_words)
     
     def _is_self_action(self, text: str) -> bool:
         """ตรวจสอบว่าเป็นการกระทำต่อตัวเองหรือไม่"""
@@ -1218,13 +1352,15 @@ class L1ContextAwareDetector:
                 continue
             
             matched = [kw for kw in lowered_kws if kw in text_lower]
+            matched_spans = self._find_keyword_occurrences(text_lower, matched)
             
             if matched:
                 detected_codes.add(code)
+                evidence_spans = self._evidence_span_records(text, matched, matched_spans=matched_spans)
                 
                 # Phase 2: Context Validation
                 is_valid, conf_mult, reason = self._check_context_validity(
-                    code, text, matched
+                    code, text, matched, matched_spans=matched_spans
                 )
                 
                 final_confidence = self._calculate_confidence(
@@ -1250,6 +1386,8 @@ class L1ContextAwareDetector:
                     detection_level=detection_level,
                     reasoning=reason,
                     matched_keywords=matched,
+                    matched_spans=[dict(span) for span in matched_spans],
+                    evidence_spans=evidence_spans,
                     context_valid=is_valid,
                     validation_notes=reason if not is_valid else ""
                 ))
@@ -1613,6 +1751,8 @@ Output Format (JSON only):
                 detection_level="L2",
                 reasoning=p.get("reasoning", "LLM Inferred"),
                 matched_keywords=[p.get("evidence", "")] if p.get("evidence") else [],
+                matched_spans=[],
+                evidence_spans=[],
                 context_valid=True
             ))
         
@@ -1905,6 +2045,8 @@ class H2LDetectorV3:
             "detection_level": p.detection_level,
             "reasoning": p.reasoning,
             "matched_keywords": p.matched_keywords,
+            "matched_spans": p.matched_spans,
+            "evidence_spans": p.evidence_spans,
             "context_valid": p.context_valid,
             "validation_notes": p.validation_notes,
         }

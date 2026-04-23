@@ -120,14 +120,16 @@ flowchart TD
 
 หลักการของส่วนแสดงผลเหล่านี้คือการแปลงค่าที่เกิดขึ้นจริงจาก runtime ให้เป็นภาษาที่เข้าใจง่ายและตรวจสอบได้ เช่น
 
-- `Analyzed Case Text` ใช้ไฮไลต์คำที่ระบบจับได้และเชื่อมคำแต่ละคำกับ problem code ที่เกี่ยวข้อง
-- `Event Frames` แยก clause-level relation ในรูปแบบ `agent → action → target` เพื่อหลีกเลี่ยงการลาก actor ข้าม clause และใช้ร่วมกับ sentence-bound coreference สำหรับคำอ้างอิงอย่าง `เขา`, `รายนี้`, `คนดังกล่าว`
+- `Analyzed Case Text` ใช้ไฮไลต์คำที่ระบบจับได้ในระดับ **occurrence** ไม่ใช่เพียงระดับคำที่ซ้ำกัน โดยอาศัย `start/end span`, `mention_id`, `action_id`, `support_spans` และ `event_id` จาก runtime จริง ทำให้คำอย่าง `มารดา` ที่ปรากฏหลายครั้งในคนละบริบทถูกคลิกแยกกันได้ และไม่ถูกลากไปอธิบายด้วย event เดียวกันทั้งหมด
+- `Event Frames` แยก clause-level relation ในรูปแบบ `agent → action → target` เพื่อหลีกเลี่ยงการลาก actor ข้าม clause และใช้ร่วมกับ sentence-bound coreference สำหรับคำอ้างอิงอย่าง `เขา`, `รายนี้`, `คนดังกล่าว` โดยแต่ละ event ถูกผูกกับ `span_start/span_end` และ support mentions ที่ตรวจสอบย้อนกลับได้
 - `Live Execution Path` แสดงขั้นตอนของ pipeline พร้อมเวลาที่ใช้จริงในแต่ละ phase
 - `Case H2L Summary` สรุปตัวแปรระดับเคส เช่น prior, severity, polarity gate จำนวน candidate ที่ผ่าน/ถูกกรอง และ `review summary` ของสถานะ `confirmed`, `needs_review`, `verify_documents`, `filtered`
 - `H2L Document Score Breakdown` อธิบายการเกิดคะแนนระดับเอกสารโดยแยกตัวแปรหลักของสมการ H2L ออกจากบริบทระดับเคส
 - `Problem-Document Matrix` เป็นมุมมองเชิงโครงสร้างที่แสดงว่า problem code ใดมี supporting document ใดหนุนอยู่บ้าง และความหนาแน่นของการรองรับเป็นอย่างไร
 - `Semantic Evidence Map` แสดงความสัมพันธ์เชิงความหมายระหว่าง query, problem codes และ supporting documents โดยเน้นรายละเอียดระดับ node, semantic distance และหลักฐานเชิงลึก ซึ่งละเอียดกว่ามุมมองแบบ matrix
 - `Research Report` แยก `Case-Level Runtime Review` ออกจาก `Benchmark Performance Review` อย่างชัดเจน พร้อมมี `Performance Provenance` สำหรับบอกแหล่งที่มาของผล, `System Evaluation Status` สำหรับสรุปว่าหลักฐาน benchmark ส่วนใดพร้อมใช้อ้างอิงแล้ว, `Latest Pair Reruns` สำหรับอ่านผลเปรียบเทียบ baseline vs H2L ราย family จาก `evaluation_results/pairs/` โดยตรง, `Live Evaluation Progress` สำหรับอ่านสถานะการรัน evaluator จาก progress artifact จริง และ `Artifact Retention` สำหรับอธิบายว่า dashboard ใช้ latest/checkpoint alias เป็นหลักและเก็บ timestamped history ไว้เพียงเท่าที่จำเป็น ทั้งหมดนี้ refresh ผ่าน `/evaluation-summary` และ `/evaluation-progress` เป็นช่วง ๆ โดยไม่สร้างข้อมูลจำลอง
+
+ในรุ่นล่าสุด ผู้ใช้ยังสามารถเลือกช่วงข้อความในกล่องเคสเพื่อสร้าง `user-adjusted span anchor` ได้โดยตรง ระบบจะ remap offset ของ span ดังกล่าวหลังขั้น `trim` และ `PII redaction` ก่อนส่งต่อไปยัง polarity และ event binding ทำให้ตำแหน่งที่ผู้ใช้เลือกยังคงเป็น occurrence หลัก แม้ข้อความจริงจะถูกแทนบางส่วนด้วย `[PERSON]` หรือ `[LOCATION]`
 
 ดังนั้น ส่วนแสดงผลจึงไม่ได้เป็นองค์ประกอบตกแต่งส่วนติดต่อผู้ใช้เท่านั้น แต่เป็นเครื่องมือสนับสนุนการตรวจสอบวิธีวิจัยและการอภิปรายผลในบทที่ 4 ด้วย
 
@@ -387,9 +389,9 @@ FEATURE_WEIGHTS = {
 
 ## 3.9 Contextual Polarity Gates
 
-Contextual Polarity Gates ถูกออกแบบเพื่อควบคุมผลบวกลวงที่เกิดจากบริบทของประโยค โดยเฉพาะกรณีที่มีคำปฏิเสธ ข้อความสั้นเกินไป หรือข้อความกล่าวถึงปัญหาของบุคคลอื่นแทนผู้รับบริการเอง ในรุ่นปัจจุบันกลไกนี้ไม่ได้พิจารณาเพียงการพบคำว่า "ไม่" ในหน้าต่างอักษร แต่ใช้ **candidate-specific polarity แบบ clause-local** ร่วมกับ sentence profile, actor-target-action, sentence-bound evidence และ coreference binding เพื่อประเมินว่าคำปฏิเสธครอบ candidate ใดจริง กลไกนี้ประกอบด้วย 3 ส่วน ได้แก่ `G_neg`, `G_len` และ `G_sub` โดยคะแนนรวมคำนวณจากผลคูณของทั้งสาม gate
+Contextual Polarity Gates ถูกออกแบบเพื่อควบคุมผลบวกลวงที่เกิดจากบริบทของประโยค โดยเฉพาะกรณีที่มีคำปฏิเสธ ข้อความสั้นเกินไป หรือข้อความกล่าวถึงปัญหาของบุคคลอื่นแทนผู้รับบริการเอง ในรุ่นปัจจุบันกลไกนี้ไม่ได้พิจารณาเพียงการพบคำว่า "ไม่" ในหน้าต่างอักษร แต่ใช้ **candidate-specific polarity แบบ clause-local** ร่วมกับ sentence profile, actor-target-action, sentence-bound evidence, occurrence-level match spans และ coreference binding เพื่อประเมินว่าคำปฏิเสธครอบ candidate ใดจริง กลไกนี้ประกอบด้วย 3 ส่วน ได้แก่ `G_neg`, `G_len` และ `G_sub` โดยคะแนนรวมคำนวณจากผลคูณของทั้งสาม gate
 
-`G_neg` ใช้หน้าต่างย้อนหลัง `30` ตัวอักษรเป็น lexical fallback ภายใน clause ที่ candidate ปรากฏ และใช้ค่า `NEG_LAMBDA=0.6` เพื่อลดคะแนนเมื่อคำปฏิเสธครอบ candidate นั้นจริง `G_len` ใช้สูตรลอการิทึมเพื่อปรับคะแนนของข้อความที่สั้นเกินไป ส่วน `G_sub` ลดคะแนนเป็น `0.85` เมื่อปัญหามี `severity >= 3` และพบการกล่าวถึงบุคคลอื่นโดยไม่พบ self-subject นอกจากนี้ระบบยังมี hardship-aware exceptions สำหรับวลีอย่าง `ไม่มีเงิน`, `เงินไม่พอ`, `ยังไม่ได้นำส่ง` ที่ไม่ควรถูกตีความว่าเป็นการปฏิเสธปัญหาการเงินโดยอัตโนมัติ
+`G_neg` ใช้หน้าต่างย้อนหลัง `30` ตัวอักษรเป็น lexical fallback ภายใน clause ที่ candidate ปรากฏ และใช้ค่า `NEG_LAMBDA=0.6` เพื่อลดคะแนนเมื่อคำปฏิเสธครอบ candidate นั้นจริง `G_len` ใช้สูตรลอการิทึมเพื่อปรับคะแนนของข้อความที่สั้นเกินไป ส่วน `G_sub` ลดคะแนนเป็น `0.85` เมื่อปัญหามี `severity >= 3` และพบการกล่าวถึงบุคคลอื่นโดยไม่พบ self-subject นอกจากนี้ระบบยังมี hardship-aware exceptions สำหรับวลีอย่าง `ไม่มีเงิน`, `เงินไม่พอ`, `ยังไม่ได้นำส่ง` ที่ไม่ควรถูกตีความว่าเป็นการปฏิเสธปัญหาการเงินโดยอัตโนมัติ ในกรณีที่ผู้ใช้ปรับตำแหน่ง evidence เอง ระบบจะสร้าง `anchor span` เพิ่มก่อนคำนวณ polarity เพื่อให้ candidate ถูกประเมินจาก occurrence เดียวกับที่ผู้ใช้เลือกจริง ไม่ไปอาศัย occurrence อื่นของ keyword เดียวกันในข้อความ
 
 **ภาพที่ 3.7 Contextual Polarity Gates พร้อมค่าตัวอย่าง**
 

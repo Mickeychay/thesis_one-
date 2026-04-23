@@ -31,7 +31,7 @@
 1. พัฒนาระบบ H2L สำหรับตรวจจับปัญหาสังคมจากข้อความภาษาไทย โดยใช้ L1 context-aware detection และ L2 semantic validation ทำงานร่วมกัน
 2. ออกแบบ sentence polarity gate แบบ candidate-specific เพื่อจัดการกับคำปฏิเสธและลด false positive ที่เกิดจากการจับคำสำคัญอย่างผิวเผิน
 3. ประเมินผล H2L บน retrieval backbone หลายแบบ ได้แก่ BM25, dense retrieval, HyDE และ hybrid retrieval ภายใต้กรอบ paired comparison ที่ใช้ข้อมูลจริง
-4. สร้างชั้นการอธิบายผลที่ตรวจสอบย้อนกลับได้ ทั้งในระดับ analyzed case text, event frames, live execution path, Case H2L Summary, H2L Document Score Breakdown, Problem-Document Matrix, Semantic Evidence Map และการแยก case-level ออกจาก benchmark-level report
+4. สร้างชั้นการอธิบายผลที่ตรวจสอบย้อนกลับได้ ทั้งในระดับ analyzed case text แบบ occurrence-aware, event frames, live execution path, Case H2L Summary, H2L Document Score Breakdown, Problem-Document Matrix, Semantic Evidence Map และการแยก case-level ออกจาก benchmark-level report
 5. สังเคราะห์ข้อค้นพบเชิงวิชาการและเชิงระบบที่สามารถนำไปใช้สรุปผลในระดับวิทยานิพนธ์ได้อย่างตรงกับการทำงานจริงของระบบ
 
 ---

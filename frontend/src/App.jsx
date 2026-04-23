@@ -270,8 +270,27 @@ function tokenizeCaseText(text, lexicalTokens) {
   const matches = [];
   lexicalTokens
     .filter((token) => token.value)
-    .sort((a, b) => b.value.length - a.value.length)
+    .sort((a, b) => {
+      const leftHasSpan = Number.isInteger(a.start) && Number.isInteger(a.end) && a.end > a.start;
+      const rightHasSpan = Number.isInteger(b.start) && Number.isInteger(b.end) && b.end > b.start;
+      const priority = { agent: 0, target: 1, action: 2, negation: 3, keyword: 4 };
+      if (leftHasSpan && rightHasSpan) {
+        return (priority[a.type] ?? 9) - (priority[b.type] ?? 9)
+          || (b.end - b.start) - (a.end - a.start)
+          || a.start - b.start;
+      }
+      if (leftHasSpan !== rightHasSpan) return leftHasSpan ? -1 : 1;
+      return (priority[a.type] ?? 9) - (priority[b.type] ?? 9)
+        || b.value.length - a.value.length;
+    })
     .forEach((token) => {
+      const hasExplicitSpan = Number.isInteger(token.start) && Number.isInteger(token.end) && token.end > token.start;
+      if (hasExplicitSpan) {
+        const overlaps = matches.some((match) => token.start < match.end && token.end > match.start);
+        if (!overlaps) matches.push({ ...token });
+        return;
+      }
+
       let start = text.indexOf(token.value);
       while (start >= 0) {
         const end = start + token.value.length;
@@ -293,43 +312,124 @@ function tokenizeCaseText(text, lexicalTokens) {
   return parts;
 }
 
+function spanOverlaps(leftStart, leftEnd, rightStart, rightEnd) {
+  return leftStart < rightEnd && rightStart < leftEnd;
+}
+
+function findAllSpanOccurrences(text, needle) {
+  if (!text || !needle) return [];
+  const spans = [];
+  let start = text.indexOf(needle);
+  while (start >= 0) {
+    spans.push({ start, end: start + needle.length });
+    start = text.indexOf(needle, start + needle.length);
+  }
+  return spans;
+}
+
 function RuntimeBanner({ runtimeStatus, onRefresh }) {
   const status = runtimeStatus?.status || 'loading';
   const components = runtimeStatus?.components || {};
   const loadedCount = Object.values(components).filter(Boolean).length;
   const totalCount = Object.keys(components).length || 1;
   const errors = runtimeStatus?.errors || [];
+  const isWaiting = status === 'loading' || status === 'degraded';
 
   return (
-    <section className="mb-6 rounded-xl bg-surface-container-low p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+    <section className={`mb-6 rounded-2xl p-6 shadow-sm border transition-all duration-500 ${
+      status === 'ready' 
+        ? 'bg-surface-container-low border-teal-500/20' 
+        : 'bg-surface-container-lowest border-yellow-500/30'
+    }`}>
+      <div className="flex flex-wrap items-start justify-between gap-6">
+        <div className="flex-1 min-w-[300px]">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="font-headline text-lg font-bold text-on-surface">Runtime Status</h2>
-            <StatusBadge label={status === 'ready' ? 'Runtime Ready' : status === 'degraded' ? 'Runtime Degraded' : status === 'loading' ? 'Model Loading' : 'Runtime Error'} tone={statusTone(status)} />
-            <StatusBadge label={runtimeStatus?.l2_ready ? 'L2 Ready' : 'L2 Degraded'} tone={runtimeStatus?.l2_ready ? 'live' : 'warning'} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-container-high text-teal-600">
+              <span className={`material-symbols-outlined text-2xl ${isWaiting ? 'animate-spin' : ''}`}>
+                {status === 'ready' ? 'verified' : 'sync'}
+              </span>
+            </div>
+            <div>
+              <h2 className="font-headline text-xl font-extrabold text-on-surface">System Core Runtime</h2>
+              <div className="flex gap-2 mt-1">
+                <StatusBadge 
+                  label={status === 'ready' ? 'System Ready' : status === 'degraded' ? 'Running Degraded' : status === 'loading' ? 'Models Loading' : 'Connection Error'} 
+                  tone={statusTone(status)} 
+                />
+                <StatusBadge 
+                  label={runtimeStatus?.l2_ready ? 'Semantic L2: OK' : 'Semantic L2: OFF'} 
+                  tone={runtimeStatus?.l2_ready ? 'live' : 'warning'} 
+                />
+              </div>
+            </div>
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
-            Stage: {runtimeStatus?.stage || 'not-started'}; components loaded {loadedCount}/{totalCount}.
+          <p className="mt-3 text-sm leading-relaxed text-on-surface-variant max-w-2xl">
+            <span className="font-bold text-on-surface">Stage:</span> {runtimeStatus?.stage || 'Initializing...'} — 
+            {status === 'loading' 
+              ? ' ระบบกำลังเตรียมโมเดลภาษาและการคำนวณเวกเตอร์ในพื้นหลัง กรุณารอสักครู่เพื่อให้การวิเคราะห์แม่นยำที่สุด' 
+              : status === 'degraded'
+              ? ' ระบบทำงานได้บางส่วน (Safe-Start) โดยจะใช้ BM25 เป็นหลัก หากต้องการใช้ Hybrid/Dense กรุณาตรวจสอบทรัพยากรเครื่อง'
+              : ' ระบบพร้อมทำงานเต็มประสิทธิภาพ ทั้ง Lexical Search และ Semantic Analysis'}
           </p>
+          <div className="mt-5 flex items-center gap-4">
+            <div className="h-2.5 flex-1 max-w-[300px] overflow-hidden rounded-full bg-surface-container-high relative">
+              <div 
+                className={`h-full transition-all duration-1000 ease-out ${status === 'ready' ? 'bg-teal-500' : 'bg-yellow-400'}`} 
+                style={{ width: `${(loadedCount / totalCount) * 100}%` }}
+              />
+              {isWaiting && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+              )}
+            </div>
+            <span className="text-sm font-black text-on-surface tracking-tighter">
+              {Math.round((loadedCount / totalCount) * 100)}% COMPLETE
+            </span>
+          </div>
         </div>
-        <button className="rounded-xl bg-surface-container-high px-4 py-2 text-sm font-bold text-on-surface hover:bg-surface-container-highest" onClick={onRefresh} type="button">
-          Refresh Runtime
+        <button 
+          className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all active:scale-95 ${
+            isWaiting ? 'bg-teal-600 text-white animate-pulse' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
+          }`} 
+          onClick={onRefresh} 
+          type="button"
+        >
+          <span className={`material-symbols-outlined text-lg ${isWaiting ? 'animate-spin' : ''}`}>sync</span>
+          {isWaiting ? 'Loading Resources...' : 'Refresh Core'}
         </button>
       </div>
-      <div className="mt-4 grid gap-2 lg:grid-cols-5">
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {Object.entries(components).map(([name, ready]) => (
-          <div key={name} className={`rounded p-2 text-xs ${ready ? 'bg-green-50 text-green-950 dark:bg-green-950/40 dark:text-green-100' : 'bg-yellow-50 text-yellow-950 dark:bg-yellow-950/40 dark:text-yellow-100'}`}>
-            <span className="font-bold">{name.replaceAll('_', ' ')}</span>: {ready ? 'loaded' : 'waiting'}
+          <div 
+            key={name} 
+            className={`flex flex-col gap-1.5 rounded-xl p-3 text-xs transition-all border ${
+              ready 
+                ? 'bg-green-50 text-green-950 border-green-200 dark:bg-green-900/10 dark:text-green-100 dark:border-green-800' 
+                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/10 animate-pulse'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-black uppercase tracking-widest text-[9px] opacity-70">{ready ? 'Loaded' : 'Waiting'}</span>
+              <span className={`material-symbols-outlined text-sm ${ready ? 'text-green-600' : 'text-on-surface-variant/40 animate-spin'}`}>
+                {ready ? 'check_circle' : 'progress_activity'}
+              </span>
+            </div>
+            <span className="font-bold truncate text-sm text-on-surface">{name.replaceAll('_', ' ')}</span>
           </div>
         ))}
       </div>
       {errors.length > 0 && (
-        <div className="mt-4 rounded-lg bg-yellow-50 p-3 text-sm text-yellow-950 dark:bg-yellow-950/40 dark:text-yellow-100">
-          <div className="font-bold">Degraded reasons</div>
-          <ul className="mt-1 space-y-1">
+        <div className="mt-6 rounded-xl bg-yellow-50/50 p-4 text-sm text-yellow-950 border border-yellow-200 dark:bg-yellow-950/10 dark:text-yellow-100 dark:border-yellow-800 shadow-inner">
+          <div className="flex items-center gap-2 font-bold mb-2">
+            <span className="material-symbols-outlined text-lg">warning</span>
+            Degraded details
+          </div>
+          <ul className="space-y-1.5 opacity-90">
             {errors.slice(0, 4).map((error, index) => (
-              <li key={`${error.component}-${index}`}>{error.component}: {error.message}</li>
+              <li key={`${error.component}-${index}`} className="flex items-start gap-2">
+                <span className="mt-1 h-1 w-1 rounded-full bg-yellow-600 shrink-0" />
+                <span className="font-semibold shrink-0">{error.component}:</span>
+                <span className="line-clamp-2 italic text-xs">{error.message}</span>
+              </li>
             ))}
           </ul>
         </div>
@@ -338,72 +438,134 @@ function RuntimeBanner({ runtimeStatus, onRefresh }) {
   );
 }
 
-function StrategySelector({ pairs, selectedFamily, setSelectedFamily, selectedMode, setSelectedMode, selectedStrategy, enableL2, setEnableL2, disabled }) {
+function StrategySelector({ pairs, strategyOptions, selectedFamily, setSelectedFamily, selectedMode, setSelectedMode, selectedStrategy, enableL2, setEnableL2, disabled }) {
   const selectedPair = pairs.find((pair) => pair.family === selectedFamily) || pairs[0];
 
+  const getOptionStatus = (id) => {
+    if (!strategyOptions) return { available: true };
+    return strategyOptions.find(opt => opt.id === id) || { available: true };
+  };
+
   return (
-    <div className="rounded-xl bg-surface-container-lowest p-4">
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+    <div className="rounded-2xl bg-surface-container-lowest p-6 border border-outline-variant/10 shadow-sm">
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Retrieval Family</div>
-              <p className="mt-1 text-sm text-on-surface-variant">เลือก family เดียว แล้วเทียบ Baseline กับ H2L-Enhanced ที่ตรงคู่กัน</p>
+              <h3 className="font-headline text-base font-bold text-on-surface">1. Select Retrieval Family</h3>
+              <p className="mt-1 text-xs text-on-surface-variant">เลือกฐานข้อมูลการค้นหา (Lexical vs Semantic)</p>
             </div>
-            <StatusBadge label={selectedStrategy} tone={selectedMode === 'enhanced' ? 'live' : 'neutral'} />
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-on-surface-variant opacity-60 uppercase tracking-tighter">Current Strategy:</span>
+              <StatusBadge label={selectedStrategy} tone={selectedMode === 'enhanced' ? 'live' : 'neutral'} />
+            </div>
           </div>
-          <div className="mt-3 grid gap-2 md:grid-cols-4">
-            {pairs.map((pair) => (
-              <button
-                key={pair.family}
-                className={`rounded-xl border px-3 py-3 text-left text-sm transition-colors ${pair.family === selectedFamily ? 'border-teal-600 bg-teal-50 text-teal-950 dark:bg-teal-950/40 dark:text-teal-100' : 'border-outline-variant/30 bg-surface-container-low text-on-surface hover:bg-surface-container'}`}
-                disabled={disabled}
-                onClick={() => setSelectedFamily(pair.family)}
-                type="button"
-              >
-                <span className="block font-bold">{pair.label}</span>
-                <span className="mt-1 block text-xs text-on-surface-variant">{pair.description}</span>
-              </button>
-            ))}
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {pairs.map((pair) => {
+              const baselineStatus = getOptionStatus(pair.baseline);
+              const enhancedStatus = getOptionStatus(pair.enhanced);
+              const isFamilyAvailable = baselineStatus.available || enhancedStatus.available;
+              const isActive = pair.family === selectedFamily;
+              
+              return (
+                <button
+                  key={pair.family}
+                  className={`group relative flex flex-col rounded-2xl border p-4 text-left transition-all ${
+                    isActive 
+                      ? 'border-teal-500 bg-teal-50/50 ring-2 ring-teal-500/20 dark:bg-teal-900/10' 
+                      : 'border-outline-variant/30 bg-surface-container-low hover:border-outline-variant hover:bg-surface-container'
+                  } ${!isFamilyAvailable ? 'opacity-70' : ''}`}
+                  disabled={disabled}
+                  onClick={() => setSelectedFamily(pair.family)}
+                  type="button"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm font-extrabold ${isActive ? 'text-teal-800 dark:text-teal-300' : 'text-on-surface'}`}>
+                      {pair.label}
+                    </span>
+                    {!isFamilyAvailable && (
+                      <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-[9px] font-black text-yellow-700 uppercase">fallback</span>
+                    )}
+                  </div>
+                  <span className="mt-2 text-[11px] leading-relaxed text-on-surface-variant group-hover:text-on-surface transition-colors">
+                    {pair.description}
+                  </span>
+                  {isActive && <div className="absolute -bottom-1.5 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-t-full bg-teal-500" />}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div className="grid gap-3">
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              className={`rounded-xl p-4 text-left ${selectedMode === 'baseline' ? 'bg-slate-900 text-white' : 'bg-surface-container-low text-on-surface'}`}
-              disabled={disabled}
-              onClick={() => setSelectedMode('baseline')}
-              type="button"
-            >
-              <span className="block text-[10px] font-bold uppercase opacity-70">Baseline</span>
-              <span className="mt-1 block font-headline text-lg font-extrabold">{selectedPair?.baseline}</span>
-              <span className="mt-2 block text-xs opacity-80">RAG พื้นฐานของ family นี้</span>
-            </button>
-            <button
-              className={`rounded-xl p-4 text-left ${selectedMode === 'enhanced' ? 'bg-teal-600 text-white' : 'bg-surface-container-low text-on-surface'}`}
-              disabled={disabled}
-              onClick={() => setSelectedMode('enhanced')}
-              type="button"
-            >
-              <span className="block text-[10px] font-bold uppercase opacity-80">H2L-Enhanced</span>
-              <span className="mt-1 block font-headline text-lg font-extrabold">{selectedPair?.enhanced}</span>
-              <span className="mt-2 block text-xs opacity-90">เพิ่ม problem-aware score/gate</span>
-            </button>
+        <div className="flex flex-col gap-4 border-l border-outline-variant/10 pl-0 lg:pl-6">
+          <div>
+            <h3 className="font-headline text-base font-bold text-on-surface">2. Enhancement Level</h3>
+            <p className="mt-1 text-xs text-on-surface-variant">เทียบผลระหว่าง RAG ปกติ กับ H2L-Scoring</p>
           </div>
-          <div className="rounded-xl bg-surface-container-low p-4">
+          <div className="grid grid-cols-2 gap-3">
+            {(() => {
+              const status = getOptionStatus(selectedPair?.baseline);
+              return (
+                <button
+                  className={`relative flex flex-col rounded-2xl p-4 text-left transition-all ${
+                    selectedMode === 'baseline' ? 'bg-slate-900 text-white shadow-lg ring-4 ring-slate-900/10' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
+                  } ${!status.available ? 'opacity-70' : ''}`}
+                  disabled={disabled}
+                  onClick={() => setSelectedMode('baseline')}
+                  type="button"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase opacity-60">Baseline</span>
+                    {!status.available && <span className="text-[9px] font-black text-yellow-500">FALLBACK</span>}
+                  </div>
+                  <span className="mt-1 truncate font-headline text-lg font-black">{selectedPair?.baseline}</span>
+                  {selectedMode === 'baseline' && <span className="material-symbols-outlined absolute bottom-3 right-3 text-lg text-teal-400">check_circle</span>}
+                </button>
+              );
+            })()}
+            {(() => {
+              const status = getOptionStatus(selectedPair?.enhanced);
+              return (
+                <button
+                  className={`relative flex flex-col rounded-2xl p-4 text-left transition-all ${
+                    selectedMode === 'enhanced' ? 'bg-teal-600 text-white shadow-lg ring-4 ring-teal-600/10' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
+                  } ${!status.available ? 'opacity-70' : ''}`}
+                  disabled={disabled}
+                  onClick={() => setSelectedMode('enhanced')}
+                  type="button"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase opacity-80">H2L-Enhanced</span>
+                    {!status.available && <span className="text-[9px] font-black text-yellow-100">FALLBACK</span>}
+                  </div>
+                  <span className="mt-1 truncate font-headline text-lg font-black">{selectedPair?.enhanced}</span>
+                  {selectedMode === 'enhanced' && <span className="material-symbols-outlined absolute bottom-3 right-3 text-lg text-white">verified</span>}
+                </button>
+              );
+            })()}
+          </div>
+          <div className="flex-1 rounded-2xl bg-surface-container-low p-4">
+            {strategyOptions && !getOptionStatus(selectedStrategy).available && (
+              <div className="mb-3 rounded-xl border border-yellow-300 bg-yellow-50 px-3 py-2 text-xs font-semibold leading-relaxed text-yellow-900 dark:border-yellow-800 dark:bg-yellow-950/20 dark:text-yellow-100">
+                Strategy นี้เลือกเพื่อเทียบ/ส่ง request ได้ แต่ runtime safe-start ยังไม่มี dense/vector component จึงจะ fallback เป็นค่า default และรายงาน effective_strategy ในผลลัพธ์
+              </div>
+            )}
             <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className={`text-sm font-bold ${selectedMode === 'baseline' ? 'text-on-surface-variant opacity-50' : 'text-on-surface'}`}>L2 LLM Validation</p>
-                <p className={`mt-1 text-xs text-on-surface-variant ${selectedMode === 'baseline' ? 'opacity-50' : ''}`}>
-                  {selectedMode === 'baseline' ? 'ถูกปิดการใช้งานโดยอัตโนมัติสำหรับ Baseline Strategy เพื่อความโปร่งใสในการทดลอง' : 'เปิดเป็นค่าเริ่มต้น ถ้า Ollama/LLM ไม่พร้อม backend จะรายงาน degraded และใช้ L1 + RAG ต่อ'}
-                </p>
+              <div className="flex gap-3">
+                <span className="material-symbols-outlined text-teal-600 shrink-0">magic_button</span>
+                <div>
+                  <p className={`text-sm font-bold ${selectedMode === 'baseline' ? 'text-on-surface-variant opacity-50' : 'text-on-surface'}`}>L2 Semantic Guardrail</p>
+                  <p className="mt-1 text-[11px] leading-relaxed text-on-surface-variant">
+                    {selectedMode === 'baseline' 
+                      ? 'ถูกปิดโดยอัตโนมัติสำหรับ Baseline' 
+                      : 'ใช้ LLM ตรวจสอบความถูกต้องของปัญหาเชิงความหมาย'}
+                  </p>
+                </div>
               </div>
               <label className={`relative inline-flex items-center ${disabled || selectedMode === 'baseline' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
                 <input checked={enableL2 && selectedMode !== 'baseline'} className="peer sr-only" disabled={disabled || selectedMode === 'baseline'} onChange={(event) => setEnableL2(event.target.checked)} type="checkbox" />
                 <span className="h-6 w-11 rounded-full bg-slate-300 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-teal-600 peer-checked:after:translate-x-5" />
               </label>
             </div>
-            <p className="mt-3 text-xs text-on-surface-variant">Request: strategy={selectedStrategy}; enable_l2={String(enableL2 && selectedMode !== 'baseline')}</p>
           </div>
         </div>
       </div>
@@ -1125,79 +1287,263 @@ function KeywordsTab({ displayResult }) {
   const actions = roles.actions || [];
   const events = profile.events || [];
   const polarityRows = displayResult.polarity_effect?.rows || [];
-  const findKeywordMatches = (keyword) => [
-    ...rows
-      .filter((row) => (row.keywords || []).includes(keyword))
-      .map((row) => ({ code: row.code, name: row.name, confidence: row.confidence, decision: 'accepted', reasoning: row.reasoning })),
-    ...filteredKeywordRows
-      .filter((row) => (row.keywords || []).includes(keyword))
-      .map((row) => ({ code: row.code, name: row.name, confidence: row.confidence, decision: 'filtered', reasoning: row.reasoning || row.validation_notes })),
+  const candidateRows = [
+    ...(displayResult.problems || []).map((row) => ({ ...row, keywords: row.keywords || row.matched_keywords || [], decision: 'accepted' })),
+    ...(displayResult.filtered_out || []).map((row) => ({ ...row, keywords: row.keywords || row.matched_keywords || [], decision: 'filtered' })),
   ];
-  const findEventMatches = (roleType, value) => events.filter((event) => {
-    if (roleType === 'agent') return [event.agent, ...(event.agents || [])].includes(value);
-    if (roleType === 'target') return [event.target, ...(event.targets || [])].includes(value);
-    if (roleType === 'action') return [event.action, ...(event.actions || [])].includes(value);
-    return false;
+  const caseText = displayResult.case_description || '';
+  const eventById = new Map(events.map((event) => [event.event_id, event]));
+  const supportEntries = [];
+  const uniqueProblemSummaries = (items) => {
+    const seen = new Set();
+    return items.filter((item) => {
+      const key = `${item.code}-${item.decision}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+  const uniquePolarityRows = (items) => {
+    const seen = new Set();
+    return items.filter((item, index) => {
+      const key = `${item.code}-${item.event_id || ''}-${item.actor || ''}-${item.action || ''}-${item.target || ''}-${index}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
+  const addSupportEntry = (support, event, type, label, detail) => {
+    const start = Number(support?.start);
+    const end = Number(support?.end);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return;
+    supportEntries.push({
+      type,
+      label,
+      detail,
+      start,
+      end,
+      value: caseText.slice(start, end),
+      eventId: event?.event_id || '',
+      supportId: support?.id || '',
+      supportLabel: support?.label || '',
+      relatedEventSeed: event ? [event] : [],
+      roleSource: `${type}:${support?.id || `${start}-${end}`}`,
+    });
+  };
+
+  events.forEach((event) => {
+    (event.agent_mentions || []).forEach((mention) => addSupportEntry(
+      mention,
+      event,
+      'agent',
+      'Agent',
+      'บทบาทผู้กระทำหรือผู้ที่เป็นต้นทางของ action ใน clause ที่ระบบจับได้',
+    ));
+    (event.target_mentions || []).forEach((mention) => addSupportEntry(
+      mention,
+      event,
+      'target',
+      'Target',
+      'บทบาทผู้ถูกกระทำหรือผู้ที่ได้รับผลจากเหตุการณ์ในประโยคนี้',
+    ));
+    (event.action_mentions || []).forEach((mention) => addSupportEntry(
+      mention,
+      event,
+      'action',
+      'Action',
+      'คำกริยาหลักที่เชื่อมความสัมพันธ์ระหว่างผู้กระทำกับผู้ถูกกระทำใน event นี้',
+    ));
   });
-  const findPolarityMatches = (roleType, value) => polarityRows.filter((row) => {
-    if (roleType === 'agent') return row.actor === value;
-    if (roleType === 'target') return row.target === value;
-    if (roleType === 'action') return row.action === value;
-    return false;
+
+  (roles.mentions || []).forEach((mention) => {
+    const start = Number(mention?.start);
+    const end = Number(mention?.end);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return;
+    const matchingEvents = events.filter((event) => (
+      (event.agent_mentions || []).some((entry) => entry.mention_id === mention.mention_id)
+      || (event.target_mentions || []).some((entry) => entry.mention_id === mention.mention_id)
+    ));
+    if (matchingEvents.length) return;
+    const rolesForMention = mention.roles || [];
+    if (!rolesForMention.some((role) => role === 'agent' || role === 'target')) return;
+    const mentionType = rolesForMention.includes('agent') ? 'agent' : 'target';
+    supportEntries.push({
+      type: mentionType,
+      label: mentionType === 'agent' ? 'Agent' : 'Target',
+      detail: mentionType === 'agent'
+        ? 'บทบาทผู้กระทำที่ระบบพบจาก mention นี้ แต่ยังไม่ได้ผูกเข้ากับ event ชัดเจน'
+        : 'บทบาทผู้ถูกกระทำที่ระบบพบจาก mention นี้ แต่ยังไม่ได้ผูกเข้ากับ event ชัดเจน',
+      start,
+      end,
+      value: caseText.slice(start, end),
+      eventId: '',
+      supportId: mention.mention_id || '',
+      supportLabel: mention.mention_text || mention.label || mention.normalized || '',
+      relatedEventSeed: [],
+      roleSource: `${mentionType}:${mention.mention_id || `${start}-${end}`}`,
+    });
   });
-  const lexicalTokens = [
-    ...targets.map((value) => ({
-      type: 'target',
-      value,
-      label: 'Target',
-      detail: 'บทบาทผู้ถูกกระทำหรือผู้ที่ได้รับผลจากเหตุการณ์ในประโยคนี้',
-      relatedEvents: findEventMatches('target', value),
-      relatedPolarity: findPolarityMatches('target', value),
-      relatedProblems: [],
-    })),
-    ...agents.map((value) => ({
-      type: 'agent',
-      value,
-      label: 'Agent',
-      detail: 'บทบาทผู้กระทำหรือผู้ที่เป็นต้นทางของ action ใน clause ที่ระบบจับได้',
-      relatedEvents: findEventMatches('agent', value),
-      relatedPolarity: findPolarityMatches('agent', value),
-      relatedProblems: [],
-    })),
-    ...actions.map((value) => ({
-      type: 'action',
-      value,
-      label: 'Action',
-      detail: 'คำกริยาหลักที่เชื่อมความสัมพันธ์ระหว่างผู้กระทำกับผู้ถูกกระทำ',
-      relatedEvents: findEventMatches('action', value),
-      relatedPolarity: findPolarityMatches('action', value),
-      relatedProblems: [],
-    })),
-    ...(profile.negation_markers || []).map((value) => ({
+
+  const supportTokensBySpan = new Map();
+  supportEntries.forEach((entry) => {
+    const key = `${entry.type}-${entry.start}-${entry.end}`;
+    const existing = supportTokensBySpan.get(key);
+    if (existing) {
+      const nextEvents = [...existing.relatedEvents];
+      entry.relatedEventSeed.forEach((event) => {
+        if (event?.event_id && !nextEvents.some((existingEvent) => existingEvent.event_id === event.event_id)) {
+          nextEvents.push(event);
+        }
+      });
+      supportTokensBySpan.set(key, { ...existing, relatedEvents: nextEvents });
+      return;
+    }
+    supportTokensBySpan.set(key, {
+      ...entry,
+      relatedEvents: [...entry.relatedEventSeed],
+    });
+  });
+
+  const negationTokens = (profile.negation_markers || []).flatMap((value) => (
+    findAllSpanOccurrences(caseText, value).map((span, index) => ({
       type: 'negation',
-      value,
+      value: caseText.slice(span.start, span.end),
       label: 'Negation',
       detail: 'คำปฏิเสธที่อาจลดน้ำหนักหรือกรองบาง candidate ออกจากผลสุดท้าย',
+      start: span.start,
+      end: span.end,
       relatedEvents: [],
-      relatedPolarity: polarityRows.filter((row) => Number(row.gate || 1) < 1 || row.decision === 'filtered'),
-      relatedProblems: polarityRows
-        .filter((row) => Number(row.gate || 1) < 1 || row.decision === 'filtered')
-        .map((row) => ({ code: row.code, name: row.name, confidence: row.after_polarity_gate, decision: row.decision, reasoning: row.explanation })),
-    })),
-    ...(analysis.unique_keywords || []).map((value) => ({
-      type: 'keyword',
-      value,
-      label: 'Keyword',
-      detail: 'คำสำคัญเชิง lexical ที่ detector ใช้เป็นสัญญาณตั้งต้นก่อนเช็คบริบทและ polarity',
-      relatedEvents: [],
-      relatedPolarity: [],
-      relatedProblems: findKeywordMatches(value),
-    })),
+      relatedPolarity: polarityRows.filter((row) => (
+        (Number(row.gate || 1) < 1 || row.decision === 'filtered')
+        && (row.explanation?.includes(value) || (row.trigger_terms || []).includes(value))
+      )),
+      relatedProblems: candidateRows
+        .filter((row) => (
+          row.polarity_negated
+          && (row.polarity_reason?.includes(value) || (row.polarity_negated_terms || []).includes(value))
+        ))
+        .map((row) => ({
+          code: row.code,
+          name: row.name,
+          confidence: row.confidence_after_polarity ?? row.confidence,
+          decision: row.decision,
+          reasoning: row.polarity_reason || row.reasoning || row.validation_notes,
+        })),
+      negationKey: `${value}-${index}`,
+    }))
+  ));
+
+  const keywordTokens = candidateRows.flatMap((row, rowIndex) => (
+    (row.matched_spans || []).map((span, spanIndex) => {
+      const start = Number(span?.start);
+      const end = Number(span?.end);
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return null;
+      const relatedEvents = [];
+      const eventId = polarityRows.find((item) => item.code === row.code)?.event_id;
+      if (eventId && eventById.has(eventId)) relatedEvents.push(eventById.get(eventId));
+      events.forEach((event) => {
+        if (spanOverlaps(start, end, Number(event.span_start || 0), Number(event.span_end || 0))) {
+          if (!relatedEvents.some((existingEvent) => existingEvent.event_id === event.event_id)) relatedEvents.push(event);
+        }
+      });
+      return {
+        type: 'keyword',
+        value: caseText.slice(start, end),
+        label: 'Keyword',
+        detail: 'คำสำคัญเชิง lexical ที่ detector ใช้เป็นสัญญาณตั้งต้นก่อนเช็คบริบทและ polarity',
+        start,
+        end,
+        relatedEvents,
+        relatedPolarity: polarityRows.filter((item) => item.code === row.code),
+        relatedProblems: [{
+          code: row.code,
+          name: row.name,
+          confidence: row.confidence,
+          decision: row.decision,
+          reasoning: row.reasoning || row.validation_notes,
+        }],
+        keywordKey: `${row.code}-${rowIndex}-${spanIndex}`,
+      };
+    }).filter(Boolean)
+  ));
+
+  const lexicalTokens = [
+    ...Array.from(supportTokensBySpan.values()).map((token) => {
+      const relatedProblems = candidateRows
+        .filter((row) => (
+          (row.polarity_event_id && token.relatedEvents.some((event) => event.event_id === row.polarity_event_id))
+          || (row.matched_spans || []).some((span) => spanOverlaps(token.start, token.end, Number(span.start || 0), Number(span.end || 0)))
+          || (row.evidence_spans || []).some((span) => spanOverlaps(token.start, token.end, Number(span.start || 0), Number(span.end || 0)))
+        ))
+        .map((row) => ({
+          code: row.code,
+          name: row.name,
+          confidence: row.confidence,
+          decision: row.decision,
+          reasoning: row.reasoning || row.validation_notes,
+        }));
+      const relatedPolarity = uniquePolarityRows(polarityRows.filter((row) => (
+        (row.event_id && token.relatedEvents.some((event) => event.event_id === row.event_id))
+        || (
+          !row.event_id
+          && (
+            (token.type === 'agent' && row.actor === token.value)
+            || (token.type === 'target' && row.target === token.value)
+            || (token.type === 'action' && row.action === token.value)
+          )
+        )
+      )));
+      return {
+        ...token,
+        relatedProblems: uniqueProblemSummaries(relatedProblems),
+        relatedPolarity,
+      };
+    }),
+    ...negationTokens,
+    ...keywordTokens,
   ];
-  const tokenizedParts = tokenizeCaseText(displayResult.case_description || '', lexicalTokens).map((token, index) => ({
-    ...token,
-    tokenKey: `${token.type}-${token.start}-${token.end}-${index}`,
-  }));
+  const tokenizedParts = tokenizeCaseText(caseText, lexicalTokens).map((token, index) => {
+    const tokenKey = `${token.type}-${token.start}-${token.end}-${index}`;
+    if (token.type === 'plain') return { ...token, tokenKey };
+
+    let contextNote = null;
+    let filteredRelatedEvents = token.relatedEvents || [];
+
+    if (!filteredRelatedEvents.length) {
+      filteredRelatedEvents = events.filter((event) => (
+        Number.isFinite(Number(event.span_start))
+        && Number.isFinite(Number(event.span_end))
+        && spanOverlaps(token.start, token.end, Number(event.span_start), Number(event.span_end))
+      ));
+    }
+
+    if (filteredRelatedEvents.length) {
+      const roleMatches = filteredRelatedEvents.some((event) => {
+        if (token.type === 'agent') {
+          return (event.agent_mentions || []).some((mention) => spanOverlaps(token.start, token.end, Number(mention.start || 0), Number(mention.end || 0)));
+        }
+        if (token.type === 'target') {
+          return (event.target_mentions || []).some((mention) => spanOverlaps(token.start, token.end, Number(mention.start || 0), Number(mention.end || 0)));
+        }
+        if (token.type === 'action') {
+          return (event.action_mentions || []).some((mention) => spanOverlaps(token.start, token.end, Number(mention.start || 0), Number(mention.end || 0)));
+        }
+        return true;
+      });
+
+      if (!roleMatches && token.type !== 'keyword' && token.type !== 'negation') {
+        contextNote = `occurrence นี้อยู่ใกล้ event จริง แต่ไม่ได้ทำหน้าที่เป็น ${token.label} หลักของ event นั้น`;
+      }
+    }
+
+    return {
+      ...token,
+      tokenKey,
+      contextNote,
+      relatedEvents: filteredRelatedEvents
+    };
+  });
   const interactiveTokens = tokenizedParts.filter((token) => token.type !== 'plain');
   const matchedKeywords = analysis.unique_keywords || [];
   const caseKey = `${displayResult.case_id || 'no-case'}::${displayResult.case_description || ''}`;
@@ -1345,6 +1691,12 @@ function KeywordsTab({ displayResult }) {
               </div>
               {activeToken ? (
                 <>
+                  {activeToken.contextNote && (
+                    <div className="mt-4 flex items-center gap-1.5 rounded-lg bg-yellow-50 p-2.5 text-[11px] font-medium text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200 border border-yellow-200/50">
+                      <span className="material-symbols-outlined text-sm">info</span>
+                      {activeToken.contextNote}
+                    </div>
+                  )}
                   <div className="mt-4 grid gap-3 sm:grid-cols-4">
                     <MetricTile label="Type" value={activeToken.label || activeToken.type} hint={`position ${activeToken.start}-${activeToken.end}`} tone="bg-surface-container-low" />
                     <MetricTile label="Related Codes" value={activeToken.relatedProblems?.length || 0} hint="problem rows ที่เชื่อมกับคำนี้" tone="bg-surface-container-low" />
@@ -5511,6 +5863,9 @@ function AuditAndFinalizePanel({ auditPacket, signoffPacket, reviewerNote, setRe
 export default function App() {
   const [caseDescription, setCaseDescription] = useState('เด็กหญิงถูกแม่ดุด่าเป็นประจำ ครอบครัวรายได้น้อย เครียดมากและไม่อยากไปโรงเรียน');
   const [analyzedCase, setAnalyzedCase] = useState('');
+  const [userAdjustedSpans, setUserAdjustedSpans] = useState([]);
+  const [pendingAnchorSpan, setPendingAnchorSpan] = useState(null);
+  const [analyzedUserAdjustedSpans, setAnalyzedUserAdjustedSpans] = useState([]);
   const [analyzedStrategy, setAnalyzedStrategy] = useState('h2l-hybrid');
   const [analyzedL2, setAnalyzedL2] = useState(true);
   const [analyzedTopK, setAnalyzedTopK] = useState(DEFAULT_DOC_TOP_K);
@@ -5546,17 +5901,17 @@ export default function App() {
   const strategyPairs = runtimeStatus?.strategy_pairs || evaluationSummary?.strategy_pairs || DEFAULT_STRATEGY_PAIRS;
   const selectedPair = strategyPairs.find((pair) => pair.family === selectedFamily) || strategyPairs[0] || DEFAULT_STRATEGY_PAIRS[3];
   const selectedStrategy = selectedMode === 'baseline' ? selectedPair.baseline : selectedPair.enhanced;
-
-  useEffect(() => {
-    const runtimeDefault = runtimeStatus?.default_strategy;
-    if (!runtimeDefault || runtimeDefault === selectedStrategy) return;
-
-    const defaultPair = strategyPairs.find((pair) => pair.baseline === runtimeDefault || pair.enhanced === runtimeDefault);
-    if (!defaultPair) return;
-
-    setSelectedFamily(defaultPair.family);
-    setSelectedMode(defaultPair.baseline === runtimeDefault ? 'baseline' : 'enhanced');
-  }, [runtimeStatus?.default_strategy, selectedStrategy, strategyPairs]);
+  const serializeUserAdjustedSpans = (spans) => JSON.stringify(
+    (spans || [])
+      .map((span) => ({
+        start: Number(span.start || 0),
+        end: Number(span.end || 0),
+        text: String(span.text || ''),
+      }))
+      .sort((left, right) => left.start - right.start || left.end - right.end || left.text.localeCompare(right.text, 'th')),
+  );
+  const userAdjustedSignature = serializeUserAdjustedSpans(userAdjustedSpans);
+  const analyzedUserAdjustedSignature = serializeUserAdjustedSpans(analyzedUserAdjustedSpans);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -5644,18 +5999,24 @@ export default function App() {
       await refreshEvaluationSummary();
     };
     poll();
-    const interval = window.setInterval(poll, activeTab === 'evaluation' ? 8000 : 30000);
+    
+    // Dynamic polling interval: fast (2s) when loading/degraded, medium (10s) when ready
+    const isRuntimeWaiting = runtimeStatus.status === 'loading' || runtimeStatus.status === 'degraded';
+    const pollInterval = isRuntimeWaiting ? 2000 : 10000;
+    
+    const interval = window.setInterval(poll, pollInterval);
     return () => {
       cancelled = true;
       window.clearInterval(interval);
     };
-  }, [activeTab]);
+  }, [activeTab, runtimeStatus.status]);
 
   const analyzeCase = async () => {
     const trimmedCase = caseDescription.trim();
     if (!trimmedCase) {
       setResult(null);
       setAnalyzedCase('');
+      setAnalyzedUserAdjustedSpans([]);
       setHasSubmitted(true);
       setError('กรุณาป้อนข้อมูลเคสก่อนเริ่มวิเคราะห์');
       return;
@@ -5676,18 +6037,25 @@ export default function App() {
       const data = await fetchJson('/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ case_description: trimmedCase, strategy: selectedStrategy, enable_l2: enableL2, top_k: evidenceTopK }),
+        body: JSON.stringify({
+          case_description: caseDescription,
+          strategy: selectedStrategy,
+          enable_l2: enableL2,
+          top_k: evidenceTopK,
+          user_adjusted_spans: userAdjustedSpans,
+        }),
       });
       setResult(data);
       setRuntimeStatus(data.runtime_status || runtimeStatus);
       setAnalyzedCase(trimmedCase);
+      setAnalyzedUserAdjustedSpans(userAdjustedSpans);
       setAnalyzedStrategy(data.requested_strategy || selectedStrategy);
       setAnalyzedL2(enableL2);
       setAnalyzedTopK(data.top_k || evidenceTopK);
       setActionMessage({
         tone: data.runtime_status?.status === 'degraded' ? 'warning' : 'live',
         title: 'ประเมินผลเสร็จแล้ว',
-        detail: `case=${data.case_id}; strategy=${data.requested_strategy}; top_k=${data.top_k || evidenceTopK}; problems=${(data.problems || []).length}; candidates=${data.candidate_count || 0}; evidence docs=${data.retrieved_docs_count || 0}; runtime=${data.runtime_status?.status}`,
+        detail: `case=${data.case_id}; strategy=${data.requested_strategy}; top_k=${data.top_k || evidenceTopK}; anchors=${data.user_adjusted_span_count || 0}; problems=${(data.problems || []).length}; candidates=${data.candidate_count || 0}; evidence docs=${data.retrieved_docs_count || 0}; runtime=${data.runtime_status?.status}`,
       });
       setActiveTab('analysis');
     } catch (err) {
@@ -5696,6 +6064,7 @@ export default function App() {
       if (runtimePayload) setRuntimeStatus(runtimePayload);
       setResult(null);
       setAnalyzedCase('');
+      setAnalyzedUserAdjustedSpans([]);
       setError(err.name === 'AbortError' ? 'API ใช้เวลานานเกินกำหนด กรุณาดู Runtime Status ว่าโมเดล/index พร้อมหรือไม่' : `เชื่อมต่อ/ประมวลผล API ไม่สำเร็จ: ${err.message}`);
     } finally {
       setLoading(false);
@@ -5703,10 +6072,82 @@ export default function App() {
   };
 
   const handleCaseDescriptionChange = (event) => {
+    const nextValue = event.target.value;
+    const hadAnchors = userAdjustedSpans.length > 0;
     setCaseDescription(event.target.value);
+    setPendingAnchorSpan(null);
+    if (hadAnchors) setUserAdjustedSpans([]);
     setError('');
-    if (result && event.target.value.trim() !== analyzedCase) {
-      setActionMessage({ tone: 'neutral', title: 'ข้อความเคสเปลี่ยนแล้ว', detail: 'ผลลัพธ์เดิมถูกพักไว้ กด Run H2L Analysis เพื่อประเมินเคสปัจจุบันใหม่' });
+    if (result && nextValue.trim() !== analyzedCase) {
+      setActionMessage({
+        tone: 'neutral',
+        title: 'ข้อความเคสเปลี่ยนแล้ว',
+        detail: hadAnchors
+          ? 'ข้อความเคสเปลี่ยนแล้ว จึงล้างตำแหน่ง anchor เดิมเพื่อไม่ให้ offset เพี้ยน กด Run H2L Analysis เพื่อประเมินใหม่'
+          : 'ผลลัพธ์เดิมถูกพักไว้ กด Run H2L Analysis เพื่อประเมินเคสปัจจุบันใหม่',
+      });
+    }
+  };
+
+  const handleCaseSelection = (event) => {
+    const start = Number(event.target.selectionStart || 0);
+    const end = Number(event.target.selectionEnd || 0);
+    if (end <= start) {
+      setPendingAnchorSpan(null);
+      return;
+    }
+    const text = event.target.value.slice(start, end);
+    if (!text.trim()) {
+      setPendingAnchorSpan(null);
+      return;
+    }
+    setPendingAnchorSpan({
+      start,
+      end,
+      text,
+      keyword: text,
+      scope: 'match',
+      position_source: 'user_adjusted',
+      user_adjusted: true,
+    });
+  };
+
+  const addPendingAnchorSpan = () => {
+    if (!pendingAnchorSpan) return;
+    setUserAdjustedSpans((current) => {
+      const alreadyExists = current.some((span) => span.start === pendingAnchorSpan.start && span.end === pendingAnchorSpan.end);
+      if (alreadyExists) return current;
+      return [...current, pendingAnchorSpan].sort((left, right) => left.start - right.start || left.end - right.end);
+    });
+    if (result) {
+      setActionMessage({
+        tone: 'neutral',
+        title: 'เพิ่ม anchor position แล้ว',
+        detail: 'ตำแหน่งที่เลือกจะถูกส่งไป backend ในการวิเคราะห์รอบถัดไป กด Run H2L Analysis เพื่ออัปเดตผล',
+      });
+    }
+  };
+
+  const removeUserAdjustedSpan = (start, end) => {
+    setUserAdjustedSpans((current) => current.filter((span) => span.start !== start || span.end !== end));
+    if (result) {
+      setActionMessage({
+        tone: 'neutral',
+        title: 'ลบ anchor position แล้ว',
+        detail: 'ผลปัจจุบันยังอ้าง anchor เดิมอยู่ กด Run H2L Analysis เพื่อประเมินใหม่ตามตำแหน่งล่าสุด',
+      });
+    }
+  };
+
+  const clearUserAdjustedSpans = () => {
+    setUserAdjustedSpans([]);
+    setPendingAnchorSpan(null);
+    if (result) {
+      setActionMessage({
+        tone: 'neutral',
+        title: 'ล้าง anchor position แล้ว',
+        detail: 'ผลปัจจุบันยังอ้าง anchor เดิมอยู่ กด Run H2L Analysis เพื่อประเมินใหม่โดยไม่ใช้ตำแหน่งที่ผู้ใช้ fix ไว้',
+      });
     }
   };
 
@@ -5747,7 +6188,7 @@ export default function App() {
   };
 
   const requestSecondaryAudit = async () => {
-    const resultMatchesInput = result && caseDescription.trim() === analyzedCase;
+    const resultMatchesInput = result && caseDescription.trim() === analyzedCase && userAdjustedSignature === analyzedUserAdjustedSignature;
     if (!resultMatchesInput) {
       setActionMessage({ tone: 'warning', title: 'Secondary Audit', detail: 'Run analysis for the current case before preparing an audit packet.' });
       return;
@@ -5766,7 +6207,7 @@ export default function App() {
   };
 
   const finalizeCase = async () => {
-    const resultMatchesInput = result && caseDescription.trim() === analyzedCase;
+    const resultMatchesInput = result && caseDescription.trim() === analyzedCase && userAdjustedSignature === analyzedUserAdjustedSignature;
     if (!resultMatchesInput) {
       setActionMessage({ tone: 'warning', title: 'Case Sign-Off', detail: 'Run analysis for the current case before sign-off review.' });
       return;
@@ -5794,7 +6235,16 @@ export default function App() {
     }
   };
 
-  const isCaseDirty = Boolean(result && (caseDescription.trim() !== analyzedCase || selectedStrategy !== analyzedStrategy || enableL2 !== analyzedL2 || evidenceTopK !== analyzedTopK));
+    const isCaseDirty = Boolean(
+      result
+      && (
+        caseDescription.trim() !== analyzedCase
+        || userAdjustedSignature !== analyzedUserAdjustedSignature
+        || selectedStrategy !== analyzedStrategy
+        || enableL2 !== analyzedL2
+        || evidenceTopK !== analyzedTopK
+      )
+    );
   const displayResult = isCaseDirty ? { ...emptyResult, status: 'stale', case_description: analyzedCase || '' } : result || emptyResult;
   const dataTone = loading
     ? 'neutral'
@@ -5926,12 +6376,74 @@ export default function App() {
               <StatusBadge label={displayResult.severity_level || 'MILD'} tone={displayResult.severity_level === 'CRITICAL' || displayResult.severity_level === 'SEVERE' ? 'error' : displayResult.severity_level === 'MODERATE' ? 'warning' : 'neutral'} />
             </div>
           </div>
-          <textarea className="mt-5 h-28 w-full rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-3 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-teal-600" value={caseDescription} onChange={handleCaseDescriptionChange} />
+          <textarea
+            className="mt-5 h-28 w-full rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-3 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-teal-600"
+            value={caseDescription}
+            onChange={handleCaseDescriptionChange}
+            onSelect={handleCaseSelection}
+          />
+          <div className="mt-3 rounded-xl bg-surface-container-lowest p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Position Anchors</div>
+                <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">
+                  ลากเลือกข้อความในกล่องเคสด้านบน แล้วเพิ่มเป็น anchor เพื่อบอก backend ให้ยึด occurrence เดียวกับที่ผู้ใช้เลือกจริง
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge label={userAdjustedSpans.length ? `${userAdjustedSpans.length} anchor` : 'No Anchor'} tone={userAdjustedSpans.length ? 'live' : 'neutral'} />
+                <button
+                  className={`rounded-lg px-3 py-2 text-xs font-bold ${pendingAnchorSpan ? 'bg-teal-600 text-white hover:opacity-90' : 'bg-surface-container-high text-on-surface-variant'}`}
+                  disabled={!pendingAnchorSpan}
+                  onClick={addPendingAnchorSpan}
+                  type="button"
+                >
+                  ใช้ช่วงที่เลือก
+                </button>
+                <button
+                  className={`rounded-lg px-3 py-2 text-xs font-bold ${userAdjustedSpans.length ? 'bg-surface-container-high text-on-surface hover:bg-surface-container' : 'bg-surface-container-high text-on-surface-variant'}`}
+                  disabled={!userAdjustedSpans.length}
+                  onClick={clearUserAdjustedSpans}
+                  type="button"
+                >
+                  ล้างทั้งหมด
+                </button>
+              </div>
+            </div>
+            <div className="mt-3 space-y-3">
+              {pendingAnchorSpan ? (
+                <div className="rounded-lg bg-teal-50 p-3 text-sm text-teal-950 dark:bg-teal-950/30 dark:text-teal-50">
+                  ช่วงที่เลือกตอนนี้: {pendingAnchorSpan.start}-{pendingAnchorSpan.end} · “{pendingAnchorSpan.text}”
+                </div>
+              ) : (
+                <div className="rounded-lg bg-surface-container-low p-3 text-sm text-on-surface-variant">
+                  ยังไม่ได้เลือกข้อความ ถ้าต้องการ fix ตำแหน่ง ให้ลากเลือกคำหรือวลีในกล่องเคสก่อน
+                </div>
+              )}
+              {userAdjustedSpans.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {userAdjustedSpans.map((span) => (
+                    <button
+                      className="inline-flex items-center gap-2 rounded-full bg-teal-100 px-3 py-1.5 text-xs font-bold text-teal-950 transition-colors hover:bg-teal-200 dark:bg-teal-950/50 dark:text-teal-100 dark:hover:bg-teal-900/60"
+                      key={`${span.start}-${span.end}-${span.text}`}
+                      onClick={() => removeUserAdjustedSpan(span.start, span.end)}
+                      type="button"
+                    >
+                      <span>{span.start}-{span.end}</span>
+                      <span className="max-w-[240px] truncate">“{span.text}”</span>
+                      <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           <div className="mt-4">
             <StrategySelector
               disabled={loading}
               enableL2={enableL2}
               pairs={strategyPairs}
+              strategyOptions={runtimeStatus?.strategy_options}
               selectedFamily={selectedFamily}
               selectedMode={selectedMode}
               selectedStrategy={selectedStrategy}
