@@ -9,7 +9,6 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-from sentence_transformers import SentenceTransformer, CrossEncoder
 from pythainlp import word_tokenize
 from pythainlp.util import normalize as th_normalize 
 
@@ -86,6 +85,8 @@ class DenseIndex:
 
     def _load_embedder(self):
         try:
+            from sentence_transformers import SentenceTransformer
+
             self.embedder = SentenceTransformer(self.model_name, device=self.device, trust_remote_code=True)
         except Exception as e:
             raise RuntimeError(f"Failed to load embedding model: {e}")
@@ -184,6 +185,8 @@ class ThaiBM25:
 class Reranker:
     def __init__(self, model_name: str, device: str):
         try:
+            from sentence_transformers import CrossEncoder
+
             self.model = CrossEncoder(model_name, device=device, trust_remote_code=True)
         except Exception as e:
             raise RuntimeError(f"Failed to load reranker model: {e}")
@@ -222,9 +225,13 @@ class HybridRetriever:
                 raise ValueError("FATAL: _load_all_docs returned an empty list. Check data source and config.")
             self.doc_map = {doc.id: doc for doc in self.all_docs}
             
-            self.dense_retriever = DenseIndex(config.DB_TYPE, config.DB_PATH, config.EMBEDDING_MODEL, config.DEVICE)
+            self.dense_retriever = (
+                DenseIndex(config.DB_TYPE, config.DB_PATH, config.EMBEDDING_MODEL, config.DEVICE)
+                if getattr(config, "ENABLE_DENSE_RUNTIME", True)
+                else None
+            )
             self.lexical_retriever = ThaiBM25(self.all_docs)
-            self.reranker = Reranker(config.RERANK_MODEL, config.DEVICE) if config.USE_RERANK else None
+            self.reranker = Reranker(config.RERANK_MODEL, config.DEVICE) if getattr(config, "USE_RERANK", False) else None
                 
         console.print(f"✅ [{self.__class__.__name__}] Pipeline ready!", style="bold green")
 
@@ -261,10 +268,15 @@ class HybridRetriever:
         fusion_k = fusion_k_override if fusion_k_override is not None else self.config.FUSION_K
         top_k = top_k_override if top_k_override is not None else self.config.TOP_K
 
-        dense_hits = self.dense_retriever.search(query, top_k=bm25_k)
-        bm25_hits = self.lexical_retriever.search(query, top_k=bm25_k)
+        dense_hits = self.dense_retriever.search(query, top_k=bm25_k) if self.dense_retriever else []
+        bm25_hits = self.lexical_retriever.search(query, top_k=bm25_k) if self.lexical_retriever else []
         
-        fused_hits = _rrf_fusion(dense_hits, bm25_hits, k=fusion_k, rrf_k=self.config.RRF_K)
+        if dense_hits and bm25_hits:
+            fused_hits = _rrf_fusion(dense_hits, bm25_hits, k=fusion_k, rrf_k=self.config.RRF_K)
+        elif bm25_hits:
+            fused_hits = bm25_hits[:fusion_k]
+        else:
+            fused_hits = dense_hits[:fusion_k]
         fused_hits_map = dict(fused_hits)
         
         candidate_docs = [self.doc_map[doc_id] for doc_id, _ in fused_hits if doc_id in self.doc_map]

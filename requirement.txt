@@ -14,7 +14,9 @@ einops>=0.8.0
 
 # ✨ เพิ่มสำหรับ Local LLM
 accelerate>=0.20.0
-bitsandbytes>=0.41.0  # สำหรับ quantization (8bit/4bit)
+# bitsandbytes is optional for local quantized LLM experiments. Keeping it out
+# of hosted installs avoids CPU/runtime crashes on platforms without CUDA.
+# bitsandbytes>=0.41.0
 sentencepiece>=0.1.99  # สำหรับบาง tokenizers
 protobuf>=3.20.0
 
