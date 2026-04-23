@@ -4018,5 +4018,7 @@ def serve_frontend_head(full_path: str):
 
 if __name__ == "__main__":
     import uvicorn
+    from config import get_config
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    config = get_config()
+    uvicorn.run(app, host=getattr(config, "HOST", "0.0.0.0"), port=getattr(config, "PORT", 8000))

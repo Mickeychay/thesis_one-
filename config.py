@@ -19,6 +19,24 @@ def _as_bool(s: str, default=False):
         return default
     return str(s).lower() in {"1", "true", "yes", "y", "on"}
 
+def _default_device() -> str:
+    """Pick a safe default device for local Mac and Linux/cloud runtimes."""
+    explicit_device = os.getenv("DEVICE")
+    if explicit_device:
+        return explicit_device
+
+    try:
+        import torch
+
+        if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+            return "mps"
+        if torch.cuda.is_available():
+            return "cuda"
+    except Exception:
+        pass
+
+    return "cpu"
+
 class Config:
     """Main configuration class"""
     
@@ -45,7 +63,7 @@ class Config:
     # =========================================================================
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "intfloat/multilingual-e5-base")
     RERANK_MODEL = os.getenv("RERANK_MODEL", "BAAI/bge-reranker-v2-m3")
-    DEVICE = os.getenv("DEVICE", "mps")
+    DEVICE = _default_device()
 
     # =========================================================================
     # LLM Configuration

@@ -19,6 +19,12 @@ Open:
 http://127.0.0.1:8000/
 ```
 
+For cloud/runtime deployment, install from `requirements.txt` and start with:
+
+```bash
+uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}
+```
+
 Do not run Vite for the full demo. `npm run dev` is only for frontend-only development.
 
 ## Readiness Endpoints
