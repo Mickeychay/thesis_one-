@@ -3,15 +3,58 @@ import sys
 import subprocess
 import time
 import socket
+import signal
 import uvicorn
 from pathlib import Path
 
 def kill_port(port):
-    """Attempt to kill process on a specific port (Mac/Linux)."""
+    """Attempt to gracefully stop processes listening on a port (Mac/Linux)."""
     try:
-        subprocess.run(f"lsof -ti:{port} | xargs kill -9", shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
-    except:
-        pass
+        result = subprocess.run(
+            ["lsof", "-ti", f":{port}"],
+            check=False,
+            text=True,
+            capture_output=True,
+        )
+    except FileNotFoundError:
+        print("   lsof not found; skipping automatic port cleanup.")
+        return
+    except Exception as exc:
+        print(f"   Could not inspect port {port}: {exc}")
+        return
+
+    pids = sorted({int(pid) for pid in result.stdout.split() if pid.isdigit()})
+    if not pids:
+        return
+
+    print(f"   Stopping {len(pids)} process(es) on port {port}: {', '.join(map(str, pids))}")
+    for pid in pids:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except ProcessLookupError:
+            continue
+        except PermissionError:
+            print(f"   No permission to stop process {pid}")
+
+    deadline = time.time() + 3
+    remaining = set(pids)
+    while remaining and time.time() < deadline:
+        for pid in list(remaining):
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                remaining.remove(pid)
+        if remaining:
+            time.sleep(0.1)
+
+    for pid in remaining:
+        try:
+            os.kill(pid, signal.SIGKILL)
+            print(f"   Force-stopped process {pid} after graceful timeout.")
+        except ProcessLookupError:
+            pass
+        except PermissionError:
+            print(f"   No permission to force-stop process {pid}")
 
 def get_network_ip():
     """Get the local network IP address."""
@@ -36,7 +79,7 @@ def main():
     print("\n🚀 H2L Thesis System Startup")
     print("=============================")
     
-    # Always try to cleanup port 8000 to prevent 'Address already in use'
+    # Try to cleanup the configured port to prevent 'Address already in use'.
     print(f"🧹 Ensuring port {port} is free...")
     kill_port(port)
     if is_dev:

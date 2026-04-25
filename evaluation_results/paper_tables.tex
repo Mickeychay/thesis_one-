@@ -1,79 +1,109 @@
-% Table 1: Template (run evaluation first)
+% Auto-refreshed thesis/paper tables from latest real artifacts (2026-04-25)
+% Source: evaluation_results/proper_eval_latest_summary.json,
+% evaluation_results/sentence_polarity_latest.json,
+% ablation_results/v6_component_latest/rq6_results.csv
 
 \begin{table*}[t]
 \centering
-\caption{Retrieval Quality Comparison Across Strategies}
+\caption{Retrieval Quality Comparison Across Strategies under the Leakage-Safe Test Split}
 \label{tab:main_comparison}
-\begin{tabular}{lcccccc}
+\begin{tabular}{lrrrrrr}
 \toprule
-Strategy & nDCG@5 & P@5 & MAP & MRR & F1@5 & Time (s) \\
+Strategy & nDCG@5 & MAP & MRR & P@5 & F1@5 & Time (s) \\
 \midrule
-basic & \textbf{0.0000 ± 0.0000} & -- & -- & -- & -- & -- \\
-\midrule
-h2l-hybrid & 0.0000 ± 0.0000 & -- & -- & -- & -- & -- \\
+BM25 Only & 0.2079 & 0.2196 & 0.2697 & 0.0971 & 0.1252 & \textbf{0.0013} \\
+Naive RAG & 0.2034 & 0.2003 & 0.2635 & 0.1029 & 0.1321 & 0.0867 \\
+HyDE & 0.1120 & 0.1113 & 0.1224 & 0.0412 & 0.0596 & 3.8283 \\
+Hybrid Baseline & 0.2270 & 0.2250 & 0.2710 & 0.1118 & 0.1435 & 1.0582 \\
+H2L-BM25 & \textbf{0.2437} & 0.2289 & 0.2687 & \textbf{0.1176} & \textbf{0.1529} & 0.0137 \\
+H2L-Naive RAG & 0.1962 & 0.1936 & 0.2703 & 0.1000 & 0.1252 & 0.9222 \\
+H2L-HyDE & 0.1405 & 0.1479 & 0.1697 & 0.0441 & 0.0641 & 7.0039 \\
+H2L-Hybrid & 0.2290 & \textbf{0.2362} & \textbf{0.2893} & 0.1088 & 0.1403 & 7.6807 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-
-
-% Table 2: Ablation Study
+\begin{table*}[t]
+\centering
+\caption{Paired Baseline-vs-H2L Comparisons for Primary Metrics}
+\label{tab:paired_comparison}
+\begin{tabular}{llrrrrl}
+\toprule
+Pair & Metric & Baseline & H2L & $\Delta$ & $p$-value & Verdict \\
+\midrule
+BM25 vs H2L-BM25 & MAP & 0.2196 & 0.2289 & +0.0093 & 0.9612 & practically tied \\
+BM25 vs H2L-BM25 & MRR & 0.2697 & 0.2687 & -0.0010 & 0.4061 & practically tied \\
+BM25 vs H2L-BM25 & nDCG@5 & 0.2079 & 0.2437 & +0.0359 & 0.0131 & supported \\
+Naive RAG vs H2L-Naive RAG & MAP & 0.2003 & 0.1936 & -0.0067 & 0.1330 & practically tied \\
+Naive RAG vs H2L-Naive RAG & MRR & 0.2635 & 0.2703 & +0.0068 & 0.6002 & practically tied \\
+Naive RAG vs H2L-Naive RAG & nDCG@5 & 0.2034 & 0.1962 & -0.0072 & 0.1156 & practically tied \\
+HyDE vs H2L-HyDE & MAP & 0.1113 & 0.1479 & +0.0366 & 0.1443 & trend only \\
+HyDE vs H2L-HyDE & MRR & 0.1224 & 0.1697 & +0.0473 & 0.0800 & trend only \\
+HyDE vs H2L-HyDE & nDCG@5 & 0.1120 & 0.1405 & +0.0284 & 0.2894 & trend only \\
+Hybrid vs H2L-Hybrid & MAP & 0.2250 & 0.2362 & +0.0112 & 0.2668 & trend only \\
+Hybrid vs H2L-Hybrid & MRR & 0.2710 & 0.2893 & +0.0183 & 0.1230 & trend only \\
+Hybrid vs H2L-Hybrid & nDCG@5 & 0.2270 & 0.2290 & +0.0019 & 0.8590 & practically tied \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
 \begin{table}[t]
 \centering
-\caption{Ablation Study Results}
-\label{tab:ablation}
-\begin{tabular}{lccc}
+\caption{Sentence Polarity Evaluation on the Leakage-Safe Test Split}
+\label{tab:sentence_polarity}
+\begin{tabular}{lr}
 \toprule
-Configuration & nDCG@5 & P@5 & MAP \\
+Metric & Value \\
 \midrule
-H2L V3 (Full) & -- & -- & -- \\
-\quad w/o L2 Filtering & -- & -- & -- \\
-\quad w/o Severity Prior & -- & -- & -- \\
-\quad w/o Semantic Matching & -- & -- & -- \\
-\quad $\alpha = 0$ (No Problem Scoring) & -- & -- & -- \\
+Total cases & 68 \\
+Positive / negated cases & 50 / 18 \\
+Accuracy & 0.8824 \\
+Negation detection rate & 0.7222 \\
+False positive rate & 0.0600 \\
+Precision & 0.8125 \\
+F1 & 0.7650 \\
+Mean $G_{neg}$ on positive cases & 0.9760 \\
+Mean $G_{neg}$ on negated cases & 0.6000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{V6 Component Ablation Smoke Run}
+\label{tab:v6_ablation}
+\begin{tabular}{lrrr}
+\toprule
+Configuration & MAP & MRR & nDCG@5 \\
+\midrule
+Full V6 & 0.3110 & 0.4000 & 0.1733 \\
+Product Feature Mode & 0.3110 & 0.4000 & 0.1733 \\
+w/o Adaptive Alpha & 0.3110 & 0.4000 & 0.1733 \\
+w/o Bayesian Prior & 0.3110 & 0.4000 & 0.1733 \\
+w/o IDF Specificity & 0.3110 & 0.4000 & 0.1733 \\
+w/o KL Penalty & 0.3110 & 0.4000 & 0.1733 \\
+w/o Margin Activation & 0.3110 & 0.4000 & 0.1733 \\
+w/o Negation Gate & 0.3110 & 0.4000 & 0.1733 \\
 \bottomrule
 \end{tabular}
 \vspace{1mm}
-\footnotesize{Values marked with -- to be filled after running updated ablation.}
+\footnotesize{This is a smoke/sanity ablation on 5 cases (40 rows), not a final component-level causal claim.}
 \end{table}
-
-
-
-% Table 3: Statistical Significance
 
 \begin{table}[t]
 \centering
-\caption{Pairwise Statistical Comparison (nDCG@5)}
-\label{tab:significance}
-\begin{tabular}{lcccc}
-\toprule
-Comparison & $p$-value & Cohen's $d$ & Effect & Sig. \\
-\midrule
-\multicolumn{5}{c}{\textit{Run evaluation to populate}} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-
-% Table 4: Human Evaluation
-
-\begin{table}[t]
-\centering
-\caption{Human Evaluation by Domain Experts ($n$ evaluators)}
+\caption{Blind Expert Evaluation Template}
 \label{tab:human_eval}
 \begin{tabular}{lccc}
 \toprule
-System & Relevance & Completeness & Usefulness \\
+System & Relevance & Completeness & Clinical usefulness \\
 \midrule
-Baseline (Hybrid) & -- & -- & -- \\
-H2L-Hybrid & -- & -- & -- \\
-H2L-Adaptive & -- & -- & -- \\
+System A/B (blinded baseline or H2L) & -- & -- & -- \\
+System A/B (blinded baseline or H2L) & -- & -- & -- \\
 \midrule
-\multicolumn{4}{l}{Krippendorff's $\alpha$: --} \\
+\multicolumn{4}{l}{Inter-rater agreement: to be reported after expert scoring} \\
 \bottomrule
 \end{tabular}
 \vspace{1mm}
-\footnotesize{Scores on 1--5 Likert scale. Values to be filled after expert evaluation.}
+\footnotesize{Scores use a 1--5 rubric. System identities remain hidden until analysis.}
 \end{table}

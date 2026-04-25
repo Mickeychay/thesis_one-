@@ -103,6 +103,7 @@ def generate_evaluation_csv(
     strategy_results: Dict[str, List] = None,
     output_path: str = "human_evaluation_form.csv",
     strategies_to_compare: List[str] = None,
+    include_expected_labels: bool = False,
 ):
     """
     Generate a CSV evaluation form.
@@ -144,7 +145,7 @@ def generate_evaluation_csv(
                     "evaluator_id": "",
                     "case_id": case.get('case_id', ''),
                     "case_description": case.get('case_description', '')[:300],
-                    "expected_problems": problems_str,
+                    "expected_problems": problems_str if include_expected_labels else "[ซ่อนไว้สำหรับ blind evaluation]",
                     "system_label": sys_label,
                     "retrieved_doc_1": "[ใส่ข้อความจากเอกสารที่ 1]",
                     "retrieved_doc_2": "[ใส่ข้อความจากเอกสารที่ 2]",
@@ -171,6 +172,49 @@ def generate_evaluation_csv(
                 writer.writerow(row)
 
     return output_path
+
+
+def load_strategy_results_from_cases_artifact(
+    artifact_path: str,
+    blind_mapping: Dict[str, str],
+) -> Dict[str, List[Dict]]:
+    """Load per-strategy case results and expose them by blinded system label."""
+    with open(artifact_path, 'r', encoding='utf-8') as f:
+        artifact = json.load(f)
+
+    per_strategy = artifact.get('per_strategy', {})
+    strategy_results = {}
+    for blind_label, real_strategy in blind_mapping.items():
+        if real_strategy not in per_strategy:
+            raise ValueError(
+                f"Strategy '{real_strategy}' not found in {artifact_path}. "
+                f"Available: {', '.join(sorted(per_strategy.keys()))}"
+            )
+        strategy_results[blind_label] = per_strategy[real_strategy]
+    return strategy_results
+
+
+def generate_blind_mapping(
+    systems: List[str],
+    output_path: str,
+    seed: int = 42,
+) -> Dict[str, str]:
+    """Create a reproducible blinded label mapping for evaluator packets."""
+    rng = random.Random(seed)
+    labels = [f"System_{chr(ord('A') + i)}" for i in range(len(systems))]
+    shuffled = labels[:]
+    rng.shuffle(shuffled)
+    mapping = dict(zip(shuffled, systems))
+
+    payload = {
+        "created_at": datetime.now().isoformat(),
+        "seed": seed,
+        "note": "Keep this file hidden from evaluators until scoring is complete.",
+        "blind_label_to_strategy": mapping,
+    }
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    return mapping
 
 
 def generate_rubric_sheet(output_path: str = "evaluation_rubric.md"):
@@ -312,7 +356,9 @@ def analyze_human_evaluation(csv_path: str) -> Dict:
 
     for row in rows:
         sys_label = row.get('system_label', '')
-        evaluator = row.get('evaluator_id', '')
+        evaluator = row.get('evaluator_id', '').strip()
+        if not evaluator:
+            continue
         evaluators.add(evaluator)
 
         for dim in dimensions:
@@ -405,6 +451,13 @@ def main():
     gen_parser.add_argument('--ground-truth', default='expanded_ground_truth.json')
     gen_parser.add_argument('--n-per-complexity', type=int, default=10)
     gen_parser.add_argument('--output-dir', default='human_evaluation')
+    gen_parser.add_argument('--systems', nargs='+', default=['basic', 'h2l-hybrid'],
+                            help='Real strategy names to blind as System_A/System_B/etc.')
+    gen_parser.add_argument('--cases-artifact', default=None,
+                            help='Optional proper_eval_latest_cases.json to prefill retrieved docs.')
+    gen_parser.add_argument('--seed', type=int, default=42)
+    gen_parser.add_argument('--include-expected-labels', action='store_true',
+                            help='Show expected problem codes in the form. Leave off for Q1-style blind evaluation.')
 
     analyze_parser = subparsers.add_parser('analyze', help='Analyze completed evaluations')
     analyze_parser.add_argument('csv_path', help='Path to completed evaluation CSV')
@@ -419,13 +472,23 @@ def main():
         cases = sample_evaluation_cases(args.ground_truth, args.n_per_complexity)
         print(f"📋 Sampled {len(cases)} cases for evaluation")
 
-        # Generate CSV form
+        # Generate hidden mapping and CSV form
+        mapping_path = output_dir / "blind_mapping.hidden.json"
+        mapping = generate_blind_mapping(args.systems, str(mapping_path), seed=args.seed)
+        blind_labels = list(mapping.keys())
+        strategy_results = None
+        if args.cases_artifact:
+            strategy_results = load_strategy_results_from_cases_artifact(args.cases_artifact, mapping)
+
         csv_path = generate_evaluation_csv(
             cases,
+            strategy_results=strategy_results,
             output_path=str(output_dir / "evaluation_form.csv"),
-            strategies_to_compare=["System_A", "System_B"]
+            strategies_to_compare=blind_labels,
+            include_expected_labels=args.include_expected_labels,
         )
         print(f"✅ Evaluation form: {csv_path}")
+        print(f"✅ Hidden blind mapping: {mapping_path}")
 
         # Generate rubric
         rubric_path = generate_rubric_sheet(str(output_dir / "evaluation_rubric.md"))
@@ -437,10 +500,11 @@ def main():
         print(f"✅ Case list: {output_dir / 'evaluation_cases.json'}")
 
         print(f"\n📌 Next steps:")
-        print(f"   1. Run evaluation for both strategies to fill in retrieved docs")
-        print(f"   2. Distribute forms to 3-5 evaluators (social workers)")
-        print(f"   3. Collect and merge results into one CSV")
-        print(f"   4. Run: python human_eval_framework.py analyze <merged.csv>")
+        print(f"   1. Run evaluation for the real strategies and fill retrieved docs into the blinded labels")
+        print(f"   2. Keep blind_mapping.hidden.json away from evaluators until scoring is complete")
+        print(f"   3. Distribute forms to 3-5 evaluators (social workers)")
+        print(f"   4. Collect and merge results into one CSV")
+        print(f"   5. Run: python scripts/human_eval_framework.py analyze <merged.csv>")
 
     elif args.command == 'analyze':
         analyze_human_evaluation(args.csv_path)

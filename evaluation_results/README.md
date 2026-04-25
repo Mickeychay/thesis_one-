@@ -25,6 +25,10 @@ progress artifacts และผล runtime บางกรณี เพื่อ
   pair reruns แยกตาม retrieval family เพื่อใช้เปรียบเทียบ baseline กับ H2L
 - `general_case_latest.json`
   snapshot ของ runtime case analysis ล่าสุดที่ใช้เป็นตัวอย่างเคสจริงนอก benchmark
+- `ground_truth_audit.json` / `ground_truth_audit.md`
+  รายงานตรวจ split integrity, family leakage, near-duplicate cross-split cases และสถานะ generated/stress-test cases
+- `q1_readiness_report.md`
+  รายงาน conservative claim readiness ที่อ่านค่าจาก artifact จริงและเตือนเมื่อผลยังไม่ significant หรือมี risk flags
 
 ## Timestamped History
 
@@ -36,3 +40,13 @@ progress artifacts และผล runtime บางกรณี เพื่อ
 
 หากต้องอ้างอิงตัวเลขในเล่มหรือใน dashboard ให้ยึดไฟล์กลุ่ม `*_latest*` เป็นหลัก
 และใช้ไฟล์ timestamped เพื่อตรวจ provenance หรือ replay ผลของรอบประเมินก่อนหน้า
+
+ก่อนใช้ผลเป็น claim ระดับบทความ ให้รัน:
+
+```bash
+python scripts/ground_truth_audit.py
+python scripts/q1_readiness_report.py
+```
+
+ถ้า `q1_readiness_report.md` ระบุว่าเป็น `trend_only` หรือพบ split leakage ให้เขียนข้อสรุปแบบจำกัดขอบเขต
+และใช้ blind expert evaluation / external holdout เพิ่มก่อน claim ว่า H2L เหนือกว่า baseline โดยทั่วไป

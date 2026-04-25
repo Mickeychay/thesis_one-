@@ -461,6 +461,60 @@ if severity >= 3 and has_other and not has_self:
 
 เพื่อป้องกันการปะปนระหว่างผลการทดลองจริงกับข้อมูลสาธิต ผู้วิจัยได้กำหนด research-integrity guardrails ในระดับโค้ด โดยปิดการสร้างข้อมูลจำลองและผลสถิติสังเคราะห์เป็นค่าเริ่มต้น (`ALLOW_DEMO_DATA=false`, `ALLOW_SYNTHETIC_STATS=false`) รวมทั้งป้องกันการสร้างดัชนีค้นคืนจากชุด ground truth โดยไม่ตั้งใจ (`ALLOW_GROUND_TRUTH_INDEX=false`) ดังนั้นการแสดงผลเชิงภาพหรือการวิเคราะห์สถิติที่ไม่มีข้อมูลจริงรองรับจะต้องแสดงสถานะว่า “ข้อมูลจริงไม่เพียงพอ” แทนการสร้างคะแนนจำลองอัตโนมัติ หากต้องใช้ข้อมูลสาธิตเพื่ออธิบายส่วนติดต่อผู้ใช้ จะต้องเปิดโหมด demo โดยตรงและติดป้ายกำกับว่าไม่ใช่ผลเชิงประจักษ์ ส่วนการสร้าง index จาก `expanded_ground_truth.json` จะถูกจำกัดให้เป็น evaluation-only corpus และต้องแยกจาก production document index เพื่อป้องกัน label leakage จากฟิลด์เฉลย เช่น `expected_diagnosis`, `problem_codes` และ `relevant_keywords`
 
+### 3.11.1 การแบ่งข้อมูลแบบป้องกัน split leakage
+
+เพื่อยกระดับความน่าเชื่อถือของผลการประเมินในระดับบทความวิชาการ ผู้วิจัยปรับการแบ่งข้อมูลจากการสุ่มรายเคสทั่วไปเป็น **family-level split** กล่าวคือ เคสต้นฉบับและเคสที่ดัดแปลงจากต้นฉบับเดียวกัน เช่น paraphrase, complexity escalation/reduction, adversarial case และ polarity pair จะถูกจัดอยู่ใน split เดียวกันให้มากที่สุด เพื่อป้องกันไม่ให้ข้อความที่มีเนื้อหาเกือบเหมือนกันหลุดไปอยู่ทั้ง train และ test ซึ่งจะทำให้ผลประเมินสูงเกินจริง
+
+หลังการแบ่งข้อมูล ระบบจะรัน `scripts/ground_truth_audit.py` เพื่อตรวจ 3 ประเด็น ได้แก่ (1) เคสที่ไม่มี split, (2) case family ที่ปรากฏข้าม train/test และ (3) near-duplicate ระหว่าง train/test โดยใช้ threshold ความคล้ายของข้อความเป็นกลไกตรวจซ้ำ ผล audit ล่าสุดรายงานว่าไม่มี cross-split family และไม่มี near-duplicate train/test pair เหนือ threshold เหลือเพียง risk flag ว่าชุดข้อมูลมี generated cases ซึ่งต้องรายงานแยกเป็น stress-test slice ไม่ควรใช้เหมารวมเป็น external generalization claim
+
+**ตารางที่ 3.5 สถานะ split หลังแก้ leakage**
+
+| รายการ | จำนวน |
+|---|---:|
+| จำนวนเคสทั้งหมด | 197 |
+| Train split | 129 |
+| Test split | 68 |
+| Cross-split family ที่พบ | 0 |
+| Near-duplicate train/test ที่พบ | 0 |
+| Risk flag ที่เหลือ | generated cases ต้องรายงานแยก |
+
+### 3.11.2 Protocol การเปรียบเทียบ baseline กับ H2L
+
+การประเมิน retrieval ใช้ protocol เดียวกันทุกกลยุทธ์ ได้แก่ `problem_source=detected`, `top_k=15` และชุด test split เดียวกันจำนวน 68 เคส กลยุทธ์ที่นำมาเปรียบเทียบแบ่งเป็น 4 baseline และ 4 H2L-enhanced counterpart ดังนี้
+
+| Baseline | H2L counterpart | ความหมายของคู่เปรียบเทียบ |
+|---|---|---|
+| `bm25_only` | `h2l-bm25` | ทดสอบผลของ H2L บน sparse lexical backbone |
+| `naive_rag` | `h2l-naive_rag` | ทดสอบผลของ H2L บน dense/naive RAG backbone |
+| `hyde` | `h2l-hyde` | ทดสอบผลของ H2L เมื่อ backbone ใช้ hypothetical expansion |
+| `basic` | `h2l-hybrid` | ทดสอบระบบเต็มบน hybrid retrieval backbone |
+
+ตัวชี้วัดหลักคือ MAP, MRR และ nDCG@5 โดยใช้ Wilcoxon Signed-Rank Test สำหรับการเปรียบเทียบแบบ paired ตามเคส และใช้ผลต่างเชิงปฏิบัติ (`absolute delta < 0.01`) เพื่อแยกกรณีที่แม้ค่าต่างกันเล็กน้อยแต่ไม่ควรตีความเป็นผลที่มีนัยสำคัญเชิงปฏิบัติ
+
+### 3.11.3 Blind expert evaluation
+
+เพื่อปิดช่องว่างระหว่าง relevance judgment จาก ground truth เชิงรหัสกับความเหมาะสมเชิงวิชาชีพ ระบบได้เพิ่มกระบวนการ **blind expert evaluation** โดยสุ่มเคสจาก artifact ผล evaluation จริง และซ่อนชื่อระบบก่อนส่งให้ผู้เชี่ยวชาญประเมิน แต่ละรายการในแบบฟอร์มประกอบด้วย case text, blinded system label, ranked evidence และช่องให้คะแนนความเกี่ยวข้อง ความครบถ้วน ความปลอดภัย และความเหมาะสมต่อการใช้งานเชิงสังคมสงเคราะห์
+
+ไฟล์สำหรับแจกผู้ประเมินอยู่ใน `human_evaluation/blind_packet_latest/evaluation_form.csv` ส่วนไฟล์ mapping ระหว่าง label ลับกับชื่อระบบจริงอยู่ใน `blind_mapping.hidden.json` และต้องเก็บแยกจากผู้ประเมินจนกว่าจะวิเคราะห์ผลเสร็จ การวิเคราะห์ควรรายงานทั้งคะแนนเฉลี่ย, inter-rater agreement และผลเปรียบเทียบแบบ paired ระหว่างระบบ เพื่อให้ข้อสรุปไม่พึ่งตัวชี้วัด retrieval เพียงอย่างเดียว
+
+### 3.11.4 V6 component ablation
+
+การทำ ablation ของ H2L V6 ถูกออกแบบเพื่อแยกบทบาทขององค์ประกอบย่อย เช่น adaptive alpha, Bayesian prior, IDF specificity, margin activation, KL penalty, negation gate และ product-feature mode โดยใช้การรัน retrieval pipeline จริง ไม่ใช้ค่าจำลอง ผล smoke ablation ล่าสุดสร้าง `rq6_results.csv` จำนวน 40 แถวจาก 8 variants และใช้เป็น sanity check ว่า experiment runner สามารถรัน component toggle ได้ครบ
+
+อย่างไรก็ตาม ผล smoke ablation บน sample ขนาดเล็กพบว่าค่าของทุก variant เท่ากันใน MAP, MRR และ nDCG@5 จึงยังไม่ควรใช้เป็นหลักฐาน causal claim ว่าองค์ประกอบใดสำคัญกว่าองค์ประกอบใด สำหรับการส่งบทความระดับ Q1 จำเป็นต้องรัน ablation บน sample ที่ใหญ่ขึ้นและตรวจสอบว่า toggle แต่ละตัวเปลี่ยน scoring path จริงก่อนสรุปเชิงองค์ประกอบ
+
+### 3.11.5 Claim policy สำหรับการตีความผลระดับ Q1
+
+เพื่อหลีกเลี่ยง overclaim ผู้วิจัยกำหนดนโยบายการสรุปผลดังนี้
+
+- ใช้คำว่า **supported** เฉพาะเมื่อ H2L ดีกว่า baseline ใน metric นั้นและ paired test มี `p < 0.05`
+- ใช้คำว่า **trend-only** เมื่อค่าเฉลี่ยดีขึ้นแต่ยังไม่มีนัยสำคัญทางสถิติ
+- ใช้คำว่า **practically tied** เมื่อผลต่างน้อยกว่า 0.01 หรือมี ROPE สูง แม้ค่าเฉลี่ยไม่เท่ากันพอดี
+- ใช้คำว่า **baseline-supported** เมื่อ baseline ดีกว่า H2L อย่างมีนัยสำคัญ
+- หลีกเลี่ยงคำว่า “เหนือกว่าโดยรวม” จนกว่าจะมี blind expert evaluation และ external holdout รองรับ
+
+นโยบายนี้ทำให้บทที่ 4 และบทสรุปสามารถใช้ถ้อยคำที่เข้มพอสำหรับ reviewer โดยยอมรับข้อจำกัดของหลักฐานปัจจุบันอย่างตรงไปตรงมา
+
 ## 3.12 สรุปบท
 
 บทนี้ได้นำเสนอวิธีดำเนินการวิจัยและการออกแบบระบบ H2L ตั้งแต่ภาพรวมสถาปัตยกรรม การเตรียมข้อมูลเอกสาร การออกแบบฐานความรู้รหัสปัญหา กลไกการตรวจจับปัญหาแบบ L1-L2 retrieval pipeline กรอบการให้คะแนนแบบ H2L และ Contextual Polarity Gates โดยแทรกตัวเลข threshold และค่าพารามิเตอร์สำคัญจากโค้ดจริงลงในภาพประกอบและคำบรรยาย เพื่อให้เนื้อหาสามารถตรวจสอบย้อนกลับจาก implementation ได้

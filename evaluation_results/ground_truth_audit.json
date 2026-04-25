@@ -1,0 +1,48 @@
+{
+  "path": "expanded_ground_truth.json",
+  "total_cases": 197,
+  "split_counts": {
+    "train": 129,
+    "test": 68
+  },
+  "augmentation_counts": {
+    "original": 92,
+    "paraphrase": 44,
+    "complexity_escalation": 10,
+    "complexity_reduction": 10,
+    "adversarial": 5,
+    "polarity": 36
+  },
+  "split_by_augmentation": {
+    "original": {
+      "train": 70,
+      "test": 22
+    },
+    "paraphrase": {
+      "train": 36,
+      "test": 8
+    },
+    "complexity_escalation": {
+      "train": 9,
+      "test": 1
+    },
+    "complexity_reduction": {
+      "train": 10
+    },
+    "adversarial": {
+      "test": 1,
+      "train": 4
+    },
+    "polarity": {
+      "test": 36
+    }
+  },
+  "missing_split": [],
+  "cross_split_families": [],
+  "near_duplicates": [],
+  "duplicate_threshold": 0.9,
+  "risk_flags": [
+    "generated_cases_present_report_separately"
+  ],
+  "recommendation": "Use group/family-level splits and report generated/adversarial/polarity cases as separate stress-test slices before making Q1-level generalization claims."
+}

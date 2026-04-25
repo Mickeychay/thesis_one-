@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-H2L V3 Ablation Study — Publication-Quality Evaluation
+H2L V6 Ablation Study — Publication-Quality Evaluation
 =======================================================
 
-Systematic ablation of H2L V3 components using **real retrieval** through
+Systematic ablation of H2L V6 components using **real retrieval** through
 the EvaluationRunner pipeline with ground truth cases.
 
 Research Questions:
@@ -13,6 +13,7 @@ Research Questions:
     RQ3: What is the advantage of soft (semantic) vs hard (keyword) matching?
     RQ4: How much does the Bayesian prior (severity-based) improve performance?
     RQ5: Does H2L filtering as post-processing improve baseline strategies?
+    RQ6: Which V6 components contribute most to the final ranking?
 
 Advanced Computational Analysis:
     - Bootstrap BCa 95% CIs (Efron & Tibshirani, 1993)
@@ -24,14 +25,14 @@ Advanced Computational Analysis:
 
 Methodology:
     - Uses EvaluationRunner for all evaluations (no mock data)
-    - Ground truth: 92 human-annotated social work cases
+    - Ground truth: split-annotated H2L social work cases
     - Metrics: nDCG@5, P@5, R@5, F1@5, MAP, MRR
     - Statistical tests: Paired t-test / Wilcoxon + Cohen's d + BCa Bootstrap
 
 Usage:
     python ablation_study.py                       # Full study (all cases)
     python ablation_study.py --max-cases 10        # Quick run with 10 cases
-    python ablation_study.py --rq 1 2 5            # Run specific RQs only
+    python ablation_study.py --rq 1 2 5 6          # Run specific RQs only
     python ablation_study.py --skip-baselines      # Skip baseline comparison
 """
 
@@ -875,6 +876,226 @@ class RQ5_FilterToggle(AblationExperiment):
         logger.info(f"✅ RQ5 visualization saved")
 
 
+class RQ6_V6ComponentAblation(AblationExperiment):
+    """
+    RQ6: Which V6 scoring components materially contribute to ranking quality?
+
+    Compares the full V6 configuration against one-component-disabled variants.
+    This supports claims about adaptive alpha, Bayesian prior integration, IDF
+    specificity, margin activation, KL regularization, negation gating, and
+    weighted-sum feature composition.
+    """
+
+    def __init__(self):
+        super().__init__(
+            name="RQ6: V6 Component Ablation",
+            description="Disable one V6 component at a time and compare rank-aware metrics",
+        )
+
+    def _variant_configs(self):
+        from H2L_core import H2LConfigV3
+
+        def cfg(**overrides):
+            h2l_cfg = H2LConfigV3()
+            for key, value in overrides.items():
+                setattr(h2l_cfg, key, value)
+            return h2l_cfg
+
+        return {
+            "Full V6": cfg(),
+            "w/o Adaptive Alpha": cfg(ADAPTIVE_ALPHA_ENABLE=False),
+            "w/o Bayesian Prior": cfg(BAYESIAN_PRIOR_ENABLE=False),
+            "w/o IDF Specificity": cfg(IDF_ENABLE=False),
+            "w/o Margin Activation": cfg(MARGIN_ENABLE=False),
+            "w/o KL Penalty": cfg(KL_KAPPA=0.0),
+            "w/o Negation Gate": cfg(NEG_ENABLE=False),
+            "Product Feature Mode": cfg(FEATURE_MODE="product"),
+        }
+
+    @staticmethod
+    def _score_key(result) -> float:
+        """Use the mutated H2L score even for baseline wrappers with fixed final_score."""
+        for attr in ("h2l_final_score", "rerank_score", "score", "final_score"):
+            value = getattr(result, attr, None)
+            if isinstance(value, (int, float)):
+                return float(value)
+        return 0.0
+
+    def run(self, ablation_runner: AblationRunner) -> pd.DataFrame:
+        logger.info(f"\n{'='*70}")
+        logger.info(f"Running {self.name}")
+        logger.info(f"{'='*70}\n")
+
+        from evaluate_h2l_proper import (
+            build_relevance_keywords,
+            judge_relevance,
+            compute_all_metrics,
+        )
+        from H2L_core import expand_query_with_problems
+
+        all_rows = []
+        self._raw_results = defaultdict(lambda: {"per_case": [], "aggregates": {}})
+        cases = ablation_runner._load_cases()
+        runner = ablation_runner._ensure_runner()
+        candidate_pool_k = max(ablation_runner.top_k * 3, 30)
+        variant_configs = self._variant_configs()
+
+        # RQ6 is a component-level re-ranking ablation. We intentionally keep
+        # the candidate pool fixed per case, then re-score that same pool with
+        # each one-component-disabled configuration. This removes candidate-set
+        # noise and is much faster than retrieving separately for every variant.
+        case_bundles = []
+        base_retriever = ablation_runner.create_h2l_retriever(h2l_config=variant_configs["Full V6"])
+        logger.info("  📌 Building fixed candidate pools once per case (pool_k=%s)", candidate_pool_k)
+        for i, case in enumerate(cases):
+            query = case.get("case_description", "")
+            if not query:
+                continue
+
+            expected = case.get("expected_diagnosis", {}).get("problem_list", [])
+            relevance_keywords = build_relevance_keywords(expected, runner.taxonomy)
+            detected_problems = runner.detect_problems(query)
+            expanded_query = (
+                expand_query_with_problems(query, detected_problems, base_retriever.h2l_config)
+                if detected_problems else query
+            )
+
+            try:
+                base_results = base_retriever.base_retriever.retrieve(expanded_query, candidate_pool_k)
+            except TypeError:
+                base_results = base_retriever.base_retriever.retrieve(expanded_query)
+
+            case_bundles.append({
+                "case": case,
+                "query": query,
+                "expected": expected,
+                "relevance_keywords": relevance_keywords,
+                "detected_problems": detected_problems,
+                "base_results": base_results,
+            })
+
+            if (i + 1) % 10 == 0:
+                logger.info("    Candidate pools ready: %s/%s", i + 1, len(cases))
+
+        metric_names = ["P@5", "R@5", "F1@5", "nDCG@5", "MAP", "MRR"]
+
+        for variant_name, h2l_cfg in variant_configs.items():
+            logger.info(f"\n  🔧 Configuration: {variant_name}")
+            retriever = ablation_runner.create_h2l_retriever(h2l_config=h2l_cfg)
+            metric_lists = defaultdict(list)
+            per_case = []
+
+            for bundle in case_bundles:
+                case = bundle["case"]
+                query = bundle["query"]
+                problems = bundle["detected_problems"]
+                # copy.copy keeps document references but prevents score mutation
+                # from leaking across variants.
+                variant_results = [copy.copy(r) for r in bundle["base_results"]]
+                base_order = [getattr(getattr(r, "doc", None), "id", id(r)) for r in variant_results[:5]]
+                base_scores = [
+                    float(getattr(r, "rerank_score", getattr(r, "score", 0.0)) or 0.0)
+                    for r in variant_results
+                ]
+
+                if problems:
+                    variant_results = retriever._apply_h2l_scoring(variant_results, problems, query)
+                variant_results.sort(key=self._score_key, reverse=True)
+                ranked = variant_results[:ablation_runner.top_k]
+                reranked_order = [getattr(getattr(r, "doc", None), "id", id(r)) for r in ranked[:5]]
+
+                relevance_grades = []
+                for r in ranked:
+                    doc = r.doc if hasattr(r, "doc") else r
+                    doc_text = getattr(doc, "text", "")
+                    grade = judge_relevance(doc_text, bundle["relevance_keywords"], bundle["expected"])
+                    relevance_grades.append(grade)
+
+                m = compute_all_metrics(relevance_grades, k_values=[3, 5, 10])
+                scored_values = [self._score_key(r) for r in variant_results]
+                mean_score_delta = float(np.mean([
+                    abs(after - before)
+                    for before, after in zip(base_scores, scored_values)
+                ])) if base_scores else 0.0
+
+                case_result = {
+                    "case_id": case.get("case_id", "unknown"),
+                    "complexity": case.get("complexity", "unknown"),
+                    "category": case.get("category", "unknown"),
+                    "metrics": m,
+                    "relevance_grades": relevance_grades,
+                    "rank_changed_at5": base_order != reranked_order,
+                    "mean_abs_score_delta": mean_score_delta,
+                    "n_detected_problems": len(problems),
+                }
+                per_case.append(case_result)
+
+                for metric_name, value in m.items():
+                    if isinstance(value, (int, float)):
+                        metric_lists[metric_name].append(value)
+
+                all_rows.append({
+                    "variant": variant_name,
+                    "case_id": case_result["case_id"],
+                    "complexity": case_result["complexity"],
+                    "category": case_result.get("category", "unknown"),
+                    "P@5": m.get("P@5", 0),
+                    "R@5": m.get("R@5", 0),
+                    "F1@5": m.get("F1@5", 0),
+                    "nDCG@5": m.get("nDCG@5", 0),
+                    "MAP": m.get("MAP", 0),
+                    "MRR": m.get("MRR", 0),
+                    "rank_changed_at5": case_result["rank_changed_at5"],
+                    "mean_abs_score_delta": case_result["mean_abs_score_delta"],
+                    "n_detected_problems": case_result["n_detected_problems"],
+                })
+
+            agg = {}
+            for metric_name, values in metric_lists.items():
+                if values:
+                    agg[metric_name] = {
+                        "mean": float(np.mean(values)),
+                        "std": float(np.std(values)),
+                        "median": float(np.median(values)),
+                        "min": float(np.min(values)),
+                        "max": float(np.max(values)),
+                        "n": len(values),
+                        "values": values,
+                    }
+            self._raw_results[variant_name] = {
+                "per_case": per_case,
+                "aggregates": agg,
+                "n_cases": len(per_case),
+            }
+            logger.info(
+                "    MAP: %.4f, MRR: %.4f, nDCG@5: %.4f, rank_changed@5: %.1f%%, score_delta: %.4f",
+                agg.get("MAP", {}).get("mean", 0),
+                agg.get("MRR", {}).get("mean", 0),
+                agg.get("nDCG@5", {}).get("mean", 0),
+                100.0 * np.mean([r["rank_changed_at5"] for r in per_case]) if per_case else 0.0,
+                np.mean([r["mean_abs_score_delta"] for r in per_case]) if per_case else 0.0,
+            )
+
+        return pd.DataFrame(all_rows)
+
+    def visualize(self, results: pd.DataFrame, output_dir: Path):
+        output_dir.mkdir(parents=True, exist_ok=True)
+        metrics = ["MAP", "MRR", "nDCG@5"]
+        avg = results.groupby("variant")[metrics].mean().sort_values("MAP", ascending=False)
+
+        fig, ax = plt.subplots(figsize=(13, 6))
+        avg.plot(kind="bar", ax=ax, color=["#2ECC71", "#3498DB", "#F39C12"])
+        ax.set_title("RQ6: V6 Component Ablation", fontsize=13, fontweight="bold")
+        ax.set_ylabel("Mean score")
+        ax.set_ylim([0, max(0.05, min(1.0, float(avg.max().max()) + 0.08))])
+        ax.grid(axis="y", alpha=0.3)
+        ax.tick_params(axis="x", rotation=30)
+        plt.tight_layout()
+        plt.savefig(output_dir / "rq6_v6_component_ablation.png", dpi=300, bbox_inches="tight")
+        plt.close()
+        logger.info("✅ RQ6 visualization saved")
+
+
 # ============================================================================
 # ADVANCED COMPUTATIONAL ANALYSIS
 # ============================================================================
@@ -1245,7 +1466,7 @@ class AdvancedComputationalAnalysis:
 
 class BaselineComparison:
     """
-    Compare H2L V3 variants against baseline retrieval strategies.
+    Compare H2L V6 variants against baseline retrieval strategies.
 
     Uses real evaluation (no mock data) through EvaluationRunner.
     Now includes baseline+h2l-filter variants for complete factorial comparison.
@@ -1444,7 +1665,7 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     lines = [
-        "# H2L V3 Ablation Study — Full Report",
+        "# H2L V6 Ablation Study — Full Report",
         f"\n**Generated**: {timestamp}",
         f"**Evaluation**: Real retrieval via EvaluationRunner with ground truth cases",
         "",
@@ -1452,7 +1673,7 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
         "",
         "## Overview",
         "",
-        "This study systematically evaluates H2L V3 components using **real retrieval** ",
+        "This study systematically evaluates H2L V6 components using **real retrieval** ",
         "(not simulated/mock data). Each experiment toggles one component while holding ",
         "others constant, measuring impact on rank-aware metrics.",
         "",
@@ -1465,6 +1686,7 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
         'RQ3': ('Matching Methods', 'variant'),
         'RQ4': ('Prior Calculation', 'variant'),
         'RQ5': ('H2L Filter Toggle', 'base_strategy'),
+        'RQ6': ('V6 Component Ablation', 'variant'),
     }
 
     for rq_key, (title, group_col) in rq_names.items():
@@ -1507,7 +1729,17 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
                 )
             lines.append("")
 
-        lines.append(f"![{rq_key}]({rq_key.lower().replace(':', '').replace(' ', '_')}_*.png)")
+        image_map = {
+            'RQ1': 'rq1_l2_filtering_impact.png',
+            'RQ2': 'rq2_alpha_sensitivity.png',
+            'RQ3': 'rq3_matching_method.png',
+            'RQ4': 'rq4_prior_calculation.png',
+            'RQ5': 'rq5_filter_toggle.png',
+            'RQ6': 'rq6_v6_component_ablation.png',
+        }
+        image_name = image_map.get(rq_key)
+        if image_name and (output_dir / image_name).exists():
+            lines.append(f"![{rq_key}]({image_name})")
         lines.append("")
         lines.append("---")
         lines.append("")
@@ -1590,21 +1822,19 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
     # ── Files generated ──
     lines.append("## Generated Files")
     lines.append("")
-    lines.append("- `rq1_l2_filtering_impact.png`")
-    lines.append("- `rq2_alpha_sensitivity.png`")
-    lines.append("- `rq3_matching_method.png`")
-    lines.append("- `rq4_prior_calculation.png`")
-    lines.append("- `rq5_filter_toggle.png`")
-    lines.append("- `baseline_comparison.png`")
-    lines.append("- `advanced_bootstrap_ci.png`")
-    lines.append("- `advanced_bayesian.png`")
-    lines.append("- `advanced_forest_plot.png`")
-    lines.append("- `advanced_interaction_heatmap.png`")
-    lines.append("- `*.csv` — Raw data for each experiment")
+    generated_files = sorted(
+        p.name for p in output_dir.iterdir()
+        if p.is_file() and p.name != "ABLATION_STUDY_REPORT.md"
+    )
+    if generated_files:
+        for name in generated_files:
+            lines.append(f"- `{name}`")
+    else:
+        lines.append("- No data or visualization files were generated.")
     lines.append("")
     lines.append("---")
     lines.append("")
-    lines.append("*Generated by H2L V3 Ablation Study (real evaluation pipeline)*")
+    lines.append("*Generated by H2L V6 Ablation Study (real evaluation pipeline)*")
 
     report_path = output_dir / 'ABLATION_STUDY_REPORT.md'
     report_path.write_text('\n'.join(lines), encoding='utf-8')
@@ -1632,7 +1862,7 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
     output_path.mkdir(parents=True, exist_ok=True)
 
     logger.info("\n" + "="*70)
-    logger.info("H2L V3 ABLATION STUDY — Real Evaluation Pipeline")
+    logger.info("H2L V6 ABLATION STUDY — Real Evaluation Pipeline")
     logger.info("="*70)
     logger.info(f"Output: {output_path.absolute()}")
     logger.info(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -1650,6 +1880,7 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
         3: RQ3_MatchingMethod(),
         4: RQ4_PriorCalculation(),
         5: RQ5_FilterToggle(),
+        6: RQ6_V6ComponentAblation(),
     }
 
     if rq_filter:
@@ -1685,7 +1916,7 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
             logger.warning(f"  ⚠️ Visualization failed: {e}")
 
         # Statistical tests
-        group_col = 'alpha' if rq_num == 2 else 'variant'
+        group_col = 'alpha' if rq_num == 2 else 'h2l_filter' if rq_num == 5 else 'variant'
         metric_col = 'nDCG@5'
         try:
             stats = run_pairwise_stats(df, group_col, metric_col)
@@ -1752,7 +1983,7 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
 # ============================================================================
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='H2L V3 Ablation Study')
+    parser = argparse.ArgumentParser(description='H2L V6 Ablation Study')
     parser.add_argument('--max-cases', type=int, default=None,
                         help='Limit number of ground truth cases (for quick testing)')
     parser.add_argument('--rq', type=int, nargs='+', default=None,

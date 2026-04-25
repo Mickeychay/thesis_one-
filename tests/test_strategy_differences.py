@@ -11,6 +11,8 @@ import sys
 import logging
 from pathlib import Path
 
+import pytest
+
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -18,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def test_strategy_differences():
-    """Test if different strategies produce different results"""
+    """Smoke-test strategy execution without returning diagnostic payloads."""
 
     # Import after path setup
     from config import Config
@@ -32,12 +34,7 @@ def test_strategy_differences():
     มีความคิดอยากทำร้ายตัวเอง พ่อแม่หย่าร้าง อยู่กับแม่ที่ดื่มเหล้า
     """
 
-    strategies = [
-        "h2l-hybrid",
-        "h2l-dynamic",
-        "h2l-multihop",
-        "h2l-adaptive"
-    ]
+    strategies = ["h2l-hybrid", "h2l-dynamic", "h2l-multihop", "h2l-adaptive"]
 
     print("\n" + "="*80)
     print("🔍 Testing Strategy Differences")
@@ -95,10 +92,7 @@ def test_strategy_differences():
             print(f"   Execution Time: {execution_time:.3f}s")
 
         except Exception as e:
-            print(f"❌ Error: {e}")
-            import traceback
-            traceback.print_exc()
-            results[strategy] = {'error': str(e)}
+            pytest.fail(f"{strategy} failed during strategy-difference smoke test: {e}")
 
     # Compare results
     print("\n" + "="*80)
@@ -145,12 +139,17 @@ def test_strategy_differences():
     print("🎯 Final Verdict")
     print("="*80)
 
-    if len(unique_classes) == 1:
-        print("❌ PROBLEM: All strategies use the SAME retriever class!")
-        print("   → Strategies are NOT utilizing their unique capabilities.")
-    elif len(unique_classes) > 1:
-        print("✅ GOOD: Different strategies use different retriever classes.")
-        print("   → Strategies are properly differentiated.")
+    assert results, "No strategy results were collected"
+    assert all("error" not in result for result in results.values())
+    assert all(result["problems_count"] > 0 for result in results.values())
+    assert all(result["retriever_class"] for result in results.values())
+
+    # In safe-start or no-index environments, strategies may degrade to the same
+    # retriever with zero documents. Keep this as a smoke test, and let full
+    # evaluation artifacts carry the statistical strategy-difference claim.
+    docs_available = any(result.get("docs_count", 0) > 0 for result in results.values())
+    if docs_available:
+        assert all(result.get("docs_count", 0) > 0 for result in results.values())
 
     # Check if scores differ significantly
     all_scores = [r.get('top_doc_scores', []) for r in results.values() if 'top_doc_scores' in r]
@@ -166,7 +165,6 @@ def test_strategy_differences():
             print("   → Strategies may not be differentiating effectively.")
 
     print("\n" + "="*80)
-    return results
 
 
 if __name__ == "__main__":

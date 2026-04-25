@@ -38,9 +38,9 @@
 
 ## 1.4 ขอบเขตของการวิจัย (Scope and Boundaries)
 
-1. **ขอบเขตข้อมูล:** ใช้ taxonomy ของปัญหาสังคมจำนวน 34 กลุ่ม 202 รหัสย่อย และใช้ชุดข้อมูล `expanded_ground_truth.json` จำนวน 197 เคส โดยเก็บในไฟล์เดียวและแยก train 122 เคส กับ test 75 เคสด้วย field `split`
+1. **ขอบเขตข้อมูล:** ใช้ taxonomy ของปัญหาสังคมจำนวน 34 กลุ่ม 202 รหัสย่อย และใช้ชุดข้อมูล `expanded_ground_truth.json` จำนวน 197 เคส โดยเก็บในไฟล์เดียวและแยก train 129 เคส กับ test 68 เคสด้วย family-level leakage-safe split
 2. **ขอบเขตการประเมิน retrieval:** ผลหลักในวิทยานิพนธ์อ้างอิงจาก proper evaluation แบบ `problem_source=detected` และ `top_k=15` เพื่อให้ทุกส่วนของระบบใช้ค่าเดียวกันในการรายงานผล แม้ว่าหน้าเว็บจะรองรับการสำรวจค่า top-k ได้หลายระดับ
-3. **ขอบเขต sentence polarity:** ประเมินบน test set 75 เคส ซึ่งมีเคสยืนยันปัญหา 57 เคส และเคสปฏิเสธ 18 เคส โดยวัดผลแยกจาก retrieval metrics
+3. **ขอบเขต sentence polarity:** ประเมินบน test set 68 เคส ซึ่งมีเคสยืนยันปัญหา 50 เคส และเคสปฏิเสธ 18 เคส โดยวัดผลแยกจาก retrieval metrics
 4. **ขอบเขตเทคโนโลยี:** L1 ใช้ keyword and context rules, L2 ใช้ Qwen2.5 7B ผ่าน Ollama, retrieval ใช้ BM25, embedding model, HyDE และ hybrid retrieval พร้อม reranking
 5. **ขอบเขตภาษา:** งานวิจัยนี้มุ่งเน้นภาษาไทย และรองรับลักษณะภาษาที่เกี่ยวข้องกับปัญหาสังคม เช่น passive pattern, active pattern, self-harm expression, bullying/social action terms และประโยคปฏิเสธ
 6. **ขอบเขต explainability:** มุ่งเน้นการอธิบายผลผ่าน traces, evidence maps และ score breakdowns ไม่ได้อ้างว่าแก้ปัญหา explainability ของ LLM ได้ทั้งหมดในทุกบริบท

@@ -1,235 +1,153 @@
 # บทที่ 4: ผลการทดลองและการวิเคราะห์ข้อมูล (Results and Analysis)
 
-บทนี้นำเสนอผลการทดลองของระบบ H2L ตามสถานะปัจจุบันของโค้ดและ evaluation artifacts ที่มีอยู่จริง โดยยึดหลักว่า **รายงานเฉพาะผลที่เกิดจากการรันจริง** ไม่ใช้ mock data หรือค่าประมาณเพื่อความสวยงามของรายงาน ผลหลักของบทนี้อ้างอิงจากไฟล์ `evaluation_results/proper_eval_latest_summary.json`, `evaluation_results/sentence_polarity_latest.json`, `sensitivity_results/sensitivity_report.md` และ pair reruns ล่าสุดใน `evaluation_results/pairs/*/proper_eval_latest_summary.json`
+บทนี้นำเสนอผลการทดลองตาม artifact ล่าสุดหลังแก้ split leakage และ rerun evaluation เมื่อวันที่ 25 เมษายน 2026 โดยยึดหลักว่า **รายงานเฉพาะผลที่เกิดจากการรันจริง** ไม่ใช้ mock data หรือค่าประมาณเพื่อทำให้ผลดูดีขึ้น ผลหลักอ้างอิงจาก `evaluation_results/proper_eval_latest_summary.json`, `evaluation_results/sentence_polarity_latest.json`, `evaluation_results/ground_truth_audit.json`, `evaluation_results/q1_readiness_report.md`, `human_evaluation/blind_packet_latest/` และ `ablation_results/v6_component_latest/`
 
 ---
 
-## 4.1 กรอบการประเมินผลและข้อมูลที่ใช้ (Evaluation Setup and Data)
+## 4.1 กรอบการประเมินผลและข้อมูลที่ใช้
 
-งานวิจัยนี้ใช้ชุดข้อมูล `expanded_ground_truth.json` จำนวน 197 เคส ซึ่งเก็บอยู่ในไฟล์เดียวและใช้ field `split` เพื่อแยก train 122 เคส และ test 75 เคส สำหรับการรายงานผล retrieval ในบทนี้ ผู้วิจัยใช้ proper evaluation ล่าสุดโดยตั้งค่า `problem_source=detected` และ `top_k=15` เพื่อให้ค่าที่ใช้ในหน้า analysis, evidence retrieval และ research report สอดคล้องกันทั้งหมด ส่วนการประเมิน sentence polarity ใช้ test split เดียวกัน โดยแยกเคสยืนยันปัญหา 57 เคส และเคสปฏิเสธ 18 เคส
+ชุดข้อมูลหลักคือ `expanded_ground_truth.json` จำนวน 197 เคส หลังปรับเป็น family-level split แล้วแบ่งเป็น train 129 เคส และ test 68 เคส การตรวจ `ground_truth_audit` ไม่พบ case family ที่รั่วข้าม train/test และไม่พบ near-duplicate train/test pair เหนือ threshold ที่กำหนด เหลือ risk flag เพียงข้อเดียวคือชุดข้อมูลยังมี generated / augmented cases ซึ่งต้องรายงานเป็น stress-test slice แยกจากข้ออ้างเชิง generalization
 
-**ตารางที่ 4.1 สรุปกรอบการประเมินผลหลัก**
+**ตารางที่ 4.1 สรุปสถานะข้อมูลและ protocol ล่าสุด**
 
-| รายการ | ค่าที่ใช้ |
+| รายการ | ค่า |
 |:---|:---|
 | ชุดข้อมูลทั้งหมด | 197 เคส |
-| Train/Test split | 122 / 75 |
-| ปัญหาที่ใช้ใน retrieval evaluation | `detected problems` |
-| ค่า top-k หลักของวิทยานิพนธ์ | 15 |
+| Train/Test split | 129 / 68 |
+| Split method | family-level leakage-safe split |
+| Cross-split family leakage | 0 |
+| Near-duplicate train/test pair | 0 |
+| Risk flag ที่เหลือ | generated cases ต้องรายงานแยก |
+| Retrieval protocol หลัก | `problem_source=detected`, `top_k=15` |
 | กลยุทธ์ที่เปรียบเทียบ | 8 กลยุทธ์ |
-| ชุดประเมิน sentence polarity | 75 เคส (ยืนยันปัญหา 57 เคส, ปฏิเสธปัญหา 18 เคส) |
-| สถิติที่ใช้เปรียบเทียบเชิงคู่ | Wilcoxon Signed-Rank Test |
+| สถิติ paired comparison | Wilcoxon Signed-Rank Test |
 
-กลยุทธ์ทั้ง 8 แบบที่นำมาประเมินประกอบด้วย 4 backbone เดิม และ 4 รุ่นที่ถูกครอบด้วย H2L ได้แก่ BM25, dense retrieval, HyDE, hybrid baseline, H2L-BM25, H2L-Dense, H2L-HyDE และ H2L-Hybrid
-
-### 4.1.1 Protocol หลักที่ใช้สรุปผลในบทนี้
-
-เพื่อให้การตีความผลมีจุดยึดเดียวกัน ผู้วิจัยกำหนด protocol หลักของบทนี้ดังนี้
-
-- **ผลหลักของวิทยานิพนธ์:** ใช้ `problem_source=detected` และ `top_k=15`
-- **upper-bound diagnostic:** ใช้ `reference problems (gold problems)` เพื่อดูศักยภาพของ retriever เมื่อไม่ถูกจำกัดด้วย detector
-- **sensitivity analysis:** ใช้ `top-k = 5, 10, 20` เพื่อดูว่าผลของ H2L คงเส้นคงวาหรือไวต่อการเปลี่ยนขนาด evidence set มากน้อยเพียงใด
-
-ดังนั้น เมื่อกล่าวถึง "ผลหลักของวิทยานิพนธ์" ในบทนี้ ผู้วิจัยหมายถึงผลแบบ end-to-end ภายใต้ `detected + top_k=15` เป็นหลัก ส่วนค่า `reference problems (gold problems)` และ top-k อื่นถูกใช้เพื่อช่วยอธิบายข้อจำกัดและตรวจสอบความเสถียรของผลเท่านั้น
-
-### 4.1.2 ความเชื่อมโยงระหว่างกราฟรายงานกับคำถามวิจัย
-
-เพื่อไม่ให้ส่วนแสดงผลเชิงโต้ตอบถูกมองว่าเป็นเพียงองค์ประกอบของหน้าเว็บ ผู้วิจัยกำหนดบทบาทของกราฟและส่วนรายงานแต่ละชนิดต่อคำถามวิจัยอย่างชัดเจน ดังตารางต่อไปนี้
-
-**ตารางที่ 4.1B ความสัมพันธ์ระหว่างกราฟ รายการข้อมูล และคำถามวิจัย**
-
-| กราฟ/ส่วนรายงาน | ระดับข้อมูล | บทบาทต่อคำถามวิจัย | แหล่งข้อมูลจริง |
-|:---|:---|:---|:---|
-| Evidence Scaling by Top-K | experiment-level | RQ1: H2L คงเส้นคงวาหรือไวต่อ top-k เพียงใดเมื่อเทียบกับ baseline | proper evaluation artifacts |
-| Latest Pair Reruns | pair-family-level | RQ1: เมื่อแยก backbone ทีละคู่ H2L ช่วยหรือเสียเปรียบอย่างไร | `evaluation_results/pairs/*/proper_eval_latest_summary.json` |
-| Comparison Bar Chart | pair-level | RQ1: H2L ช่วย backbone เดียวกันหรือไม่ | comparison pairs จาก proper evaluation |
-| Scatter Plot (Quality vs Time) | strategy-level | RQ1: คุณภาพ retrieval ดีขึ้นแลกกับเวลาแค่ไหน | benchmark rows จาก proper evaluation |
-| Performance Provenance | report-level | ใช้สนับสนุนการตีความ RQ1/RQ2 ว่าผลที่กำลังอ่านเป็น case-level หรือ benchmark-level | `/evaluation-summary` + runtime `/analyze` |
-| Provenance badges + auto refresh | report-level | ใช้สนับสนุนการตีความ RQ1/RQ2 ว่า artifact ที่เห็นเป็นไฟล์ล่าสุดจริงหรือไม่ | `/evaluation-summary` polling + latest artifact aliases |
-| Live Evaluation Progress + Artifact Retention | report-level | ใช้สนับสนุนการตีความ RQ1/RQ2 ว่า evaluator กำลังรันถึงไหน และ dashboard คุมไฟล์ผลลัพธ์อย่างไร | progress artifacts + latest/checkpoint policy |
-| Problem-Document Matrix | case-level, structure-level | ใช้สนับสนุนการอธิบายผลของ RQ1/RQ2 ว่า problem ใดมี evidence ใดรองรับ | runtime `/analyze` |
-| Semantic Evidence Map | case-level, node-level | ใช้สนับสนุนการอธิบายผลของ RQ1/RQ2 ในระดับ semantic relation และหลักฐาน | runtime vector projection |
-| System Evaluation Status | benchmark-synthesis | RQ1/RQ2: อะไรพร้อมใช้สรุปผล และอะไรยังต้องระวัง | benchmark artifacts + diagnostics |
-
-ตารางนี้ทำให้ผู้อ่านแยกได้ชัดว่า กราฟบางชนิดใช้ตอบคำถามวิจัยโดยตรงบนชุดทดสอบ ขณะที่บางชนิดทำหน้าที่เป็นหลักฐานสนับสนุนการตีความผลในระดับเคสเฉพาะหน้า จึงไม่ควรนำไปตีความข้ามระดับกัน
+กลยุทธ์ทั้ง 8 แบบประกอบด้วย baseline 4 แบบ ได้แก่ `bm25_only`, `naive_rag`, `hyde`, `basic` และ H2L-enhanced counterpart 4 แบบ ได้แก่ `h2l-bm25`, `h2l-naive_rag`, `h2l-hyde`, `h2l-hybrid` การตีความในบทนี้ใช้ claim policy แบบ conservative โดยแบ่งผลเป็น `supported`, `trend_only`, `practically_tied` และ `baseline_supported`
 
 ---
 
-## 4.2 ผลการประเมิน Sentence Polarity (Sentence Polarity Evaluation)
+## 4.2 ผลการประเมิน Sentence Polarity
 
-การประเมิน sentence polarity มีเป้าหมายเพื่อตอบคำถามว่า เมื่อข้อความมีคำปฏิเสธหรือโครงสร้างที่อาจก่อ false positive ระบบสามารถกดทอน candidate ที่ไม่ควรถูกแจ้งเตือนได้หรือไม่ โดยการประเมินนี้วัดแยกจาก retrieval quality เพื่อไม่ให้ผลด้านความปลอดภัยถูกกลบด้วยค่า rank metrics
+การประเมิน sentence polarity ใช้ test split ล่าสุดจำนวน 68 เคส แบ่งเป็นเคสยืนยันปัญหา 50 เคส และเคสปฏิเสธปัญหา 18 เคส เป้าหมายของการประเมินนี้คือดูว่า polarity gate สามารถลด false positive จากประโยคปฏิเสธได้หรือไม่ โดยแยกจาก retrieval ranking metrics
 
-ผู้วิจัยได้รันยืนยันผลอีกครั้งบนโค้ดสถานะปัจจุบันเมื่อวันที่ 23 เมษายน 2026 และได้ค่าเท่ากับ artifact หลักล่าสุดทุกตัวชี้วัดสำคัญ จึงสะท้อนว่าผลของ sentence polarity ในรุ่นปัจจุบันมีความเสถียรในระดับที่ใช้อ้างอิงในวิทยานิพนธ์ได้
-
-ในงานรุ่นปัจจุบัน ผู้วิจัยยังเพิ่มกลไก `sentence_polarity_progress.json` และ `proper_eval_progress.json` เพื่อให้หน้า report อ่านสถานะการรัน evaluator จากไฟล์จริงระหว่างประมวลผล และใช้ `*_latest*` กับ `*_checkpoint*` เป็น stable aliases สำหรับการแสดงผลหลัก ขณะที่ไฟล์ timestamped history ถูกเก็บไว้ในจำนวนจำกัดเพื่อไม่ให้ artifact กองสะสมจนรบกวนการ review
-
-นอกเหนือจากตัวเลขเชิง benchmark รุ่นนี้ยังเพิ่ม refinement สำคัญในชั้น runtime ได้แก่ candidate-specific polarity แบบ clause-local, sentence-bound evidence, entity/coreference binding, code-specific context rules, implicit taxonomy-anchor guard, review statuses และการยุบรหัสซ้ำเชิงประเด็น เพื่อแก้ปัญหา false positive จากเคสภาษาจริงที่มีหลายบุคคล หลาย clause และคำปฏิเสธที่ไม่ครอบ candidate เดียวกัน
-
-**ตารางที่ 4.2 ผลการประเมิน sentence polarity ล่าสุด**
+**ตารางที่ 4.2 ผลการประเมิน sentence polarity หลังแก้ split leakage**
 
 | ตัวชี้วัด | ค่า |
 |:---|---:|
-| Accuracy | 0.8667 |
+| Total cases | 68 |
+| Positive / Negated cases | 50 / 18 |
+| Accuracy | 0.8824 |
 | Negation Detection Rate (NDR) | 0.7222 |
-| False Positive Rate (FPR) | 0.0877 |
-| Precision | 0.7222 |
-| F1 | 0.7222 |
-| จำนวนเคสยืนยันปัญหา | 57 |
-| จำนวนเคสปฏิเสธปัญหา | 18 |
+| False Positive Rate (FPR) | 0.0600 |
+| Precision | 0.8125 |
+| F1 | 0.7650 |
+| Mean G_neg positive | 0.9760 |
+| Mean G_neg negated | 0.6000 |
 
-เมื่อตีความเป็นจำนวนเคสจริง ระบบตัดสินถูกต้อง 65 จาก 75 เคส ตรวจพบเคสปฏิเสธได้ 13 จาก 18 เคส และลดน้ำหนักเคสยืนยันปัญหาผิดพลาด 5 จาก 57 เคส ผลลัพธ์นี้แสดงให้เห็นว่า sentence polarity gate ในรุ่นปัจจุบันสามารถช่วยลด false positive ได้จริง แต่ยังไม่สมบูรณ์จนถึงระดับที่ไม่พลาดเลย
+ผลนี้หมายความว่า polarity gate ตรวจจับเคสปฏิเสธได้ 13 จาก 18 เคส และเกิด false positive ในเคสยืนยันปัญหา 3 จาก 50 เคส จุดแข็งคือระบบลด false positive ได้จริงในเคสปฏิเสธจำนวนมาก แต่จุดที่ยังต้องปรับปรุงคือ negation ในข้อความยาว โดยผลแยกตามความยาวพบว่า short NDR = 100.0%, medium NDR = 66.7% และ long NDR = 50.0%
 
-### 4.2.1 ความหมายของผลลัพธ์
-
-ข้อค้นพบสำคัญมี 3 ประเด็น
-
-1. **ระบบไม่ได้เพียงตรวจคำว่า "ไม่" แบบผิวเผิน**
-   ในรุ่นปัจจุบัน polarity gate ถูกใช้แบบ candidate-specific กล่าวคือระบบพิจารณาว่าคำปฏิเสธครอบ problem candidate ใดจริง ไม่ใช่ลดคะแนนทุกปัญหาพร้อมกันทั้งเคส
-
-2. **ข้อมูล actor-target-action ช่วยลดความสับสนเชิงบริบท**
-   การแยกผู้กระทำ ผู้ถูกกระทำ และ action ทำให้ระบบไม่ดึงบุคคลที่อยู่คนละ clause มาเป็น agent โดยอัตโนมัติ และช่วยให้ polarity reasoning อ่านได้ตรงกับเคสจริงมากขึ้น
-
-3. **ยังมี trade-off ระหว่างการกัน false positive กับการไม่ลดน้ำหนักเคสจริงเกินไป**
-   ค่า FPR ที่ 0.0877 แสดงว่ายังมีเคสยืนยันปัญหาบางส่วนที่ถูกลดน้ำหนักผิด ซึ่งเป็นข้อจำกัดที่ควรอภิปรายอย่างตรงไปตรงมาในวิทยานิพนธ์
-
-### 4.2.2 ข้อสังเกตสำหรับการอภิปรายผล
-
-ผลชุดนี้สนับสนุนแนวคิดว่า sentence polarity ควรถูกนำเสนอเป็น **มิติด้าน safety** แยกจาก retrieval quality เนื่องจากระบบอาจปลอดภัยขึ้นแม้ค่า retrieval บาง backbone จะไม่ได้เพิ่มขึ้นทันทีในอันดับต้น ๆ การสรุปผลแบบแยกมิติทำให้ผู้อ่านเข้าใจได้ชัดว่า H2L ช่วยอะไรแน่ และไม่เหมารวมว่าค่า nDCG ที่เพิ่มขึ้นหรือลดลงเล็กน้อยเท่ากับความปลอดภัยของระบบ
+ดังนั้น polarity gate ควรถูกอภิปรายเป็น **safety mechanism ที่มีผลเชิงบวกแต่ยังไม่สมบูรณ์** ไม่ใช่กลไกที่แก้ negation blindness ได้ทั้งหมด
 
 ---
 
-## 4.3 ผลการประเมิน Retrieval Performance (Retrieval Results)
+## 4.3 ผลการประเมิน Retrieval Performance
 
 ### 4.3.1 ผลรวมทุกกลยุทธ์
 
-**ตารางที่ 4.3 ผลรวมของ retrieval metrics จาก proper evaluation**
+**ตารางที่ 4.3 ผลรวม retrieval metrics จาก proper evaluation ล่าสุด**
 
-| กลยุทธ์ | nDCG@5 | nDCG@10 | MAP | MRR | เวลาเฉลี่ยต่อเคส (วินาที) |
-|:---|---:|---:|---:|---:|---:|
-| H2L-BM25 | **0.3171** | **0.3273** | **0.3009** | 0.3388 | 0.0099 |
-| BM25 Only | 0.3041 | 0.3168 | 0.2968 | 0.3430 | **0.0012** |
-| Hybrid baseline (`basic`) | 0.2875 | 0.3024 | 0.2801 | 0.3287 | 1.3194 |
-| H2L-Hybrid | 0.2847 | 0.3061 | 0.2891 | **0.3444** | 5.0750 |
-| Naive RAG | 0.2620 | 0.2875 | 0.2634 | 0.3270 | 0.0785 |
-| H2L-Naive RAG | 0.2568 | 0.2949 | 0.2622 | 0.3296 | 0.3516 |
-| HyDE | 0.1427 | 0.1818 | 0.1523 | 0.1720 | 3.5589 |
-| H2L-HyDE | 0.1614 | 0.1856 | 0.1746 | 0.2102 | 4.5850 |
+| กลยุทธ์ | nDCG@5 | MAP | MRR | P@5 | F1@5 | เวลาเฉลี่ยต่อเคส (วินาที) |
+|:---|---:|---:|---:|---:|---:|---:|
+| `bm25_only` | 0.2079 | 0.2196 | 0.2697 | 0.0971 | 0.1252 | **0.0013** |
+| `naive_rag` | 0.2034 | 0.2003 | 0.2635 | 0.1029 | 0.1321 | 0.0867 |
+| `hyde` | 0.1120 | 0.1113 | 0.1224 | 0.0412 | 0.0596 | 3.8283 |
+| `basic` | 0.2270 | 0.2250 | 0.2710 | 0.1118 | 0.1435 | 1.0582 |
+| `h2l-bm25` | **0.2437** | 0.2289 | 0.2687 | **0.1176** | **0.1529** | 0.0137 |
+| `h2l-naive_rag` | 0.1962 | 0.1936 | 0.2703 | 0.1000 | 0.1252 | 0.9222 |
+| `h2l-hyde` | 0.1405 | 0.1479 | 0.1697 | 0.0441 | 0.0641 | 7.0039 |
+| `h2l-hybrid` | 0.2290 | **0.2362** | **0.2893** | 0.1088 | 0.1403 | 7.6807 |
 
-ผลรวมชี้ให้เห็นว่า **H2L-BM25** ได้อันดับสูงสุดในชุดทดสอบหลักทั้ง nDCG@5, nDCG@10 และ MAP รวมถึง P@5 และ F1@5 ขณะที่ **H2L-Hybrid** ขึ้นมาเป็นตัวที่ได้ MRR สูงสุดในรอบนี้และยังยกระดับ MAP เหนือ hybrid baseline ได้ แม้ nDCG@5 จะลดลงเล็กน้อย ส่วน **BM25 Only** ยังคงเป็น baseline ที่เร็วที่สุดอย่างชัดเจน
+ผลรวมล่าสุดชี้ว่า `h2l-bm25` เป็นกลยุทธ์ที่ได้ nDCG@5, P@5 และ F1@5 สูงสุด ขณะที่ `h2l-hybrid` ได้ MAP และ MRR สูงสุด แต่มีต้นทุนเวลาเฉลี่ยต่อเคสมากที่สุดในกลุ่มที่รันครบ ระบบ baseline `bm25_only` ยังคงเร็วที่สุดอย่างชัดเจน
 
-### 4.3.2 การเปรียบเทียบแบบคู่ Baseline vs H2L
+### 4.3.2 การเปรียบเทียบแบบ paired ระหว่าง baseline และ H2L
 
-เพื่อประเมินผลของ H2L อย่างเป็นธรรม ผู้วิจัยเปรียบเทียบ baseline แต่ละตัวกับรุ่น H2L ที่ใช้ backbone เดียวกัน
+**ตารางที่ 4.4 ผลเปรียบเทียบแบบคู่ตาม Q1 readiness report**
 
-**ตารางที่ 4.4 ผลเปรียบเทียบเชิงคู่ของ backbone เดียวกันจาก unified proper evaluation ล่าสุด**
+| คู่เปรียบเทียบ | Metric | Baseline | H2L | Delta | p-value | Verdict |
+|:---|:---|---:|---:|---:|---:|:---|
+| `bm25_only` vs `h2l-bm25` | MAP | 0.2196 | 0.2289 | +0.0093 | 0.9612 | practically_tied |
+| `bm25_only` vs `h2l-bm25` | MRR | 0.2697 | 0.2687 | -0.0010 | 0.4061 | practically_tied |
+| `bm25_only` vs `h2l-bm25` | nDCG@5 | 0.2079 | 0.2437 | +0.0359 | 0.0131 | supported |
+| `naive_rag` vs `h2l-naive_rag` | MAP | 0.2003 | 0.1936 | -0.0067 | 0.1330 | practically_tied |
+| `naive_rag` vs `h2l-naive_rag` | MRR | 0.2635 | 0.2703 | +0.0068 | 0.6002 | practically_tied |
+| `naive_rag` vs `h2l-naive_rag` | nDCG@5 | 0.2034 | 0.1962 | -0.0072 | 0.1156 | practically_tied |
+| `hyde` vs `h2l-hyde` | MAP | 0.1113 | 0.1479 | +0.0366 | 0.1443 | trend_only |
+| `hyde` vs `h2l-hyde` | MRR | 0.1224 | 0.1697 | +0.0473 | 0.0800 | trend_only |
+| `hyde` vs `h2l-hyde` | nDCG@5 | 0.1120 | 0.1405 | +0.0284 | 0.2894 | trend_only |
+| `basic` vs `h2l-hybrid` | MAP | 0.2250 | 0.2362 | +0.0112 | 0.2668 | trend_only |
+| `basic` vs `h2l-hybrid` | MRR | 0.2710 | 0.2893 | +0.0183 | 0.1230 | trend_only |
+| `basic` vs `h2l-hybrid` | nDCG@5 | 0.2270 | 0.2290 | +0.0019 | 0.8590 | practically_tied |
 
-เพื่อให้บทนี้สอดคล้องกับผลหลักของวิทยานิพนธ์ ผู้วิจัยยึดค่าเปรียบเทียบจาก proper evaluation รอบล่าสุดที่รันทั้ง 8 กลยุทธ์ภายใต้ protocol เดียวกัน แล้วคำนวณส่วนต่างของ H2L เทียบกับ backbone เดิมโดยตรง
+ผล paired comparison สรุปได้ว่า หลักฐานที่ถึงระดับ `supported` มี 1 รายการ คือ H2L-BM25 เพิ่ม nDCG@5 เหนือ BM25 อย่างมีนัยสำคัญ ส่วน `hyde` และ `h2l-hybrid` มีทิศทางบวกหลาย metric แต่ยังเป็น `trend_only` เพราะค่า p-value ยังไม่ต่ำกว่า 0.05 ใน test split ปัจจุบัน ส่วน `naive_rag` กับ `h2l-naive_rag` อยู่ในระดับ practically tied
 
-| คู่เปรียบเทียบ | ΔMAP | ΔMRR | ΔnDCG@5 | ΔP@5 | ข้อสรุปเบื้องต้น |
-|:---|---:|---:|---:|---:|:---|
-| BM25 Only vs H2L-BM25 | +0.0042 | -0.0042 | +0.0130 | +0.0080 | H2L ช่วย BM25 ชัดที่สุดในภาพรวมรอบล่าสุด |
-| Naive RAG vs H2L-Naive RAG | -0.0012 | +0.0027 | -0.0052 | -0.0080 | ภาพรวมยังเป็น mixed effect โดย MRR ดีขึ้นเล็กน้อยแต่ top-rank ลดลง |
-| HyDE vs H2L-HyDE | +0.0223 | +0.0382 | +0.0186 | +0.0027 | รอบล่าสุด H2L ช่วย HyDE กลับมาเป็นบวกชัดเจน แต่ยังแลกกับเวลาเพิ่ม |
-| Hybrid baseline vs H2L-Hybrid | +0.0090 | +0.0157 | -0.0028 | -0.0053 | top-5 ใกล้เคียงเดิม แต่ MAP/MRR ดีขึ้นชัดกว่า backbone เดิม |
+### 4.3.3 การตีความผลเชิง Q1
 
-จากตารางจะเห็นว่า H2L ไม่ได้เพิ่มค่า top-5 ให้ทุก backbone แบบอัตโนมัติ แต่ช่วยแตกต่างกันไปตามธรรมชาติของ backbone นั้น ๆ
+ผล retrieval ปัจจุบันยังไม่ควรสรุปว่า H2L เหนือกว่า baseline โดยรวมทุกกรณี ข้อสรุปที่ปลอดภัยกว่าและสอดคล้องกับหลักฐานคือ:
 
-- **BM25:** H2L ช่วยเสริมได้ชัดใน nDCG@5, MAP และ P@5 โดยยังคงเร็วที่สุดในกลุ่ม H2L
-- **Dense retrieval:** H2L ทำให้ MRR ดีขึ้นเล็กน้อย แต่ MAP, nDCG@5 และ P@5 ลดลงเล็กน้อย จึงยังเป็นภาพแบบ mixed effect
-- **HyDE:** ใน unified evaluation รอบล่าสุด H2L-HyDE พลิกกลับมาดีกว่า HyDE เดิมทั้ง nDCG@5, MAP, MRR และ P@5 แต่ยังมีต้นทุนเวลาเพิ่ม
-- **Hybrid:** H2L-Hybrid ยังคง competitive และมี MAP/MRR สูงกว่า hybrid baseline อย่างชัดเจน แม้ nDCG@5 และ P@5 จะลดลงเล็กน้อย
-
-### 4.3.3 การตีความผลเชิงวิทยานิพนธ์
-
-ผล retrieval ปัจจุบันนำไปสู่ข้อสรุปสำคัญ 4 ข้อ
-
-1. **H2L ไม่ใช่โมดูลเพิ่มคะแนนแบบเส้นตรง**
-   H2L ปรับอันดับเอกสารตาม problem distribution, severity, polarity และ semantic cues ของเคสจริง ดังนั้นจึงมีโอกาสช่วยหรือ trade off ต่างกันในแต่ละ backbone
-
-2. **การชนะใน nDCG@5 ไม่ได้เท่ากับเป็นโมเดลหลักของวิทยานิพนธ์เสมอไป**
-   แม้ H2L-BM25 จะได้คะแนน retrieval สูงสุด แต่ `h2l-hybrid` ยังเหมาะเป็นโมเดลหลักของวิทยานิพนธ์ เพราะรวม detector + hybrid retrieval + polarity + explanation stack ครบที่สุด
-
-3. **ขนาด test set ปัจจุบันยังเล็กและควรสรุปผลเชิง retrieval อย่างระมัดระวัง**
-   แม้ H2L-BM25 จะเด่นชัดที่สุดในภาพรวม unified evaluation แต่ความแตกต่างของแต่ละคู่ยังมีขนาดไม่มากในหลาย metric และบางคู่มี trade-off ข้าม metric ดังนั้นการอภิปรายผลควรใช้คำว่า H2L "ช่วยแตกต่างกันตาม backbone" มากกว่าจะเหมารวมว่าเหนือกว่าทุกคู่แบบเด็ดขาด
-
-4. **การรายงาน retrieval ควรคู่กับ safety metrics เสมอ**
-   หากพิจารณาเฉพาะ nDCG อย่างเดียว อาจมองไม่เห็นคุณค่าของ polarity gate และ contextual filtering ที่ช่วยลด false positive ได้จริง
+1. H2L ให้ผลดีชัดที่สุดเมื่อครอบบน BM25 ใน metric nDCG@5
+2. H2L-HyDE และ H2L-Hybrid มีแนวโน้มดีขึ้นใน MAP/MRR แต่ยังไม่ significant
+3. H2L มีต้นทุนเวลาเพิ่มขึ้น โดยเฉพาะ backbone ที่ใช้ HyDE หรือ hybrid retrieval
+4. ผลด้าน retrieval ranking ควรอภิปรายคู่กับผลด้าน polarity/safety เพราะเป็นคนละมิติของคุณภาพระบบ
 
 ---
 
-## 4.4 การวิเคราะห์ความอ่อนไหวของพารามิเตอร์ (Sensitivity Analysis)
+## 4.4 V6 Component Ablation
 
-ผล sensitivity analysis ล่าสุดช่วยตอบว่าพารามิเตอร์ใดเป็นตัวคุมระบบจริง และพารามิเตอร์ใดมีความเสถียรสูงในงานรุ่นปัจจุบัน
+เพื่อทดสอบองค์ประกอบของ H2L V6 ผู้วิจัยรัน smoke ablation บน sample ขนาดเล็กจำนวน 5 เคส ครอบคลุม 8 variants และได้ผลลัพธ์รวม 40 แถวใน `ablation_results/v6_component_latest/rq6_results.csv`
 
-**ตารางที่ 4.5 สรุปความอ่อนไหวของพารามิเตอร์**
+**ตารางที่ 4.5 ผล smoke ablation ของ V6 components**
 
-| พารามิเตอร์ | ค่าเริ่มต้น | Max abs Δ | การตีความ |
-|:---|---:|---:|:---|
-| α0 | 1.0 | **219.68%** | ตัวคุมระบบหลัก ต้องตั้งค่าอย่างระมัดระวัง |
-| T_base | 0.5 | **17.51%** | มีผลรองลงมา โดยเฉพาะต่อ calibration |
-| T_range | 1.5 | 2.25% | ค่อนข้างเสถียร |
-| μ | 2.0 | 0.24% | เสถียรสูง |
-| κ | 0.15 | 0.17% | เสถียรสูง |
-| λ_neg | 0.6 | 0.00% | เสถียรในชุดทดสอบปัจจุบัน |
-| m | 0.3 | 0.00% | เสถียรในชุดทดสอบปัจจุบัน |
-| β | 0.3 | 0.00% | เสถียรในชุดทดสอบปัจจุบัน |
+| Variant | MAP | MRR | nDCG@5 |
+|:---|---:|---:|---:|
+| Full V6 | 0.3110 | 0.4000 | 0.1733 |
+| Product Feature Mode | 0.3110 | 0.4000 | 0.1733 |
+| w/o Adaptive Alpha | 0.3110 | 0.4000 | 0.1733 |
+| w/o Bayesian Prior | 0.3110 | 0.4000 | 0.1733 |
+| w/o IDF Specificity | 0.3110 | 0.4000 | 0.1733 |
+| w/o KL Penalty | 0.3110 | 0.4000 | 0.1733 |
+| w/o Margin Activation | 0.3110 | 0.4000 | 0.1733 |
+| w/o Negation Gate | 0.3110 | 0.4000 | 0.1733 |
 
-ผลนี้ทำให้การอภิปรายในวิทยานิพนธ์ควรเน้นว่า **α0 เป็น system driver ที่แท้จริง** ส่วน **T_base** เป็นค่าที่ควรจับตาในขั้น calibration ขณะที่พารามิเตอร์อีกหลายตัวทำหน้าที่เหมือน stabilizer มากกว่า optimizer กล่าวคือมีผลช่วยให้สมการสมบูรณ์และตีความได้ แต่ไม่ได้ทำให้คะแนนเหวี่ยงอย่างรุนแรง
-
----
-
-## 4.5 ผลด้าน Explainability และการตรวจสอบย้อนกลับ (Explainability and Reporting)
-
-งานรุ่นปัจจุบันไม่ได้พึ่งการอธิบายผลด้วยมุมมอง 3D เพียงอย่างเดียวอีกต่อไป แต่ขยายสู่ชุดเครื่องมือเชิงโต้ตอบที่ช่วยให้ตีความผลของคำถามวิจัยทั้งสองข้อได้ง่ายกว่าเดิม กล่าวคือช่วยอธิบายว่าทำไม H2L จึงเปลี่ยนอันดับเอกสารจาก baseline และช่วยตรวจสอบว่ากลไก polarity ลดหรือคง candidate ใดไว้ด้วยเหตุผลอะไร เครื่องมือสำคัญประกอบด้วย
-
-1. **Analyzed Case Text**
-   แสดงคำหรือวลีที่ตรวจจับได้จริงในระดับ occurrence พร้อม matched keywords, polarity rows, support spans และการเชื่อมโยงกับ problem candidates ทำให้คำที่ซ้ำกันหลายตำแหน่ง เช่น `มารดา` ใน clause เรื่องหนี้สินและ `มารดา` ใน clause เรื่องตีเด็ก ถูกแยกเป็นคนละ token และชี้ไปยัง event frame คนละตัว
-
-2. **Event Frames**
-   แสดง actor, action, target และ evidence span ในรูปแบบที่ผู้ใช้คลิกดูรายละเอียดได้ โดยแต่ละ event ถูกผูกกับ `span_start/span_end`, `mention_id`, `action_id` และ support mentions ทำให้ตรวจสอบย้อนหลังได้ว่าบทบาทใดมาจากคำ occurrence ใดในข้อความจริง
-
-3. **Live Execution Path**
-   แยก phase ของระบบ เช่น case preparation, L1 detection, L2 validation, polarity effect และ retrieval พร้อมระบุเวลาของแต่ละ phase
-
-4. **Case H2L Summary และ H2L Document Score Breakdown**
-   แยกตัวแปรระดับเคสออกจากตัวแปรระดับเอกสาร ทำให้ผู้อ่านเห็นว่า final document score เกิดจาก prior, severity, semantic evidence และ polarity อย่างไร โดยไม่สับสนว่าคะแนนเป็นของเคสหรือของเอกสาร
-
-5. **Problem-Document Matrix**
-   ใช้เป็นมุมมองเชิงโครงสร้างเพื่อสรุปอย่างรวดเร็วว่า problem code ใดมี evidence document ใดรองรับ และการรองรับนั้นกระจุกหรือกระจายเพียงใด
-
-6. **Semantic Evidence Map**
-   ใช้เป็นมุมมองเชิงลึกสำหรับดู semantic distance, linked nodes และรายละเอียดหลักฐานระดับ node ซึ่งละเอียดกว่ามุมมองแบบ Problem-Document Matrix
-
-7. **Performance Provenance, Case-Level Runtime Review และ Benchmark Performance Review**
-   ช่วยแยกอย่างชัดเจนว่าผลใดมาจาก runtime ของเคสปัจจุบัน และผลใดมาจาก benchmark artifacts บน test split เพื่อกันการตีความข้ามระดับ
-
-8. **Review Status Summary**
-   แสดงสถานะ `confirmed`, `needs_review`, `verify_documents`, `filtered`, รวมถึงโหมด `baseline_candidate` และ `baseline_filtered` เพื่อช่วยสื่อสารว่ารหัสใดพร้อมใช้งาน รหัสใดยังต้องตรวจทะเบียน/สิทธิ/เอกสาร และรหัสใดเป็นเพียง preview จาก baseline detector
-
-9. **Evidence Scaling by Top-K, Comparison Bar Chart, Scatter Plot, Live Evaluation Progress และ System Evaluation Status**
-   ใช้ตอบคำถามเชิงงานทดลองว่า H2L มีผลต่อ retrieval quality, latency, ความคงเส้นคงวาตาม top-k, สถานะการรัน evaluator และความพร้อมของ benchmark artifacts อย่างไร โดยอ้างอิงจาก stable latest/checkpoint aliases และ progress artifacts จริง
-
-นอกจากนี้ dashboard รุ่นล่าสุดยังสะท้อน refinement เชิงตรรกะของ detector โดยตรง เช่น การจับ evidence แบบ sentence-bound, การใช้ coreference สำหรับตัวอ้างอิงในประโยคถัดไป, การยุบรหัสซ้ำเชิงประเด็น เช่น `0801` กับ `Z59.0`, การแยกเคสที่ควรเป็น `verify_documents` แทนการสรุปเป็นปัญหายืนยัน และการรองรับ `user-adjusted span anchor` ที่ผู้ใช้เลือกเองเพื่อบังคับให้ polarity และ event binding อ้างอิง occurrence เดียวกับที่ผู้ใช้ตรวจแล้วว่าถูกต้อง การเพิ่มความละเอียดระดับนี้มีผลมากต่อคุณภาพของ runtime case review แม้จะไม่ถูกสรุปเป็นตัวเลข retrieval metric โดยตรง
-
-ผลเชิง explainability จึงไม่ควรถูกมองเป็นเพียงส่วนแสดงผลของหน้าเว็บ แต่เป็นองค์ประกอบสำคัญที่ช่วยรองรับการตีความผลของ RQ1 และ RQ2 เพราะทำให้ระบบสามารถถูก audit ได้ทั้งในระดับเคสและระดับเอกสารหลักฐาน ซึ่งมีความสำคัญต่อการนำเสนอในวิทยานิพนธ์และต่อการตรวจสอบโดยผู้เชี่ยวชาญ
+ผลนี้มีประโยชน์ในฐานะ sanity check ว่า ablation runner สามารถรัน retrieval pipeline จริงได้ครบทุก variant แต่ยังไม่เพียงพอสำหรับ claim เชิง causal ว่าองค์ประกอบใดของ V6 สำคัญกว่าองค์ประกอบใด เพราะทุก variant ให้ค่าเท่ากันใน sample นี้ ข้อสรุปเชิง Q1 คือ ต้องรัน ablation บน sample ที่ใหญ่ขึ้นและตรวจว่าแต่ละ toggle เปลี่ยน live scoring path จริง ก่อนนำผลไปใช้เป็นหลักฐาน component-level
 
 ---
 
-## 4.6 สรุปผลสำหรับการนำไปใช้ในบทอภิปรายและบทสรุป
+## 4.5 Blind Expert Evaluation
 
-จากผลการทดลองทั้งหมด ผู้วิจัยสามารถสรุปประเด็นสำคัญสำหรับบทถัดไปได้ดังนี้
+งานรุ่นล่าสุดเพิ่ม blind expert evaluation packet แล้วที่ `human_evaluation/blind_packet_latest/` ประกอบด้วย
 
-1. **Sentence polarity gate ช่วยลด false positive ได้จริง**
-   Accuracy 0.8667 และ NDR 0.7222 สะท้อนว่าระบบมีความสามารถด้าน safety ที่ใช้งานได้จริง แม้ยังมีพื้นที่สำหรับปรับปรุงเพิ่มเติม
+- `evaluation_form.csv` สำหรับส่งให้ผู้เชี่ยวชาญให้คะแนน
+- `evaluation_rubric.md` สำหรับเกณฑ์การให้คะแนน
+- `evaluation_cases.json` สำหรับ metadata ของเคสที่สุ่มมา
+- `blind_mapping.hidden.json` สำหรับ mapping ระหว่างระบบจริงกับ label ลับ
 
-2. **H2L ช่วย retrieval บาง backbone มากกว่าบาง backbone**
-   H2L-BM25 ให้แนวโน้มดีขึ้นชัดที่สุดในเชิง retrieval score ขณะที่ H2L-Hybrid ให้ภาพแบบสมดุลพร้อมยก MAP/MRR เหนือ hybrid baseline ส่วน H2L-Naive RAG ให้ผลแบบผสม และ H2L-HyDE รอบล่าสุดกลับมาเป็นบวกในหลาย metric แต่ยังแลกกับเวลาเพิ่ม จึงควรอธิบาย trade-off อย่างตรงไปตรงมา
+การประเมินนี้ยังไม่ถือว่าเสร็จสมบูรณ์จนกว่าจะมีผู้เชี่ยวชาญอย่างน้อย 3 คนให้คะแนนและนำผลมาวิเคราะห์ inter-rater agreement กับ paired comparison ระหว่างระบบ ดังนั้นในบทนี้จึงรายงานสถานะว่า **เตรียม protocol และ packet แล้ว แต่ยังรอคะแนนผู้เชี่ยวชาญจริง** ไม่ควรรายงานเป็นผลรับรองด้าน usability หรือ clinical relevance จนกว่าข้อมูลส่วนนี้จะครบ
 
-3. **โมเดลหลักของวิทยานิพนธ์ควรเป็น H2L-Hybrid**
-   เพราะเป็นตัวแทนของระบบเต็มที่รวม detector, hybrid retrieval, sentence polarity และ explanation stack เข้าด้วยกัน แม้จะไม่ใช่อันดับหนึ่งด้าน nDCG@5
+---
 
-4. **โมเดลทางเลือกที่โดดเด่นด้าน retrieval efficiency คือ H2L-BM25**
-   หากจุดเน้นคือความเร็ว ความเรียบง่าย และ retrieval score สูงสุดใน test split ปัจจุบัน H2L-BM25 เป็นตัวเลือกที่น่าสนใจมาก
+## 4.6 สรุปความพร้อมต่อการส่ง Q1
 
-5. **บทสรุปในวิทยานิพนธ์ควรแยกคำว่า "ดีขึ้น" ออกเป็นสองมิติ**
-   ได้แก่ "ดีขึ้นด้าน safety/polarity" และ "ดีขึ้นด้าน retrieval ranking" เพื่อไม่ให้การตีความคลาดเคลื่อน
+`q1_readiness_report.md` สรุปผลปัจจุบันดังนี้
+
+| ประเภทข้อสรุป | จำนวน metric comparisons |
+|:---|---:|
+| Supported H2L comparisons | 1 |
+| Trend-only comparisons | 5 |
+| Practical ties | 6 |
+| Baseline-supported comparisons | 0 |
+
+ดังนั้น สถานะปัจจุบันของงานคือ **มีหลักฐานเชิงบวกบางส่วนและมี methodology ที่แข็งแรงขึ้นหลังแก้ leakage แต่ยังไม่ควร claim broad superiority** ข้อความสรุปที่เหมาะสมสำหรับบทความหรือวิทยานิพนธ์คือ:
+
+> H2L provides statistically supported improvement for BM25 on nDCG@5 and shows trend-level gains for HyDE and hybrid retrieval on selected ranking metrics, while also contributing an interpretable polarity-gating mechanism that improves safety-related negation handling. However, broader superiority claims require completed blind expert evaluation, larger component ablation, and ideally an external holdout set.
+
+ประเด็นที่พร้อมใช้เป็นจุดแข็งของงาน ได้แก่ family-level leakage-safe split, audit trail ของ artifact, paired evaluation, polarity safety metric และ blind evaluation protocol ส่วนประเด็นที่ยังต้องทำก่อนยื่น Q1 อย่างมั่นใจ ได้แก่ เก็บคะแนน blind expert จริง, rerun V6 ablation บน sample ใหญ่กว่า smoke set, และเพิ่ม external holdout หรืออย่างน้อยแยก generated stress-test cases ออกจาก claim หลักอย่างชัดเจน
