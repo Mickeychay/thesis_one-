@@ -1,0 +1,15 @@
+variant,metric,p_value,significant,effect_size_d,mean_diff
+w/o Adaptive Alpha,nDCG@5,1.0,False,0.0,0.0
+w/o Bayesian Prior,nDCG@5,1.0,False,0.0,0.0
+w/o IDF Specificity,nDCG@5,1.0,False,0.0,0.0
+w/o Margin Activation,nDCG@5,0.1797,False,-0.0949,-0.001118
+w/o KL Penalty,nDCG@5,1.0,False,0.0,0.0
+w/o Negation Gate,nDCG@5,1.0,False,0.0,0.0
+Product Feature Mode,nDCG@5,0.3173,False,-0.0714,-0.000767
+w/o Adaptive Alpha,h2l_mean_top5,0.0,True,0.565,0.757022
+w/o Bayesian Prior,h2l_mean_top5,0.0,True,-0.3954,-0.119928
+w/o IDF Specificity,h2l_mean_top5,0.0,True,0.6788,0.40177
+w/o Margin Activation,h2l_mean_top5,0.0,True,0.5176,0.02166
+w/o KL Penalty,h2l_mean_top5,0.0,True,-0.5064,-0.004795
+w/o Negation Gate,h2l_mean_top5,0.0,True,0.7005,0.367363
+Product Feature Mode,h2l_mean_top5,0.0,True,0.7103,1.566416

@@ -1,0 +1,8 @@
+variant,mean_score_diff,max_score_diff,n_cases_changed,pct_cases_changed,n_cases
+Product Feature Mode,1.566416,11.54189,175,88.8,197
+w/o Adaptive Alpha,0.775026,6.868152,163,82.7,197
+w/o IDF Specificity,0.40177,2.837532,162,82.2,197
+w/o Negation Gate,0.367363,2.446946,160,81.2,197
+w/o Bayesian Prior,0.12511,1.853979,168,85.3,197
+w/o Margin Activation,0.02166,0.254623,125,63.5,197
+w/o KL Penalty,0.004795,0.072613,78,39.6,197

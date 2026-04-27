@@ -499,9 +499,9 @@ if severity >= 3 and has_other and not has_self:
 
 ### 3.11.4 V6 component ablation
 
-การทำ ablation ของ H2L V6 ถูกออกแบบเพื่อแยกบทบาทขององค์ประกอบย่อย เช่น adaptive alpha, Bayesian prior, IDF specificity, margin activation, KL penalty, negation gate และ product-feature mode โดยใช้การรัน retrieval pipeline จริง ไม่ใช้ค่าจำลอง ผล smoke ablation ล่าสุดสร้าง `rq6_results.csv` จำนวน 40 แถวจาก 8 variants และใช้เป็น sanity check ว่า experiment runner สามารถรัน component toggle ได้ครบ
+การทำ ablation ของ H2L V6 ถูกออกแบบเพื่อแยกบทบาทขององค์ประกอบย่อย เช่น adaptive alpha, Bayesian prior, IDF specificity, margin activation, KL penalty, negation gate และ product-feature mode โดยใช้การรัน retrieval pipeline จริง ไม่ใช้ค่าจำลอง รุ่นล่าสุดของ RQ6 ใช้ fixed candidate pool ต่อเคส แล้ว re-score candidate set เดียวกันด้วย one-component-disabled variants เพื่อลด candidate-set noise และตรวจว่า toggle แต่ละตัวเปลี่ยน live scoring path จริงหรือไม่ ผลล่าสุดสร้าง `rq6_results.csv` จำนวน 160 แถวจาก 20 เคสและ 8 variants
 
-อย่างไรก็ตาม ผล smoke ablation บน sample ขนาดเล็กพบว่าค่าของทุก variant เท่ากันใน MAP, MRR และ nDCG@5 จึงยังไม่ควรใช้เป็นหลักฐาน causal claim ว่าองค์ประกอบใดสำคัญกว่าองค์ประกอบใด สำหรับการส่งบทความระดับ Q1 จำเป็นต้องรัน ablation บน sample ที่ใหญ่ขึ้นและตรวจสอบว่า toggle แต่ละตัวเปลี่ยน scoring path จริงก่อนสรุปเชิงองค์ประกอบ
+อย่างไรก็ตาม ผล fixed-candidate ablation พบว่าค่าของทุก variant ยังเท่ากันใน MAP, MRR และ nDCG@5 แม้ค่า score diagnostics เช่น mean absolute score delta และ rank_changed@5 จะแสดงว่า component toggles ส่งผลต่อคะแนนและอันดับบางส่วน ดังนั้นผลนี้ใช้เป็น component sensitivity evidence ได้ แต่ยังไม่ควรใช้เป็นหลักฐาน causal claim ว่าองค์ประกอบใดเพิ่ม retrieval effectiveness อย่างมีนัยสำคัญ สำหรับการส่งบทความระดับ Q1 ควรขยายเป็น full test split และเพิ่ม rank-distance, score calibration หรือ per-document attribution diagnostics ก่อนสรุปเชิงองค์ประกอบ
 
 ### 3.11.5 Claim policy สำหรับการตีความผลระดับ Q1
 

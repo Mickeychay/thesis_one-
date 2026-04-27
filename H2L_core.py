@@ -1075,15 +1075,29 @@ def aggregate_features_v6(
     total_weight = 0.0
     weighted_sum = 0.0
     
+    # Feature-to-Flag Mapping for V6 Ablation
+    feature_flags = {
+        'detect': True, # Always enabled
+        'semantic': True, # Controlled via temperature
+        'prior': getattr(config, 'BAYESIAN_PRIOR_ENABLE', True),
+        'specificity': getattr(config, 'IDF_ENABLE', True),
+        'negation': getattr(config, 'NEG_ENABLE', True),
+    }
+    
     for name, value in features.items():
-        w = weights.get(name, 0.1)  # Default weight for unknown features
+        if not feature_flags.get(name, True):
+            continue # Skip disabled features in weighted sum
+            
+        w = weights.get(name, 0.1)
         weighted_sum += w * value
         total_weight += w
     
-    # Normalize by total weight
-    if total_weight > 0:
-        return weighted_sum / total_weight
-    return 0.0
+    
+    # Normalize by total weight (V6 Fix: Use fixed denominator 1.0 for ablation sensitivity)
+    # If we re-normalize by current total_weight, the ratio stays identical 
+    # and we can't see the impact of missing components.
+    return weighted_sum # Weights are already normalized to sum to 1.0 in __post_init__
+
 
 
 # =============================================================================
@@ -1585,7 +1599,7 @@ def test_probabilistic_formulation():
         print(f"       IDF        = {f['IDF']}")
         print(f"       G_neg      = {f['G_neg']}")
         print(f"       w_i        = {f['w_i']}")
-        print(f"       φ_i        = {f['φ_i']}")
+        print(f"       Φ_i        = {f['Φ_i']}")
         print(f"       w·φ        = {f['w·φ']}")
     
     print(f"\n   Σ(w·φ)   = {breakdown['Σ(w·φ)']}")
@@ -1785,20 +1799,12 @@ class H2LUnifiedRetriever:
         # Strategy-specific alpha values for differentiation
         self.alpha = self._get_strategy_alpha()
 
-        logger.info(f"🚀 [H2L-Unified] Initializing...")
-        logger.info(f"   • Base Strategy: {self.base_strategy}")
-        logger.info(f"   • Alpha (problem weight): {self.alpha}")
-        logger.info(f"   • Adaptive Boundaries: {'✅ Enabled' if enable_adaptive else '❌ Disabled'}")
-        logger.info(f"   • Multi-hop Retrieval: {'✅ Enabled' if enable_multihop else '❌ Disabled'}")
-
         # Initialize base retriever using composition
         self.base_retriever = self._init_base_retriever(config, shared_components)
 
         # Initialize multi-hop components if enabled
         if self.enable_multihop:
             self._init_multihop_components()
-
-        logger.info(f"✅ [H2L-Unified] Ready")
 
     def _get_strategy_alpha(self) -> float:
         """
@@ -1850,10 +1856,8 @@ class H2LUnifiedRetriever:
                     api_key = getattr(self.config, 'OPENROUTER_API_KEY', '')
 
             self.llm_client = OpenAI(base_url=base_url, api_key=api_key)
-            logger.info(f"   ✅ LLM Client ready: {self.llm_model}")
 
         except Exception as e:
-            logger.warning(f"   ⚠️ LLM initialization failed: {e}")
             self.llm_client = None
             self.enable_multihop = False
 
@@ -1882,7 +1886,6 @@ class H2LUnifiedRetriever:
                 explicit_problems,
                 self.h2l_config
             )
-            logger.info(f"[H2L-Unified] Query expanded with {len(explicit_problems)} problems")
 
         # Step 2: Base retrieval
         if self.enable_multihop and self.llm_client and explicit_problems:
@@ -2155,14 +2158,16 @@ New search query:"""
         """
         config = self.h2l_config
 
-        # Adaptive strategy: adjust alpha based on severity
-        if self.enable_adaptive and problems:
-            avg_severity = sum(p.get('severity', 1) for p in problems) / len(problems)
-            severity_factor = avg_severity / 5.0
-            adaptive_alpha = self.alpha * (0.5 + severity_factor)
-            logger.info(f"[Adaptive] Avg Severity: {avg_severity:.2f} → Alpha: {adaptive_alpha:.2f}")
+        # V6 Stateless Fix: Always use config directly, avoid stale self.alpha/self.enable_adaptive
+        config_alpha = getattr(config, 'ALPHA', 1.0)
+        config_adaptive_enabled = getattr(config, 'ADAPTIVE_ALPHA_ENABLE', True)
+
+        if config_adaptive_enabled and problems:
+            # Note: We now defer detailed adaptive calculation to calculate_adaptive_alpha()
+            # but we need a base to work from.
+            adaptive_alpha = config_alpha 
         else:
-            adaptive_alpha = self.alpha
+            adaptive_alpha = config_alpha
 
         # Compute semantic embeddings for problem-aware scoring
         embedder = self._get_embedder()

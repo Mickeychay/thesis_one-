@@ -1,0 +1,8 @@
+variant,metric,p_value,significant
+w/o Adaptive Alpha,nDCG@5,1.0,False
+w/o Bayesian Prior,nDCG@5,1.0,False
+w/o IDF Specificity,nDCG@5,1.0,False
+w/o Margin Activation,nDCG@5,1.0,False
+w/o KL Penalty,nDCG@5,1.0,False
+w/o Negation Gate,nDCG@5,1.0,False
+Product Feature Mode,nDCG@5,1.0,False

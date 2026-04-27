@@ -1,0 +1,8 @@
+variant,n_rank_changed,n_total,pct_rank_changed
+w/o Margin Activation,31,197,15.7
+w/o Bayesian Prior,25,197,12.7
+w/o IDF Specificity,25,197,12.7
+w/o KL Penalty,25,197,12.7
+w/o Negation Gate,25,197,12.7
+Product Feature Mode,25,197,12.7
+w/o Adaptive Alpha,24,197,12.2

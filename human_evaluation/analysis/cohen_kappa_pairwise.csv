@@ -1,0 +1,4 @@
+evaluator_1,evaluator_2,metric,n_cases,cohen_kappa_linear,interpretation
+E01,E02,relevance_score,16,0.2993,fair
+E01,E03,relevance_score,16,0.2571,fair
+E02,E03,relevance_score,16,0.0256,slight

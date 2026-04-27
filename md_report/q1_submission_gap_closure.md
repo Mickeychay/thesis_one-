@@ -11,7 +11,7 @@ This checklist translates the current artifacts into concrete actions before mak
 | Main supported result | H2L-BM25 improves nDCG@5 over BM25, delta +0.0359, p = 0.0131 | Strongest quantitative claim |
 | Hybrid/HyDE results | Positive mean deltas on selected metrics but not significant | Trend-only |
 | Sentence polarity | Accuracy 0.8824, NDR 0.7222, FPR 0.0600, F1 0.7650 | Usable as safety evidence, with limitation on long text |
-| V6 ablation | Smoke run complete, 40 rows, all variants identical | Sanity check only |
+| V6 ablation | Fixed-candidate cached run complete on 20 cases, 160 rows; toggles change H2L scores and top-5 order in 15% of cases, but rank-aware relevance metrics remain identical across variants | Component sensitivity evidence only |
 | Blind expert evaluation | Packet generated but not scored | Not yet usable as result |
 
 ## Claims Allowed Now
@@ -24,7 +24,7 @@ This checklist translates the current artifacts into concrete actions before mak
 ## Claims To Avoid Until More Evidence
 
 - Do not claim H2L is superior to all baselines.
-- Do not claim V6 component causality from the smoke ablation.
+- Do not claim V6 component causality from the current fixed-candidate ablation; it supports score sensitivity, not retrieval effectiveness causality.
 - Do not claim clinical usability has been validated until blind expert scoring is complete.
 - Do not merge generated/paraphrase/adversarial cases into broad real-world generalization claims without reporting them as stress-test slices.
 
@@ -32,7 +32,7 @@ This checklist translates the current artifacts into concrete actions before mak
 
 1. Complete blind expert evaluation with at least 3 domain experts.
 2. Analyze expert scores with paired comparison and inter-rater agreement.
-3. Rerun V6 ablation on a larger fixed sample and verify each toggle changes the live scoring path.
+3. Extend V6 ablation from 20 cases to the full leakage-safe test split and add rank-distance / score-calibration diagnostics.
 4. Add an external holdout set or clearly limit claims to the current benchmark.
 5. Report generated, paraphrase, adversarial, and polarity cases as separate slices.
 6. Keep `q1_readiness_report.md`, `ground_truth_audit.md`, and `paper_tables.tex` regenerated immediately before submission.

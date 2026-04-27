@@ -1,0 +1,8 @@
+variant,mean_abs_delta,std_delta,max_delta,n_nonzero
+w/o Adaptive Alpha,0.062802,0.021911,0.144863,68
+w/o Bayesian Prior,0.062802,0.021911,0.144863,68
+w/o IDF Specificity,0.062802,0.021911,0.144863,68
+w/o Margin Activation,0.062802,0.021911,0.144863,68
+w/o KL Penalty,0.062802,0.021911,0.144863,68
+w/o Negation Gate,0.062802,0.021911,0.144863,68
+Product Feature Mode,0.062802,0.021911,0.144863,68

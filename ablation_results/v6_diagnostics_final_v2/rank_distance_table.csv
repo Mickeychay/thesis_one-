@@ -1,0 +1,8 @@
+variant,mean_score_diff,max_score_diff,n_cases_changed,pct_cases_changed,n_cases
+w/o Adaptive Alpha,0.0,0.0,0,0.0,68
+w/o Bayesian Prior,0.0,0.0,0,0.0,68
+w/o IDF Specificity,0.0,0.0,0,0.0,68
+w/o Margin Activation,0.0,0.0,0,0.0,68
+w/o KL Penalty,0.0,0.0,0,0.0,68
+w/o Negation Gate,0.0,0.0,0,0.0,68
+Product Feature Mode,0.0,0.0,0,0.0,68

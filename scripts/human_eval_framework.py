@@ -78,12 +78,18 @@ RATING_RUBRIC = {
 def sample_evaluation_cases(
     ground_truth_path: str = "expanded_ground_truth.json",
     n_per_complexity: int = 10,
+    filter_case_ids: List[str] = None,
 ) -> List[Dict]:
     """Stratified sampling: n cases per complexity level"""
     with open(ground_truth_path, 'r', encoding='utf-8') as f:
         gt = json.load(f)
 
     cases = gt.get('cases', [])
+    if filter_case_ids:
+        cases = [c for c in cases if c.get('case_id') in filter_case_ids]
+        if n_per_complexity >= 100:  # Special case to take all
+            return cases
+
     by_complexity = defaultdict(list)
     for c in cases:
         by_complexity[c.get('complexity', 'unknown')].append(c)
@@ -468,8 +474,17 @@ def main():
         output_dir = Path(args.output_dir)
         output_dir.mkdir(exist_ok=True)
 
+        filter_case_ids = None
+        if args.cases_artifact:
+            with open(args.cases_artifact, 'r', encoding='utf-8') as f:
+                art = json.load(f)
+            # Find any strategy and take its case IDs
+            any_strat = list(art.get('per_strategy', {}).keys())[0]
+            filter_case_ids = [r['case_id'] for r in art['per_strategy'][any_strat]]
+            print(f"🎯 Found {len(filter_case_ids)} case IDs in artifact")
+
         # Sample cases
-        cases = sample_evaluation_cases(args.ground_truth, args.n_per_complexity)
+        cases = sample_evaluation_cases(args.ground_truth, args.n_per_complexity, filter_case_ids=filter_case_ids)
         print(f"📋 Sampled {len(cases)} cases for evaluation")
 
         # Generate hidden mapping and CSV form

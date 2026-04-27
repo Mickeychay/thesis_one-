@@ -1,0 +1,4 @@
+metric,System_A_mean,System_B_mean,delta_A_minus_B,wilcoxon_stat,p_value,effect_r,n_cases,significant_p05
+relevance_score,2.875,3.4167,-0.5417,6.5,0.2344,1.0833,8,False
+completeness_score,3.5704,3.8471,-0.2767,14.0,0.6406,2.3333,8,False
+clinical_usefulness_score,3.862,3.4985,0.3634,12.0,0.4609,2.0,8,False

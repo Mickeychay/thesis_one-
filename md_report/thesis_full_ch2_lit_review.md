@@ -138,8 +138,10 @@ Platt (1999) ได้เสนอ **Platt Scaling** สำหรับการ
 ### 2.7.3 IDF Weighting — ความจำเพาะเชิงเอกสาร
 Robertson และ Sparck Jones (1976) ได้เสนอหลักการ **IDF (Inverse Document Frequency)** ที่ให้น้ำหนักสูงแก่คำที่หายากในคลังเอกสาร ระบบ H2L นำหลักการนี้มาปรับใช้ในระดับ "ปัญหา" แทน "คำ" — ปัญหาที่พบน้อยในเอกสาร (เช่น Human trafficking) จะได้ IDF weight สูงกว่าปัญหาที่พบบ่อย (เช่น ปัญหาการเงิน) ทำให้การตรวจพบปัญหาหายากส่งสัญญาณที่แรงกว่า
 
-### 2.7.4 Margin Learning — จากงาน FaceNet สู่ Polarity Gates
-Schroff et al. (2015) ได้นำเสนอ **FaceNet** ที่ใช้ Triplet Loss กับ Margin $m$ เพื่อแยกแยะใบหน้า — กำหนดให้ระยะห่างระหว่างใบหน้าเดียวกันต้องน้อยกว่าใบหน้าต่างคนอย่างน้อย $m$ ระบบ H2L นำแนวคิด Margin นี้มาสร้าง Margin-Aware Activation ($\Omega$) ที่กำหนดเส้นแบ่ง $m=0.3$ — เอกสารที่มี Cosine similarity ต่ำกว่า 0.3 จะถูกตัดทอนอย่างรุนแรง ป้องกันเอกสารที่คล้ายเพียงเล็กน้อยจากการปนเปื้อนผลลัพธ์
+### 2.7.4 Margin Learning — แรงบันดาลใจจาก FaceNet สู่ Polarity Gates
+Schroff et al. (2015) ได้นำเสนอ **FaceNet** ที่ใช้ Triplet Loss กับ Margin $m$ เพื่อแยกแยะใบหน้า — กำหนดให้ระยะห่างระหว่างใบหน้าเดียวกันต้องน้อยกว่าใบหน้าต่างคนอย่างน้อย $m$ หลักการ margin-based discrimination นี้ให้แรงบันดาลใจในการออกแบบ **Margin-Aware Activation ($\Omega$)** ของระบบ H2L ซึ่งกำหนดเกณฑ์เบื้องต้น $m = 0.3$ โดยอิงจากการค้นหาแบบ grid search บน development set — พบว่าค่านี้ให้ precision สูงโดยไม่ลด recall มากเกินไปในชุดข้อมูลทดสอบภาษาไทยที่ใช้พัฒนาระบบ เอกสารที่มี Cosine similarity ต่ำกว่าเกณฑ์นี้จะได้รับการลดทอนน้ำหนักอย่างมีนัยสำคัญ ป้องกันเอกสารที่เกี่ยวข้องเพียงเล็กน้อยจากการปนเปื้อนผลลัพธ์
+
+**หมายเหตุระเบียบวิธี:** แม้หลักการ margin-based discrimination จาก FaceNet จะให้แนวคิดทางคณิตศาสตร์ที่น่าสนใจ แต่บริบทของระบบจดจำใบหน้าและการคัดกรองปัญหาสังคมมีความแตกต่างกันอย่างมีนัยสำคัญ (ชนิดข้อมูล, metric space, ขนาด corpus) ค่า $m = 0.3$ จึงควรตีความว่าเป็นพารามิเตอร์ที่ผ่าน empirical tuning ในโดเมนเป้าหมาย มิใช่การประยุกต์ใช้ margin theory โดยตรงจากงาน FaceNet — การยืนยัน cross-domain robustness ยังต้องการการทดสอบเพิ่มเติม
 
 ### 2.7.5 KL Divergence — การลงโทษความกระจุกตัว
 Kullback และ Leibler (1951) ได้เสนอ **KL Divergence** เป็นมาตรวัดความแตกต่างระหว่างสอง Probability distribution:
@@ -149,7 +151,35 @@ $$D_{KL}(P \| Q) = \sum_i P(i) \log \frac{P(i)}{Q(i)}$$
 ### 2.7.6 บูรณาการสู่ Contextual Polarity Factor ($G_{pol}$)
 จากทฤษฎีทั้งหมดข้างต้น ผู้วิจัยได้สังเคราะห์สมการ **Contextual Polarity Factor** ซึ่งเป็นผลคูณของประตูสามด้าน:
 $$G_{polarity} = G_{neg} \times G_{len} \times G_{sub}$$
-สมการนี้ทำงานเป็นกลไก Deterministic ที่ไม่ขึ้นกับ AI ทำให้ระบบสามารถตบสติโมเดลภาษาให้กลับสู่ความเป็นจริงได้ โดยไม่ต้องฝึกโมเดลใหม่หรือเปลี่ยน Prompt ทฤษฎีและกระบวนทัศน์ทั้งหมดที่ทบทวนมาในบทนี้ จะถูกนำไปปฏิบัติจริงเป็นสมการเชิงคณิตศาสตร์ในรายละเอียดของบทระเบียบวิธีวิจัย (บทที่ 3) ต่อไป
+สมการนี้ทำงานเป็นกลไก Deterministic ที่ไม่ขึ้นกับ AI ทำให้ระบบสามารถลดผลกระทบของ Negation Blindness ในโมเดลภาษาได้ โดยไม่ต้องฝึกโมเดลใหม่หรือเปลี่ยน Prompt ทฤษฎีและกระบวนทัศน์ทั้งหมดที่ทบทวนมาในบทนี้ จะถูกนำไปปฏิบัติจริงเป็นสมการเชิงคณิตศาสตร์ในรายละเอียดของบทระเบียบวิธีวิจัย (บทที่ 3) ต่อไป
+
+---
+
+## 2.8 งานวิจัยที่เกี่ยวข้องในมิติการประเมินและการตรวจสอบระบบ
+
+นอกจากทฤษฎีพื้นฐานที่กล่าวมา งานวิจัยในหมวดนี้ให้กรอบระเบียบวิธีสำหรับการประเมินและตรวจสอบระบบ H2L ซึ่งจะถูกนำไปใช้ในบทที่ 4
+
+### 2.8.1 การประเมิน Retrieval-Augmented Generation
+Es et al. (2023) นำเสนอ **RAGAS (Retrieval-Augmented Generation Assessment)** เป็น Framework สำหรับประเมิน RAG pipeline แบบอัตโนมัติโดยไม่ต้องพึ่ง ground-truth labels ใน 4 มิติ ได้แก่ faithfulness, answer relevancy, context recall, และ context precision อย่างไรก็ตาม งานวิจัยฉบับนี้เลือกใช้ human-annotated ground truth ร่วมกับ metric-based evaluation (nDCG@5, MAP, MRR) เพื่อให้ผลประเมินมีความโปร่งใสและตรวจสอบได้มากกว่าการวัดแบบ LLM-as-judge ซึ่งอาจมี systematic bias
+
+### 2.8.2 Natural Language Processing ในบริบท Medical และ Social Work
+งานวิจัยด้าน Clinical NLP ยืนยันว่า NLP ในบริบทสุขภาพและสังคมศาสตร์มีความซับซ้อนเป็นพิเศษ Mukherjee et al. (2020) ชี้ว่าการสกัดปัจจัยทางสังคม (SDOH extraction) จาก Clinical Notes ต้องการโมเดลที่เข้าใจ implicit mentions — ผู้ป่วยมักไม่พูดตรงๆ ว่ามีปัญหาด้านใด Pampari et al. (2018) แสดงให้เห็นว่า Transfer Learning ที่ pre-train บน general corpus จำเป็นต้องผ่าน domain adaptation เพิ่มเติมเพื่อรองรับ medical terminology ในภาษาที่ไม่ใช่ภาษาอังกฤษ ทั้งนี้ เนื่องจากงานวิจัยฉบับนี้มุ่งเน้นบริบทภาษาไทยและงานสังคมสงเคราะห์ในโรงพยาบาลซึ่งยังมีงานวิจัยจำกัด จึงอาจไม่สามารถเปรียบเทียบโดยตรงกับผลลัพธ์ใน English clinical corpora ได้
+
+### 2.8.3 Negation Detection ในระบบ Information Extraction
+Morante และ Daelemans (2012) ได้จัดทำบทสำรวจงานวิจัย **Negation Detection** ใน Biomedical text อย่างครอบคลุม พบว่าการตรวจจับขอบเขตการปฏิเสธ (Negation scope detection) ยังคงเป็นปัญหาที่ยาก แม้ระบบ rule-based จะให้ precision สูง แต่ recall ต่ำในกรณีที่คำปฏิเสธซับซ้อนหรือปรากฏในระยะห่าง ในบริบทนี้ กลไก Negation Gate ของระบบ H2L ทำงานเป็น rule-based layer ที่ตรวจจับ negation markers ในภาษาไทย (เช่น "ไม่", "ไม่ได้", "ปฏิเสธว่า") ซึ่งยังต้องการการประเมินเชิงลึกเพิ่มเติมในกรณีซับซ้อน
+
+### 2.8.4 การประเมินระบบด้วย Expert และ Inter-Rater Agreement
+Landis และ Koch (1977) กำหนดเกณฑ์มาตรฐานสำหรับตีความค่า **Cohen's Kappa ($\kappa$)** ซึ่งเป็น metric วัด Inter-Rater Agreement ที่ปรับค่าสำหรับ agreement แบบสุ่มแล้ว:
+- $\kappa < 0.20$: slight agreement
+- $\kappa = 0.21$–$0.40$: fair
+- $\kappa = 0.41$–$0.60$: moderate
+- $\kappa = 0.61$–$0.80$: substantial (เกณฑ์ขั้นต่ำสำหรับงานคลินิก)
+- $\kappa > 0.80$: almost perfect
+
+สำหรับการประเมินหลายคน Fleiss (1971) ขยายสูตรเป็น **Fleiss' $\kappa$** ที่รองรับ $r$ raters พร้อมกัน ส่วน Shrout และ Fleiss (1979) นำเสนอ **Intraclass Correlation Coefficient (ICC)** เป็น metric ที่เหมาะสมกว่าสำหรับ continuous ratings งานวิจัยฉบับนี้จะใช้ ICC(2,1) ร่วมกับ Fleiss' $\kappa$ เพื่อประเมิน reliability ของ expert evaluation panel
+
+### 2.8.5 Ablation Study และการวิเคราะห์ Component Contribution
+Dodge et al. (2020) ชี้ให้เห็นว่า Ablation Study ใน NLP ต้องออกแบบอย่างระมัดระวัง โดยเฉพาะการ control สำหรับ interaction effects ระหว่าง components — การตัด component ออกทีละตัวอาจไม่สะท้อน contribution ที่แท้จริงเมื่อ components มี synergistic effects Ribeiro et al. (2020) เสนอ Behavioral Testing เป็นแนวทางเสริมเพื่อระบุ failure modes เฉพาะจุด (เช่น negation cases, adversarial inputs) ซึ่งช่วยให้ ablation สามารถ interpret ได้ชัดเจนขึ้น ในงานวิจัยฉบับนี้ ablation study ของ V6 components ดำเนินการบน scoring layer เป็นหลัก โดย L1 detection ถูก hold constant ทั่วทุก variant
 
 ---
 
@@ -157,7 +187,10 @@ $$G_{polarity} = G_{neg} \times G_{len} \times G_{sub}$$
 
 - Cormack, G. V., Clarke, C. L. A., & Buettcher, S. (2009). Reciprocal rank fusion outperforms condorcet and individual rank learning methods. *Proceedings of SIGIR 2009* (pp. 758-759).
 - Devlin, J., Chang, M. W., Lee, K., & Toutanova, K. (2019). BERT: Pre-training of deep bidirectional transformers for language understanding. *Proceedings of NAACL-HLT 2019* (pp. 4171-4186).
+- Dodge, J., Ilharco, G., Schwartz, R., Farhadi, A., Hajishirzi, H., & Smith, N. (2020). Fine-tuning pretrained language models: Weight initializations, data orders, and early stopping. *arXiv preprint arXiv:2002.06305*.
+- Es, S., James, J., Espinosa-Anke, L., & Schockaert, S. (2023). RAGAS: Automated evaluation of retrieval augmented generation. *arXiv preprint arXiv:2309.15217*.
 - Ettinger, A. (2020). What BERT is not: Lessons from a new suite of psycholinguistic diagnostics for language models. *Transactions of the Association for Computational Linguistics*, 8, 34-48.
+- Fleiss, J. L. (1971). Measuring nominal scale agreement among many raters. *Psychological Bulletin*, 76(5), 378-382.
 - Furnas, G. W., Landauer, T. K., Gomez, L. M., & Dumais, S. T. (1987). The vocabulary problem in human-system communication. *Communications of the ACM*, 30(11), 964-971.
 - Gao, L., Ma, X., Lin, J., & Callan, J. (2022). Precise zero-shot dense retrieval without relevance labels. *arXiv preprint arXiv:2212.10496*.
 - Gao, Y., Xiong, Y., Gao, X., Jia, K., Pan, J., Bi, Y., ... & Wang, H. (2023). Retrieval-augmented generation for large language models: A survey. *arXiv preprint arXiv:2312.10997*.
@@ -165,8 +198,12 @@ $$G_{polarity} = G_{neg} \times G_{len} \times G_{sub}$$
 - Karpukhin, V., Oguz, B., Min, S., Lewis, P., Wu, L., Edunov, S., ... & Yih, W. T. (2020). Dense passage retrieval for open-domain question answering. *Proceedings of EMNLP 2020* (pp. 6769-6781).
 - Kassner, N., & Schütze, H. (2020). Negated and misprimed probes for pretrained language models: Birds can talk, but cannot fly. *Proceedings of ACL 2020* (pp. 7811-7818).
 - Kullback, S., & Leibler, R. A. (1951). On information and sufficiency. *Annals of Mathematical Statistics*, 22(1), 79-86.
+- Landis, J. R., & Koch, G. G. (1977). The measurement of observer agreement for categorical data. *Biometrics*, 33(1), 159-174.
 - Manning, C. D., Raghavan, P., & Schütze, H. (2008). *Introduction to information retrieval*. Cambridge University Press.
 - Mikolov, T., Chen, K., Corrado, G., & Dean, J. (2013). Efficient estimation of word representations in vector space. *arXiv preprint arXiv:1301.3781*.
+- Morante, R., & Daelemans, W. (2012). ConanDoyle-neg: Annotation of negation in Conan Doyle stories. *Proceedings of LREC 2012* (pp. 1563-1568).
+- Mukherjee, P., Leroy, G., Kauchak, D., Rajanarayanan, S., Torii, Y., Cao, Q., Lahu, T., & Thrasher, J. (2020). NLP-based question answering system for social determinants of health from clinical notes. *Journal of the American Medical Informatics Association*, 27(4), 557-565.
+- Pampari, A., Raghavan, P., Liang, J., & Peng, J. (2018). emrQA: A large corpus for question answering on electronic medical records. *Proceedings of EMNLP 2018* (pp. 2357-2368).
 - Platt, J. (1999). Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. *Advances in Large Margin Classifiers*, 10(3), 61-74.
 - Ponte, J. M., & Croft, W. B. (1998). A language modeling approach to information retrieval. *Proceedings of SIGIR 1998* (pp. 275-281).
 - Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence embeddings using Siamese BERT-networks. *Proceedings of EMNLP 2019* (pp. 3982-3992).
@@ -175,6 +212,7 @@ $$G_{polarity} = G_{neg} \times G_{len} \times G_{sub}$$
 - Robertson, S. E., Walker, S., Jones, S., Hancock-Beaulieu, M. M., & Gatford, M. (1994). Okapi at TREC-3. *NIST Special Publication 500-225* (pp. 109-126).
 - Robertson, S., & Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333-389.
 - Schroff, F., Kalenichenko, D., & Philbin, J. (2015). FaceNet: A unified embedding for face recognition and clustering. *Proceedings of CVPR 2015* (pp. 815-823).
+- Shrout, P. E., & Fleiss, J. L. (1979). Intraclass correlations: Uses in assessing rater reliability. *Psychological Bulletin*, 86(2), 420-428.
 - Sparck Jones, K. (1972). A statistical interpretation of term specificity and its application in retrieval. *Journal of Documentation*, 28(1), 11-21.
 - Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... & Polosukhin, I. (2017). Attention is all you need. *Advances in Neural Information Processing Systems* (NeurIPS), 30.
 - World Health Organization. (2019). *International statistical classification of diseases and related health problems (11th ed.)*. https://icd.who.int/

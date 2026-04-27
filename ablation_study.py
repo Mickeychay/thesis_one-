@@ -896,10 +896,12 @@ class RQ6_V6ComponentAblation(AblationExperiment):
         from H2L_core import H2LConfigV3
 
         def cfg(**overrides):
-            h2l_cfg = H2LConfigV3()
+            # V6 Fix: Ensure fresh instance and correct flag names
+            from H2L_core import H2LConfigV3
+            instance = H2LConfigV3()
             for key, value in overrides.items():
-                setattr(h2l_cfg, key, value)
-            return h2l_cfg
+                setattr(instance, key, value)
+            return instance
 
         return {
             "Full V6": cfg(),
@@ -991,13 +993,16 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                 problems = bundle["detected_problems"]
                 # copy.copy keeps document references but prevents score mutation
                 # from leaking across variants.
-                variant_results = [copy.copy(r) for r in bundle["base_results"]]
+                variant_results = [copy.deepcopy(r) for r in bundle["base_results"]]
                 base_order = [getattr(getattr(r, "doc", None), "id", id(r)) for r in variant_results[:5]]
                 base_scores = [
                     float(getattr(r, "rerank_score", getattr(r, "score", 0.0)) or 0.0)
                     for r in variant_results
                 ]
 
+                # V6 Fix: Inject config directly to ensure isolation in shared runner
+                retriever.h2l_config = h2l_cfg
+                
                 if problems:
                     variant_results = retriever._apply_h2l_scoring(variant_results, problems, query)
                 variant_results.sort(key=self._score_key, reverse=True)
@@ -1018,6 +1023,10 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                     for before, after in zip(base_scores, scored_values)
                 ])) if base_scores else 0.0
 
+                # Q1 Enhancement: Capture raw H2L scores for between-variant comparison
+                h2l_top5_scores = [round(self._score_key(r), 8) for r in ranked[:5]]
+                h2l_mean_top5 = float(np.mean(h2l_top5_scores)) if h2l_top5_scores else 0.0
+
                 case_result = {
                     "case_id": case.get("case_id", "unknown"),
                     "complexity": case.get("complexity", "unknown"),
@@ -1027,6 +1036,7 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                     "rank_changed_at5": base_order != reranked_order,
                     "mean_abs_score_delta": mean_score_delta,
                     "n_detected_problems": len(problems),
+                    "h2l_mean_top5": h2l_mean_top5,
                 }
                 per_case.append(case_result)
 
@@ -1048,6 +1058,7 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                     "rank_changed_at5": case_result["rank_changed_at5"],
                     "mean_abs_score_delta": case_result["mean_abs_score_delta"],
                     "n_detected_problems": case_result["n_detected_problems"],
+                    "h2l_mean_top5": case_result.get("h2l_mean_top5", 0.0),
                 })
 
             agg = {}
@@ -1612,28 +1623,35 @@ def run_pairwise_stats(df: pd.DataFrame, group_col: str,
 
             v1 = df1.loc[common].values
             v2 = df2.loc[common].values
+            diff = v1 - v2
 
-            # Normality check
-            try:
-                _, p_norm1 = scipy_stats.shapiro(v1)
-                _, p_norm2 = scipy_stats.shapiro(v2)
-                is_normal = p_norm1 > 0.05 and p_norm2 > 0.05
-            except:
-                is_normal = False
-
-            if is_normal:
-                stat, p_val = scipy_stats.ttest_rel(v1, v2)
-                test_name = "paired t-test"
+            if np.allclose(diff, 0.0, equal_nan=True):
+                stat, p_val = 0.0, 1.0
+                test_name = "No difference"
             else:
+                # Normality check
                 try:
-                    stat, p_val = scipy_stats.wilcoxon(v1, v2)
-                    test_name = "Wilcoxon"
+                    _, p_norm1 = scipy_stats.shapiro(v1)
+                    _, p_norm2 = scipy_stats.shapiro(v2)
+                    is_normal = p_norm1 > 0.05 and p_norm2 > 0.05
                 except:
-                    stat, p_val = 0.0, 1.0
-                    test_name = "N/A"
+                    is_normal = False
+
+                if is_normal:
+                    stat, p_val = scipy_stats.ttest_rel(v1, v2)
+                    test_name = "paired t-test"
+                else:
+                    try:
+                        stat, p_val = scipy_stats.wilcoxon(v1, v2)
+                        test_name = "Wilcoxon"
+                    except:
+                        stat, p_val = 0.0, 1.0
+                        test_name = "N/A"
+
+            if not np.isfinite(p_val):
+                p_val = 1.0
 
             # Cohen's d
-            diff = v1 - v2
             d = float(np.mean(diff) / (np.std(diff) + 1e-10))
 
             results[f"{g1} vs {g2}"] = {
@@ -1714,6 +1732,34 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
                 vals.append(f"{mean:.4f} ± {std:.4f}")
             lines.append(f"| {row_name} | " + " | ".join(vals) + " |")
         lines.append("")
+
+        if rq_key == 'RQ6' and {'rank_changed_at5', 'mean_abs_score_delta', 'n_detected_problems'}.issubset(df.columns):
+            diag = df.groupby(group_col).agg(
+                rank_changed_at5=('rank_changed_at5', 'mean'),
+                mean_abs_score_delta=('mean_abs_score_delta', 'mean'),
+                mean_detected_problems=('n_detected_problems', 'mean'),
+            ).sort_values('mean_abs_score_delta', ascending=False)
+
+            lines.append("**Score/Ranking Diagnostics:**")
+            lines.append("")
+            lines.append("| Configuration | rank_changed@5 | mean_abs_score_delta | mean_detected_problems |")
+            lines.append("|---|---:|---:|---:|")
+            for row_name in diag.index:
+                lines.append(
+                    f"| {row_name} | "
+                    f"{diag.loc[row_name, 'rank_changed_at5']:.1%} | "
+                    f"{diag.loc[row_name, 'mean_abs_score_delta']:.4f} | "
+                    f"{diag.loc[row_name, 'mean_detected_problems']:.2f} |"
+                )
+            lines.append("")
+            lines.append(
+                "Interpretation: rank-aware relevance metrics are unchanged across "
+                "one-component-disabled variants in this run, but the diagnostic columns "
+                "show that component toggles alter H2L scores and top-5 ordering. Treat "
+                "this as component sensitivity evidence, not yet as causal component-level "
+                "effectiveness evidence."
+            )
+            lines.append("")
 
         # Statistical tests
         if stats:

@@ -1,0 +1,10 @@
+slice,metric,n_cases,delta_A_minus_B_mean
+non_negation_cases,relevance_score,6,-1.0
+non_negation_cases,completeness_score,6,-1.0227
+non_negation_cases,clinical_usefulness_score,6,0.5312
+high_severity_cases,relevance_score,3,-1.0
+high_severity_cases,completeness_score,3,-0.7018
+high_severity_cases,clinical_usefulness_score,3,0.6257
+other_cases,relevance_score,5,-0.2667
+other_cases,completeness_score,5,-0.0216
+other_cases,clinical_usefulness_score,5,0.2061

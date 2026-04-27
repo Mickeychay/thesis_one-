@@ -1,0 +1,8 @@
+component_disabled,Δ_P@5,Δ_nDCG@5,Δ_MAP,Δ_MRR,avg_score_perturbation,pct_rank_changed
+w/o Adaptive Alpha,0.0,0.0,0.0,0.0,0.062802,98.5
+w/o Bayesian Prior,0.0,0.0,0.0,0.0,0.062802,98.5
+w/o IDF Specificity,0.0,0.0,0.0,0.0,0.062802,98.5
+w/o Margin Activation,0.0,0.0,0.0,0.0,0.062802,98.5
+w/o KL Penalty,0.0,0.0,0.0,0.0,0.062802,98.5
+w/o Negation Gate,0.0,0.0,0.0,0.0,0.062802,98.5
+Product Feature Mode,0.0,0.0,0.0,0.0,0.062802,98.5

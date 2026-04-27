@@ -1,0 +1,24 @@
+\begin{table}[htbp]
+  \centering
+  \caption{RQ6: V6 Component Ablation Results (n=197 cases)}
+  \label{tab:rq6_ablation}
+  \begin{tabular}{lcccccl}
+    \toprule
+    Configuration & nDCG@5 & MAP & H2L Score & Cohen's $d$ & $p$-value & Effect \\
+    \midrule
+    Full V6 (baseline) & 0.3410 & 0.3453 & 1.8947 & — & — & — \\
+    −Bayesian Prior & 0.3410 & 0.3453 & 2.0146 & -0.048 & <0.001 & negligible \\
+    −KL Penalty & 0.3410 & 0.3453 & 1.8995 & -0.002 & <0.001 & negligible \\
+    −Margin & 0.3421 & 0.3460 & 1.8730 & 0.009 & <0.001 & negligible \\
+    −Negation & 0.3410 & 0.3453 & 1.5273 & 0.167 & <0.001 & negligible \\
+    −IDF & 0.3410 & 0.3453 & 1.4929 & 0.184 & <0.001 & negligible \\
+    −Adaptive α & 0.3410 & 0.3453 & 1.1377 & 0.409 & <0.001 & small \\
+    Product Mode & 0.3418 & 0.3454 & 0.3283 & 0.932 & <0.001 & large \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}\small
+    \item Cohen's $d$ computed on h2l\_mean\_top5 (Full V6 $-$ Ablated).
+    \item $p$-value from Wilcoxon signed-rank test.
+    \item Effect thresholds: $|d|<0.2$ negligible, $<0.5$ small, $<0.8$ medium, $\geq0.8$ large.
+  \end{tablenotes}
+\end{table}

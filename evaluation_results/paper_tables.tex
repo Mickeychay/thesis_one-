@@ -1,7 +1,7 @@
 % Auto-refreshed thesis/paper tables from latest real artifacts (2026-04-25)
 % Source: evaluation_results/proper_eval_latest_summary.json,
 % evaluation_results/sentence_polarity_latest.json,
-% ablation_results/v6_component_latest/rq6_results.csv
+% ablation_results/v6_component_cached_20/rq6_results.csv
 
 \begin{table*}[t]
 \centering
@@ -70,24 +70,24 @@ Mean $G_{neg}$ on negated cases & 0.6000 \\
 
 \begin{table}[t]
 \centering
-\caption{V6 Component Ablation Smoke Run}
+\caption{V6 Component Ablation on a Fixed Candidate Pool}
 \label{tab:v6_ablation}
-\begin{tabular}{lrrr}
+\begin{tabular}{lrrrrr}
 \toprule
-Configuration & MAP & MRR & nDCG@5 \\
+Configuration & MAP & MRR & nDCG@5 & Rank changed@5 & Mean score delta \\
 \midrule
-Full V6 & 0.3110 & 0.4000 & 0.1733 \\
-Product Feature Mode & 0.3110 & 0.4000 & 0.1733 \\
-w/o Adaptive Alpha & 0.3110 & 0.4000 & 0.1733 \\
-w/o Bayesian Prior & 0.3110 & 0.4000 & 0.1733 \\
-w/o IDF Specificity & 0.3110 & 0.4000 & 0.1733 \\
-w/o KL Penalty & 0.3110 & 0.4000 & 0.1733 \\
-w/o Margin Activation & 0.3110 & 0.4000 & 0.1733 \\
-w/o Negation Gate & 0.3110 & 0.4000 & 0.1733 \\
+Full V6 & 0.3935 & 0.4467 & 0.3609 & 15.0\% & 0.5163 \\
+w/o Adaptive Alpha & 0.3935 & 0.4467 & 0.3609 & 15.0\% & 0.2572 \\
+w/o Bayesian Prior & 0.3935 & 0.4467 & 0.3609 & 15.0\% & 0.6098 \\
+w/o IDF Specificity & 0.3935 & 0.4467 & 0.3609 & 15.0\% & 0.4330 \\
+w/o KL Penalty & 0.3935 & 0.4467 & 0.3609 & 15.0\% & 0.5172 \\
+w/o Margin Activation & 0.3935 & 0.4467 & 0.3609 & 15.0\% & 0.5117 \\
+w/o Negation Gate & 0.3935 & 0.4467 & 0.3609 & 15.0\% & 0.5197 \\
+Product Feature Mode & 0.3935 & 0.4467 & 0.3609 & 15.0\% & 0.0230 \\
 \bottomrule
 \end{tabular}
 \vspace{1mm}
-\footnotesize{This is a smoke/sanity ablation on 5 cases (40 rows), not a final component-level causal claim.}
+\footnotesize{This 20-case fixed-candidate run shows score/rank sensitivity, but not significant rank-aware effectiveness differences between component variants.}
 \end{table}
 
 \begin{table}[t]

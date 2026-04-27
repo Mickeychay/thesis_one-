@@ -33,19 +33,32 @@ def load_rq6_ablation(path: str) -> Dict[str, Any]:
 
     metric_sums: Dict[str, Dict[str, float]] = {}
     metric_counts: Dict[str, int] = {}
+    diagnostic_sums: Dict[str, Dict[str, float]] = {}
     with p.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
             variant = row.get("variant", "unknown")
             metric_sums.setdefault(variant, {"MAP": 0.0, "MRR": 0.0, "nDCG@5": 0.0})
+            diagnostic_sums.setdefault(
+                variant,
+                {
+                    "rank_changed_at5": 0.0,
+                    "mean_abs_score_delta": 0.0,
+                    "n_detected_problems": 0.0,
+                },
+            )
             metric_counts[variant] = metric_counts.get(variant, 0) + 1
             for metric in metric_sums[variant]:
                 metric_sums[variant][metric] += float(row.get(metric) or 0.0)
+            diagnostic_sums[variant]["rank_changed_at5"] += float(str(row.get("rank_changed_at5", "0")).lower() in {"true", "1", "yes"})
+            diagnostic_sums[variant]["mean_abs_score_delta"] += float(row.get("mean_abs_score_delta") or 0.0)
+            diagnostic_sums[variant]["n_detected_problems"] += float(row.get("n_detected_problems") or 0.0)
 
     variants: Dict[str, Dict[str, float]] = {}
     for variant, sums in metric_sums.items():
         n = metric_counts[variant]
         variants[variant] = {metric: value / n for metric, value in sums.items()}
+        variants[variant].update({metric: value / n for metric, value in diagnostic_sums[variant].items()})
 
     full = variants.get("Full V6", {})
     deltas = []
@@ -184,14 +197,16 @@ def build_report(
                 f"- RQ6 variants: `{rq6_ablation.get('n_variants')}`",
                 f"- Max |Δ nDCG@5| vs Full V6: `{rq6_ablation.get('max_abs_ndcg_delta_vs_full', 0.0):.4f}`",
                 "",
-                "| Variant | MAP | MRR | nDCG@5 |",
-                "|---|---:|---:|---:|",
+                "| Variant | MAP | MRR | nDCG@5 | rank_changed@5 | mean score delta |",
+                "|---|---:|---:|---:|---:|---:|",
             ]
         )
         for variant, metrics in sorted(variants.items()):
             lines.append(
                 f"| {variant} | {metrics.get('MAP', 0.0):.4f} | "
-                f"{metrics.get('MRR', 0.0):.4f} | {metrics.get('nDCG@5', 0.0):.4f} |"
+                f"{metrics.get('MRR', 0.0):.4f} | {metrics.get('nDCG@5', 0.0):.4f} | "
+                f"{metrics.get('rank_changed_at5', 0.0):.1%} | "
+                f"{metrics.get('mean_abs_score_delta', 0.0):.4f} |"
             )
         if rq6_ablation.get("n_rows", 0) < 100:
             lines.extend(
@@ -201,6 +216,16 @@ def build_report(
                     "Identical variant means indicate the current bounded case set is too small "
                     "or the toggled controls are not changing the live scoring path enough to "
                     "support component-level causal claims.",
+                ]
+            )
+        elif rq6_ablation.get("max_abs_ndcg_delta_vs_full", 0.0) == 0.0:
+            lines.extend(
+                [
+                    "",
+                    "Interpretation: this fixed-candidate ablation shows score/rank sensitivity "
+                    "through `rank_changed@5` and score deltas, but it still does not show "
+                    "component-level effectiveness differences on MAP/MRR/nDCG@5. Treat it as "
+                    "component sensitivity evidence rather than causal evidence.",
                 ]
             )
     else:
@@ -233,7 +258,7 @@ def build_report(
             "",
             "1. Complete blinded expert relevance scoring with at least 3 domain experts.",
             "2. Rerun family-level split audit and keep augmented/paraphrase cases as stress-test slices.",
-            "3. Rerun V6 component ablation on a larger fixed sample and verify each toggle changes live scoring.",
+            "3. Extend V6 component ablation to the full leakage-safe test split and add rank-distance / score-calibration diagnostics.",
             "4. Add an external holdout set before making generalization claims.",
             "",
             "## Summary Counts",
@@ -254,7 +279,7 @@ def main() -> None:
     parser.add_argument("--summary", default="evaluation_results/proper_eval_latest_summary.json")
     parser.add_argument("--polarity", default="evaluation_results/sentence_polarity_latest.json")
     parser.add_argument("--audit", default="evaluation_results/ground_truth_audit.json")
-    parser.add_argument("--rq6-ablation", default="ablation_results/v6_component_latest/rq6_results.csv")
+    parser.add_argument("--rq6-ablation", default="ablation_results/v6_component_cached_20/rq6_results.csv")
     parser.add_argument("--output", default="evaluation_results/q1_readiness_report.md")
     args = parser.parse_args()
 

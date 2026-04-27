@@ -38,22 +38,22 @@ This report is generated from repository artifacts and uses conservative languag
 
 ## V6 Ablation Evidence
 
-- RQ6 ablation rows: `40`
+- RQ6 ablation rows: `160`
 - RQ6 variants: `8`
 - Max |Δ nDCG@5| vs Full V6: `0.0000`
 
-| Variant | MAP | MRR | nDCG@5 |
-|---|---:|---:|---:|
-| Full V6 | 0.3110 | 0.4000 | 0.1733 |
-| Product Feature Mode | 0.3110 | 0.4000 | 0.1733 |
-| w/o Adaptive Alpha | 0.3110 | 0.4000 | 0.1733 |
-| w/o Bayesian Prior | 0.3110 | 0.4000 | 0.1733 |
-| w/o IDF Specificity | 0.3110 | 0.4000 | 0.1733 |
-| w/o KL Penalty | 0.3110 | 0.4000 | 0.1733 |
-| w/o Margin Activation | 0.3110 | 0.4000 | 0.1733 |
-| w/o Negation Gate | 0.3110 | 0.4000 | 0.1733 |
+| Variant | MAP | MRR | nDCG@5 | rank_changed@5 | mean score delta |
+|---|---:|---:|---:|---:|---:|
+| Full V6 | 0.3935 | 0.4467 | 0.3609 | 15.0% | 0.5163 |
+| Product Feature Mode | 0.3935 | 0.4467 | 0.3609 | 15.0% | 0.0230 |
+| w/o Adaptive Alpha | 0.3935 | 0.4467 | 0.3609 | 15.0% | 0.2572 |
+| w/o Bayesian Prior | 0.3935 | 0.4467 | 0.3609 | 15.0% | 0.6098 |
+| w/o IDF Specificity | 0.3935 | 0.4467 | 0.3609 | 15.0% | 0.4330 |
+| w/o KL Penalty | 0.3935 | 0.4467 | 0.3609 | 15.0% | 0.5172 |
+| w/o Margin Activation | 0.3935 | 0.4467 | 0.3609 | 15.0% | 0.5117 |
+| w/o Negation Gate | 0.3935 | 0.4467 | 0.3609 | 15.0% | 0.5197 |
 
-Interpretation: this is a smoke/sanity ablation, not a final Q1 ablation. Identical variant means indicate the current bounded case set is too small or the toggled controls are not changing the live scoring path enough to support component-level causal claims.
+Interpretation: this fixed-candidate ablation shows score/rank sensitivity through `rank_changed@5` and score deltas, but it still does not show component-level effectiveness differences on MAP/MRR/nDCG@5. Treat it as component sensitivity evidence rather than causal evidence.
 
 ## Conservative Claim Guidance
 
@@ -63,7 +63,7 @@ Recommended next empirical steps:
 
 1. Complete blinded expert relevance scoring with at least 3 domain experts.
 2. Rerun family-level split audit and keep augmented/paraphrase cases as stress-test slices.
-3. Rerun V6 component ablation on a larger fixed sample and verify each toggle changes live scoring.
+3. Extend V6 component ablation to the full leakage-safe test split and add rank-distance / score-calibration diagnostics.
 4. Add an external holdout set before making generalization claims.
 
 ## Summary Counts

@@ -1,0 +1,1189 @@
+2026-04-27 01:26:22,125 - INFO - 
+======================================================================
+2026-04-27 01:26:22,125 - INFO - H2L V6 ABLATION STUDY — Real Evaluation Pipeline
+2026-04-27 01:26:22,125 - INFO - ======================================================================
+2026-04-27 01:26:22,125 - INFO - Output: /Users/rischen/Documents/GitHub/thesis_one-/ablation_results
+2026-04-27 01:26:22,125 - INFO - Timestamp: 2026-04-27 01:26:22
+2026-04-27 01:26:22,125 - INFO - Max cases: 1
+2026-04-27 01:26:22,125 - INFO - ======================================================================
+
+2026-04-27 01:26:22,125 - INFO - 
+🔬 Starting RQ6: V6 Component Ablation
+2026-04-27 01:26:22,125 - INFO - 
+======================================================================
+2026-04-27 01:26:22,125 - INFO - Running RQ6: V6 Component Ablation
+2026-04-27 01:26:22,125 - INFO - ======================================================================
+
+2026-04-27 01:26:22,135 - INFO - 📦 Initializing EvaluationRunner (loading models)...
+2026-04-27 01:26:22,135 - INFO - ✅ EvaluationRunner ready
+2026-04-27 01:26:23,008 - INFO - 📦 Loading shared components...
+[01:26:23]   [Loader] Loading metadata from              retrieval_engine.py:249
+           'data/vector_db_lancedb/metadata.json'...                            
+2026-04-27 01:26:25,197 - INFO - Load pretrained SentenceTransformer: intfloat/multilingual-e5-base
+  - 🔍 [ThaiBM25] Starting tokenization for 92 docs...
+  - ✅ [ThaiBM25] BM25 index created successfully.
+2026-04-27 01:26:37,121 - INFO - ✅ Shared components ready. 92 docs loaded.
+
+🚀 [HybridRetriever] Initializing...
+[01:26:37]   - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:26:37,145 - INFO -   📌 Building fixed candidate pools once per case (pool_k=45)
+2026-04-27 01:26:37,176 - INFO - ✅ Loaded taxonomy from: problem_codes.json
+2026-04-27 01:26:37,177 - INFO - ✅ [L1-ContextAware] Loaded 202 problem codes
+2026-04-27 01:26:37,450 - INFO - ✅ [L2-Semantic] Ready with model: qwen2.5:7b
+2026-04-27 01:26:37,450 - INFO - ✅ [H2LDetectorV3] Initialized (L2: enabled)
+2026-04-27 01:26:37,450 - INFO - ✅ H2L Detector ready.
+2026-04-27 01:26:37,450 - INFO -   🚫 L1-Filtered: [1106] ปัญหาการศึกษา อื่นๆ (conf=19%, reason=พบเพียงการเล่าประวัติการเรียนหรือระดับการศึกษา แต่ยังไม่พบบริบทว่าการศึกษาเป็นปัญหาโดยตรงสำหรับ ปัญหาการศึกษา อื่นๆ)
+2026-04-27 01:26:37,450 - INFO - 
+============================================================
+2026-04-27 01:26:37,450 - INFO - 📋 [H2L-V3] Detection Results
+2026-04-27 01:26:37,450 - INFO - ============================================================
+2026-04-27 01:26:37,450 - INFO - L1 Detected: 2 problems
+2026-04-27 01:26:37,450 - INFO - Needs Validation: 1 codes
+2026-04-27 01:26:37,450 - INFO - Conflicts: {}
+2026-04-27 01:26:37,450 - INFO - 
+🔍 Running L2 Validation...
+2026-04-27 01:26:56,804 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-27 01:26:56,819 - INFO -   🚫 L2-Implicit rejected: [0201] lacks taxonomy anchor in evidence/text for high-precision category
+2026-04-27 01:26:56,819 - INFO -   🚫 L2-Implicit rejected: [0203] lacks taxonomy anchor in evidence/text for high-precision category
+2026-04-27 01:26:56,819 - INFO - L2 Implicit: 0 problems
+2026-04-27 01:26:56,819 - INFO - 
+✅ Final: 2 problems
+2026-04-27 01:26:56,819 - INFO -   [0104] ฝ่ายใดฝ่ายหนึ่งไม่รับผิดชอบ/ผูกพันครอบครัวเดิม (sev:3, conf:74%, level:L1)
+2026-04-27 01:26:56,819 - INFO -   [0301] ปัญหาการหย่าร้าง (sev:3, conf:66%, level:L1)
+2026-04-27 01:26:56,819 - INFO - ============================================================
+
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.55it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.12it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.11it/s]
+2026-04-27 01:26:58,748 - INFO - 
+  🔧 Configuration: Full V6
+
+🚀 [HybridRetriever] Initializing...
+[01:26:58]   - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:26:59,021 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:26:59,029 - INFO -     MAP: 0.0667, MRR: 0.0667, nDCG@5: 0.0000, rank_changed@5: 100.0%, score_delta: 0.0523
+2026-04-27 01:26:59,029 - INFO - 
+  🔧 Configuration: w/o Adaptive Alpha
+DEBUG: Case CHILD_001, Variant Full V6
+      IDF_ENABLE: True
+      NEG_ENABLE: True
+      BAYESIAN_PRIOR_ENABLE: True
+DEBUG CORE: _apply_h2l_scoring with config id 4542686864, IDF_ENABLE=True
+  [ABLAT] Final Phi: 0.761100 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720295 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=3.46706915 (boost=4.0670, prior=0.8525)
+  [ABLAT] Final Phi: 0.761825 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721098 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.05913498 (boost=4.0729, prior=0.8525)
+  [ABLAT] Final Phi: 0.760636 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721104 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00562348 (boost=4.0684, prior=0.8525)
+  [ABLAT] Final Phi: 0.759564 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718557 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00302383 (boost=4.0544, prior=0.8525)
+  [ABLAT] Final Phi: 0.759573 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718948 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00204085 (boost=4.0560, prior=0.8525)
+  [ABLAT] Final Phi: 0.759211 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719301 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00172266 (boost=4.0559, prior=0.8525)
+  [ABLAT] Final Phi: 0.760935 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721099 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00097387 (boost=4.0695, prior=0.8525)
+  [ABLAT] Final Phi: 0.759645 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720389 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00057120 (boost=4.0618, prior=0.8525)
+  [ABLAT] Final Phi: 0.760979 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721059 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00054070 (boost=4.0695, prior=0.8525)
+  [ABLAT] Final Phi: 0.759162 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718168 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00047214 (boost=4.0514, prior=0.8525)
+  [ABLAT] Final Phi: 0.761239 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721009 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00046492 (boost=4.0703, prior=0.8525)
+  [ABLAT] Final Phi: 0.760817 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721822 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00041372 (boost=4.0718, prior=0.8525)
+  [ABLAT] Final Phi: 0.760114 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720080 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00036296 (boost=4.0624, prior=0.8525)
+  [ABLAT] Final Phi: 0.759530 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00034507 (boost=4.0577, prior=0.8525)
+  [ABLAT] Final Phi: 0.759712 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719838 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00034467 (boost=4.0599, prior=0.8525)
+  [ABLAT] Final Phi: 0.759143 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718707 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00024474 (boost=4.0534, prior=0.8525)
+  [ABLAT] Final Phi: 0.758873 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.716841 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00024096 (boost=4.0452, prior=0.8525)
+  [ABLAT] Final Phi: 0.760940 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719960 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00022783 (boost=4.0651, prior=0.8525)
+  [ABLAT] Final Phi: 0.760685 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721275 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00017455 (boost=4.0692, prior=0.8525)
+  [ABLAT] Final Phi: 0.759671 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719413 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00014788 (boost=4.0581, prior=0.8525)
+  [ABLAT] Final Phi: 0.759831 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719325 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00013842 (boost=4.0584, prior=0.8525)
+  [ABLAT] Final Phi: 0.760073 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720266 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00011786 (boost=4.0630, prior=0.8525)
+  [ABLAT] Final Phi: 0.758993 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718495 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007279 (boost=4.0520, prior=0.8525)
+  [ABLAT] Final Phi: 0.760039 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007055 (boost=4.0597, prior=0.8525)
+  [ABLAT] Final Phi: 0.759663 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719715 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006873 (boost=4.0593, prior=0.8525)
+  [ABLAT] Final Phi: 0.759315 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719952 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006575 (boost=4.0588, prior=0.8525)
+  [ABLAT] Final Phi: 0.758983 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719384 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006097 (boost=4.0554, prior=0.8525)
+  [ABLAT] Final Phi: 0.760640 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720537 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005731 (boost=4.0662, prior=0.8525)
+  [ABLAT] Final Phi: 0.761553 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721821 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005649 (boost=4.0747, prior=0.8525)
+  [ABLAT] Final Phi: 0.758657 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719201 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005555 (boost=4.0534, prior=0.8525)
+
+🚀 [HybridRetriever] Initializing...
+[01:26:59]   - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:26:59,202 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:26:59,204 - INFO -     MAP: 0.0667, MRR: 0.0667, nDCG@5: 0.0000, rank_changed@5: 100.0%, score_delta: 0.0523
+2026-04-27 01:26:59,204 - INFO - 
+  🔧 Configuration: w/o Bayesian Prior
+DEBUG: Case CHILD_001, Variant w/o Adaptive Alpha
+      IDF_ENABLE: True
+      NEG_ENABLE: True
+      BAYESIAN_PRIOR_ENABLE: True
+DEBUG CORE: _apply_h2l_scoring with config id 4686128784, IDF_ENABLE=True
+  [ABLAT] Final Phi: 0.761100 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720295 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=3.46100211 (boost=4.0599, prior=0.8525)
+  [ABLAT] Final Phi: 0.761825 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721098 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.05903138 (boost=4.0658, prior=0.8525)
+  [ABLAT] Final Phi: 0.760636 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721104 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00561363 (boost=4.0612, prior=0.8525)
+  [ABLAT] Final Phi: 0.759564 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718557 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00301856 (boost=4.0474, prior=0.8525)
+  [ABLAT] Final Phi: 0.759573 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718948 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00203728 (boost=4.0489, prior=0.8525)
+  [ABLAT] Final Phi: 0.759211 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719301 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00171965 (boost=4.0489, prior=0.8525)
+  [ABLAT] Final Phi: 0.760935 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721099 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00097217 (boost=4.0624, prior=0.8525)
+  [ABLAT] Final Phi: 0.759645 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720389 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00057020 (boost=4.0547, prior=0.8525)
+  [ABLAT] Final Phi: 0.760979 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721059 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00053975 (boost=4.0624, prior=0.8525)
+  [ABLAT] Final Phi: 0.759162 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718168 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00047131 (boost=4.0443, prior=0.8525)
+  [ABLAT] Final Phi: 0.761239 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721009 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00046411 (boost=4.0632, prior=0.8525)
+  [ABLAT] Final Phi: 0.760817 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721822 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00041300 (boost=4.0647, prior=0.8525)
+  [ABLAT] Final Phi: 0.760114 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720080 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00036232 (boost=4.0553, prior=0.8525)
+  [ABLAT] Final Phi: 0.759530 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00034447 (boost=4.0506, prior=0.8525)
+  [ABLAT] Final Phi: 0.759712 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719838 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00034407 (boost=4.0528, prior=0.8525)
+  [ABLAT] Final Phi: 0.759143 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718707 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00024432 (boost=4.0463, prior=0.8525)
+  [ABLAT] Final Phi: 0.758873 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.716841 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00024054 (boost=4.0382, prior=0.8525)
+  [ABLAT] Final Phi: 0.760940 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719960 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00022743 (boost=4.0580, prior=0.8525)
+  [ABLAT] Final Phi: 0.760685 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721275 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00017424 (boost=4.0621, prior=0.8525)
+  [ABLAT] Final Phi: 0.759671 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719413 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00014763 (boost=4.0510, prior=0.8525)
+  [ABLAT] Final Phi: 0.759831 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719325 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00013818 (boost=4.0513, prior=0.8525)
+  [ABLAT] Final Phi: 0.760073 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720266 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00011766 (boost=4.0559, prior=0.8525)
+  [ABLAT] Final Phi: 0.758993 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718495 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007267 (boost=4.0449, prior=0.8525)
+  [ABLAT] Final Phi: 0.760039 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007043 (boost=4.0526, prior=0.8525)
+  [ABLAT] Final Phi: 0.759663 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719715 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006861 (boost=4.0522, prior=0.8525)
+  [ABLAT] Final Phi: 0.759315 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719952 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006563 (boost=4.0517, prior=0.8525)
+  [ABLAT] Final Phi: 0.758983 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719384 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006087 (boost=4.0483, prior=0.8525)
+  [ABLAT] Final Phi: 0.760640 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720537 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005721 (boost=4.0591, prior=0.8525)
+  [ABLAT] Final Phi: 0.761553 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721821 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005639 (boost=4.0675, prior=0.8525)
+  [ABLAT] Final Phi: 0.758657 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719201 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005545 (boost=4.0464, prior=0.8525)
+
+🚀 [HybridRetriever] Initializing...
+             - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:26:59,378 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:26:59,380 - INFO -     MAP: 0.0667, MRR: 0.0667, nDCG@5: 0.0000, rank_changed@5: 100.0%, score_delta: 0.0523
+2026-04-27 01:26:59,380 - INFO - 
+  🔧 Configuration: w/o IDF Specificity
+DEBUG: Case CHILD_001, Variant w/o Bayesian Prior
+      IDF_ENABLE: True
+      NEG_ENABLE: True
+      BAYESIAN_PRIOR_ENABLE: False
+DEBUG CORE: _apply_h2l_scoring with config id 4724134928, IDF_ENABLE=True
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.686100 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.645295 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=3.52837896 (boost=3.5285, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.686825 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.646098 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.06018068 (boost=3.5336, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685636 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.646104 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00572292 (boost=3.5296, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684564 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.643557 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00307731 (boost=3.5175, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684573 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.643948 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00207693 (boost=3.5189, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684211 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644301 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00175312 (boost=3.5188, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685935 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.646099 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00099109 (boost=3.5306, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684645 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.645389 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00058130 (boost=3.5239, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685979 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.646059 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00055026 (boost=3.5306, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684162 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.643168 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00048048 (boost=3.5149, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.686239 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.646009 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00047315 (boost=3.5313, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685817 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.646822 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00042104 (boost=3.5326, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685114 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.645080 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00036938 (boost=3.5244, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684530 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644446 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00035117 (boost=3.5204, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684712 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644838 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00035076 (boost=3.5223, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684143 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.643707 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00024907 (boost=3.5166, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.683873 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.641841 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00024522 (boost=3.5095, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685940 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644960 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00023186 (boost=3.5268, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685685 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.646275 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00017763 (boost=3.5303, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684671 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644413 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00015050 (boost=3.5207, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684831 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644325 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00014087 (boost=3.5210, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685073 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.645266 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00011995 (boost=3.5249, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.683993 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.643495 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007408 (boost=3.5154, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685039 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644446 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007180 (boost=3.5221, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684663 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644715 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006994 (boost=3.5217, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.684315 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644952 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006691 (boost=3.5213, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.683983 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644384 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006205 (boost=3.5183, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.685640 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.645537 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005832 (boost=3.5277, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.686553 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.646821 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005749 (boost=3.5351, prior=1.0000)
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.683657 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+  [ABLAT] Skipping prior
+  [ABLAT] Final Phi: 0.644201 (flags: {'detect': True, 'semantic': True, 'prior': False, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005653 (boost=3.5167, prior=1.0000)
+
+🚀 [HybridRetriever] Initializing...
+             - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:26:59,555 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:26:59,557 - INFO -     MAP: 0.0667, MRR: 0.0667, nDCG@5: 0.0000, rank_changed@5: 100.0%, score_delta: 0.0523
+2026-04-27 01:26:59,557 - INFO - 
+  🔧 Configuration: w/o Margin Activation
+DEBUG: Case CHILD_001, Variant w/o IDF Specificity
+      IDF_ENABLE: False
+      NEG_ENABLE: True
+      BAYESIAN_PRIOR_ENABLE: True
+DEBUG CORE: _apply_h2l_scoring with config id 4724135248, IDF_ENABLE=False
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.661100 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.620295 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=2.86883354 (boost=3.3653, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.661825 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.621098 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.04893135 (boost=3.3701, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660636 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.621104 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00465316 (boost=3.3664, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659564 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.618557 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00250208 (boost=3.3549, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659573 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.618948 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00168870 (boost=3.3561, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659211 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619301 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00142542 (boost=3.3561, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660935 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.621099 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00080583 (boost=3.3673, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659645 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.620389 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00047264 (boost=3.3609, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660979 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.621059 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00044740 (boost=3.3673, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659162 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.618168 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00039067 (boost=3.3523, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.661239 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.621009 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00038470 (boost=3.3680, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660817 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.621822 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00034233 (boost=3.3692, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660114 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.620080 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00030033 (boost=3.3614, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659530 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00028553 (boost=3.3576, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659712 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619838 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00028520 (boost=3.3594, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659143 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.618707 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00020251 (boost=3.3540, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.658873 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.616841 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00019938 (boost=3.3472, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660940 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619960 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00018852 (boost=3.3637, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660685 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.621275 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00014443 (boost=3.3671, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659671 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619413 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00012237 (boost=3.3579, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659831 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619325 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00011454 (boost=3.3581, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660073 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.620266 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00009753 (boost=3.3619, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.658993 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.618495 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00006023 (boost=3.3528, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660039 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00005838 (boost=3.3592, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659663 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619715 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00005687 (boost=3.3588, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.659315 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619952 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00005440 (boost=3.3585, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.658983 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619384 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00005045 (boost=3.3556, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.660640 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.620537 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00004742 (boost=3.3646, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.661553 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.621821 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00004674 (boost=3.3716, prior=0.8525)
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.658657 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+  [ABLAT] Skipping specificity
+  [ABLAT] Final Phi: 0.619201 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': False, 'negation': True})
+      [CORE] final_score=0.00004596 (boost=3.3540, prior=0.8525)
+
+🚀 [HybridRetriever] Initializing...
+             - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:26:59,735 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:26:59,736 - INFO -     MAP: 0.0667, MRR: 0.0667, nDCG@5: 0.0000, rank_changed@5: 100.0%, score_delta: 0.0523
+2026-04-27 01:26:59,736 - INFO - 
+  🔧 Configuration: w/o KL Penalty
+DEBUG: Case CHILD_001, Variant w/o Margin Activation
+      IDF_ENABLE: True
+      NEG_ENABLE: True
+      BAYESIAN_PRIOR_ENABLE: True
+DEBUG CORE: _apply_h2l_scoring with config id 4724135568, IDF_ENABLE=True
+  [ABLAT] Final Phi: 0.759595 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718998 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=3.45788169 (boost=4.0562, prior=0.8525)
+  [ABLAT] Final Phi: 0.760227 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.709631 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.05840782 (boost=4.0228, prior=0.8525)
+  [ABLAT] Final Phi: 0.749209 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.709641 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00550288 (boost=3.9811, prior=0.8525)
+  [ABLAT] Final Phi: 0.747437 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.705530 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00295265 (boost=3.9590, prior=0.8525)
+  [ABLAT] Final Phi: 0.747451 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.706141 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00199323 (boost=3.9613, prior=0.8525)
+  [ABLAT] Final Phi: 0.746866 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718192 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00170085 (boost=4.0046, prior=0.8525)
+  [ABLAT] Final Phi: 0.749714 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.709633 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00095317 (boost=3.9830, prior=0.8525)
+  [ABLAT] Final Phi: 0.747568 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.708455 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00055836 (boost=3.9705, prior=0.8525)
+  [ABLAT] Final Phi: 0.749789 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.709565 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00052921 (boost=3.9830, prior=0.8525)
+  [ABLAT] Final Phi: 0.746788 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.704927 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00046082 (boost=3.9543, prior=0.8525)
+  [ABLAT] Final Phi: 0.759714 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719594 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00046363 (boost=4.0590, prior=0.8525)
+  [ABLAT] Final Phi: 0.749514 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.710861 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00040509 (boost=3.9869, prior=0.8525)
+  [ABLAT] Final Phi: 0.748338 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.707950 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00035483 (boost=3.9715, prior=0.8525)
+  [ABLAT] Final Phi: 0.747381 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.706930 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00033710 (boost=3.9640, prior=0.8525)
+  [ABLAT] Final Phi: 0.747678 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.707559 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00033682 (boost=3.9675, prior=0.8525)
+  [ABLAT] Final Phi: 0.746756 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.705764 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00023894 (boost=3.9573, prior=0.8525)
+  [ABLAT] Final Phi: 0.746325 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.702918 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00023499 (boost=3.9451, prior=0.8525)
+  [ABLAT] Final Phi: 0.749722 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.707755 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00022283 (boost=3.9759, prior=0.8525)
+  [ABLAT] Final Phi: 0.749291 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.709929 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00017083 (boost=3.9825, prior=0.8525)
+  [ABLAT] Final Phi: 0.747611 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.706878 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00014448 (boost=3.9647, prior=0.8525)
+  [ABLAT] Final Phi: 0.747872 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.706737 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00013524 (boost=3.9652, prior=0.8525)
+  [ABLAT] Final Phi: 0.748271 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718974 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00011641 (boost=4.0129, prior=0.8525)
+  [ABLAT] Final Phi: 0.746517 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.705434 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007106 (boost=3.9552, prior=0.8525)
+  [ABLAT] Final Phi: 0.748214 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.706929 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006894 (boost=3.9672, prior=0.8525)
+  [ABLAT] Final Phi: 0.747598 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.707360 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006716 (boost=3.9665, prior=0.8525)
+  [ABLAT] Final Phi: 0.747033 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.707743 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006424 (boost=3.9658, prior=0.8525)
+  [ABLAT] Final Phi: 0.746501 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.706830 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005955 (boost=3.9604, prior=0.8525)
+  [ABLAT] Final Phi: 0.749215 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.708697 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005606 (boost=3.9776, prior=0.8525)
+  [ABLAT] Final Phi: 0.750776 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.710860 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005534 (boost=3.9916, prior=0.8525)
+  [ABLAT] Final Phi: 0.745983 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.706540 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005423 (boost=3.9573, prior=0.8525)
+
+🚀 [HybridRetriever] Initializing...
+             - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:26:59,911 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:26:59,913 - INFO -     MAP: 0.0667, MRR: 0.0667, nDCG@5: 0.0000, rank_changed@5: 100.0%, score_delta: 0.0523
+2026-04-27 01:26:59,913 - INFO - 
+  🔧 Configuration: w/o Negation Gate
+DEBUG: Case CHILD_001, Variant w/o KL Penalty
+      IDF_ENABLE: True
+      NEG_ENABLE: True
+      BAYESIAN_PRIOR_ENABLE: True
+DEBUG CORE: _apply_h2l_scoring with config id 4724135888, IDF_ENABLE=True
+  [ABLAT] Final Phi: 0.761100 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720295 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=3.46706915 (boost=4.0670, prior=0.8525)
+  [ABLAT] Final Phi: 0.761825 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721098 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.05913498 (boost=4.0729, prior=0.8525)
+  [ABLAT] Final Phi: 0.760636 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721104 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00562348 (boost=4.0684, prior=0.8525)
+  [ABLAT] Final Phi: 0.759564 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718557 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00302383 (boost=4.0544, prior=0.8525)
+  [ABLAT] Final Phi: 0.759573 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718948 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00204085 (boost=4.0560, prior=0.8525)
+  [ABLAT] Final Phi: 0.759211 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719301 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00172266 (boost=4.0559, prior=0.8525)
+  [ABLAT] Final Phi: 0.760935 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721099 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00097387 (boost=4.0695, prior=0.8525)
+  [ABLAT] Final Phi: 0.759645 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720389 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00057120 (boost=4.0618, prior=0.8525)
+  [ABLAT] Final Phi: 0.760979 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721059 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00054070 (boost=4.0695, prior=0.8525)
+  [ABLAT] Final Phi: 0.759162 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718168 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00047214 (boost=4.0514, prior=0.8525)
+  [ABLAT] Final Phi: 0.761239 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721009 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00046492 (boost=4.0703, prior=0.8525)
+  [ABLAT] Final Phi: 0.760817 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721822 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00041372 (boost=4.0718, prior=0.8525)
+  [ABLAT] Final Phi: 0.760114 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720080 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00036296 (boost=4.0624, prior=0.8525)
+  [ABLAT] Final Phi: 0.759530 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00034507 (boost=4.0577, prior=0.8525)
+  [ABLAT] Final Phi: 0.759712 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719838 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00034467 (boost=4.0599, prior=0.8525)
+  [ABLAT] Final Phi: 0.759143 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718707 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00024474 (boost=4.0534, prior=0.8525)
+  [ABLAT] Final Phi: 0.758873 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.716841 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00024096 (boost=4.0452, prior=0.8525)
+  [ABLAT] Final Phi: 0.760940 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719960 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00022783 (boost=4.0651, prior=0.8525)
+  [ABLAT] Final Phi: 0.760685 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721275 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00017455 (boost=4.0692, prior=0.8525)
+  [ABLAT] Final Phi: 0.759671 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719413 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00014788 (boost=4.0581, prior=0.8525)
+  [ABLAT] Final Phi: 0.759831 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719325 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00013842 (boost=4.0584, prior=0.8525)
+  [ABLAT] Final Phi: 0.760073 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720266 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00011786 (boost=4.0630, prior=0.8525)
+  [ABLAT] Final Phi: 0.758993 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718495 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007279 (boost=4.0520, prior=0.8525)
+  [ABLAT] Final Phi: 0.760039 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00007055 (boost=4.0597, prior=0.8525)
+  [ABLAT] Final Phi: 0.759663 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719715 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006873 (boost=4.0593, prior=0.8525)
+  [ABLAT] Final Phi: 0.759315 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719952 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006575 (boost=4.0588, prior=0.8525)
+  [ABLAT] Final Phi: 0.758983 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719384 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00006097 (boost=4.0554, prior=0.8525)
+  [ABLAT] Final Phi: 0.760640 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720537 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005731 (boost=4.0662, prior=0.8525)
+  [ABLAT] Final Phi: 0.761553 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721821 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005649 (boost=4.0747, prior=0.8525)
+  [ABLAT] Final Phi: 0.758657 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719201 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00005555 (boost=4.0534, prior=0.8525)
+
+🚀 [HybridRetriever] Initializing...
+             - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:27:00,090 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:27:00,092 - INFO -     MAP: 0.0667, MRR: 0.0667, nDCG@5: 0.0000, rank_changed@5: 100.0%, score_delta: 0.0523
+2026-04-27 01:27:00,092 - INFO - 
+  🔧 Configuration: Product Feature Mode
+DEBUG: Case CHILD_001, Variant w/o Negation Gate
+      IDF_ENABLE: True
+      NEG_ENABLE: False
+      BAYESIAN_PRIOR_ENABLE: True
+DEBUG CORE: _apply_h2l_scoring with config id 4724136208, IDF_ENABLE=True
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.661100 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.620295 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=2.86883354 (boost=3.3653, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.661825 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.621098 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.04893135 (boost=3.3701, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660636 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.621104 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00465316 (boost=3.3664, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659564 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.618557 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00250208 (boost=3.3549, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659573 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.618948 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00168870 (boost=3.3561, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659211 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619301 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00142542 (boost=3.3561, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660935 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.621099 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00080583 (boost=3.3673, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659645 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.620389 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00047264 (boost=3.3609, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660979 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.621059 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00044740 (boost=3.3673, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659162 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.618168 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00039067 (boost=3.3523, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.661239 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.621009 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00038470 (boost=3.3680, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660817 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.621822 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00034233 (boost=3.3692, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660114 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.620080 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00030033 (boost=3.3614, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659530 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00028553 (boost=3.3576, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659712 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619838 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00028520 (boost=3.3594, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659143 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.618707 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00020251 (boost=3.3540, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.658873 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.616841 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00019938 (boost=3.3472, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660940 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619960 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00018852 (boost=3.3637, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660685 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.621275 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00014443 (boost=3.3671, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659671 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619413 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00012237 (boost=3.3579, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659831 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619325 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00011454 (boost=3.3581, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660073 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.620266 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00009753 (boost=3.3619, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.658993 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.618495 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00006023 (boost=3.3528, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660039 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00005838 (boost=3.3592, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659663 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619715 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00005687 (boost=3.3588, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.659315 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619952 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00005440 (boost=3.3585, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.658983 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619384 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00005045 (boost=3.3556, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.660640 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.620537 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00004742 (boost=3.3646, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.661553 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.621821 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00004674 (boost=3.3716, prior=0.8525)
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.658657 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+  [ABLAT] Skipping negation
+  [ABLAT] Final Phi: 0.619201 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': False})
+      [CORE] final_score=0.00004596 (boost=3.3540, prior=0.8525)
+
+🚀 [HybridRetriever] Initializing...
+[01:27:00]   - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+2026-04-27 01:27:00,266 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:27:00,268 - INFO -     MAP: 0.0667, MRR: 0.0667, nDCG@5: 0.0000, rank_changed@5: 100.0%, score_delta: 0.0523
+2026-04-27 01:27:00,275 - INFO -   💾 Data saved: ablation_results/rq6_results.csv (8 rows, 38.1s)
+2026-04-27 01:27:00,469 - INFO - ✅ RQ6 visualization saved
+2026-04-27 01:27:00,480 - INFO - 
+🔬 Starting Baseline Comparison
+2026-04-27 01:27:00,480 - INFO - 
+======================================================================
+2026-04-27 01:27:00,480 - INFO - Running Baseline Comparison
+2026-04-27 01:27:00,480 - INFO - ======================================================================
+
+2026-04-27 01:27:00,480 - INFO - 
+  🔧 Evaluating: basic
+DEBUG: Case CHILD_001, Variant Product Feature Mode
+      IDF_ENABLE: True
+      NEG_ENABLE: True
+      BAYESIAN_PRIOR_ENABLE: True
+DEBUG CORE: _apply_h2l_scoring with config id 4724136528, IDF_ENABLE=True
+      [CORE] final_score=1.34829271 (boost=1.5816, prior=0.8525)
+      [CORE] final_score=0.02299094 (boost=1.5835, prior=0.8525)
+      [CORE] final_score=0.00218652 (boost=1.5819, prior=0.8525)
+      [CORE] final_score=0.00117656 (boost=1.5776, prior=0.8525)
+      [CORE] final_score=0.00079401 (boost=1.5780, prior=0.8525)
+      [CORE] final_score=0.00067017 (boost=1.5779, prior=0.8525)
+      [CORE] final_score=0.00037865 (boost=1.5823, prior=0.8525)
+      [CORE] final_score=0.00022215 (boost=1.5797, prior=0.8525)
+      [CORE] final_score=0.00021023 (boost=1.5823, prior=0.8525)
+      [CORE] final_score=0.00018373 (boost=1.5766, prior=0.8525)
+      [CORE] final_score=0.00018077 (boost=1.5826, prior=0.8525)
+      [CORE] final_score=0.00016083 (boost=1.5829, prior=0.8525)
+      [CORE] final_score=0.00014117 (boost=1.5800, prior=0.8525)
+      [CORE] final_score=0.00013424 (boost=1.5785, prior=0.8525)
+      [CORE] final_score=0.00013407 (boost=1.5792, prior=0.8525)
+      [CORE] final_score=0.00009523 (boost=1.5771, prior=0.8525)
+      [CORE] final_score=0.00009380 (boost=1.5747, prior=0.8525)
+      [CORE] final_score=0.00008861 (boost=1.5810, prior=0.8525)
+      [CORE] final_score=0.00006786 (boost=1.5821, prior=0.8525)
+      [CORE] final_score=0.00005753 (boost=1.5787, prior=0.8525)
+      [CORE] final_score=0.00005385 (boost=1.5788, prior=0.8525)
+      [CORE] final_score=0.00004584 (boost=1.5802, prior=0.8525)
+      [CORE] final_score=0.00002833 (boost=1.5767, prior=0.8525)
+      [CORE] final_score=0.00002744 (boost=1.5792, prior=0.8525)
+      [CORE] final_score=0.00002673 (boost=1.5790, prior=0.8525)
+      [CORE] final_score=0.00002557 (boost=1.5788, prior=0.8525)
+      [CORE] final_score=0.00002372 (boost=1.5777, prior=0.8525)
+      [CORE] final_score=0.00002229 (boost=1.5812, prior=0.8525)
+      [CORE] final_score=0.00002196 (boost=1.5839, prior=0.8525)
+      [CORE] final_score=0.00002161 (boost=1.5770, prior=0.8525)
+
+🚀 [HybridRetriever] Initializing...
+             - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.84it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.84it/s]
+2026-04-27 01:27:01,607 - INFO -     nDCG@5: 0.0000 ± 0.0000
+2026-04-27 01:27:01,608 - INFO - 
+  🔧 Evaluating: dynamic
+2026-04-27 01:27:01,608 - ERROR -     ❌ Failed: 'dynamic'
+2026-04-27 01:27:01,608 - INFO - 
+  🔧 Evaluating: adaptive
+2026-04-27 01:27:01,608 - ERROR -     ❌ Failed: 'adaptive'
+2026-04-27 01:27:01,608 - INFO - 
+  🔧 Evaluating: multihop
+2026-04-27 01:27:01,608 - ERROR -     ❌ Failed: 'multihop'
+2026-04-27 01:27:01,608 - INFO - 
+  🔧 Evaluating: basic+h2l
+2026-04-27 01:27:01,608 - ERROR -     ❌ Failed: 'basic+h2l'
+2026-04-27 01:27:01,608 - INFO - 
+  🔧 Evaluating: dynamic+h2l
+2026-04-27 01:27:01,608 - ERROR -     ❌ Failed: 'dynamic+h2l'
+2026-04-27 01:27:01,608 - INFO - 
+  🔧 Evaluating: adaptive+h2l
+2026-04-27 01:27:01,608 - ERROR -     ❌ Failed: 'adaptive+h2l'
+2026-04-27 01:27:01,608 - INFO - 
+  🔧 Evaluating: multihop+h2l
+2026-04-27 01:27:01,608 - ERROR -     ❌ Failed: 'multihop+h2l'
+2026-04-27 01:27:01,608 - INFO - 
+  🔧 Evaluating: h2l-hybrid
+2026-04-27 01:27:01,609 - INFO -   🚫 L1-Filtered: [1106] ปัญหาการศึกษา อื่นๆ (conf=19%, reason=พบเพียงการเล่าประวัติการเรียนหรือระดับการศึกษา แต่ยังไม่พบบริบทว่าการศึกษาเป็นปัญหาโดยตรงสำหรับ ปัญหาการศึกษา อื่นๆ)
+2026-04-27 01:27:01,609 - INFO - 
+============================================================
+2026-04-27 01:27:01,609 - INFO - 📋 [H2L-V3] Detection Results
+2026-04-27 01:27:01,609 - INFO - ============================================================
+2026-04-27 01:27:01,609 - INFO - L1 Detected: 2 problems
+2026-04-27 01:27:01,609 - INFO - Needs Validation: 1 codes
+2026-04-27 01:27:01,609 - INFO - Conflicts: {}
+2026-04-27 01:27:01,609 - INFO - 
+🔍 Running L2 Validation...
+2026-04-27 01:27:22,082 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-27 01:27:22,104 - INFO -   🚫 L2-Implicit rejected: [0201] lacks taxonomy anchor in evidence/text for high-precision category
+2026-04-27 01:27:22,105 - INFO -   🚫 L2-Implicit rejected: [0203] lacks taxonomy anchor in evidence/text for high-precision category
+2026-04-27 01:27:22,105 - INFO - L2 Implicit: 0 problems
+2026-04-27 01:27:22,105 - INFO - 
+✅ Final: 2 problems
+2026-04-27 01:27:22,105 - INFO -   [0104] ฝ่ายใดฝ่ายหนึ่งไม่รับผิดชอบ/ผูกพันครอบครัวเดิม (sev:3, conf:74%, level:L1)
+2026-04-27 01:27:22,105 - INFO -   [0301] ปัญหาการหย่าร้าง (sev:3, conf:66%, level:L1)
+2026-04-27 01:27:22,105 - INFO - ============================================================
+
+
+🚀 [HybridRetriever] Initializing...
+[01:27:22]   - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:06<00:00,  6.78s/it]Batches: 100%|██████████| 1/1 [00:06<00:00,  6.78s/it]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.35it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.34it/s]
+2026-04-27 01:27:30,816 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-04-27 01:27:30,824 - INFO -     nDCG@5: 0.0000 ± 0.0000
+2026-04-27 01:27:30,824 - INFO - 
+  🔧 Evaluating: h2l-dynamic
+2026-04-27 01:27:30,824 - ERROR -     ❌ Failed: 'h2l-dynamic'
+2026-04-27 01:27:30,824 - INFO - 
+  🔧 Evaluating: h2l-adaptive
+2026-04-27 01:27:30,824 - ERROR -     ❌ Failed: 'h2l-adaptive'
+2026-04-27 01:27:30,824 - INFO - 
+  🔧 Evaluating: h2l-multihop
+2026-04-27 01:27:30,824 - ERROR -     ❌ Failed: 'h2l-multihop'
+2026-04-27 01:27:30,830 - INFO -   💾 Data saved: ablation_results/baseline_results.csv (2 rows)
+2026-04-27 01:27:31,081 - INFO - ✅ Baseline comparison visualization saved
+2026-04-27 01:27:31,082 - INFO - 
+🧮 Running Advanced Computational Analysis
+2026-04-27 01:27:31,082 - INFO - 
+======================================================================
+2026-04-27 01:27:31,082 - INFO - 🧮 Advanced Computational Analysis
+2026-04-27 01:27:31,082 - INFO - ======================================================================
+
+2026-04-27 01:27:31,082 - INFO -   📊 Bootstrap BCa Confidence Intervals (1000 resamples)
+2026-04-27 01:27:31,082 - INFO -     basic              nDCG@5: 0.0000 [0.0000, 0.0000]
+2026-04-27 01:27:31,083 - INFO -     basic              P@5: 0.0000 [0.0000, 0.0000]
+2026-04-27 01:27:31,083 - INFO -     basic              MAP: 0.0714 [0.0714, 0.0714]
+2026-04-27 01:27:31,083 - INFO -     basic              MRR: 0.0714 [0.0714, 0.0714]
+2026-04-27 01:27:31,083 - INFO -     h2l-hybrid         nDCG@5: 0.0000 [0.0000, 0.0000]
+2026-04-27 01:27:31,083 - INFO -     h2l-hybrid         P@5: 0.0000 [0.0000, 0.0000]
+2026-04-27 01:27:31,083 - INFO -     h2l-hybrid         MAP: 0.0000 [0.0000, 0.0000]
+2026-04-27 01:27:31,083 - INFO -     h2l-hybrid         MRR: 0.0000 [0.0000, 0.0000]
+2026-04-27 01:27:31,208 - INFO -     ✅ Bootstrap CI plot saved
+2026-04-27 01:27:31,208 - INFO -   📊 Bayesian Signed-Rank Analysis
+2026-04-27 01:27:31,209 - INFO -   📊 Stratified Effect Heterogeneity (Forest Plots)
+2026-04-27 01:27:31,212 - INFO -   📊 Component Interaction Analysis
+2026-04-27 01:27:31,228 - INFO - ✅ Report saved: ablation_results/ABLATION_STUDY_REPORT.md
+2026-04-27 01:27:31,228 - INFO - 
+======================================================================
+2026-04-27 01:27:31,228 - INFO - ✅ Ablation study completed!
+2026-04-27 01:27:31,228 - INFO - ======================================================================
+2026-04-27 01:27:31,228 - INFO - 
+Results in: /Users/rischen/Documents/GitHub/thesis_one-/ablation_results
+2026-04-27 01:27:31,228 - INFO - Files:
+2026-04-27 01:27:31,230 - INFO -   • ABLATION_STUDY_REPORT.md
+2026-04-27 01:27:31,230 - INFO -   • advanced_bayesian.png
+2026-04-27 01:27:31,230 - INFO -   • advanced_bootstrap_ci.png
+2026-04-27 01:27:31,230 - INFO -   • advanced_forest_plot.png
+2026-04-27 01:27:31,230 - INFO -   • baseline_comparison.csv
+2026-04-27 01:27:31,230 - INFO -   • baseline_comparison.png
+2026-04-27 01:27:31,230 - INFO -   • baseline_results.csv
+2026-04-27 01:27:31,230 - INFO -   • rq1_l2_filtering_impact.csv
+2026-04-27 01:27:31,230 - INFO -   • rq1_l2_filtering_impact.png
+2026-04-27 01:27:31,230 - INFO -   • rq1_results.csv
+2026-04-27 01:27:31,230 - INFO -   • rq2_alpha_sensitivity.png
+2026-04-27 01:27:31,230 - INFO -   • rq2_α_parameter_sensitivity.csv
+2026-04-27 01:27:31,230 - INFO -   • rq3_matching_method.png
+2026-04-27 01:27:31,230 - INFO -   • rq3_soft_vs_hard_matching.csv
+2026-04-27 01:27:31,230 - INFO -   • rq4_prior_calculation.png
+2026-04-27 01:27:31,230 - INFO -   • rq4_prior_calculation_impact.csv
+2026-04-27 01:27:31,230 - INFO -   • rq6_fixed_full
+2026-04-27 01:27:31,230 - INFO -   • rq6_q1_final
+2026-04-27 01:27:31,230 - INFO -   • rq6_q1_final_log.txt
+2026-04-27 01:27:31,230 - INFO -   • rq6_results.csv
+2026-04-27 01:27:31,230 - INFO -   • rq6_v6_component_ablation.png
+2026-04-27 01:27:31,230 - INFO -   • rq6_v6_final
+2026-04-27 01:27:31,230 - INFO -   • rq6_v6_final_fixed
+2026-04-27 01:27:31,230 - INFO -   • rq6_v6_final_stateless
+2026-04-27 01:27:31,230 - INFO -   • rq6_v6_final_stateless_v2
+2026-04-27 01:27:31,230 - INFO -   • v6_component_cached_20
+2026-04-27 01:27:31,230 - INFO -   • v6_component_cached_smoke
+2026-04-27 01:27:31,230 - INFO -   • v6_component_latest
+2026-04-27 01:27:31,230 - INFO -   • v6_diagnostics_final
+2026-04-27 01:27:31,230 - INFO -   • v6_diagnostics_final_v2
+2026-04-27 01:27:31,230 - INFO -   • v6_diagnostics_fixed
+2026-04-27 01:27:31,230 - INFO -   • v6_diagnostics_full
+2026-04-27 01:27:31,230 - INFO -   • v6_diagnostics_rerun
+2026-04-27 01:27:31,230 - INFO -   • v6_diagnostics_stateless
+DEBUG CORE: _apply_h2l_scoring with config id 4688596752, IDF_ENABLE=True
+  [ABLAT] Final Phi: 0.761100 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720295 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=3.46706915 (boost=4.0670, prior=0.8525)
+  [ABLAT] Final Phi: 0.761825 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721098 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.05913498 (boost=4.0729, prior=0.8525)
+  [ABLAT] Final Phi: 0.760636 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721104 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00562348 (boost=4.0684, prior=0.8525)
+  [ABLAT] Final Phi: 0.759564 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718557 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00302383 (boost=4.0544, prior=0.8525)
+  [ABLAT] Final Phi: 0.759573 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718948 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00204085 (boost=4.0560, prior=0.8525)
+  [ABLAT] Final Phi: 0.759211 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719301 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00172266 (boost=4.0559, prior=0.8525)
+  [ABLAT] Final Phi: 0.760935 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721099 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00097387 (boost=4.0695, prior=0.8525)
+  [ABLAT] Final Phi: 0.759645 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720389 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00057120 (boost=4.0618, prior=0.8525)
+  [ABLAT] Final Phi: 0.760979 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721059 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00054070 (boost=4.0695, prior=0.8525)
+  [ABLAT] Final Phi: 0.759162 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.718168 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00047214 (boost=4.0514, prior=0.8525)
+  [ABLAT] Final Phi: 0.761239 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721009 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00046492 (boost=4.0703, prior=0.8525)
+  [ABLAT] Final Phi: 0.760817 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.721822 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00041372 (boost=4.0718, prior=0.8525)
+  [ABLAT] Final Phi: 0.760114 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.720080 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00036296 (boost=4.0624, prior=0.8525)
+  [ABLAT] Final Phi: 0.759530 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719446 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00034507 (boost=4.0577, prior=0.8525)
+  [ABLAT] Final Phi: 0.759712 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+  [ABLAT] Final Phi: 0.719838 (flags: {'detect': True, 'semantic': True, 'prior': True, 'specificity': True, 'negation': True})
+      [CORE] final_score=0.00034467 (boost=4.0599, prior=0.8525)

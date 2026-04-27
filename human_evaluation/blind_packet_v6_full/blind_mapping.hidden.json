@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-04-25T18:30:42.632978",
+  "seed": 42,
+  "note": "Keep this file hidden from evaluators until scoring is complete.",
+  "blind_label_to_strategy": {
+    "System_B": "basic",
+    "System_A": "h2l-hybrid"
+  }
+}
