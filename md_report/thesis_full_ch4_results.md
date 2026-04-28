@@ -1,12 +1,12 @@
 # บทที่ 4: ผลการทดลองและการวิเคราะห์ข้อมูล (Results and Analysis)
 
-บทนี้นำเสนอผลการทดลองตาม artifact ล่าสุดหลังแก้ split leakage และ rerun evaluation เมื่อวันที่ 25 เมษายน 2026 โดยยึดหลักว่า **รายงานเฉพาะผลที่เกิดจากการรันจริง** ไม่ใช้ mock data หรือค่าประมาณเพื่อทำให้ผลดูดีขึ้น ผลหลักอ้างอิงจาก `evaluation_results/proper_eval_latest_summary.json`, `evaluation_results/sentence_polarity_latest.json`, `evaluation_results/ground_truth_audit.json`, `evaluation_results/q1_readiness_report.md`, `human_evaluation/blind_packet_latest/` และ `ablation_results/v6_component_cached_20/`
+บทนี้นำเสนอผลการทดลองตาม artifact ล่าสุดหลังแก้ split leakage และ rerun evaluation เมื่อวันที่ 25 เมษายน 2026 โดยยึดหลักว่า **รายงานเฉพาะผลที่เกิดจากการรันจริง** ไม่ใช้ mock data หรือค่าประมาณเพื่อทำให้ผลดูดีขึ้น ผลหลักอ้างอิงจาก `evaluation_results/proper_eval_latest_summary.json`, `evaluation_results/sentence_polarity_latest.json`, `evaluation_results/ground_truth_audit.json`, `evaluation_results/q1_readiness_report.md`, `human_evaluation/blind_packet_latest/`, `ablation_results/rq6_v6_final/` และ `ablation_results/q1_figures/`
 
 ---
 
 ## 4.1 กรอบการประเมินผลและข้อมูลที่ใช้
 
-ชุดข้อมูลหลักคือ `expanded_ground_truth.json` จำนวน 197 เคส หลังปรับเป็น family-level split แล้วแบ่งเป็น train 129 เคส และ test 68 เคส การตรวจ `ground_truth_audit` ไม่พบ case family ที่รั่วข้าม train/test และไม่พบ near-duplicate train/test pair เหนือ threshold ที่กำหนด เหลือ risk flag เพียงข้อเดียวคือชุดข้อมูลยังมี generated / augmented cases ซึ่งต้องรายงานเป็น stress-test slice แยกจากข้ออ้างเชิง generalization
+ชุดข้อมูลหลักคือ `expanded_ground_truth.json` จำนวน 197 เคส หลังปรับเป็น family-level split แล้วแบ่งเป็น train 129 เคส,  และ test 68 เคส การตรวจ `ground_truth_audit` ไม่พบ case family ที่รั่วข้าม train/test และไม่พบ near-duplicate train/test pair เหนือ threshold ที่กำหนด เหลือ risk flag เพียงข้อเดียวคือชุดข้อมูลยังมี generated / augmented cases ซึ่งต้องรายงานเป็น stress-test slice แยกจากข้ออ้างเชิง generalization
 
 **ตารางที่ 4.1 สรุปสถานะข้อมูลและ protocol ล่าสุด**
 
@@ -22,7 +22,7 @@
 | กลยุทธ์ที่เปรียบเทียบ | 8 กลยุทธ์ |
 | สถิติ paired comparison | Wilcoxon Signed-Rank Test |
 
-กลยุทธ์ทั้ง 8 แบบประกอบด้วย baseline 4 แบบ ได้แก่ `bm25_only`, `naive_rag`, `hyde`, `basic` และ H2L-enhanced counterpart 4 แบบ ได้แก่ `h2l-bm25`, `h2l-naive_rag`, `h2l-hyde`, `h2l-hybrid` การตีความในบทนี้ใช้ claim policy แบบ conservative โดยแบ่งผลเป็น `supported`, `trend_only`, `practically_tied` และ `baseline_supported`
+กลยุทธ์ทั้ง 8 แบบประกอบด้วย baseline 4 แบบ ได้แก่ `bm25_only`, `naive_rag`, `hyde`, `basic`,  และ H2L-enhanced counterpart 4 แบบ ได้แก่ `h2l-bm25`, `h2l-naive_rag`, `h2l-hyde`, `h2l-hybrid` การตีความในบทนี้ใช้ claim policy แบบ conservative โดยแบ่งผลเป็น `supported`, `trend_only`, `practically_tied`,  และ `baseline_supported`
 
 ---
 
@@ -44,7 +44,7 @@
 | Mean G_neg positive | 0.9760 |
 | Mean G_neg negated | 0.6000 |
 
-ผลนี้หมายความว่า polarity gate ตรวจจับเคสปฏิเสธได้ 13 จาก 18 เคส และเกิด false positive ในเคสยืนยันปัญหา 3 จาก 50 เคส จุดแข็งคือระบบลด false positive ได้จริงในเคสปฏิเสธจำนวนมาก แต่จุดที่ยังต้องปรับปรุงคือ negation ในข้อความยาว โดยผลแยกตามความยาวพบว่า short NDR = 100.0%, medium NDR = 66.7% และ long NDR = 50.0%
+ผลนี้หมายความว่า polarity gate ตรวจจับเคสปฏิเสธได้ 13 จาก 18 เคส และเกิด false positive ในเคสยืนยันปัญหา 3 จาก 50 เคส จุดแข็งคือระบบลด false positive ได้จริงในเคสปฏิเสธจำนวนมาก แต่จุดที่ยังต้องปรับปรุงคือ negation ในข้อความยาว โดยผลแยกตามความยาวพบว่า short NDR = 100.0%, medium NDR = 66.7%,  และ long NDR = 50.0%
 
 ดังนั้น polarity gate ควรถูกอภิปรายเป็น **safety mechanism ที่มีผลเชิงบวกแต่ยังไม่สมบูรณ์** ไม่ใช่กลไกที่แก้ negation blindness ได้ทั้งหมด
 
@@ -67,9 +67,9 @@
 | `h2l-hyde` | 0.1405 | 0.1479 | 0.1697 | 0.0441 | 0.0641 | 7.0039 |
 | `h2l-hybrid` | 0.2290 | **0.2362** | **0.2893** | 0.1088 | 0.1403 | 7.6807 |
 
-ผลรวมล่าสุดชี้ว่า `h2l-bm25` เป็นกลยุทธ์ที่ได้ nDCG@5, P@5 และ F1@5 สูงสุด ขณะที่ `h2l-hybrid` ได้ MAP และ MRR สูงสุด แต่มีต้นทุนเวลาเฉลี่ยต่อเคสมากที่สุดในกลุ่มที่รันครบ ระบบ baseline `bm25_only` ยังคงเร็วที่สุดอย่างชัดเจน
+ผลรวมล่าสุดชี้ว่า `h2l-bm25` เป็นกลยุทธ์ที่ได้ nDCG@5, P@5,  และ F1@5 สูงสุด ขณะที่ `h2l-hybrid` ได้ MAP,  และ MRR สูงสุด แต่มีต้นทุนเวลาเฉลี่ยต่อเคสมากที่สุดในกลุ่มที่รันครบ ระบบ baseline `bm25_only` ยังคงเร็วที่สุดอย่างชัดเจน
 
-### 4.3.2 การเปรียบเทียบแบบ paired ระหว่าง baseline และ H2L
+### 4.3.2 การเปรียบเทียบแบบ paired ระหว่าง baseline,  และ H2L
 
 **ตารางที่ 4.4 ผลเปรียบเทียบแบบคู่ตาม Q1 readiness report**
 
@@ -88,14 +88,14 @@
 | `basic` vs `h2l-hybrid` | MRR | 0.2710 | 0.2893 | +0.0183 | 0.1230 | trend_only |
 | `basic` vs `h2l-hybrid` | nDCG@5 | 0.2270 | 0.2290 | +0.0019 | 0.8590 | practically_tied |
 
-ผล paired comparison สรุปได้ว่า หลักฐานที่ถึงระดับ `supported` มี 1 รายการ คือ H2L-BM25 เพิ่ม nDCG@5 เหนือ BM25 อย่างมีนัยสำคัญ ส่วน `hyde` และ `h2l-hybrid` มีทิศทางบวกหลาย metric แต่ยังเป็น `trend_only` เพราะค่า p-value ยังไม่ต่ำกว่า 0.05 ใน test split ปัจจุบัน ส่วน `naive_rag` กับ `h2l-naive_rag` อยู่ในระดับ practically tied
+ผล paired comparison สรุปได้ว่า หลักฐานที่ถึงระดับ `supported` มี 1 รายการ คือ H2L-BM25 เพิ่ม nDCG@5 เหนือ BM25 อย่างมีนัยสำคัญ ส่วน `hyde`,  และ `h2l-hybrid` มีทิศทางบวกหลาย metric แต่ยังเป็น `trend_only` เพราะค่า p-value ยังไม่ต่ำกว่า 0.05 ใน test split ปัจจุบัน ส่วน `naive_rag` กับ `h2l-naive_rag` อยู่ในระดับ practically tied
 
 ### 4.3.3 การตีความผลเชิง Q1
 
 ผล retrieval ปัจจุบันยังไม่ควรสรุปว่า H2L เหนือกว่า baseline โดยรวมทุกกรณี ข้อสรุปที่ปลอดภัยกว่าและสอดคล้องกับหลักฐานคือ:
 
 1. H2L ให้ผลดีชัดที่สุดเมื่อครอบบน BM25 ใน metric nDCG@5
-2. H2L-HyDE และ H2L-Hybrid มีแนวโน้มดีขึ้นใน MAP/MRR แต่ยังไม่ significant
+2. H2L-HyDE,  และ H2L-Hybrid มีแนวโน้มดีขึ้นใน MAP/MRR แต่ยังไม่ significant
 3. H2L มีต้นทุนเวลาเพิ่มขึ้น โดยเฉพาะ backbone ที่ใช้ HyDE หรือ hybrid retrieval
 4. ผลด้าน retrieval ranking ควรอภิปรายคู่กับผลด้าน polarity/safety เพราะเป็นคนละมิติของคุณภาพระบบ
 
@@ -128,7 +128,7 @@
 3. **ความสำคัญของ Context-Awareness**: Adaptive Alpha เป็น Component เสริมที่ส่งผลชัดเจนที่สุด (Cohen's $d$ = 0.409, **Small Effect**) ชี้ให้เห็นว่าการปรับน้ำหนักรวมของ H2L ตามความซับซ้อนของเคส (Entropy) เป็นกลไกสำคัญที่ช่วยแยกแยะระดับความมั่นใจของเอกสาร 
 4. **Statistical Significance**: ทุก Component มีผลกระทบต่อคะแนนรวมของ H2L อย่างมีนัยสำคัญทางสถิติ ($p < 0.001$) แม้บางตัวจะมี Effect Size ที่มีขนาดเล็กก็ตาม 
 
-กราฟและผลวิเคราะห์เจาะลึก (Forest Plot, Waterfall Chart, และ Score Distribution) ถูกสร้างไว้ในโฟลเดอร์ `ablation_results/q1_figures/` เพื่อประกอบการอภิปรายผลในส่วนนี้
+กราฟและผลวิเคราะห์เจาะลึก (Forest Plot, Waterfall Chart และ Score Distribution) ถูกสร้างไว้ในโฟลเดอร์ `ablation_results/q1_figures/` เพื่อประกอบการอภิปรายผลในส่วนนี้
 
 ---
 
