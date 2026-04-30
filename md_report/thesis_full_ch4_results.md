@@ -1,6 +1,6 @@
 # บทที่ 4: ผลการทดลองและการวิเคราะห์ข้อมูล (Results and Analysis)
 
-บทนี้นำเสนอผลการทดลองตาม artifact ล่าสุดหลังแก้ split leakage และ rerun evaluation เมื่อวันที่ 25 เมษายน 2026 โดยยึดหลักว่า **รายงานเฉพาะผลที่เกิดจากการรันจริง** ไม่ใช้ mock data หรือค่าประมาณเพื่อทำให้ผลดูดีขึ้น ผลหลักอ้างอิงจาก `evaluation_results/proper_eval_latest_summary.json`, `evaluation_results/sentence_polarity_latest.json`, `evaluation_results/ground_truth_audit.json`, `evaluation_results/q1_readiness_report.md`, `human_evaluation/blind_packet_latest/`, `ablation_results/rq6_v6_final/` และ `ablation_results/q1_figures/`
+บทนี้นำเสนอผลการทดลองตาม artifact ที่ใช้รายงานผลหลังแก้ split leakage และ rerun evaluation เมื่อวันที่ 25 เมษายน 2026 โดยยึดหลักว่า **รายงานเฉพาะผลที่เกิดจากการรันจริง** ไม่ใช้ mock data หรือค่าประมาณเพื่อทำให้ผลดูดีขึ้น ผลหลักอ้างอิงจาก `evaluation_results/proper_eval_latest_summary.json`, `evaluation_results/sentence_polarity_latest.json`, `evaluation_results/ground_truth_audit.json`, `evaluation_results/q1_readiness_report.md`, `human_evaluation/blind_packet_latest/`, `ablation_results/rq6_v6_final/` และ `ablation_results/q1_figures/`
 
 ---
 
@@ -8,7 +8,7 @@
 
 ชุดข้อมูลหลักคือ `expanded_ground_truth.json` จำนวน 197 เคส หลังปรับเป็น family-level split แล้วแบ่งเป็น train 129 เคส,  และ test 68 เคส การตรวจ `ground_truth_audit` ไม่พบ case family ที่รั่วข้าม train/test และไม่พบ near-duplicate train/test pair เหนือ threshold ที่กำหนด เหลือ risk flag เพียงข้อเดียวคือชุดข้อมูลยังมี generated / augmented cases ซึ่งต้องรายงานเป็น stress-test slice แยกจากข้ออ้างเชิง generalization
 
-**ตารางที่ 4.1 สรุปสถานะข้อมูลและ protocol ล่าสุด**
+**ตารางที่ 4.1 สรุปสถานะข้อมูลและ protocol ที่ใช้รายงานผล**
 
 | รายการ | ค่า |
 |:---|:---|
@@ -28,7 +28,7 @@
 
 ## 4.2 ผลการประเมิน Sentence Polarity
 
-การประเมิน sentence polarity ใช้ test split ล่าสุดจำนวน 68 เคส แบ่งเป็นเคสยืนยันปัญหา 50 เคส และเคสปฏิเสธปัญหา 18 เคส เป้าหมายของการประเมินนี้คือดูว่า polarity gate สามารถลด false positive จากประโยคปฏิเสธได้หรือไม่ โดยแยกจาก retrieval ranking metrics
+การประเมิน sentence polarity ใช้ test split ที่ใช้รายงานผลจำนวน 68 เคส แบ่งเป็นเคสยืนยันปัญหา 50 เคส และเคสปฏิเสธปัญหา 18 เคส เป้าหมายของการประเมินนี้คือดูว่า polarity gate สามารถลด false positive จากประโยคปฏิเสธได้หรือไม่ โดยแยกจาก retrieval ranking metrics
 
 **ตารางที่ 4.2 ผลการประเมิน sentence polarity หลังแก้ split leakage**
 
@@ -46,7 +46,7 @@
 
 ผลนี้หมายความว่า polarity gate ตรวจจับเคสปฏิเสธได้ 13 จาก 18 เคส และเกิด false positive ในเคสยืนยันปัญหา 3 จาก 50 เคส จุดแข็งคือระบบลด false positive ได้จริงในเคสปฏิเสธจำนวนมาก แต่จุดที่ยังต้องปรับปรุงคือ negation ในข้อความยาว โดยผลแยกตามความยาวพบว่า short NDR = 100.0%, medium NDR = 66.7%,  และ long NDR = 50.0%
 
-ดังนั้น polarity gate ควรถูกอภิปรายเป็น **safety mechanism ที่มีผลเชิงบวกแต่ยังไม่สมบูรณ์** ไม่ใช่กลไกที่แก้ negation blindness ได้ทั้งหมด
+ดังนั้น polarity gate จึงถูกอภิปรายเป็น **safety mechanism ที่มีผลเชิงบวกแต่ยังไม่สมบูรณ์** ไม่ใช่กลไกที่แก้ negation blindness ได้ทั้งหมด
 
 ---
 
@@ -54,7 +54,7 @@
 
 ### 4.3.1 ผลรวมทุกกลยุทธ์
 
-**ตารางที่ 4.3 ผลรวม retrieval metrics จาก proper evaluation ล่าสุด**
+**ตารางที่ 4.3 ผลรวม retrieval metrics จาก proper evaluation**
 
 | กลยุทธ์ | nDCG@5 | MAP | MRR | P@5 | F1@5 | เวลาเฉลี่ยต่อเคส (วินาที) |
 |:---|---:|---:|---:|---:|---:|---:|
@@ -67,11 +67,11 @@
 | `h2l-hyde` | 0.1405 | 0.1479 | 0.1697 | 0.0441 | 0.0641 | 7.0039 |
 | `h2l-hybrid` | 0.2290 | **0.2362** | **0.2893** | 0.1088 | 0.1403 | 7.6807 |
 
-ผลรวมล่าสุดชี้ว่า `h2l-bm25` เป็นกลยุทธ์ที่ได้ nDCG@5, P@5,  และ F1@5 สูงสุด ขณะที่ `h2l-hybrid` ได้ MAP,  และ MRR สูงสุด แต่มีต้นทุนเวลาเฉลี่ยต่อเคสมากที่สุดในกลุ่มที่รันครบ ระบบ baseline `bm25_only` ยังคงเร็วที่สุดอย่างชัดเจน
+ผลรวมการประเมินชี้ว่า `h2l-bm25` เป็นกลยุทธ์ที่ได้ nDCG@5, P@5,  และ F1@5 สูงสุด ขณะที่ `h2l-hybrid` ได้ MAP,  และ MRR สูงสุด แต่มีต้นทุนเวลาเฉลี่ยต่อเคสมากที่สุดในกลุ่มที่รันครบ ระบบ baseline `bm25_only` ยังคงเร็วที่สุดอย่างชัดเจน
 
 ### 4.3.2 การเปรียบเทียบแบบ paired ระหว่าง baseline,  และ H2L
 
-**ตารางที่ 4.4 ผลเปรียบเทียบแบบคู่ตาม Q1 readiness report**
+**ตารางที่ 4.4 ผลเปรียบเทียบแบบคู่ตาม readiness report**
 
 | คู่เปรียบเทียบ | Metric | Baseline | H2L | Delta | p-value | Verdict |
 |:---|:---|---:|---:|---:|---:|:---|
@@ -90,24 +90,24 @@
 
 ผล paired comparison สรุปได้ว่า หลักฐานที่ถึงระดับ `supported` มี 1 รายการ คือ H2L-BM25 เพิ่ม nDCG@5 เหนือ BM25 อย่างมีนัยสำคัญ ส่วน `hyde`,  และ `h2l-hybrid` มีทิศทางบวกหลาย metric แต่ยังเป็น `trend_only` เพราะค่า p-value ยังไม่ต่ำกว่า 0.05 ใน test split ปัจจุบัน ส่วน `naive_rag` กับ `h2l-naive_rag` อยู่ในระดับ practically tied
 
-### 4.3.3 การตีความผลเชิง Q1
+### 4.3.3 การตีความผลเชิง Conservative Claim
 
-ผล retrieval ปัจจุบันยังไม่ควรสรุปว่า H2L เหนือกว่า baseline โดยรวมทุกกรณี ข้อสรุปที่ปลอดภัยกว่าและสอดคล้องกับหลักฐานคือ:
+ผล retrieval ปัจจุบันยังไม่สรุปว่า H2L เหนือกว่า baseline โดยรวมทุกกรณี ข้อสรุปที่ปลอดภัยกว่าและสอดคล้องกับหลักฐานคือ:
 
 1. H2L ให้ผลดีชัดที่สุดเมื่อครอบบน BM25 ใน metric nDCG@5
 2. H2L-HyDE,  และ H2L-Hybrid มีแนวโน้มดีขึ้นใน MAP/MRR แต่ยังไม่ significant
 3. H2L มีต้นทุนเวลาเพิ่มขึ้น โดยเฉพาะ backbone ที่ใช้ HyDE หรือ hybrid retrieval
-4. ผลด้าน retrieval ranking ควรอภิปรายคู่กับผลด้าน polarity/safety เพราะเป็นคนละมิติของคุณภาพระบบ
+4. ผลด้าน retrieval ranking อภิปรายคู่กับผลด้าน polarity/safety เพราะเป็นคนละมิติของคุณภาพระบบ
 
 ---
 
 ## 4.4 V6 Component Ablation (Ablation Study)
 
-เพื่อทดสอบผลกระทบขององค์ประกอบย่อยใน H2L V6 อย่างรัดกุมที่สุด ผู้วิจัยได้ทำการทดลองแบบ Component Ablation โดยใช้โครงสร้าง **Fixed Candidate Pool** จำนวน 45 เอกสารต่อเคส ร่วมกับข้อมูลชุดทดสอบ 197 เคส เพื่อลด noise จากการสืบค้นซ้ำ และแยกพิจารณาเฉพาะความเปลี่ยนแปลงในชั้นการให้คะแนน (Scoring Layer) 
+เพื่อทดสอบผลกระทบขององค์ประกอบย่อยใน H2L V6 อย่างรัดกุมที่สุด ผู้วิจัยได้ทำการทดลองแบบ Component Ablation โดยใช้โครงสร้าง **Fixed Candidate Pool** จำนวน 45 เอกสารต่อเคส ร่วมกับข้อมูลชุดทดสอบ 68 เคส เพื่อลด noise จากการสืบค้นซ้ำ และแยกพิจารณาเฉพาะความเปลี่ยนแปลงในชั้นการให้คะแนน (Scoring Layer)
 
-การทดลองใช้ Metric แบบ Rank-aware (nDCG@5, MAP, MRR) คู่กับ Score-level Metric (`h2l_mean_top5`) ซึ่งสะท้อนความสามารถในการกระจายและจัดระดับความมั่นใจของคะแนน (Score Calibration) การทดสอบนัยสำคัญทางสถิติใช้ Wilcoxon Signed-Rank Test และคำนวณ Cohen's $d$ Effect Size ตามมาตรฐาน Q1
+การทดลองใช้ Metric แบบ Rank-aware (nDCG@5, MAP, MRR) คู่กับ Score-level Metric (`h2l_mean_top5`) ซึ่งสะท้อนความสามารถในการกระจายและจัดระดับความมั่นใจของคะแนน (Score Calibration) การทดสอบนัยสำคัญทางสถิติใช้ Wilcoxon Signed-Rank Test และคำนวณ Cohen's $d$ Effect Size ตามมาตรฐานการรายงานงานวิจัย
 
-**ตารางที่ 4.5 ผลการทำ Ablation ของ H2L V6 Components (n=197 เคส)**
+**ตารางที่ 4.5 ผลการทำ Ablation ของ H2L V6 Components (test split 68 เคส)**
 
 | Configuration | nDCG@5 | MAP | H2L Score | Cohen's $d$ | $p$-value | Effect Size |
 |:---|---:|---:|---:|---:|---:|:---|
@@ -134,18 +134,18 @@
 
 ## 4.5 Blind Expert Evaluation
 
-งานรุ่นล่าสุดเพิ่ม blind expert evaluation packet แล้วที่ `human_evaluation/blind_packet_latest/` ประกอบด้วย
+งานวิจัยนี้จัดเตรียม blind expert evaluation packet แล้วที่ `human_evaluation/blind_packet_latest/` ประกอบด้วย
 
 - `evaluation_form.csv` สำหรับส่งให้ผู้เชี่ยวชาญให้คะแนน
 - `evaluation_rubric.md` สำหรับเกณฑ์การให้คะแนน
 - `evaluation_cases.json` สำหรับ metadata ของเคสที่สุ่มมา
 - `blind_mapping.hidden.json` สำหรับ mapping ระหว่างระบบจริงกับ label ลับ
 
-การประเมินนี้ยังไม่ถือว่าเสร็จสมบูรณ์จนกว่าจะมีผู้เชี่ยวชาญอย่างน้อย 3 คนให้คะแนนและนำผลมาวิเคราะห์ inter-rater agreement กับ paired comparison ระหว่างระบบ ดังนั้นในบทนี้จึงรายงานสถานะว่า **เตรียม protocol และ packet แล้ว แต่ยังรอคะแนนผู้เชี่ยวชาญจริง** ไม่ควรรายงานเป็นผลรับรองด้าน usability หรือ clinical relevance จนกว่าข้อมูลส่วนนี้จะครบ
+การประเมินนี้ยังไม่ถือว่าเสร็จสมบูรณ์จนกว่าจะมีผู้เชี่ยวชาญอย่างน้อย 3 คนให้คะแนนและนำผลมาวิเคราะห์ inter-rater agreement กับ paired comparison ระหว่างระบบ ดังนั้นในบทนี้จึงรายงานสถานะว่า **เตรียม protocol และ packet แล้ว แต่ยังรอคะแนนผู้เชี่ยวชาญจริง** และไม่รายงานเป็นผลรับรองด้าน usability หรือ clinical relevance จนกว่าข้อมูลส่วนนี้จะครบ
 
 ---
 
-## 4.6 สรุปความพร้อมต่อการส่ง Q1
+## 4.6 สรุปความพร้อมต่อการส่งบทความ
 
 `q1_readiness_report.md` สรุปผลปัจจุบันดังนี้
 
@@ -156,8 +156,8 @@
 | Practical ties | 6 |
 | Baseline-supported comparisons | 0 |
 
-ดังนั้น สถานะปัจจุบันของงานคือ **มีหลักฐานเชิงบวกบางส่วนและมี methodology ที่แข็งแรงขึ้นหลังแก้ leakage แต่ยังไม่ควร claim broad superiority** ข้อความสรุปที่เหมาะสมสำหรับบทความหรือวิทยานิพนธ์คือ:
+ดังนั้น สถานะปัจจุบันของงานคือ **มีหลักฐานเชิงบวกบางส่วนและมี methodology ที่แข็งแรงขึ้นหลังแก้ leakage แต่ยังไม่ claim broad superiority** ข้อความสรุปที่เหมาะสมสำหรับบทความหรือวิทยานิพนธ์คือ:
 
-> H2L provides statistically supported improvement for BM25 on nDCG@5 and shows trend-level gains for HyDE and hybrid retrieval on selected ranking metrics, while also contributing an interpretable polarity-gating mechanism that improves safety-related negation handling. A comprehensive component ablation on 197 cases demonstrates score-level sensitivity and high component causality across V6 toggles, with Adaptive Alpha and Weighted-Sum Feature Composition yielding significant practical effect sizes (Cohen's $d$). Broader clinical superiority claims now await the final blind expert evaluation framework.
+> H2L provides statistically supported improvement for BM25 on nDCG@5 and shows trend-level gains for HyDE and hybrid retrieval on selected ranking metrics, while also contributing an interpretable polarity-gating mechanism that improves safety-related negation handling. The fixed-candidate V6 ablation demonstrates score-level sensitivity across component toggles, with Adaptive Alpha and Weighted-Sum Feature Composition yielding the largest practical effect sizes (Cohen's $d$). Broader clinical superiority claims now await the final blind expert evaluation framework.
 
-ประเด็นที่พร้อมใช้เป็นจุดแข็งของงาน ได้แก่ family-level leakage-safe split, audit trail ของ artifact, paired evaluation, polarity safety metric, full-scale V6 ablation พร้อมการทำ Effect Size และ blind evaluation protocol ส่วนประเด็นที่ยังต้องทำเพื่อให้ครบกระบวนการ 100% คือ การเก็บคะแนน blind expert จริง เพื่อวิเคราะห์ Human-AI Agreement ต่อไป
+ประเด็นที่พร้อมใช้เป็นจุดแข็งของงาน ได้แก่ family-level leakage-safe split, audit trail ของ artifact, paired evaluation, polarity safety metric, fixed-candidate V6 ablation พร้อมการทำ Effect Size และ blind evaluation protocol ส่วนประเด็นที่ยังต้องทำเพื่อให้ครบกระบวนการ 100% คือ การเก็บคะแนน blind expert จริง เพื่อวิเคราะห์ Human-AI Agreement ต่อไป

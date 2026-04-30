@@ -8,11 +8,11 @@
 
 เพื่อตอบโจทย์ดังกล่าว วิทยานิพนธ์นี้เสนอ **H2L (A Two-Level Hierarchical Retrieval-Augmented Generation Approach with Polarity Gates for Screening and Differential Diagnosis of Social Problems)** ซึ่งออกแบบให้เป็นสถาปัตยกรรมเชิงระบบมากกว่าการเป็น retriever ตัวใหม่เพียงตัวเดียว โดยแกนหลักของ H2L ประกอบด้วย
 
-- **L1 Context-Aware Keyword Detection:** ใช้การจับคำสำคัญร่วมกับกฎเชิงบริบท เช่น actor-target-action, passive/active pattern, self-harm pattern, clause boundary และ social action terms
+- **L1 Context-Aware Keyword Detection:** ใช้การจับคำสำคัญร่วมกับกฎเชิงบริบท เช่น actor/context cues, passive/active pattern, self-harm pattern, evidence boundary และ social action terms
 - **L2 Semantic Validation:** ใช้แบบจำลองภาษาเพื่อตรวจสอบเฉพาะกรณีที่ L1 ยังไม่ชัดเจน เช่น conflict, implicit problem, หรือ candidate ที่กำกวม
 - **Problem-Aware Retrieval and H2L Scoring:** ใช้ผล problem detection ไปช่วยขยาย query และปรับคะแนนเอกสารตาม prior, severity, semantic match, specificity และ polarity signal
-- **Sentence Polarity Gate:** ใช้ candidate-specific gating เพื่อลด false positive จากข้อความปฏิเสธ โดยไม่ปะปนกับการให้คะแนน retrieval โดยตรง
-- **Interactive Explainability Stack:** รายงานผลผ่าน Live Execution Path, Problem-Document Matrix, Semantic Evidence Map, Case H2L Summary, H2L Document Score Breakdown, Event Frames, token-level highlights รวมถึง `Performance Provenance`, `System Evaluation Status`, live evaluation progress และ artifact retention policy เพื่อให้ผู้ใช้แยกผลระดับเคสออกจากผล benchmark ตรวจว่าไฟล์ล่าสุดใดกำลังถูกใช้ และตรวจสอบย้อนกลับได้
+- **Sentence Polarity Gate:** ใช้ rule-based gating จาก negation window, length gate และ subject heuristic เพื่อลด false positive จากข้อความปฏิเสธ โดยเป็น feature หนึ่งภายใน H2L scoring
+- **Interactive Explainability Stack:** รายงานผลผ่าน Live Execution Path, Problem-Document Matrix, Semantic Evidence Map, Case H2L Summary, H2L Document Score Breakdown, evidence highlights รวมถึง `Performance Provenance`, `System Evaluation Status`, live evaluation progress และ artifact retention policy เพื่อให้ผู้ใช้แยกผลระดับเคสออกจากผล benchmark และตรวจสอบย้อนกลับได้
 
 แนวคิดสำคัญของงานนี้คือ H2L ไม่ได้พยายามแทนที่ retrieval backbone เดิมทั้งหมด แต่ทำหน้าที่เป็น **problem-aware scoring and safety layer** ที่สามารถครอบบน baseline หลายแบบได้ เช่น BM25, dense retrieval, HyDE และ hybrid retrieval การออกแบบเช่นนี้ทำให้งานวิจัยสามารถตอบคำถามหลักได้ทั้งด้าน retrieval quality และ safety from negation errors พร้อมทั้งมีชั้น explainability รองรับการตีความผลลัพธ์ในระดับเคสและเอกสารหลักฐาน
 
@@ -22,7 +22,7 @@
 
 1. H2L ในฐานะ problem-aware scoring layer ให้ผลด้านคุณภาพการจัดอันดับเอกสารแตกต่างจาก baseline อย่างไร เมื่อครอบบน retrieval backbone หลายแบบและวัดด้วย nDCG@K, MAP และ MRR?
 
-2. Sentence polarity gate ภายในสถาปัตยกรรม H2L ช่วยลด false positive จากประโยคที่ต้องอาศัยการตีความเชิงบริบท เช่น negation, actor-target-action และ clause boundary ได้ในระดับใด เมื่อวัดด้วย Accuracy, Negation Detection Rate (NDR), False Positive Rate (FPR) และ F1?
+2. Sentence polarity gate ภายในสถาปัตยกรรม H2L ช่วยลด false positive จากประโยคที่ต้องอาศัยการตีความเชิงบริบท เช่น negation, subject heuristic และข้อความสั้น ได้ในระดับใด เมื่อวัดด้วย Accuracy, Negation Detection Rate (NDR), False Positive Rate (FPR) และ F1?
 
 ---
 
@@ -31,7 +31,7 @@
 1. พัฒนาระบบ H2L สำหรับตรวจจับปัญหาสังคมจากข้อความภาษาไทย โดยใช้ L1 context-aware detection และ L2 semantic validation ทำงานร่วมกัน
 2. ออกแบบ sentence polarity gate แบบ candidate-specific เพื่อจัดการกับคำปฏิเสธและลด false positive ที่เกิดจากการจับคำสำคัญอย่างผิวเผิน
 3. ประเมินผล H2L บน retrieval backbone หลายแบบ ได้แก่ BM25, dense retrieval, HyDE และ hybrid retrieval ภายใต้กรอบ paired comparison ที่ใช้ข้อมูลจริง
-4. สร้างชั้นการอธิบายผลที่ตรวจสอบย้อนกลับได้ ทั้งในระดับ analyzed case text แบบ occurrence-aware, event frames, live execution path, Case H2L Summary, H2L Document Score Breakdown, Problem-Document Matrix, Semantic Evidence Map และการแยก case-level ออกจาก benchmark-level report
+4. สร้างชั้นการอธิบายผลที่ตรวจสอบย้อนกลับได้ ทั้งในระดับ analyzed case text แบบ occurrence-aware, evidence traces, live execution path, Case H2L Summary, H2L Document Score Breakdown, Problem-Document Matrix, Semantic Evidence Map และการแยก case-level ออกจาก benchmark-level report
 5. สังเคราะห์ข้อค้นพบเชิงวิชาการและเชิงระบบที่สามารถนำไปใช้สรุปผลในระดับวิทยานิพนธ์ได้อย่างตรงกับการทำงานจริงของระบบ
 
 ---
@@ -62,12 +62,12 @@
 | คำศัพท์ | นิยาม |
 |:---|:---|
 | **H2L** | สถาปัตยกรรมสองระดับสำหรับตรวจจับปัญหาและค้นคืนเอกสาร โดยใช้ L1, L2, H2L scoring และ sentence polarity gate ร่วมกัน |
-| **Sentence Polarity Gate** | กลไกที่ลดหรือตัดน้ำหนัก problem candidate เมื่อมีหลักฐานว่าคำปฏิเสธครอบพฤติกรรมหรือปัญหานั้นโดยตรง |
+| **Sentence Polarity Gate** | กลไก rule-based ที่ลดน้ำหนัก problem candidate เมื่อพบสัญญาณปฏิเสธ ความสั้นของข้อความ หรือ subject heuristic ที่อาจทำให้ตีความผิด |
 | **Problem-Aware Retrieval** | การค้นคืนเอกสารที่ไม่ใช้ query text อย่างเดียว แต่ใช้ problem codes และบริบทของเคสจริงช่วยปรับอันดับเอกสาร |
-| **Actor-Target-Action** | โครงสร้างเชิงเหตุการณ์ที่ช่วยระบุว่าใครเป็นผู้กระทำ ใครเป็นผู้ถูกกระทำ และเกิดพฤติกรรมใดขึ้น |
+| **Actor/Context Cues** | สัญญาณบริบท เช่น บุคคลที่กล่าวถึง ความสัมพันธ์ บริบท active/passive และคำที่อยู่ใกล้หลักฐาน ซึ่งใช้ช่วยตรวจสอบรหัสในชั้น L1 และการอธิบายผล |
 | **Semantic Evidence Map** | มุมมองเชิงโต้ตอบที่เชื่อม query, problems และ supporting documents เพื่อช่วยอธิบาย semantic distance, node relation และเหตุผลเชิงลึกของการดึงเอกสาร |
 | **Problem-Document Matrix** | มุมมองเชิงโครงสร้างที่แสดงว่า problem code ใดมี supporting document ใดหนุนอยู่บ้าง และหนุนแรงมากน้อยเพียงใด |
-| **Live Execution Path** | ภาพรวมลำดับการประมวลผลของระบบจาก case text ไปสู่ detected problems, polarity effect และ evidence retrieval |
+| **Live Execution Path** | ภาพรวมลำดับการประมวลผลของระบบจาก case text ไปสู่ detected problems, H2L scoring และ evidence retrieval |
 | **Performance Provenance** | ส่วนของรายงานที่อธิบายว่าผลที่กำลังอ่านมาจาก runtime ของเคสปัจจุบันหรือจาก benchmark artifacts บน test split |
 | **System Evaluation Status** | ส่วนสรุปว่าหลักฐาน benchmark ใดพร้อมใช้สรุปผลแล้ว และหัวข้อใดยังต้อง review เพิ่มก่อนอ้างอิงในวิทยานิพนธ์ |
 | **nDCG@K / MAP / MRR** | มาตรวัดคุณภาพการจัดอันดับเอกสารที่ใช้ประเมิน retrieval performance |

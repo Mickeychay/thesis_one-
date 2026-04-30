@@ -1,6 +1,6 @@
 # กรอบแนวคิด สถาปัตยกรรมระบบ และกระแสการคำนวณทางคณิตศาสตร์
 
-เอกสารฉบับนี้เป็นเอกสารประกอบบทที่ 3 สำหรับอธิบายกรอบแนวคิด สถาปัตยกรรมระบบ และกระแสการคำนวณของระบบ H2L ซึ่งหมายถึง **A Two-Level Hierarchical Retrieval-Augmented Generation Approach with Polarity Gates for Screening and Differential Diagnosis of Social Problems** ให้สอดคล้องกับไฟล์หลัก `md_report/thesis_full_ch3_methodology.md` ฉบับล่าสุด เนื้อหานี้เน้นภาพรวมเชิงระบบและสูตรที่จำเป็นต่อการอ้างอิงในวิทยานิพนธ์ โดยแทรกค่าพารามิเตอร์และ threshold ที่ตรวจสอบจากโค้ดปัจจุบันเท่าที่สามารถระบุได้
+เอกสารฉบับนี้เป็นเอกสารประกอบบทที่ 3 สำหรับอธิบายกรอบแนวคิด สถาปัตยกรรมระบบ และกระแสการคำนวณของระบบ H2L ซึ่งหมายถึง **A Two-Level Hierarchical Retrieval-Augmented Generation Approach with Polarity Gates for Screening and Differential Diagnosis of Social Problems** ให้สอดคล้องกับไฟล์หลัก `md_report/thesis_full_ch3_methodology.md` ฉบับที่ใช้รายงานผล เนื้อหานี้เน้นภาพรวมเชิงระบบและสูตรที่จำเป็นต่อการอ้างอิงในวิทยานิพนธ์ โดยแทรกค่าพารามิเตอร์และ threshold ที่ตรวจสอบจากโค้ดปัจจุบันเท่าที่สามารถระบุได้
 
 ---
 
@@ -8,12 +8,12 @@
 
 บทที่ 3 อธิบายระบบ H2L ในฐานะ pipeline แบบทวิลำดับชั้นสำหรับวิเคราะห์ข้อความกรณีศึกษา ตรวจจับรหัสปัญหา ค้นคืนเอกสาร และปรับคะแนนผลลัพธ์ด้วย problem-aware scoring ร่วมกับ Polarity Gates ส่วนเอกสารฉบับนี้ทำหน้าที่ขยายรายละเอียดด้านกรอบแนวคิดและลำดับสมการ เพื่อใช้เป็นแหล่งอ้างอิงร่วมกับภาพประกอบและตารางในบทที่ 3
 
-ประเด็นที่ปรับให้ตรงกับบทที่ 3 ฉบับล่าสุดมีดังนี้
+ประเด็นที่ปรับให้ตรงกับบทที่ 3 ฉบับที่ใช้รายงานผลมีดังนี้
 
 - L1 detection ใช้ keyword matching ร่วมกับ context validation เป็นเกณฑ์หลักของ detector
 - L2 validation ทำงานแบบ LLM-based validation สำหรับรหัสที่กำกวมหรือมี conflict ไม่ได้ใช้ `L2_SIMILARITY_THRESHOLD=0.7` เป็นเกณฑ์ตัดสินโดยตรง
 - Retrieval pipeline แยกจาก detector และใช้ dense retrieval, BM25, RRF fusion และ reranking ตามค่า config
-- Contextual Polarity Gates ประกอบด้วย `G_neg`, `G_len` และ `G_sub` ใน pipeline หลักของบทที่ 3
+- Contextual Polarity Gates ประกอบด้วย `G_neg`, `G_len` และ `G_sub` ในฐานะ feature ภายใน H2L scoring ไม่ใช่ stage แยกหลัง retrieval
 - ค่าที่ใช้กำกับภาพประกอบหลัก ได้แก่ `0.30`, `0.25`, `0.40`, `0.75`, `BM25_K=25`, `FUSION_K=30`, `RRF_K=60`, `NEG_LAMBDA=0.6`, `gate_sub=0.85` และ reporting `top_k=15` สำหรับผลวิจัยหลัก
 
 ---
@@ -38,8 +38,7 @@ flowchart TD
         P1["L1 Detection<br/>keyword matching + context validation<br/>base_conf = min(0.95, 0.6 + 0.12 x kw_count)"]:::processNode
         P2["L2 Validation<br/>run only for needs_validation/conflicts<br/>implicit requires taxonomy anchor<br/>default confidence=0.75"]:::processNode
         P3["Hybrid Retrieval<br/>BM25_K=25, FUSION_K=30<br/>RRF_K=60, reporting top-k=15"]:::processNode
-        P4["H2L Scoring<br/>detect=.35 semantic=.30<br/>prior=.15 specificity=.10 negation=.10"]:::processNode
-        P5["Contextual Polarity Gates<br/>candidate-specific + clause-local<br/>G_neg x G_len x G_sub"]:::processNode
+        P4["H2L Scoring<br/>detect=.35 semantic=.30<br/>prior=.15 specificity=.10 negation=.10<br/>includes G_neg x G_len x G_sub"]:::processNode
     end
 
     subgraph OUTPUT ["Runtime Output / Evaluation Output"]
@@ -55,8 +54,7 @@ flowchart TD
     P2 --> O1
     P2 --> P4
     P3 --> P4
-    P4 --> P5
-    P5 --> O2
+    P4 --> O2
     O1 --> O3
     O2 --> O3
 ```
@@ -86,7 +84,6 @@ sequenceDiagram
     participant L2 as L2 Validation
     participant Ret as Retrieval Pipeline
     participant H2L as H2L Scoring
-    participant Gate as Polarity Gates
     participant Out as Results
 
     User->>L1: ส่งข้อความกรณีศึกษา
@@ -102,8 +99,7 @@ sequenceDiagram
     Ret->>Ret: dense + BM25 + RRF + rerank
     L2->>H2L: ส่ง problem profile
     Ret->>H2L: ส่ง candidate documents
-    H2L->>Gate: คำนวณ candidate-specific clause-local G_neg, G_len, G_sub
-    Gate->>H2L: ส่งค่า polarity adjustment
+    H2L->>H2L: คำนวณ G_neg, G_len, G_sub ด้วย negation window, length gate และ subject heuristic
     H2L->>Out: ส่ง detected problems + review status + ranked documents
 ```
 
@@ -231,7 +227,7 @@ flowchart TD
     B1["Confidence Calibration<br/>T_base=0.5<br/>T_range=1.5"]:::per
     B2["Document-Problem Relevance<br/>semantic + keyword<br/>margin m=0.3 tau=0.15"]:::per
     B3["IDF Specificity<br/>N=500<br/>IDF_MAX=3.0"]:::per
-    B4["Polarity Gate<br/>NEG_LAMBDA=0.6<br/>window=30 chars"]:::per
+    B4["Polarity Gate<br/>NEG_LAMBDA=0.6<br/>window=30 ตัวอักษร"]:::per
     C1["Feature Aggregation<br/>.35 detect + .30 semantic<br/>.15 prior + .10 specificity + .10 negation"]:::final
     C2["Final Score<br/>S_final = S_rerank x exp(alpha_eff x mean(wPhi)) x P(rel|profile)"]:::final
 
@@ -325,7 +321,7 @@ $$G_{polarity} = G_{neg} \times G_{len} \times G_{sub}$$
 
 ```mermaid
 flowchart LR
-    A["Problem Match"] --> B["G_neg<br/>window=30 chars<br/>NEG_LAMBDA=0.6"]
+    A["Problem Match"] --> B["G_neg<br/>window=30 ตัวอักษร<br/>NEG_LAMBDA=0.6"]
     A --> C["G_len<br/>log10((L/10)+1)+0.5"]
     A --> D["G_sub<br/>severity >= 3<br/>other subject + no self<br/>gate_sub=0.85"]
     B --> E["G_polarity"]
@@ -382,7 +378,7 @@ if severity >= 3 and has_other and not has_self:
 | Detection/polarity safety | Accuracy, F1, false positive behavior, negation-related cases |
 | Comparative analysis | ablation study, sensitivity analysis, statistical tests, expert validation |
 
-หมายเหตุ: เอกสารนี้ไม่กำหนด threshold ตัดสิทธิ์เชิงคลินิกเป็นค่า hard constraint ของระบบหลัก เพราะบทที่ 3 ฉบับล่าสุดอธิบายการประเมินผลเป็นกรอบเชิงวิธีวิจัย ไม่ได้ใช้เกณฑ์ดังกล่าวเป็นเงื่อนไขตัดสินใน implementation หลัก
+หมายเหตุ: เอกสารนี้ไม่กำหนด threshold ตัดสิทธิ์เชิงคลินิกเป็นค่า hard constraint ของระบบหลัก เพราะบทที่ 3 ฉบับที่ใช้รายงานผลอธิบายการประเมินผลเป็นกรอบเชิงวิธีวิจัย ไม่ได้ใช้เกณฑ์ดังกล่าวเป็นเงื่อนไขตัดสินใน implementation หลัก
 
 ---
 
@@ -401,11 +397,11 @@ if severity >= 3 and has_other and not has_self:
 | H2L scoring | feature weights | `.35`, `.30`, `.15`, `.10`, `.10` |
 | H2L scoring | `DIRICHLET_MU`, `KL_KAPPA` | `2.0`, `0.15` |
 | H2L scoring | `MARGIN_M`, `MARGIN_TAU` | `0.3`, `0.15` |
-| Polarity | `NEG_LAMBDA`, window | `0.6`, `30 chars` |
+| Polarity | `NEG_LAMBDA`, window | `0.6`, `30 ตัวอักษร` |
 | Polarity | `gate_sub` | `0.85` |
 
 ---
 
 ## 10. สรุป
 
-เอกสาร framework และ math flow ฉบับนี้ถูกปรับให้ทำหน้าที่เป็นเอกสารประกอบบทที่ 3 โดยตรง เนื้อหาเน้นความสอดคล้องกับ implementation ปัจจุบันมากกว่าการอธิบายเชิงแนวคิดแบบกว้าง ๆ จุดที่สำคัญคือการแยก L1/L2 detection ออกจาก retrieval pipeline อย่างชัดเจน การใช้ threshold จริงของ detector การใช้ค่า retrieval defaults จาก config และการอธิบาย H2L scoring กับ Contextual Polarity Gates ตามสูตรและค่าที่มีอยู่ในโค้ดจริง
+เอกสาร framework และ math flow ฉบับนี้ถูกปรับให้ทำหน้าที่เป็นเอกสารประกอบบทที่ 3 โดยตรง เนื้อหาเน้นความสอดคล้องกับ implementation ปัจจุบันมากกว่าการอธิบายเชิงแนวคิดแบบกว้าง ๆ จุดที่สำคัญคือการแยก L1/L2 detection ออกจาก retrieval pipeline อย่างชัดเจน การใช้ threshold จริงของ detector การใช้ค่า retrieval defaults จาก config และการอธิบาย Contextual Polarity Gates ในฐานะ feature ภายใน H2L scoring ตามสูตรและค่าที่มีอยู่ในโค้ดจริง

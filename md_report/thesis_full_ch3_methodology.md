@@ -28,15 +28,39 @@ flowchart LR
     D1 --> G["Problem Set<br/>final keep confidence >= 0.25"]
     F --> G
     B --> H["Retrieval Pipeline<br/>BM25_K=25<br/>Fusion_K=30<br/>RRF_K=60<br/>reporting top-k = 15"]
-    H --> I["H2L Scoring<br/>detect=.35 semantic=.30<br/>prior=.15 specificity=.10 negation=.10"]
+    H --> I["H2L Scoring<br/>detect=.35 semantic=.30<br/>prior=.15 specificity=.10 negation=.10<br/>รวม polarity gates ในสมการ"]
     G --> I
-    I --> J["Contextual Polarity Gates<br/>Negation window=30 chars<br/>NEG_LAMBDA=0.6<br/>gate_sub=0.85"]
-    J --> K["ผลลัพธ์สุดท้าย<br/>Detected Problems + Ranked Documents"]
+    I --> K["ผลลัพธ์สุดท้าย<br/>Detected Problems + Ranked Documents"]
 ```
 
 คำบรรยายภาพ: ภาพที่ 3.1 แสดงลำดับการประมวลผลของระบบ H2L ตั้งแต่การรับข้อความกรณีศึกษา การตรวจจับปัญหา การส่งรหัสที่กำกวมไปตรวจสอบในระดับ L2 การค้นคืนเอกสาร และการปรับคะแนนด้วย H2L scoring framework ตัวเลขที่ใส่ในภาพเป็นค่าจากโค้ดปัจจุบัน เช่น สูตรคำนวณความเชื่อมั่นใน L1, เกณฑ์กรองที่ `0.30`, เกณฑ์เก็บผลสุดท้ายที่ `0.25`, ค่า retrieval defaults และค่าน้ำหนักของ feature ใน H2L scoring
 
 โค้ดอ้างอิงแบบย่อ:
+
+```python
+# End-to-end methodological flow (ย่อจาก orchestrator + retriever)
+def analyze_case(case_text):
+    detection = detector.detect_with_metadata(case_text)
+    problems = detection["problems"]
+
+    docs = retriever.retrieve(
+        query=case_text,
+        explicit_problems=problems
+    )
+
+    ranked_docs = h2l_rescore(
+        docs=docs,
+        problems=problems,
+        query_text=case_text
+    )
+
+    return {
+        "problems": problems,
+        "ranked_documents": ranked_docs
+    }
+```
+
+โค้ดย่อข้างต้นสรุป logic ของระบบในระดับวิธีวิจัย กล่าวคือระบบเริ่มจากการตรวจจับปัญหา สร้าง problem profile ส่งต่อไปยัง retrieval pipeline และปรับคะแนนเอกสารด้วย H2L scoring ก่อนประกอบผลลัพธ์สุดท้าย โค้ดนี้เป็น pseudo-code เพื่ออธิบาย pipeline ไม่ใช่การคัดลอก implementation ทั้งหมดจากไฟล์ runtime
 
 ```python
 # H2LDetector.py
@@ -51,7 +75,7 @@ else:
 
 ### 3.2.1 Flow diagram ของระบบตั้งแต่การนำเข้าข้อมูลจนถึงการรายงานผล
 
-เพื่อให้สอดคล้องกับหลักการเขียนบทที่ 3 ของวิทยานิพนธ์ ผู้วิจัยควรอธิบายกระบวนการทำงานของระบบตั้งแต่ระดับการเตรียมข้อมูล (offline preparation) ไปจนถึงระดับการประมวลผลเคสจริง (online inference) และการรายงานผลอย่างต่อเนื่อง ภาพต่อไปนี้จึงทำหน้าที่เป็นภาพรวมเชิงระเบียบวิธีของทั้งระบบ ไม่ใช่เฉพาะ retrieval pipeline หรือ detector เพียงส่วนเดียว
+เพื่อให้สอดคล้องกับหลักการเขียนบทที่ 3 ของวิทยานิพนธ์ ผู้วิจัยอธิบายกระบวนการทำงานของระบบตั้งแต่ระดับการเตรียมข้อมูล (offline preparation) ไปจนถึงระดับการประมวลผลเคสจริง (online inference) และการรายงานผลอย่างต่อเนื่อง ภาพต่อไปนี้จึงทำหน้าที่เป็นภาพรวมเชิงระเบียบวิธีของทั้งระบบ ไม่ใช่เฉพาะ retrieval pipeline หรือ detector เพียงส่วนเดียว
 
 **ภาพที่ 3.1A flow diagram ตั้งแต่การนำเข้าข้อมูลจนถึงการประมวลผลและรายงานผล**
 
@@ -62,16 +86,15 @@ flowchart TD
     C --> D["สร้างฐานข้อมูล retrieval<br/>dense index + BM25 + metadata store"]
     D --> E["สร้างฐานความรู้ problem taxonomy<br/>problem_codes.json + severity + keywords + context rules"]
     E --> F["รับข้อความกรณีศึกษาใหม่<br/>case input"]
-    F --> G["Sentence Profile Layer<br/>actors, actions, negation, event frames"]
+    F --> G["Context Feature Layer<br/>actors + negation cues<br/>สำหรับ L1/explainability"]
     G --> H["L1 Detection<br/>keyword + context validation"]
     H --> I{"ต้องส่งต่อ L2 หรือไม่"}
     I -->|ใช่| J["L2 Semantic Validation<br/>ตรวจ conflict และ implicit problems"]
     I -->|ไม่ใช่| K["ใช้ผล L1 โดยตรง"]
     J --> L["Problem Set หลัง validation"]
     K --> L
-    L --> M["Polarity Gate<br/>candidate-specific + clause-local gating"]
-    M --> N["Retrieval Execution<br/>BM25 / Dense / HyDE / Hybrid"]
-    N --> O["H2L Scoring<br/>problem-aware ranking"]
+    L --> N["Retrieval Execution<br/>BM25 / Dense / HyDE / Hybrid"]
+    N --> O["H2L Scoring<br/>problem-aware ranking<br/>with polarity gates"]
     O --> P["Evidence Selection Top-K<br/>เชื่อมกับค่า top-k ที่ผู้ใช้เลือก"]
     P --> Q["Result Assembly<br/>problems, review_status,<br/>evidence, traces, metrics"]
     Q --> R["Interactive Report + Thesis Reporting<br/>dashboard, case analysis, evaluation summary"]
@@ -87,7 +110,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["Case Text"] --> B["Sentence Profile"]
+    A["Case Text"] --> B["Context Cues<br/>actor + negation heuristic"]
     B --> C["L1 Keyword Match"]
     C --> D{"พบ keyword หรือไม่"}
     D -->|ไม่พบ| Z["ไม่พบปัญหาที่ชัดเจน"]
@@ -107,8 +130,8 @@ flowchart TD
     J --> Q
     M --> Q
     O --> Q
-    Q --> R["Polarity Gate"]
-    R --> S["Retrieval + H2L Scoring"]
+    Q --> R["Retrieval"]
+    R --> S["H2L Scoring<br/>with polarity gates"]
     S --> T["Top-K Evidence + Final Report"]
 ```
 
@@ -116,12 +139,12 @@ flowchart TD
 
 ### 3.2.3 ส่วนแสดงผลเชิงโต้ตอบที่ใช้ตรวจสอบย้อนกลับผลลัพธ์
 
-ระบบที่พัฒนาขึ้นไม่ได้มีเพียงโมดูลคำนวณ แต่ยังมีส่วนแสดงผลเชิงโต้ตอบเพื่อช่วยให้ผู้วิจัยและผู้เชี่ยวชาญตรวจสอบตรรกะของระบบได้แบบย้อนหลัง (traceability) ส่วนแสดงผลสำคัญประกอบด้วย `Analyzed Case Text`, `Event Frames`, `Sentence Polarity`, `Live Execution Path`, `Case H2L Summary`, `H2L Document Score Breakdown`, `Problem-Document Matrix`, `Semantic Evidence Map` และ `Research Report`
+ระบบที่พัฒนาขึ้นไม่ได้มีเพียงโมดูลคำนวณ แต่ยังมีส่วนแสดงผลเชิงโต้ตอบเพื่อช่วยให้ผู้วิจัยและผู้เชี่ยวชาญตรวจสอบตรรกะของระบบได้แบบย้อนหลัง (traceability) ส่วนแสดงผลสำคัญประกอบด้วย `Analyzed Case Text`, `Sentence Polarity`, `Live Execution Path`, `Case H2L Summary`, `H2L Document Score Breakdown`, `Problem-Document Matrix`, `Semantic Evidence Map` และ `Research Report` ส่วนมุมมอง event/actor ใช้เพื่อช่วยอธิบายบริบทในระดับ L1 และการตรวจสอบผล ไม่ใช่ตัวคำนวณหลักของ polarity score
 
 หลักการของส่วนแสดงผลเหล่านี้คือการแปลงค่าที่เกิดขึ้นจริงจาก runtime ให้เป็นภาษาที่เข้าใจง่ายและตรวจสอบได้ เช่น
 
-- `Analyzed Case Text` ใช้ไฮไลต์คำที่ระบบจับได้ในระดับ **occurrence** ไม่ใช่เพียงระดับคำที่ซ้ำกัน โดยอาศัย `start/end span`, `mention_id`, `action_id`, `support_spans` และ `event_id` จาก runtime จริง ทำให้คำอย่าง `มารดา` ที่ปรากฏหลายครั้งในคนละบริบทถูกคลิกแยกกันได้ และไม่ถูกลากไปอธิบายด้วย event เดียวกันทั้งหมด
-- `Event Frames` แยก clause-level relation ในรูปแบบ `agent → action → target` เพื่อหลีกเลี่ยงการลาก actor ข้าม clause และใช้ร่วมกับ sentence-bound coreference สำหรับคำอ้างอิงอย่าง `เขา`, `รายนี้`, `คนดังกล่าว` โดยแต่ละ event ถูกผูกกับ `span_start/span_end` และ support mentions ที่ตรวจสอบย้อนกลับได้
+- `Analyzed Case Text` ใช้ไฮไลต์คำที่ระบบจับได้ในระดับ **occurrence** ไม่ใช่เพียงระดับคำที่ซ้ำกัน โดยอาศัย `matched_spans` และ `evidence_spans` จากผลตรวจจับจริง ทำให้คำที่ปรากฏหลายครั้งในคนละบริบทสามารถตรวจสอบแยกตามหลักฐานที่ระบบใช้ได้
+- มุมมอง event/actor ใช้อธิบายบริบทของการตรวจจับในระดับ L1 และการตรวจสอบย้อนกลับเชิงคุณภาพ เช่น การดูว่าหลักฐานเกี่ยวข้องกับผู้รับบริการหรือบุคคลอื่น แต่ implementation ปัจจุบันยังไม่ได้ใช้ full event-frame parser เป็นตัวคำนวณ `G_neg` ในสมการ scoring หลัก
 - `Live Execution Path` แสดงขั้นตอนของ pipeline พร้อมเวลาที่ใช้จริงในแต่ละ phase
 - `Case H2L Summary` สรุปตัวแปรระดับเคส เช่น prior, severity, polarity gate จำนวน candidate ที่ผ่าน/ถูกกรอง และ `review summary` ของสถานะ `confirmed`, `needs_review`, `verify_documents`, `filtered`
 - `H2L Document Score Breakdown` อธิบายการเกิดคะแนนระดับเอกสารโดยแยกตัวแปรหลักของสมการ H2L ออกจากบริบทระดับเคส
@@ -129,7 +152,7 @@ flowchart TD
 - `Semantic Evidence Map` แสดงความสัมพันธ์เชิงความหมายระหว่าง query, problem codes และ supporting documents โดยเน้นรายละเอียดระดับ node, semantic distance และหลักฐานเชิงลึก ซึ่งละเอียดกว่ามุมมองแบบ matrix
 - `Research Report` แยก `Case-Level Runtime Review` ออกจาก `Benchmark Performance Review` อย่างชัดเจน พร้อมมี `Performance Provenance` สำหรับบอกแหล่งที่มาของผล, `System Evaluation Status` สำหรับสรุปว่าหลักฐาน benchmark ส่วนใดพร้อมใช้อ้างอิงแล้ว, `Latest Pair Reruns` สำหรับอ่านผลเปรียบเทียบ baseline vs H2L ราย family จาก `evaluation_results/pairs/` โดยตรง, `Live Evaluation Progress` สำหรับอ่านสถานะการรัน evaluator จาก progress artifact จริง และ `Artifact Retention` สำหรับอธิบายว่า dashboard ใช้ latest/checkpoint alias เป็นหลักและเก็บ timestamped history ไว้เพียงเท่าที่จำเป็น ทั้งหมดนี้ refresh ผ่าน `/evaluation-summary` และ `/evaluation-progress` เป็นช่วง ๆ โดยไม่สร้างข้อมูลจำลอง
 
-ในรุ่นล่าสุด ผู้ใช้ยังสามารถเลือกช่วงข้อความในกล่องเคสเพื่อสร้าง `user-adjusted span anchor` ได้โดยตรง ระบบจะ remap offset ของ span ดังกล่าวหลังขั้น `trim` และ `PII redaction` ก่อนส่งต่อไปยัง polarity และ event binding ทำให้ตำแหน่งที่ผู้ใช้เลือกยังคงเป็น occurrence หลัก แม้ข้อความจริงจะถูกแทนบางส่วนด้วย `[PERSON]` หรือ `[LOCATION]`
+ใน implementation ที่ใช้รายงานผล ส่วนแสดงผลช่วยให้ตรวจสอบตำแหน่งหลักฐานที่ระบบใช้ได้ชัดขึ้น โดยแยก occurrence ของคำสำคัญและบริบทที่สนับสนุนการตัดสินใจออกจากกัน อย่างไรก็ตาม การคำนวณ `G_neg` ใน H2L scoring ยังคงใช้กลไก lightweight จากหน้าต่างคำปฏิเสธย้อนหลัง `30` ตัวอักษรรอบ candidate term เป็นหลัก
 
 ดังนั้น ส่วนแสดงผลจึงไม่ได้เป็นองค์ประกอบตกแต่งส่วนติดต่อผู้ใช้เท่านั้น แต่เป็นเครื่องมือสนับสนุนการตรวจสอบวิธีวิจัยและการอภิปรายผลในบทที่ 4 ด้วย
 
@@ -244,7 +267,7 @@ if not r.context_valid and r.confidence < 0.3:
 
 กรณีที่ L2 ยืนยันว่ารหัสถูกต้องและบริบท L1 ถูกต้อง ระบบจะเพิ่มความเชื่อมั่นด้วยการคูณ `1.2` แต่ไม่เกิน `0.95` หาก L2 ยืนยันแต่ L1 เห็นว่าบริบทไม่ถูกต้อง ระบบจะเก็บรหัสไว้แต่จำกัด confidence ไม่เกิน `0.40` เพื่อสะท้อนความไม่แน่นอน หาก L2 ไม่ยืนยัน ระบบจะกรองทิ้ง ยกเว้นกรณีที่เป็นรหัสความรุนแรงสูง `severity >= 4` และบริบท L1 ถูกต้อง ระบบจะเก็บไว้เป็น safety net โดยให้ confidence อย่างน้อย `0.40`
 
-ในรุ่นล่าสุดของระบบ ผู้วิจัยได้เพิ่ม refinement สำคัญอีก 4 ประการให้ชั้นนี้ ได้แก่ (1) L2 มีสิทธิ์คัดออกเฉพาะรหัสที่ถูกส่งเข้า `needs_validation` จริง เพื่อลดการลบรหัส L1 ที่บริบทชัดเจนอยู่แล้ว (2) implicit problems ที่ L2 เสนอเพิ่มต้องมี `taxonomy anchor` ใน evidence หรือข้อความจริงก่อนจึงจะถูกรับไว้ (3) ผลลัพธ์ทุกตัวจะถูกจัดสถานะ review เป็น `confirmed`, `needs_review`, `verify_documents` หรือ `filtered` เพื่อแยกระดับความมั่นใจเชิงปฏิบัติการ และ (4) baseline preview ถูกแยกสถานะเป็น `baseline_candidate` และ `baseline_filtered` เพื่อไม่ให้ปะปนกับผลที่ผ่านการตรวจ semantic แล้ว
+ใน implementation ที่ใช้รายงานผล ผู้วิจัยได้เพิ่ม refinement สำคัญอีก 4 ประการให้ชั้นนี้ ได้แก่ (1) L2 มีสิทธิ์คัดออกเฉพาะรหัสที่ถูกส่งเข้า `needs_validation` จริง เพื่อลดการลบรหัส L1 ที่บริบทชัดเจนอยู่แล้ว (2) implicit problems ที่ L2 เสนอเพิ่มต้องมี `taxonomy anchor` ใน evidence หรือข้อความจริงก่อนจึงจะถูกรับไว้ (3) ผลลัพธ์ทุกตัวจะถูกจัดสถานะ review เป็น `confirmed`, `needs_review`, `verify_documents` หรือ `filtered` เพื่อแยกระดับความมั่นใจเชิงปฏิบัติการ และ (4) baseline preview ถูกแยกสถานะเป็น `baseline_candidate` และ `baseline_filtered` เพื่อไม่ให้ปะปนกับผลที่ผ่านการตรวจ semantic แล้ว
 
 **ภาพที่ 3.4 flow การทำงานของ L2 Validation**
 
@@ -297,7 +320,7 @@ if code and code not in l1_codes:
     detection_level="L2"
 ```
 
-หมายเหตุเชิงวิธีวิจัย: ใน `config.py` มีค่า `L2_SIMILARITY_THRESHOLD=0.7` และ `L2_TOP_K=5` แต่ implementation ปัจจุบันของ L2 validation ใช้ LLM-based validation จาก prompt และผล JSON เป็นหลัก ไม่ได้ใช้ `L2_SIMILARITY_THRESHOLD` เป็นเกณฑ์ตัดสินโดยตรง ดังนั้นในภาพประกอบจึงไม่ควรเขียนว่า L2 ตัดสินด้วย similarity มากกว่า `0.7`
+หมายเหตุเชิงวิธีวิจัย: ใน `config.py` มีค่า `L2_SIMILARITY_THRESHOLD=0.7` และ `L2_TOP_K=5` แต่ implementation ปัจจุบันของ L2 validation ใช้ LLM-based validation จาก prompt และผล JSON เป็นหลัก ไม่ได้ใช้ `L2_SIMILARITY_THRESHOLD` เป็นเกณฑ์ตัดสินโดยตรง ดังนั้นภาพประกอบของบทนี้จึงอธิบาย L2 ในฐานะ LLM-based validation ไม่ใช่การตัดสินด้วย similarity มากกว่า `0.7`
 
 ## 3.7 Retrieval pipeline และการจัดอันดับเอกสาร
 
@@ -346,6 +369,22 @@ bm25_hits = self.lexical_retriever.search(query, top_k=bm25_k)
 fused_hits = _rrf_fusion(dense_hits, bm25_hits, k=fusion_k, rrf_k=self.config.RRF_K)
 ```
 
+ฟังก์ชันย่อของการผสานอันดับด้วย Reciprocal Rank Fusion สามารถสรุปได้ดังนี้
+
+```python
+def rrf_fusion(dense_hits, bm25_hits, rrf_k=60):
+    scores = {}
+
+    for ranked_list in [dense_hits, bm25_hits]:
+        for rank, hit in enumerate(ranked_list, start=1):
+            doc_id = hit[0] if isinstance(hit, tuple) else hit
+            scores[doc_id] = scores.get(doc_id, 0.0) + 1.0 / (rrf_k + rank)
+
+    return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+```
+
+โค้ดย่อข้างต้นแสดงหลักการสำคัญของ RRF คือเอกสารที่ปรากฏในอันดับต้น ๆ ของ retriever หลายตัวจะได้คะแนนสะสมสูงกว่าเอกสารที่ปรากฏเฉพาะในอันดับท้าย ๆ ของ retriever ตัวใดตัวหนึ่ง วิธีนี้ช่วยรวมข้อดีของ dense retrieval ซึ่งจับความหมายได้ดี และ BM25 ซึ่งจับคำสำคัญเฉพาะได้ดี โดยไม่ต้องทำ normalization คะแนน similarity ระหว่างโมเดลต่างชนิดกันโดยตรง
+
 ## 3.8 กรอบการให้คะแนน H2L
 
 H2L scoring framework ทำหน้าที่ปรับคะแนนเอกสารที่ได้จาก retrieval pipeline โดยคำนึงถึง problem profile ของกรณีศึกษา ระบบไม่ได้พิจารณาเฉพาะคะแนน similarity หรือคะแนน rerank แต่รวมปัจจัยจากการตรวจจับปัญหาเข้ามาด้วย ได้แก่ detection confidence, ความสัมพันธ์เชิงความหมายระหว่างเอกสารกับปัญหา, prior ของปัญหา, ความจำเพาะของปัญหา และ negation gate
@@ -387,17 +426,50 @@ FEATURE_WEIGHTS = {
 }
 ```
 
+เมื่อนำ feature ทั้งหมดมารวมกัน logic ของการคำนวณคะแนนสุดท้ายสามารถเขียนเป็นฟังก์ชันย่อได้ดังนี้
+
+```python
+def h2l_score(rerank_score, problems, document, query):
+    priors = calculate_problem_prior(problems)
+    alpha_eff = calculate_alpha_eff(problems, priors)
+    weighted_sum = 0.0
+
+    for problem in problems:
+        features = {
+            "detect": calibrated_confidence(problem),
+            "semantic": document_problem_similarity(document, problem),
+            "prior": priors[problem["code"]],
+            "specificity": normalized_idf(problem),
+            "negation": polarity_gate(problem, query),
+        }
+
+        phi = weighted_feature_sum(features)
+        weighted_sum += co_occurrence_weight(problem, problems) * phi
+
+    mean_phi = weighted_sum / max(len(problems), 1)
+    boost = exp(alpha_eff * mean_phi)
+    return rerank_score * boost * bayesian_prior(problems, priors)
+```
+
+ฟังก์ชันย่อนี้สอดคล้องกับสมการหลักของระบบ:
+
+```text
+S_final = S_rerank × exp(α_eff × mean(w_i × Φ_i)) × P(rel | profile)
+```
+
+โดย `S_rerank` คือคะแนนตั้งต้นจาก retrieval/reranker, `Φ_i` คือ feature รวมของปัญหาแต่ละรหัส, `w_i` คือค่าน้ำหนักจาก co-occurrence ระหว่างปัญหา, `α_eff` คือค่าน้ำหนัก H2L ที่ปรับตามบริบทของเคส และ `P(rel | profile)` คือ Bayesian prior ที่คำนวณจาก problem profile ของเคสนั้น
+
 ## 3.9 Contextual Polarity Gates
 
-Contextual Polarity Gates ถูกออกแบบเพื่อควบคุมผลบวกลวงที่เกิดจากบริบทของประโยค โดยเฉพาะกรณีที่มีคำปฏิเสธ ข้อความสั้นเกินไป หรือข้อความกล่าวถึงปัญหาของบุคคลอื่นแทนผู้รับบริการเอง ในรุ่นปัจจุบันกลไกนี้ไม่ได้พิจารณาเพียงการพบคำว่า "ไม่" ในหน้าต่างอักษร แต่ใช้ **candidate-specific polarity แบบ clause-local** ร่วมกับ sentence profile, actor-target-action, sentence-bound evidence, occurrence-level match spans และ coreference binding เพื่อประเมินว่าคำปฏิเสธครอบ candidate ใดจริง กลไกนี้ประกอบด้วย 3 ส่วน ได้แก่ `G_neg`, `G_len` และ `G_sub` โดยคะแนนรวมคำนวณจากผลคูณของทั้งสาม gate
+Contextual Polarity Gates ถูกออกแบบเพื่อควบคุมผลบวกลวงที่เกิดจากบริบทของประโยค โดยเฉพาะกรณีที่มีคำปฏิเสธ ข้อความสั้นเกินไป หรือข้อความกล่าวถึงปัญหาของบุคคลอื่นแทนผู้รับบริการเอง ใน implementation ปัจจุบัน polarity gate ที่ใช้ใน H2L scoring เป็นกลไกแบบ lightweight ประกอบด้วย 3 ส่วน ได้แก่ `G_neg`, `G_len` และ `G_sub` โดยยังไม่ได้ใช้ full event-frame parser หรือการแยก `actor → action → target` เป็นตัวคำนวณหลักของคะแนนนี้
 
-`G_neg` ใช้หน้าต่างย้อนหลัง `30` ตัวอักษรเป็น lexical fallback ภายใน clause ที่ candidate ปรากฏ และใช้ค่า `NEG_LAMBDA=0.6` เพื่อลดคะแนนเมื่อคำปฏิเสธครอบ candidate นั้นจริง `G_len` ใช้สูตรลอการิทึมเพื่อปรับคะแนนของข้อความที่สั้นเกินไป ส่วน `G_sub` ลดคะแนนเป็น `0.85` เมื่อปัญหามี `severity >= 3` และพบการกล่าวถึงบุคคลอื่นโดยไม่พบ self-subject นอกจากนี้ระบบยังมี hardship-aware exceptions สำหรับวลีอย่าง `ไม่มีเงิน`, `เงินไม่พอ`, `ยังไม่ได้นำส่ง` ที่ไม่ควรถูกตีความว่าเป็นการปฏิเสธปัญหาการเงินโดยอัตโนมัติ ในกรณีที่ผู้ใช้ปรับตำแหน่ง evidence เอง ระบบจะสร้าง `anchor span` เพิ่มก่อนคำนวณ polarity เพื่อให้ candidate ถูกประเมินจาก occurrence เดียวกับที่ผู้ใช้เลือกจริง ไม่ไปอาศัย occurrence อื่นของ keyword เดียวกันในข้อความ
+`G_neg` ตรวจคำปฏิเสธด้วยหน้าต่างย้อนหลัง `30` ตัวอักษรรอบ candidate term และใช้ค่า `NEG_LAMBDA=0.6` เพื่อลดคะแนนเมื่อพบ negation marker ที่ครอบคำสำคัญของปัญหา `G_len` ใช้สูตรลอการิทึมเพื่อปรับคะแนนของข้อความที่สั้นเกินไป ส่วน `G_sub` ลดคะแนนเป็น `0.85` เมื่อปัญหามี `severity >= 3` และพบการกล่าวถึงบุคคลอื่นโดยไม่พบ self-subject กลไก actor/context ที่ละเอียดกว่านี้ถูกใช้ในชั้น L1 context validation และส่วนแสดงผลเพื่อการตรวจสอบย้อนกลับ ขณะที่ polarity score ในสมการ H2L ยังคงใช้ negation window, length gate และ subject heuristic เป็นหลัก นอกจากนี้ระบบยังมี tone/hardship exceptions สำหรับวลีอย่าง `ไม่มีเงิน`, `ไม่มีที่ไป`, `ไม่สบายใจ` ที่ไม่ควรถูกตีความว่าเป็นการปฏิเสธปัญหาโดยอัตโนมัติ
 
 **ภาพที่ 3.7 Contextual Polarity Gates พร้อมค่าตัวอย่าง**
 
 ```mermaid
 flowchart LR
-    A["Problem Match"] --> B["G_neg<br/>window=30 chars<br/>NEG_LAMBDA=0.6<br/>example=0.40"]
+    A["Problem Match"] --> B["G_neg<br/>window=30 ตัวอักษร<br/>NEG_LAMBDA=0.6<br/>example=0.40"]
     A --> C["G_len<br/>log10((L/10)+1)+0.5<br/>example=0.7041"]
     A --> D["G_sub<br/>severity >= 3<br/>other subject + no self<br/>example=0.85"]
     B --> E["G_polarity<br/>G_neg x G_len x G_sub"]
@@ -457,7 +529,32 @@ if severity >= 3 and has_other and not has_self:
 
 การออกแบบการประเมินผลเช่นนี้ทำให้ผู้วิจัยสามารถแยกวิเคราะห์ได้ว่าการปรับปรุงประสิทธิภาพของระบบเกิดจากองค์ประกอบใด เช่น เกิดจากการตรวจจับปัญหาที่แม่นยำขึ้น การปรับคะแนนเอกสารด้วย problem profile หรือการลดผลบวกลวงจาก polarity gates ขณะที่ชั้น explainability ถูกใช้เป็นกลไกสนับสนุนการตีความผลทั้งสองคำถามวิจัย ไม่ได้ถูกกำหนดเป็นคำถามวิจัยแยกต่างหาก
 
-ในระดับผลวิเคราะห์เคสจริง งานรุ่นล่าสุดยังประเมินการเปลี่ยนแปลงเชิงพฤติกรรมของ detector ด้วย เช่น การบังคับ code-specific context rules สำหรับรหัสกว้าง, การแยก review status เพื่อสื่อสารผลที่ยังต้องตรวจเอกสาร, การยุบรหัสซ้ำเชิงประเด็น เช่น `0801` กับ `Z59.0`, และการทดสอบ regression สำหรับเคสภาษาจริงที่เคยเกิด false positive/false negative การเก็บข้อมูลระดับนี้ช่วยให้บทอภิปรายแยก "ผล benchmark" ออกจาก "คุณภาพการตัดสินเชิงกรณีศึกษา" ได้ชัดเจนยิ่งขึ้น
+ในระดับผลวิเคราะห์เคสจริง งานวิจัยนี้ยังประเมินการเปลี่ยนแปลงเชิงพฤติกรรมของ detector ด้วย เช่น การบังคับ code-specific context rules สำหรับรหัสกว้าง, การแยก review status เพื่อสื่อสารผลที่ยังต้องตรวจเอกสาร, การยุบรหัสซ้ำเชิงประเด็น เช่น `0801` กับ `Z59.0`, และการทดสอบ regression สำหรับเคสภาษาจริงที่เคยเกิด false positive/false negative การเก็บข้อมูลระดับนี้ช่วยให้บทอภิปรายแยก "ผล benchmark" ออกจาก "คุณภาพการตัดสินเชิงกรณีศึกษา" ได้ชัดเจนยิ่งขึ้น
+
+โค้ดย่อของ evaluation loop ที่ใช้เชื่อมผล retrieval กับ metric หลักสามารถสรุปได้ดังนี้
+
+```python
+for case in test_cases:
+    query = case["case_description"]
+    expected = case["expected_diagnosis"]["problem_list"]
+    relevance_keywords = build_relevance_keywords(expected, taxonomy)
+
+    results = retriever.retrieve(query, top_k_override=15)
+
+    relevance_grades = []
+    for result in results:
+        grade = judge_relevance(
+            result.doc.text,
+            relevance_keywords,
+            expected
+        )
+        relevance_grades.append(grade)
+
+    metrics = compute_all_metrics(relevance_grades)
+    store_result(case["case_id"], metrics)
+```
+
+โค้ดย่อนี้แสดงหลักการประเมินแบบรายเคส โดยใช้ข้อความกรณีศึกษาเป็น query ใช้ problem list ใน ground truth เป็นคำตอบอ้างอิง ค้นคืนเอกสารด้วย protocol เดียวกัน และแปลงผลลัพธ์ที่จัดอันดับแล้วเป็น `relevance_grades` ก่อนคำนวณตัวชี้วัด เช่น nDCG@5, MAP, MRR และ Precision@K จากนั้นจึงรวมผลทุกเคสเป็นค่าเฉลี่ยและส่วนเบี่ยงเบนมาตรฐานสำหรับรายงานในบทที่ 4
 
 เพื่อป้องกันการปะปนระหว่างผลการทดลองจริงกับข้อมูลสาธิต ผู้วิจัยได้กำหนด research-integrity guardrails ในระดับโค้ด โดยปิดการสร้างข้อมูลจำลองและผลสถิติสังเคราะห์เป็นค่าเริ่มต้น (`ALLOW_DEMO_DATA=false`, `ALLOW_SYNTHETIC_STATS=false`) รวมทั้งป้องกันการสร้างดัชนีค้นคืนจากชุด ground truth โดยไม่ตั้งใจ (`ALLOW_GROUND_TRUTH_INDEX=false`) ดังนั้นการแสดงผลเชิงภาพหรือการวิเคราะห์สถิติที่ไม่มีข้อมูลจริงรองรับจะต้องแสดงสถานะว่า “ข้อมูลจริงไม่เพียงพอ” แทนการสร้างคะแนนจำลองอัตโนมัติ หากต้องใช้ข้อมูลสาธิตเพื่ออธิบายส่วนติดต่อผู้ใช้ จะต้องเปิดโหมด demo โดยตรงและติดป้ายกำกับว่าไม่ใช่ผลเชิงประจักษ์ ส่วนการสร้าง index จาก `expanded_ground_truth.json` จะถูกจำกัดให้เป็น evaluation-only corpus และต้องแยกจาก production document index เพื่อป้องกัน label leakage จากฟิลด์เฉลย เช่น `expected_diagnosis`, `problem_codes` และ `relevant_keywords`
 
@@ -465,7 +562,7 @@ if severity >= 3 and has_other and not has_self:
 
 เพื่อยกระดับความน่าเชื่อถือของผลการประเมินในระดับบทความวิชาการ ผู้วิจัยปรับการแบ่งข้อมูลจากการสุ่มรายเคสทั่วไปเป็น **family-level split** กล่าวคือ เคสต้นฉบับและเคสที่ดัดแปลงจากต้นฉบับเดียวกัน เช่น paraphrase, complexity escalation/reduction, adversarial case และ polarity pair จะถูกจัดอยู่ใน split เดียวกันให้มากที่สุด เพื่อป้องกันไม่ให้ข้อความที่มีเนื้อหาเกือบเหมือนกันหลุดไปอยู่ทั้ง train และ test ซึ่งจะทำให้ผลประเมินสูงเกินจริง
 
-หลังการแบ่งข้อมูล ระบบจะรัน `scripts/ground_truth_audit.py` เพื่อตรวจ 3 ประเด็น ได้แก่ (1) เคสที่ไม่มี split, (2) case family ที่ปรากฏข้าม train/test และ (3) near-duplicate ระหว่าง train/test โดยใช้ threshold ความคล้ายของข้อความเป็นกลไกตรวจซ้ำ ผล audit ล่าสุดรายงานว่าไม่มี cross-split family และไม่มี near-duplicate train/test pair เหนือ threshold เหลือเพียง risk flag ว่าชุดข้อมูลมี generated cases ซึ่งต้องรายงานแยกเป็น stress-test slice ไม่ควรใช้เหมารวมเป็น external generalization claim
+หลังการแบ่งข้อมูล ระบบรัน `scripts/ground_truth_audit.py` เพื่อตรวจ 3 ประเด็น ได้แก่ (1) เคสที่ไม่มี split, (2) case family ที่ปรากฏข้าม train/test และ (3) near-duplicate ระหว่าง train/test โดยใช้ threshold ความคล้ายของข้อความเป็นกลไกตรวจซ้ำ ผล audit ที่ใช้รายงานในงานวิจัยนี้ระบุว่าไม่มี cross-split family และไม่มี near-duplicate train/test pair เหนือ threshold เหลือเพียง risk flag ว่าชุดข้อมูลมี generated cases ซึ่งต้องรายงานแยกเป็น stress-test slice ไม่ควรใช้เหมารวมเป็น external generalization claim
 
 **ตารางที่ 3.5 สถานะ split หลังแก้ leakage**
 
@@ -495,15 +592,15 @@ if severity >= 3 and has_other and not has_self:
 
 เพื่อปิดช่องว่างระหว่าง relevance judgment จาก ground truth เชิงรหัสกับความเหมาะสมเชิงวิชาชีพ ระบบได้เพิ่มกระบวนการ **blind expert evaluation** โดยสุ่มเคสจาก artifact ผล evaluation จริง และซ่อนชื่อระบบก่อนส่งให้ผู้เชี่ยวชาญประเมิน แต่ละรายการในแบบฟอร์มประกอบด้วย case text, blinded system label, ranked evidence และช่องให้คะแนนความเกี่ยวข้อง ความครบถ้วน ความปลอดภัย และความเหมาะสมต่อการใช้งานเชิงสังคมสงเคราะห์
 
-ไฟล์สำหรับแจกผู้ประเมินอยู่ใน `human_evaluation/blind_packet_latest/evaluation_form.csv` ส่วนไฟล์ mapping ระหว่าง label ลับกับชื่อระบบจริงอยู่ใน `blind_mapping.hidden.json` และต้องเก็บแยกจากผู้ประเมินจนกว่าจะวิเคราะห์ผลเสร็จ การวิเคราะห์ควรรายงานทั้งคะแนนเฉลี่ย, inter-rater agreement และผลเปรียบเทียบแบบ paired ระหว่างระบบ เพื่อให้ข้อสรุปไม่พึ่งตัวชี้วัด retrieval เพียงอย่างเดียว
+ไฟล์สำหรับแจกผู้ประเมินอยู่ใน `human_evaluation/blind_packet_latest/evaluation_form.csv` ส่วนไฟล์ mapping ระหว่าง label ลับกับชื่อระบบจริงอยู่ใน `blind_mapping.hidden.json` และต้องเก็บแยกจากผู้ประเมินจนกว่าจะวิเคราะห์ผลเสร็จ การวิเคราะห์รายงานทั้งคะแนนเฉลี่ย, inter-rater agreement และผลเปรียบเทียบแบบ paired ระหว่างระบบ เพื่อให้ข้อสรุปไม่พึ่งตัวชี้วัด retrieval เพียงอย่างเดียว
 
 ### 3.11.4 V6 component ablation
 
-การทำ ablation ของ H2L V6 ถูกออกแบบเพื่อแยกบทบาทขององค์ประกอบย่อย เช่น adaptive alpha, Bayesian prior, IDF specificity, margin activation, KL penalty, negation gate และ product-feature mode โดยใช้การรัน retrieval pipeline จริง ไม่ใช้ค่าจำลอง รุ่นล่าสุดของ RQ6 ใช้ fixed candidate pool ต่อเคส แล้ว re-score candidate set เดียวกันด้วย one-component-disabled variants เพื่อลด candidate-set noise และตรวจว่า toggle แต่ละตัวเปลี่ยน live scoring path จริงหรือไม่ ผลล่าสุดสร้าง `rq6_results.csv` จำนวน 160 แถวจาก 20 เคสและ 8 variants
+การทำ ablation ของ H2L V6 ถูกออกแบบเพื่อแยกบทบาทขององค์ประกอบย่อย เช่น adaptive alpha, Bayesian prior, IDF specificity, margin activation, KL penalty, negation gate และ product-feature mode โดยใช้การรัน retrieval pipeline จริง ไม่ใช้ค่าจำลอง การรัน RQ6 ที่ใช้รายงานผลใช้ fixed candidate pool ต่อเคส แล้ว re-score candidate set เดียวกันด้วย one-component-disabled variants เพื่อลด candidate-set noise และตรวจว่า toggle แต่ละตัวเปลี่ยน live scoring path จริงหรือไม่ ผลการรันสร้าง `rq6_results.csv` จาก test split 68 เคสและ 8 variants
 
-อย่างไรก็ตาม ผล fixed-candidate ablation พบว่าค่าของทุก variant ยังเท่ากันใน MAP, MRR และ nDCG@5 แม้ค่า score diagnostics เช่น mean absolute score delta และ rank_changed@5 จะแสดงว่า component toggles ส่งผลต่อคะแนนและอันดับบางส่วน ดังนั้นผลนี้ใช้เป็น component sensitivity evidence ได้ แต่ยังไม่ควรใช้เป็นหลักฐาน causal claim ว่าองค์ประกอบใดเพิ่ม retrieval effectiveness อย่างมีนัยสำคัญ สำหรับการส่งบทความระดับ Q1 ควรขยายเป็น full test split และเพิ่ม rank-distance, score calibration หรือ per-document attribution diagnostics ก่อนสรุปเชิงองค์ประกอบ
+อย่างไรก็ตาม ผล fixed-candidate ablation พบว่าค่า rank-aware metrics เปลี่ยนแปลงเพียงเล็กน้อย แม้ค่า score diagnostics เช่น mean absolute score delta และ rank_changed@5 จะแสดงว่า component toggles ส่งผลต่อคะแนนและอันดับบางส่วน ดังนั้นผลนี้ใช้เป็น component sensitivity evidence ได้ แต่ยังไม่ใช้เป็นหลักฐาน causal claim ว่าองค์ประกอบใดเพิ่ม retrieval effectiveness อย่างมีนัยสำคัญ การขยายผลสู่การตีพิมพ์ในวารสารวิชาการระดับสูงควรเพิ่ม rank-distance, score calibration หรือ per-document attribution diagnostics ก่อนสรุปเชิงองค์ประกอบ
 
-### 3.11.5 Claim policy สำหรับการตีความผลระดับ Q1
+### 3.11.5 Claim policy สำหรับการตีความผล
 
 เพื่อหลีกเลี่ยง overclaim ผู้วิจัยกำหนดนโยบายการสรุปผลดังนี้
 
@@ -519,4 +616,4 @@ if severity >= 3 and has_other and not has_self:
 
 บทนี้ได้นำเสนอวิธีดำเนินการวิจัยและการออกแบบระบบ H2L ตั้งแต่ภาพรวมสถาปัตยกรรม การเตรียมข้อมูลเอกสาร การออกแบบฐานความรู้รหัสปัญหา กลไกการตรวจจับปัญหาแบบ L1-L2 retrieval pipeline กรอบการให้คะแนนแบบ H2L และ Contextual Polarity Gates โดยแทรกตัวเลข threshold และค่าพารามิเตอร์สำคัญจากโค้ดจริงลงในภาพประกอบและคำบรรยาย เพื่อให้เนื้อหาสามารถตรวจสอบย้อนกลับจาก implementation ได้
 
-ภาพประกอบในบทนี้ควรใช้เพื่ออธิบาย pipeline ในระดับกระบวนการ โดยใส่เฉพาะค่าที่เป็นจุดตัดสินใจสำคัญ เช่น `0.30` สำหรับการกรอง L1, `0.25` สำหรับ final keep threshold, `0.40` สำหรับการจำกัด confidence เมื่อ L2 ยืนยันแต่บริบท L1 ไม่ถูกต้อง, `0.75` สำหรับ implicit problem default confidence, และค่าของ polarity gates เช่น `30` ตัวอักษร, `0.6`, `0.85` ส่วนโค้ดอ้างอิงควรแทรกแบบสั้นหลังภาพหรือในภาคผนวก เพื่อให้บทที่ 3 อ่านเป็นวิทยานิพนธ์เชิงระบบและยังคงตรวจสอบจากระบบจริงได้
+ภาพประกอบในบทนี้ใช้เพื่ออธิบาย pipeline ในระดับกระบวนการ โดยใส่เฉพาะค่าที่เป็นจุดตัดสินใจสำคัญ เช่น `0.30` สำหรับการกรอง L1, `0.25` สำหรับ final keep threshold, `0.40` สำหรับการจำกัด confidence เมื่อ L2 ยืนยันแต่บริบท L1 ไม่ถูกต้อง, `0.75` สำหรับ implicit problem default confidence, และค่าของ polarity gates เช่น `30` ตัวอักษร, `0.6`, `0.85` ส่วนโค้ดอ้างอิงแทรกแบบสั้นหลังภาพ เพื่อให้บทที่ 3 อ่านเป็นวิทยานิพนธ์เชิงระบบและยังคงตรวจสอบจากระบบจริงได้
