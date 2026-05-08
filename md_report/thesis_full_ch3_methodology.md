@@ -562,18 +562,7 @@ for case in test_cases:
 
 เพื่อยกระดับความน่าเชื่อถือของผลการประเมินในระดับบทความวิชาการ ผู้วิจัยปรับการแบ่งข้อมูลจากการสุ่มรายเคสทั่วไปเป็น **family-level split** กล่าวคือ เคสต้นฉบับและเคสที่ดัดแปลงจากต้นฉบับเดียวกัน เช่น paraphrase, complexity escalation/reduction, adversarial case และ polarity pair จะถูกจัดอยู่ใน split เดียวกันให้มากที่สุด เพื่อป้องกันไม่ให้ข้อความที่มีเนื้อหาเกือบเหมือนกันหลุดไปอยู่ทั้ง train และ test ซึ่งจะทำให้ผลประเมินสูงเกินจริง
 
-หลังการแบ่งข้อมูล ระบบรัน `scripts/ground_truth_audit.py` เพื่อตรวจ 3 ประเด็น ได้แก่ (1) เคสที่ไม่มี split, (2) case family ที่ปรากฏข้าม train/test และ (3) near-duplicate ระหว่าง train/test โดยใช้ threshold ความคล้ายของข้อความเป็นกลไกตรวจซ้ำ ผล audit ที่ใช้รายงานในงานวิจัยนี้ระบุว่าไม่มี cross-split family และไม่มี near-duplicate train/test pair เหนือ threshold เหลือเพียง risk flag ว่าชุดข้อมูลมี generated cases ซึ่งต้องรายงานแยกเป็น stress-test slice ไม่ควรใช้เหมารวมเป็น external generalization claim
-
-**ตารางที่ 3.5 สถานะ split หลังแก้ leakage**
-
-| รายการ | จำนวน |
-|---|---:|
-| จำนวนเคสทั้งหมด | 197 |
-| Train split | 129 |
-| Test split | 68 |
-| Cross-split family ที่พบ | 0 |
-| Near-duplicate train/test ที่พบ | 0 |
-| Risk flag ที่เหลือ | generated cases ต้องรายงานแยก |
+หลังการแบ่งข้อมูล ระบบรัน `scripts/ground_truth_audit.py` เพื่อตรวจ 3 ประเด็น ได้แก่ (1) เคสที่ไม่มี split, (2) case family ที่ปรากฏข้าม train/test และ (3) near-duplicate ระหว่าง train/test โดยใช้ threshold ความคล้ายของข้อความเป็นกลไกตรวจซ้ำ เพื่อให้มั่นใจว่าชุดข้อมูลที่ใช้ทดสอบ (Test split) จะไม่มีความทับซ้อนกับชุดข้อมูลฝึกสอน (Train split) ซึ่งรายละเอียดของจำนวนชุดข้อมูลและผลการตรวจสอบจะนำเสนอในบทที่ 4 ต่อไป
 
 ### 3.11.2 Protocol การเปรียบเทียบ baseline กับ H2L
 
@@ -596,21 +585,16 @@ for case in test_cases:
 
 ### 3.11.4 V6 component ablation
 
-การทำ ablation ของ H2L V6 ถูกออกแบบเพื่อแยกบทบาทขององค์ประกอบย่อย เช่น adaptive alpha, Bayesian prior, IDF specificity, margin activation, KL penalty, negation gate และ product-feature mode โดยใช้การรัน retrieval pipeline จริง ไม่ใช้ค่าจำลอง การรัน RQ6 ที่ใช้รายงานผลใช้ fixed candidate pool ต่อเคส แล้ว re-score candidate set เดียวกันด้วย one-component-disabled variants เพื่อลด candidate-set noise และตรวจว่า toggle แต่ละตัวเปลี่ยน live scoring path จริงหรือไม่ ผลการรันสร้าง `rq6_results.csv` จาก test split 68 เคสและ 8 variants
+การทำ ablation ของ H2L V6 ถูกออกแบบเพื่อแยกบทบาทขององค์ประกอบย่อย เช่น adaptive alpha, Bayesian prior, IDF specificity, margin activation, KL penalty, negation gate และ product-feature mode โดยใช้การรัน retrieval pipeline จริง ไม่ใช้ค่าจำลอง การรันทดสอบใช้ fixed candidate pool ต่อเคส แล้ว re-score candidate set เดียวกันด้วย one-component-disabled variants เพื่อลด candidate-set noise และตรวจว่า toggle แต่ละตัวเปลี่ยน live scoring path จริงหรือไม่ โดยผลลัพธ์ของการทดสอบ ablation จะนำไปสรุปและอภิปรายในบทที่ 4
 
-อย่างไรก็ตาม ผล fixed-candidate ablation พบว่าค่า rank-aware metrics เปลี่ยนแปลงเพียงเล็กน้อย แม้ค่า score diagnostics เช่น mean absolute score delta และ rank_changed@5 จะแสดงว่า component toggles ส่งผลต่อคะแนนและอันดับบางส่วน ดังนั้นผลนี้ใช้เป็น component sensitivity evidence ได้ แต่ยังไม่ใช้เป็นหลักฐาน causal claim ว่าองค์ประกอบใดเพิ่ม retrieval effectiveness อย่างมีนัยสำคัญ การขยายผลสู่การตีพิมพ์ในวารสารวิชาการระดับสูงควรเพิ่ม rank-distance, score calibration หรือ per-document attribution diagnostics ก่อนสรุปเชิงองค์ประกอบ
+### 3.11.5 เกณฑ์การวิเคราะห์และตีความผลทางสถิติ
 
-### 3.11.5 Claim policy สำหรับการตีความผล
+เพื่อความรัดกุมในการอภิปรายผลการทดลอง ผู้วิจัยกำหนดเกณฑ์การสรุปผลทางสถิติในการเปรียบเทียบประสิทธิภาพดังนี้
 
-เพื่อหลีกเลี่ยง overclaim ผู้วิจัยกำหนดนโยบายการสรุปผลดังนี้
-
-- ใช้คำว่า **supported** เฉพาะเมื่อ H2L ดีกว่า baseline ใน metric นั้นและ paired test มี `p < 0.05`
-- ใช้คำว่า **trend-only** เมื่อค่าเฉลี่ยดีขึ้นแต่ยังไม่มีนัยสำคัญทางสถิติ
-- ใช้คำว่า **practically tied** เมื่อผลต่างน้อยกว่า 0.01 หรือมี ROPE สูง แม้ค่าเฉลี่ยไม่เท่ากันพอดี
-- ใช้คำว่า **baseline-supported** เมื่อ baseline ดีกว่า H2L อย่างมีนัยสำคัญ
-- หลีกเลี่ยงคำว่า “เหนือกว่าโดยรวม” จนกว่าจะมี blind expert evaluation และ external holdout รองรับ
-
-นโยบายนี้ทำให้บทที่ 4 และบทสรุปสามารถใช้ถ้อยคำที่เข้มพอสำหรับ reviewer โดยยอมรับข้อจำกัดของหลักฐานปัจจุบันอย่างตรงไปตรงมา
+- ระดับ **Supported**: เมื่อระบบนำเสนอให้ผลลัพธ์ดีกว่า baseline ใน metric นั้น และผลการทดสอบทางสถิติ (paired test) มีค่า `p < 0.05`
+- ระดับ **Trend-only**: เมื่อค่าเฉลี่ยของระบบนำเสนอดีขึ้น แต่ยังไม่พบความแตกต่างอย่างมีนัยสำคัญทางสถิติ
+- ระดับ **Practically tied**: เมื่อผลต่างของประสิทธิภาพน้อยกว่า 0.01 หรือมีความแตกต่างในระดับที่ไม่มีนัยสำคัญเชิงปฏิบัติ
+- ระดับ **Baseline-supported**: เมื่อ baseline ให้ผลลัพธ์ที่ดีกว่าระบบนำเสนออย่างมีนัยสำคัญ
 
 ## 3.12 สรุปบท
 

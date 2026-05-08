@@ -147,6 +147,7 @@ NEGATION_MARKERS = [
     "ยังไม่",
     "ไม่แสดง",
     "ไม่ปรากฏ",
+    "ไม่",
     "ไร้",
     "ปราศจาก",
 ]
@@ -1980,7 +1981,8 @@ def _candidate_polarity_signal(
             between = text_lower[marker_end:term_start]
             if any(breaker in between for breaker in POLARITY_SCOPE_BREAKERS):
                 continue
-            if hardship_patterns and any(pattern in clause_text for pattern in hardship_patterns):
+            immediate_negation = not between.strip()
+            if not immediate_negation and hardship_patterns and any(pattern in clause_text for pattern in hardship_patterns):
                 continue
             negated_terms.append(term or case_text[term_start:int(span["end"])])
             break
@@ -4328,7 +4330,10 @@ def analyze_case(req: CaseRequest):
     else:
         enable_l2_requested = False
         
-    enable_l2_effective = enable_l2_requested and bool(runtime.get("l2_ready"))
+    # Keep H2L detection semantics even when the semantic L2 endpoint is
+    # degraded. The detector will still apply deterministic context filtering
+    # and will report semantic L2 readiness separately.
+    enable_l2_effective = enable_l2_requested
     
     if runtime_manager.detector:
         detector = runtime_manager.detector
@@ -4455,6 +4460,9 @@ def analyze_case(req: CaseRequest):
             "l2_applied": enable_l2_effective and bool(metadata.get("l2_count", 0) or filtered_out),
             "l2_requested": enable_l2_requested,
             "l2_ready": runtime_status_after.get("l2_ready", False),
+            "l2_client_ready": bool(metadata.get("l2_ready", False)),
+            "l2_semantic_ready": runtime_status_after.get("l2_ready", False),
+            "l2_degraded": bool(metadata.get("l2_degraded", False)),
             "final_count": len(problems),
             "filtered_count": len(filtered_out),
             "l1_count": metadata.get("l1_count", 0),

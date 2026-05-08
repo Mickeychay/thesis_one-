@@ -1956,8 +1956,10 @@ class H2LDetectorV3:
         context = {}
         filtered_out = []
         l2_ms = 0.0
+        l2_attempted = False
+        l2_ready = bool(self.l2_detector and self.l2_detector.is_ready)
 
-        if self.l2_detector and self.l2_detector.is_ready:
+        if l2_ready:
             needs_validation = l1_metadata.get("needs_l2_validation", [])
             conflicts = l1_metadata.get("conflicts", {})
 
@@ -1966,6 +1968,7 @@ class H2LDetectorV3:
                 original_l1_results = l1_results.copy()
 
                 # L2 validation
+                l2_attempted = True
                 l2_started = time.perf_counter()
                 l1_results, l2_results, context = self.l2_detector.validate_and_detect(
                     text, l1_results, needs_validation, conflicts,
@@ -1980,6 +1983,26 @@ class H2LDetectorV3:
                 for p in original_l1_results:
                     if p.code not in validated_codes:
                         filtered_out.append(self._to_dict(p))
+
+        # If semantic L2 is unavailable or fails open, still apply the
+        # deterministic L1 context gate in H2L mode. This keeps the live API from
+        # behaving like baseline mode when the LLM endpoint is degraded.
+        if use_l2 and (not l2_ready or (l2_attempted and not context and not l2_results)):
+            fallback_kept = []
+            already_filtered = {item.get("code") for item in filtered_out}
+            for p in l1_results:
+                if (
+                    p.detection_level == "L1-NeedsValidation"
+                    and not p.context_valid
+                    and p.severity < L2SemanticDetector.CRISIS_SEVERITY_THRESHOLD
+                ):
+                    if p.code not in already_filtered:
+                        p.validation_notes = p.validation_notes or p.reasoning
+                        filtered_out.append(self._to_dict(p))
+                        already_filtered.add(p.code)
+                    continue
+                fallback_kept.append(p)
+            l1_results = fallback_kept
 
         # Combine
         all_results = l1_results + l2_results
@@ -2026,6 +2049,9 @@ class H2LDetectorV3:
                 "needs_l2_validation": l1_metadata.get("needs_l2_validation", []),
                 "l1_filtered_out": [classify_review_status_dict(self._to_dict(p), filtered=True) for p in l1_metadata.get("l1_filtered_out", [])],
                 "context_analysis": context,
+                "l2_ready": l2_ready,
+                "l2_attempted": l2_attempted,
+                "l2_degraded": use_l2 and ((not l2_ready) or (l2_attempted and not context and not l2_results)),
                 "timings_ms": {
                     "l1": l1_ms,
                     "l2": l2_ms,

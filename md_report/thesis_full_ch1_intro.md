@@ -31,16 +31,15 @@
 1. พัฒนาระบบ H2L สำหรับตรวจจับปัญหาสังคมจากข้อความภาษาไทย โดยใช้ L1 context-aware detection และ L2 semantic validation ทำงานร่วมกัน
 2. ออกแบบ sentence polarity gate แบบ candidate-specific เพื่อจัดการกับคำปฏิเสธและลด false positive ที่เกิดจากการจับคำสำคัญอย่างผิวเผิน
 3. ประเมินผล H2L บน retrieval backbone หลายแบบ ได้แก่ BM25, dense retrieval, HyDE และ hybrid retrieval ภายใต้กรอบ paired comparison ที่ใช้ข้อมูลจริง
-4. สร้างชั้นการอธิบายผลที่ตรวจสอบย้อนกลับได้ ทั้งในระดับ analyzed case text แบบ occurrence-aware, evidence traces, live execution path, Case H2L Summary, H2L Document Score Breakdown, Problem-Document Matrix, Semantic Evidence Map และการแยก case-level ออกจาก benchmark-level report
-5. สังเคราะห์ข้อค้นพบเชิงวิชาการและเชิงระบบที่สามารถนำไปใช้สรุปผลในระดับวิทยานิพนธ์ได้อย่างตรงกับการทำงานจริงของระบบ
+4. สร้างชั้นการอธิบายผลที่ตรวจสอบย้อนกลับได้ เพื่อแสดงความสัมพันธ์เชิงความหมายระหว่างข้อความกรณีศึกษา รหัสปัญหา และเอกสารอ้างอิง
 
 ---
 
 ## 1.4 ขอบเขตของการวิจัย (Scope and Boundaries)
 
 1. **ขอบเขตข้อมูล:** ใช้ taxonomy ของปัญหาสังคมจำนวน 34 กลุ่ม 202 รหัสย่อย และใช้ชุดข้อมูล `expanded_ground_truth.json` จำนวน 197 เคส โดยเก็บในไฟล์เดียวและแยก train 129 เคส กับ test 68 เคสด้วย family-level leakage-safe split
-2. **ขอบเขตการประเมิน retrieval:** ผลหลักในวิทยานิพนธ์อ้างอิงจาก proper evaluation แบบ `problem_source=detected` และ `top_k=15` เพื่อให้ทุกส่วนของระบบใช้ค่าเดียวกันในการรายงานผล แม้ว่าหน้าเว็บจะรองรับการสำรวจค่า top-k ได้หลายระดับ
-3. **ขอบเขต sentence polarity:** ประเมินบน test set 68 เคส ซึ่งมีเคสยืนยันปัญหา 50 เคส และเคสปฏิเสธ 18 เคส โดยวัดผลแยกจาก retrieval metrics
+2. **ขอบเขตการประเมิน retrieval:** การประเมินประสิทธิภาพการค้นคืนเอกสารจะพิจารณาจากผลลัพธ์ในระดับ top-k = 15
+3. **ขอบเขต sentence polarity:** ประเมินบน test set 68 เคส ซึ่งประกอบด้วยเคสยืนยันปัญหา 50 เคส และเคสปฏิเสธ 18 เคส โดยวัดผลแยกจาก retrieval metrics
 4. **ขอบเขตเทคโนโลยี:** L1 ใช้ keyword and context rules, L2 ใช้ Qwen2.5 7B ผ่าน Ollama, retrieval ใช้ BM25, embedding model, HyDE และ hybrid retrieval พร้อม reranking
 5. **ขอบเขตภาษา:** งานวิจัยนี้มุ่งเน้นภาษาไทย และรองรับลักษณะภาษาที่เกี่ยวข้องกับปัญหาสังคม เช่น passive pattern, active pattern, self-harm expression, bullying/social action terms และประโยคปฏิเสธ
 6. **ขอบเขต explainability:** มุ่งเน้นการอธิบายผลผ่าน traces, evidence maps และ score breakdowns ไม่ได้อ้างว่าแก้ปัญหา explainability ของ LLM ได้ทั้งหมดในทุกบริบท
@@ -52,8 +51,7 @@
 1. **เชิงวิชาการ:** เสนอกรอบคิดที่แยกการประเมิน retrieval quality ออกจาก sentence polarity safety อย่างชัดเจน ทำให้การอภิปรายผลไม่สับสนระหว่าง "ค้นได้ดี" กับ "ปลอดภัยพอสำหรับการใช้งาน"
 2. **เชิงระบบ:** พัฒนา H2L ให้เป็นชั้น problem-aware scoring ที่สามารถนำไปครอบบน baseline หลายแบบได้ โดยไม่ต้องออกแบบ retriever ใหม่ทั้งหมด
 3. **เชิงปฏิบัติ:** ช่วยให้นักสังคมสงเคราะห์หรือผู้วิจัยตรวจสอบว่าเคสหนึ่ง ๆ ถูกจับปัญหาอะไร เพราะอะไร และอ้างอิงเอกสารชิ้นใดเป็นหลักฐาน
-4. **เชิงอธิบายผล:** ยกระดับการรายงานผลจากการแสดงตัวเลขรวม ไปสู่การแสดง live execution path, event frames, Problem-Document Matrix, Semantic Evidence Map, Case H2L Summary, H2L Document Score Breakdown, evaluator progress และ provenance/retention ของ artifact ที่ผู้อ่านเข้าใจได้ง่ายขึ้น
-5. **เชิงวิทยานิพนธ์:** ทำให้การสรุปผลของระบบสอดคล้องกับผลประเมินจริง ไม่อาศัย mock data หรือ simulated statistics ในบทอภิปรายผล
+4. **เชิงอธิบายผล:** ยกระดับการนำเสนอผลลัพธ์จากการแสดงตัวเลขรวม ไปสู่การอธิบายโครงสร้างความสัมพันธ์ของข้อมูลที่ช่วยให้ผู้ใช้งานเข้าใจเหตุผลของระบบได้ดีขึ้น
 
 ---
 
@@ -68,7 +66,5 @@
 | **Semantic Evidence Map** | มุมมองเชิงโต้ตอบที่เชื่อม query, problems และ supporting documents เพื่อช่วยอธิบาย semantic distance, node relation และเหตุผลเชิงลึกของการดึงเอกสาร |
 | **Problem-Document Matrix** | มุมมองเชิงโครงสร้างที่แสดงว่า problem code ใดมี supporting document ใดหนุนอยู่บ้าง และหนุนแรงมากน้อยเพียงใด |
 | **Live Execution Path** | ภาพรวมลำดับการประมวลผลของระบบจาก case text ไปสู่ detected problems, H2L scoring และ evidence retrieval |
-| **Performance Provenance** | ส่วนของรายงานที่อธิบายว่าผลที่กำลังอ่านมาจาก runtime ของเคสปัจจุบันหรือจาก benchmark artifacts บน test split |
-| **System Evaluation Status** | ส่วนสรุปว่าหลักฐาน benchmark ใดพร้อมใช้สรุปผลแล้ว และหัวข้อใดยังต้อง review เพิ่มก่อนอ้างอิงในวิทยานิพนธ์ |
 | **nDCG@K / MAP / MRR** | มาตรวัดคุณภาพการจัดอันดับเอกสารที่ใช้ประเมิน retrieval performance |
 | **NDR / FPR / F1** | มาตรวัดด้าน sentence polarity และความปลอดภัยของการคัดกรองบริบท |

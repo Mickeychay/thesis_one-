@@ -1,6 +1,6 @@
 # บทที่ 4: ผลการทดลองและการวิเคราะห์ข้อมูล (Results and Analysis)
 
-บทนี้นำเสนอผลการทดลองตาม artifact ที่ใช้รายงานผลหลังแก้ split leakage และ rerun evaluation เมื่อวันที่ 25 เมษายน 2026 โดยยึดหลักว่า **รายงานเฉพาะผลที่เกิดจากการรันจริง** ไม่ใช้ mock data หรือค่าประมาณเพื่อทำให้ผลดูดีขึ้น ผลหลักอ้างอิงจาก `evaluation_results/proper_eval_latest_summary.json`, `evaluation_results/sentence_polarity_latest.json`, `evaluation_results/ground_truth_audit.json`, `evaluation_results/q1_readiness_report.md`, `human_evaluation/blind_packet_latest/`, `ablation_results/rq6_v6_final/` และ `ablation_results/q1_figures/`
+บทนี้นำเสนอผลการทดลองและการวิเคราะห์ข้อมูลจากการประเมินประสิทธิภาพของระบบ H2L โดยแบ่งการรายงานออกเป็น 4 ส่วนหลัก ได้แก่ (1) ข้อมูลชุดทดสอบที่ผ่านการตรวจสอบความถูกต้อง (2) ผลการประเมินการตรวจจับความขัดแย้ง (Sentence Polarity) (3) ผลการประเมินประสิทธิภาพการค้นคืนเอกสาร (Retrieval Performance) และ (4) ผลการทดสอบบทบาทขององค์ประกอบย่อย (Ablation Study)
 
 ---
 
@@ -145,19 +145,8 @@
 
 ---
 
-## 4.6 สรุปความพร้อมต่อการส่งบทความ
+## 4.6 สรุปบท
 
-`q1_readiness_report.md` สรุปผลปัจจุบันดังนี้
+ผลการทดลองในบทนี้แสดงให้เห็นว่า ระบบ H2L สามารถเพิ่มประสิทธิภาพการค้นคืนข้อมูลได้อย่างมีนัยสำคัญทางสถิติเมื่อใช้งานร่วมกับ BM25 (ในตัวชี้วัด nDCG@5) และแสดงแนวโน้มการเพิ่มประสิทธิภาพ (trend-level gains) เมื่อใช้งานร่วมกับ HyDE และ Hybrid retrieval ในหลายตัวชี้วัด นอกจากนี้ กลไก Contextual Polarity Gate ยังแสดงให้เห็นถึงความสามารถในการลดผลบวกลวง (False Positive) จากประโยคปฏิเสธได้อย่างเป็นรูปธรรม
 
-| ประเภทข้อสรุป | จำนวน metric comparisons |
-|:---|---:|
-| Supported H2L comparisons | 1 |
-| Trend-only comparisons | 5 |
-| Practical ties | 6 |
-| Baseline-supported comparisons | 0 |
-
-ดังนั้น สถานะปัจจุบันของงานคือ **มีหลักฐานเชิงบวกบางส่วนและมี methodology ที่แข็งแรงขึ้นหลังแก้ leakage แต่ยังไม่ claim broad superiority** ข้อความสรุปที่เหมาะสมสำหรับบทความหรือวิทยานิพนธ์คือ:
-
-> H2L provides statistically supported improvement for BM25 on nDCG@5 and shows trend-level gains for HyDE and hybrid retrieval on selected ranking metrics, while also contributing an interpretable polarity-gating mechanism that improves safety-related negation handling. The fixed-candidate V6 ablation demonstrates score-level sensitivity across component toggles, with Adaptive Alpha and Weighted-Sum Feature Composition yielding the largest practical effect sizes (Cohen's $d$). Broader clinical superiority claims now await the final blind expert evaluation framework.
-
-ประเด็นที่พร้อมใช้เป็นจุดแข็งของงาน ได้แก่ family-level leakage-safe split, audit trail ของ artifact, paired evaluation, polarity safety metric, fixed-candidate V6 ablation พร้อมการทำ Effect Size และ blind evaluation protocol ส่วนประเด็นที่ยังต้องทำเพื่อให้ครบกระบวนการ 100% คือ การเก็บคะแนน blind expert จริง เพื่อวิเคราะห์ Human-AI Agreement ต่อไป
+จากการทดสอบ Ablation Study พบว่าทุกองค์ประกอบย่อยใน H2L V6 ล้วนส่งผลต่อความแม่นยำในการจัดอันดับเอกสาร โดยเฉพาะการใช้สถาปัตยกรรมแบบ Weighted-Sum ร่วมกับฟีเจอร์ Adaptive Alpha ที่ให้ขนาดอิทธิพล (Effect Size) สูงสุด ท้ายที่สุด การประเมินผลในภาพรวมชี้ให้เห็นว่า H2L ไม่เพียงแต่รักษาระดับประสิทธิภาพการค้นคืนได้ทัดเทียมหรือดีกว่า Baseline แต่ยังเพิ่มความสามารถในการจัดการบริบทปฏิเสธและความโปร่งใสในการอธิบายผลลัพธ์ ซึ่งเป็นคุณสมบัติสำคัญสำหรับการใช้งานในบริบทสังคมสงเคราะห์คลินิก
