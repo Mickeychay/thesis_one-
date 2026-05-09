@@ -61,7 +61,11 @@
 
 การแยกสองมิตินี้ออกจากกันช่วยให้บทสรุปของวิทยานิพนธ์ตรงไปตรงมา และป้องกันการตีความผิดว่า retrieval score ที่สูงเท่ากับระบบปลอดภัยกว่า
 
-### 5.2.5 บทบาทของ interactive explanation ต่อความพร้อมของงานวิทยานิพนธ์
+### 5.2.5 ความเสถียรของพารามิเตอร์ที่กำหนดจากความรู้เชิงโดเมน
+
+ผลการวิเคราะห์ความไวของพารามิเตอร์ใน §4.5 พบว่า 6 จาก 8 พารามิเตอร์ที่ผู้วิจัยกำหนดค่าจากความรู้เชิงโดเมน (ได้แก่ $\lambda_{\text{neg}}$, $\kappa$, $m$, $\mu$, $\beta$ และ $T_{\text{range}}$) ให้ผลคะแนนเปลี่ยนน้อยกว่า 5% เมื่อปรับ ±30-50% จากค่าเริ่มต้น ผลนี้สนับสนุนแนวทางการเลือกค่าตามทฤษฎี (rule-based negation literature, margin-based discrimination, Dirichlet smoothing convention) แทนการ data-driven tuning ซึ่งสำคัญในบริบทงานวิจัยที่ชุดทดสอบยังมีขนาดจำกัด เพราะการ tune พารามิเตอร์บนชุดเล็กมีความเสี่ยงสูงต่อ overfitting ส่วนพารามิเตอร์ 2 ตัวที่อ่อนไหว ($\alpha_0$ และ $T_{\text{base}}$) ได้รับการอธิบายชัดว่าเป็น scaling/calibration knobs ตามคุณสมบัติเชิงคณิตศาสตร์ ไม่ใช่หลักฐานความไม่เสถียรของแบบจำลอง
+
+### 5.2.6 บทบาทของ interactive explanation ต่อความพร้อมของงานวิทยานิพนธ์
 
 ใน implementation ที่ใช้รายงานผล การอธิบายผลไม่ใช่เพียงองค์ประกอบเสริมของหน้าเว็บ แต่เป็นส่วนหนึ่งของหลักฐานวิจัย เพราะช่วยให้ตรวจสอบได้ว่า
 
@@ -145,7 +149,7 @@
    แม้งานปัจจุบันจะดีขึ้นในเรื่อง context rules, passive/active pattern และ subject heuristic แต่ยังสามารถต่อยอดด้วย learned coreference models, structured semantic parsing หรือ entity linking กับบทบาทเชิงสังคมได้
 
 5. **ทำ per-code calibration สำหรับ review status**
-   เนื่องจากระบบมีสถานะ `confirmed`, `needs_review`, `verify_documents`, `filtered` แล้ว งานต่อไปสามารถปรับเกณฑ์รายรหัสและประเมินกับเคสจริงว่ารหัสใดเหมาะกับสถานะ verify-documents โดย default
+   เนื่องจากระบบมีสถานะ `confirmed`, `needs_review`, `verify_documents`, `filtered` แล้ว งานต่อไปสามารถปรับเกณฑ์รายรหัสและประเมินกับเคสจริงว่ารหัสใดเหมาะกับสถานะ `verify_documents` โดย default
 
 6. **แยก production mode และ research mode ให้ชัดขึ้น**
    production mode อาจเน้น latency ต่ำและความเรียบง่าย ส่วน research mode อาจเปิดการแสดง traces, ablations และ top-k exploration มากขึ้น
