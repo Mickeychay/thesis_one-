@@ -44,12 +44,12 @@ Devlin et al. (2019) ได้แก้ปัญหานี้ด้วยก�
 ### 2.2.2 กระบวนการวัดความคล้ายคลึง (Cosine Similarity) และ Dense Passage Retrieval
 จากรากฐานของ BERT, Karpukhin et al. (2020) ได้พัฒนาระบบ **DPR (Dense Passage Retrieval)** สำหรับงานถามตอบเชิงเปิด (Open-domain QA) โดยใช้ BERT encoder สองตัว — ตัวหนึ่งเข้ารหัสคำถาม อีกตัวเข้ารหัสเอกสาร — แล้ววัดความคล้ายคลึงด้วย Cosine Similarity:
 $$\text{Cosine}(\mathbf{p}, \mathbf{d}) = \frac{\mathbf{p} \cdot \mathbf{d}}{\|\mathbf{p}\| \|\mathbf{d}\|}$$
-เมื่อ $\mathbf{p}$ คือเวกเตอร์ปัญหาและ $\mathbf{d}$ คือเวกเตอร์เอกสาร ค่าผลลัพธ์อยู่ในช่วง $[-1, 1]$ โดย 1.0 หมายถึงความหมายเหมือนกันทุกประการ Karpukhin et al. แสดงให้เห็นว่า DPR เหนือกว่า BM25 ในงาน Natural Questions ถึง 9-19% Recall@20
+เมื่อ $\mathbf{p}$ คือเวกเตอร์ปัญหาและ $\mathbf{d}$ คือเวกเตอร์เอกสาร ค่าผลลัพธ์อยู่ในช่วง $[-1, 1]$ โดย 1.0 หมายถึงความหมายเหมือนกันทุกประการ Karpukhin et al. รายงานว่า DPR เพิ่มความถูกต้องของ top-20 passage retrieval เหนือ Lucene-BM25 อย่างมีนัยสำคัญที่ระดับ 9-19 percentage points ใน open-domain QA หลายชุดข้อมูล (รวม Natural Questions, TriviaQA, WebQuestions, CuratedTREC และ SQuAD)
 
 Reimers และ Gurevych (2019) ได้พัฒนา **Sentence-BERT (SBERT)** ที่ปรับแต่ง BERT ด้วย Siamese/Triplet networks เพื่อสร้าง Sentence Embeddings ที่เร็วกว่าการเปรียบเทียบทีละคู่ถึง 1000 เท่า ในระบบ H2L ที่พัฒนาขึ้น ผู้วิจัยใช้ Sentence-Transformers ขนาด 768 มิติ เป็น Encoder หลักสำหรับสร้าง Dense Embeddings
 
 ### 2.2.3 การยกระดับด้วยแนวคิด HyDE (Hypothetical Document Embeddings)
-Gao et al. (2022) ได้เสนอเทคนิค **HyDE** ที่ใช้ LLM สร้าง "เอกสารจำลอง" (Hypothetical document) จากคำถามของผู้ใช้ก่อน แล้วจึงนำเอกสารจำลองนั้นไปสร้างเวกเตอร์เพื่อค้นหา แนวคิดนี้ปิดช่องว่างระหว่าง "คำถามสั้น ↔ เอกสารยาว" ที่มักมี Length mismatch Gao et al. รายงานว่า HyDE เพิ่มประสิทธิภาพ Retrieval ได้ 15-30% ในงาน BEIR benchmark
+Gao et al. (2022) ได้เสนอเทคนิค **HyDE** ที่ใช้ LLM สร้าง "เอกสารจำลอง" (Hypothetical document) จากคำถามของผู้ใช้ก่อน แล้วจึงนำเอกสารจำลองนั้นไปสร้างเวกเตอร์เพื่อค้นหา แนวคิดนี้ปิดช่องว่างระหว่าง "คำถามสั้น ↔ เอกสารยาว" ที่มักมี Length mismatch Gao et al. รายงานว่า HyDE สามารถทำ zero-shot dense retrieval ได้ดีกว่า unsupervised baseline อย่าง Contriever อย่างมีนัยสำคัญ และได้ผลใกล้เคียงกับ retriever ที่ผ่านการ fine-tune มาแล้วในงานหลากหลายประเภท เช่น web search, QA และ fact verification
 
 อย่างไรก็ตาม ผู้วิจัยพบว่าในบริบทคลินิก (Clinical Context) การเปิดโอกาสให้ AI "แต่งเรื่อง" ขึ้นมาก่อนถือเป็นความเสี่ยงร้ายแรง — LLM อาจสร้างรายละเอียดเท็จที่ปนเปื้อนเข้าไปในการค้นหา ทำให้ดึงเอกสารที่ไม่เกี่ยวข้องมาผิดๆ (Hallucinated Fabrication Risk) งานวิจัยฉบับนี้จึงไม่เลือก HyDE เป็นแนวทางหลักของระบบที่เสนอ แต่ยังคงเก็บ HyDE ไว้เป็นหนึ่งใน retrieval backbones สำหรับการประเมินเชิงเปรียบเทียบ เพื่อให้เห็นอย่างเป็นธรรมว่าชั้น H2L ให้ผลอย่างไรเมื่อครอบบน backbone ที่มีความเสี่ยงต่อ hallucinated expansion สูงกว่าแนวทางอื่น ขณะเดียวกันระบบหลักของงานยังพึ่ง L1/L2 detection และ problem-aware scoring มากกว่าการสร้าง hypothetical document เป็นตัวตั้ง
 
