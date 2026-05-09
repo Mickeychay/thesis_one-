@@ -38,6 +38,23 @@ This report is generated from repository artifacts and uses conservative languag
 
 ## V6 Ablation Evidence
 
+> **Note on data source and reconciliation with thesis Table 4.5:**
+> The aggregates in this section are derived from an earlier ablation snapshot
+> retained for provenance. They differ from the numbers reported in the thesis
+> Chapter 4, Table 4.5 because:
+> - **Thesis Table 4.5** is computed from `ablation_results/rq6_results.csv`
+>   (full 197-case dataset, n=197 per variant), used for score-level analysis
+>   on `h2l_mean_top5` with adequate statistical power.
+> - The 68-case leakage-safe test split runs
+>   (`ablation_results/rq6_v6_final*/rq6_results.csv`) all produce identical
+>   rank-aware metrics (`nDCG@5 = 0.4031`, `MAP = 0.4020`) across every
+>   variant, confirming that on the test split component effects are observable
+>   only at the score level, not at the rank level.
+> - The numbers in the table below (`nDCG@5 = 0.3609`, `MAP = 0.3935`) reflect
+>   the snapshot at the time this readiness report was generated and do not
+>   match either run; treat **Table 4.5 in the thesis as the canonical
+>   source** for component-level effect sizes.
+
 - RQ6 ablation rows: `160`
 - RQ6 variants: `8`
 - Max |Δ nDCG@5| vs Full V6: `0.0000`

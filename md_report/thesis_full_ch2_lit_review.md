@@ -114,7 +114,7 @@ Ribeiro et al. (2020) ได้พัฒนาเครื่องมือ **C
 ## 2.6 ทฤษฎีวิศวกรรมอนุกรมวิธานคลินิก (Clinical Ontology & Taxonomy Engineering)
 
 ### 2.6.1 มาตรฐาน ICD-10 และ Social Determinants of Health (SDOH)
-World Health Organization (2019) ได้จัดทำบัญชีจำแนกโรคระหว่างประเทศ **ICD-10/ICD-11** ซึ่งบรรจุกลุ่มรหัส Z-codes สำหรับปัจจัยทางสังคมที่มีผลต่อสุขภาพ (Social Determinants of Health: SDOH) ตัวอย่างเช่น:
+World Health Organization (1992) ได้จัดทำบัญชีจำแนกโรคระหว่างประเทศ **ICD-10** ซึ่งบรรจุกลุ่มรหัส Z-codes สำหรับปัจจัยทางสังคมที่มีผลต่อสุขภาพ (Social Determinants of Health: SDOH) และต่อมา WHO (2019) ได้รับรอง **ICD-11** เป็นฉบับปรับปรุงในการประชุม World Health Assembly ครั้งที่ 72 ตัวอย่างรหัส Z-codes (ICD-10) ที่เกี่ยวข้องกับงานสังคมสงเคราะห์ทางการแพทย์ ได้แก่:
 - **Z55:** ปัญหาเกี่ยวกับการศึกษาและการรู้หนังสือ
 - **Z59:** ปัญหาเกี่ยวกับที่อยู่อาศัยและสถานการณ์ทางเศรษฐกิจ
 - **Z63:** ปัญหาเกี่ยวกับกลุ่มสนับสนุนหลัก รวมถึงสถานการณ์ในครอบครัว
@@ -166,7 +166,7 @@ Es et al. (2023) นำเสนอ **RAGAS (Retrieval-Augmented Generation Asse
 งานวิจัยด้าน Clinical NLP ยืนยันว่า NLP ในบริบทสุขภาพและสังคมศาสตร์มีความซับซ้อนเป็นพิเศษ Mukherjee et al. (2020) ชี้ว่าการสกัดปัจจัยทางสังคม (SDOH extraction) จาก Clinical Notes ต้องการโมเดลที่เข้าใจ implicit mentions — ผู้ป่วยมักไม่พูดตรงๆ ว่ามีปัญหาด้านใด Pampari et al. (2018) แสดงให้เห็นว่า Transfer Learning ที่ pre-train บน general corpus จำเป็นต้องผ่าน domain adaptation เพิ่มเติมเพื่อรองรับ medical terminology ในภาษาที่ไม่ใช่ภาษาอังกฤษ ทั้งนี้ เนื่องจากงานวิจัยฉบับนี้มุ่งเน้นบริบทภาษาไทยและงานสังคมสงเคราะห์ในโรงพยาบาลซึ่งยังมีงานวิจัยจำกัด จึงอาจไม่สามารถเปรียบเทียบโดยตรงกับผลลัพธ์ใน English clinical corpora ได้
 
 ### 2.8.3 Negation Detection ในระบบ Information Extraction
-Morante และ Daelemans (2012) ได้จัดทำบทสำรวจงานวิจัย **Negation Detection** ใน Biomedical text อย่างครอบคลุม พบว่าการตรวจจับขอบเขตการปฏิเสธ (Negation scope detection) ยังคงเป็นปัญหาที่ยาก แม้ระบบ rule-based จะให้ precision สูง แต่ recall ต่ำในกรณีที่คำปฏิเสธซับซ้อนหรือปรากฏในระยะห่าง ในบริบทนี้ กลไก Negation Gate ของระบบ H2L ทำงานเป็น rule-based layer ที่ตรวจจับ negation markers ในภาษาไทย (เช่น "ไม่", "ไม่ได้", "ปฏิเสธว่า") ซึ่งยังต้องการการประเมินเชิงลึกเพิ่มเติมในกรณีซับซ้อน
+Morante และ Daelemans (2012) ได้จัดทำคลังข้อมูล **ConanDoyle-neg** ซึ่งเป็น corpus มาตรฐานสำหรับการ annotate ขอบเขตของการปฏิเสธ (negation scope) ในข้อความเล่าเรื่อง การวิเคราะห์บนคลังนี้และคลังอื่นในงาน biomedical/clinical text ชี้ตรงกันว่า การตรวจจับขอบเขตการปฏิเสธ (Negation scope detection) ยังคงเป็นปัญหาที่ยาก แม้ระบบ rule-based จะให้ precision สูง แต่ recall ต่ำในกรณีที่คำปฏิเสธซับซ้อนหรือปรากฏในระยะห่าง ในบริบทนี้ กลไก Negation Gate ของระบบ H2L ทำงานเป็น rule-based layer ที่ตรวจจับ negation markers ในภาษาไทย (เช่น "ไม่", "ไม่ได้", "ปฏิเสธว่า") ซึ่งยังต้องการการประเมินเชิงลึกเพิ่มเติมในกรณีซับซ้อน
 
 ### 2.8.4 การประเมินระบบด้วย Expert และ Inter-Rater Agreement
 Landis และ Koch (1977) กำหนดเกณฑ์มาตรฐานสำหรับตีความค่า **Cohen's Kappa ($\kappa$)** ซึ่งเป็น metric วัด Inter-Rater Agreement ที่ปรับค่าสำหรับ agreement แบบสุ่มแล้ว:
@@ -215,5 +215,6 @@ Dodge et al. (2020) ชี้ให้เห็นว่า Ablation Study ใ�
 - Shrout, P. E., & Fleiss, J. L. (1979). Intraclass correlations: Uses in assessing rater reliability. *Psychological Bulletin*, 86(2), 420-428.
 - Sparck Jones, K. (1972). A statistical interpretation of term specificity and its application in retrieval. *Journal of Documentation*, 28(1), 11-21.
 - Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... & Polosukhin, I. (2017). Attention is all you need. *Advances in Neural Information Processing Systems* (NeurIPS), 30.
-- World Health Organization. (2019). *International statistical classification of diseases and related health problems (11th ed.)*. https://icd.who.int/
+- World Health Organization. (1992). *International statistical classification of diseases and related health problems (10th rev.)*. WHO.
+- World Health Organization. (2019). *International statistical classification of diseases and related health problems (11th rev.)*. https://icd.who.int/
 - Zhai, C., & Lafferty, J. (2001). A study of smoothing methods for language models applied to ad hoc information retrieval. *Proceedings of SIGIR 2001* (pp. 334-342).

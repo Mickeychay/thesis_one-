@@ -40,7 +40,7 @@
 | Negation Detection Rate (NDR) | 0.7222 |
 | False Positive Rate (FPR) | 0.0600 |
 | Precision | 0.8125 |
-| F1 | 0.7650 |
+| F1 | 0.7647 |
 | Mean G_neg positive | 0.9760 |
 | Mean G_neg negated | 0.6000 |
 
@@ -103,30 +103,30 @@
 
 ## 4.4 V6 Component Ablation (Ablation Study)
 
-เพื่อทดสอบผลกระทบขององค์ประกอบย่อยใน H2L V6 อย่างรัดกุมที่สุด ผู้วิจัยได้ทำการทดลองแบบ Component Ablation โดยใช้โครงสร้าง **Fixed Candidate Pool** จำนวน 45 เอกสารต่อเคส ร่วมกับข้อมูลชุดทดสอบ 68 เคส เพื่อลด noise จากการสืบค้นซ้ำ และแยกพิจารณาเฉพาะความเปลี่ยนแปลงในชั้นการให้คะแนน (Scoring Layer)
+เพื่อทดสอบผลกระทบขององค์ประกอบย่อยใน H2L V6 อย่างรัดกุมที่สุด ผู้วิจัยได้ทำการทดลองแบบ Component Ablation โดยใช้โครงสร้าง **Fixed Candidate Pool** จำนวน 45 เอกสารต่อเคส ร่วมกับข้อมูลทั้งชุด 197 เคส (รวมทั้ง train และ test) เพื่อลด noise จากการสืบค้นซ้ำ และแยกพิจารณาเฉพาะความเปลี่ยนแปลงในชั้นการให้คะแนน (Scoring Layer) เหตุที่ใช้ทั้งชุด 197 เคสในส่วนนี้ (ต่างจากผล retrieval หลักในตารางที่ 4.3 ที่รายงานบน test split 68 เคส) เป็นเพราะการทดลองบน test split 68 เคสพบว่า rank-aware metrics ของทุก variant มีค่าเท่ากันทั้งหมด (`nDCG@5 = 0.4031`, `MAP = 0.4020`) ทำให้ไม่สามารถแยกแยะอิทธิพลของแต่ละ component ได้ ผู้วิจัยจึงขยาย sample size เพื่อเพิ่ม statistical power สำหรับการวิเคราะห์ระดับคะแนน (`h2l_mean_top5`) ซึ่งเป็น within-subject comparison บนชุดเคสเดียวกันที่รันด้วย 2 variant การขยาย sample size ลักษณะนี้ไม่ทำให้เกิด train/test leakage เนื่องจากเป็นการวิเคราะห์เปรียบเทียบ score distribution ของ variant ต่าง ๆ บน input เดียวกัน ไม่ใช่การประเมิน generalization
 
-การทดลองใช้ Metric แบบ Rank-aware (nDCG@5, MAP, MRR) คู่กับ Score-level Metric (`h2l_mean_top5`) ซึ่งสะท้อนความสามารถในการกระจายและจัดระดับความมั่นใจของคะแนน (Score Calibration) การทดสอบนัยสำคัญทางสถิติใช้ Wilcoxon Signed-Rank Test และคำนวณ Cohen's $d$ Effect Size ตามมาตรฐานการรายงานงานวิจัย
+การทดลองใช้ Metric แบบ Rank-aware (nDCG@5, MAP, MRR) คู่กับ Score-level Metric (`h2l_mean_top5`) ซึ่งสะท้อนความสามารถในการกระจายและจัดระดับความมั่นใจของคะแนน (Score Calibration) การทดสอบนัยสำคัญทางสถิติใช้ Wilcoxon Signed-Rank Test และคำนวณ Cohen's $d$ Effect Size ตามมาตรฐานการรายงานงานวิจัย เนื่องจาก paired sample size (n=197) ทำให้ Wilcoxon Signed-Rank Test ตรวจพบความแตกต่างเชิงสถิติได้แม้ effect size อยู่ในระดับ negligible ($|d| < 0.2$) ผู้วิจัยจึงรายงาน $p$-value เฉพาะแถวที่ $|d| \geq 0.2$ (small effect ขึ้นไป) และใช้ "—" ในแถวที่ effect size อยู่ในระดับ negligible เพื่อให้ตารางสะท้อน practical significance ตามมาตรฐาน Cohen (1988) มากกว่าเพียง statistical significance ที่ขึ้นกับขนาดตัวอย่าง
 
-**ตารางที่ 4.5 ผลการทำ Ablation ของ H2L V6 Components (test split 68 เคส)**
+**ตารางที่ 4.5 ผลการทำ Ablation ของ H2L V6 Components (ทั้งชุดข้อมูล 197 เคส, score-level analysis)**
 
 | Configuration | nDCG@5 | MAP | H2L Score | Cohen's $d$ | $p$-value | Effect Size |
 |:---|---:|---:|---:|---:|---:|:---|
 | **Full V6 (baseline)** | 0.3410 | 0.3453 | 1.8947 | — | — | — |
 | Product Mode | 0.3418 | 0.3454 | 0.3283 | 0.932 | <0.001 | **large** |
 | w/o Adaptive Alpha | 0.3410 | 0.3453 | 1.1377 | 0.409 | <0.001 | **small** |
-| w/o IDF Specificity | 0.3410 | 0.3453 | 1.4929 | 0.184 | <0.001 | negligible |
-| w/o Negation Gate | 0.3410 | 0.3453 | 1.5273 | 0.167 | <0.001 | negligible |
-| w/o Bayesian Prior | 0.3410 | 0.3453 | 2.0146 | -0.048 | <0.001 | negligible |
-| w/o Margin Activation | 0.3421 | 0.3460 | 1.8730 | 0.009 | <0.001 | negligible |
-| w/o KL Penalty | 0.3410 | 0.3453 | 1.8995 | -0.002 | <0.001 | negligible |
+| w/o IDF Specificity | 0.3410 | 0.3453 | 1.4929 | 0.184 | — | negligible |
+| w/o Negation Gate | 0.3410 | 0.3453 | 1.5273 | 0.167 | — | negligible |
+| w/o Bayesian Prior | 0.3410 | 0.3453 | 2.0146 | -0.048 | — | negligible |
+| w/o Margin Activation | 0.3421 | 0.3460 | 1.8730 | 0.009 | — | negligible |
+| w/o KL Penalty | 0.3410 | 0.3453 | 1.8995 | -0.002 | — | negligible |
 
-*หมายเหตุ: Cohen's $d$ คำนวณจากความแตกต่างของ `h2l_mean_top5` (Full V6 - Ablated)*
+*หมายเหตุ: Cohen's $d$ ในตารางนี้คำนวณจากความแตกต่างของ `h2l_mean_top5` (Full V6 − Ablated) โดยใช้สูตร independent-samples pooled SD ตามอนุสัญญา Cohen (1988): $d = (\bar{x}_1 - \bar{x}_2) / s_{\text{pooled}}$ โดย $s_{\text{pooled}} = \sqrt{((n_1-1)s_1^2 + (n_2-1)s_2^2)/(n_1+n_2-2)}$ ผู้วิจัยเลือกสูตรนี้เพราะสะท้อน practical magnitude ของการเปลี่ยนแปลงคะแนนเทียบกับการกระจายตัวของคะแนนทั้งระบบ ซึ่งตีความได้ตรงไปตรงมากว่า ทั้งนี้ Cohen's $d_z$ (paired-difference SD) เป็นสูตรที่เหมาะสมเชิงสถิติสำหรับ within-subject design แต่บางตัวแปร เช่น `w/o KL Penalty` มี paired-difference SD ที่เล็กมาก (≈ 0.01) ทำให้ $d_z$ ขยายขนาดเทียมจาก mean-difference เพียง 0.005 ของระบบทั้งหมด ส่งผลให้การจัดประเภทมี artifact ที่ไม่สะท้อน practical effect ผู้วิจัยจึงใช้ pooled SD เป็นเกณฑ์หลักของการตีความ และรายงาน absolute mean-difference (`H2L Score` คอลัมน์) เป็นข้อมูลประกอบ*
 
 **การวิเคราะห์ผล (Findings)**:
 1. **ข้อจำกัดของ Binary Relevance Metrics**: ค่า nDCG@5 และ MAP แทบไม่มีการเปลี่ยนแปลงอย่างมีนัยสำคัญระหว่าง Variant เนื่องจากธรรมชาติของชุดข้อมูลทดสอบที่มีความกระจัดกระจาย (Sparsity) สูง แม้ลำดับ Top-5 จะเปลี่ยน (Rank Swap เปลี่ยนประมาณ 12-16% ของเคส) แต่เอกสารที่สลับขึ้นมาใหม่มักเป็นเอกสารที่ไม่ได้ถูก Label ไว้ จึงไม่ส่งผลต่อ Metric
 2. **ความสำคัญของ Architecture (Product vs Weighted-Sum)**: การเปลี่ยนสถาปัตยกรรมรวมฟีเจอร์จากแบบคูณ (Product Mode) มาเป็นแบบบวก (Weighted-Sum) ใน V6 เป็นการปรับปรุงที่ส่งผลกระทบสูงสุด (Cohen's $d$ = 0.932, **Large Effect**) โดยช่วยรักษาคะแนนไม่ให้ตกฮวบเมื่อฟีเจอร์ใดฟีเจอร์หนึ่งหายไป (Zero-product problem)
 3. **ความสำคัญของ Context-Awareness**: Adaptive Alpha เป็น Component เสริมที่ส่งผลชัดเจนที่สุด (Cohen's $d$ = 0.409, **Small Effect**) ชี้ให้เห็นว่าการปรับน้ำหนักรวมของ H2L ตามความซับซ้อนของเคส (Entropy) เป็นกลไกสำคัญที่ช่วยแยกแยะระดับความมั่นใจของเอกสาร 
-4. **Statistical Significance**: ทุก Component มีผลกระทบต่อคะแนนรวมของ H2L อย่างมีนัยสำคัญทางสถิติ ($p < 0.001$) แม้บางตัวจะมี Effect Size ที่มีขนาดเล็กก็ตาม 
+4. **Practical vs Statistical Significance**: เฉพาะ Product Mode (large effect) และ Adaptive Alpha (small effect) เท่านั้นที่มีอิทธิพลต่อคะแนนรวมของ H2L ในระดับที่มีนัยสำคัญเชิงปฏิบัติ ($|d| \geq 0.2$) ส่วน IDF Specificity, Negation Gate, Bayesian Prior, Margin Activation และ KL Penalty มี effect size อยู่ในระดับ negligible ($|d| < 0.2$) แม้ Wilcoxon Signed-Rank Test จะตรวจพบความแตกต่างเชิงสถิติได้ที่ระดับ $p < 0.001$ ก็ตาม สิ่งนี้สะท้อนข้อจำกัดทั่วไปของ paired test ที่มีขนาดตัวอย่างใหญ่ (n=197) ผู้วิจัยจึงเลือกรายงาน $p$-value เฉพาะแถวที่ effect ถึงเกณฑ์ practical significance เพื่อหลีกเลี่ยงการตีความผิดว่าทุก component มีอิทธิพลต่อระบบในระดับเดียวกัน
 
 กราฟและผลวิเคราะห์เจาะลึก (Forest Plot, Waterfall Chart และ Score Distribution) ถูกสร้างไว้ในโฟลเดอร์ `ablation_results/q1_figures/` เพื่อประกอบการอภิปรายผลในส่วนนี้
 
@@ -149,4 +149,4 @@
 
 ผลการทดลองในบทนี้แสดงให้เห็นว่า ระบบ H2L สามารถเพิ่มประสิทธิภาพการค้นคืนข้อมูลได้อย่างมีนัยสำคัญทางสถิติเมื่อใช้งานร่วมกับ BM25 (ในตัวชี้วัด nDCG@5) และแสดงแนวโน้มการเพิ่มประสิทธิภาพ (trend-level gains) เมื่อใช้งานร่วมกับ HyDE และ Hybrid retrieval ในหลายตัวชี้วัด นอกจากนี้ กลไก Contextual Polarity Gate ยังแสดงให้เห็นถึงความสามารถในการลดผลบวกลวง (False Positive) จากประโยคปฏิเสธได้อย่างเป็นรูปธรรม
 
-จากการทดสอบ Ablation Study พบว่าทุกองค์ประกอบย่อยใน H2L V6 ล้วนส่งผลต่อความแม่นยำในการจัดอันดับเอกสาร โดยเฉพาะการใช้สถาปัตยกรรมแบบ Weighted-Sum ร่วมกับฟีเจอร์ Adaptive Alpha ที่ให้ขนาดอิทธิพล (Effect Size) สูงสุด ท้ายที่สุด การประเมินผลในภาพรวมชี้ให้เห็นว่า H2L ไม่เพียงแต่รักษาระดับประสิทธิภาพการค้นคืนได้ทัดเทียมหรือดีกว่า Baseline แต่ยังเพิ่มความสามารถในการจัดการบริบทปฏิเสธและความโปร่งใสในการอธิบายผลลัพธ์ ซึ่งเป็นคุณสมบัติสำคัญสำหรับการใช้งานในบริบทสังคมสงเคราะห์คลินิก
+จากการทดสอบ Ablation Study พบว่าองค์ประกอบที่มีอิทธิพลต่อคะแนนรวมของ H2L ในระดับ practical significance มีเพียง 2 องค์ประกอบ ได้แก่ **สถาปัตยกรรมแบบ Weighted-Sum** (Product Mode, $d=0.932$, large effect) และ **Adaptive Alpha** ($d=0.409$, small effect) ส่วนองค์ประกอบอื่น (IDF Specificity, Negation Gate, Bayesian Prior, Margin Activation, KL Penalty) มี effect size อยู่ในระดับ negligible แม้จะ statistically significant ก็ตาม ท้ายที่สุด การประเมินผลในภาพรวมชี้ให้เห็นว่า H2L ไม่เพียงแต่รักษาระดับประสิทธิภาพการค้นคืนได้ทัดเทียมหรือดีกว่า Baseline แต่ยังเพิ่มความสามารถในการจัดการบริบทปฏิเสธและความโปร่งใสในการอธิบายผลลัพธ์ ซึ่งเป็นคุณสมบัติสำคัญสำหรับการใช้งานในบริบทสังคมสงเคราะห์คลินิก

@@ -35,7 +35,7 @@ flowchart TD
     end
 
     subgraph PROCESS ["H2L Process"]
-        P1["L1 Detection<br/>keyword matching + context validation<br/>base_conf = min(0.95, 0.6 + 0.12 x kw_count)"]:::processNode
+        P1["L1 Detection<br/>keyword matching + context validation<br/>raw_conf = 0.50 + match + cov + spec + phrase + rep<br/>final = clamp(raw x conf_mult, 0.05, 0.95)"]:::processNode
         P2["L2 Validation<br/>run only for needs_validation/conflicts<br/>implicit requires taxonomy anchor<br/>default confidence=0.75"]:::processNode
         P3["Hybrid Retrieval<br/>BM25_K=25, FUSION_K=30<br/>RRF_K=60, reporting top-k=15"]:::processNode
         P4["H2L Scoring<br/>detect=.35 semantic=.30<br/>prior=.15 specificity=.10 negation=.10<br/>includes G_neg x G_len x G_sub"]:::processNode
@@ -88,7 +88,7 @@ sequenceDiagram
 
     User->>L1: ส่งข้อความกรณีศึกษา
     L1->>L1: keyword matching + context validation
-    L1->>L1: base_conf = min(0.95, 0.6 + 0.12 x kw_count)
+    L1->>L1: raw_conf = 0.50 + match + cov + spec + phrase + rep; final = clamp(raw x conf_mult, 0.05, 0.95)
     alt context_valid=True and conf_mult >= 0.8
         L1->>L2: ไม่ต้อง validate ยกเว้นมี conflict
     else context_valid=False หรือมี conflict
@@ -109,11 +109,13 @@ sequenceDiagram
 
 ### 4.1 L1 Context-Aware Detection
 
-L1 ใช้คำสำคัญจาก taxonomy จับคู่กับข้อความกรณีศึกษา แล้วตรวจสอบบริบทของรหัสนั้นก่อนกำหนดสถานะผลลัพธ์ สูตร confidence ของ L1 คือ
+L1 ใช้คำสำคัญจาก taxonomy จับคู่กับข้อความกรณีศึกษา แล้วตรวจสอบบริบทของรหัสนั้นก่อนกำหนดสถานะผลลัพธ์ สูตร confidence ของ L1 ใช้ฐาน `0.50` รวมกับองค์ประกอบ 5 ส่วนที่สะท้อนคุณภาพหลักฐาน แล้วคูณด้วยตัวคูณบริบทและ clamp ในช่วง `[0.05, 0.95]` ดังนี้
 
-$$base\_confidence = \min(0.95, 0.6 + 0.12 \times kw\_count)$$
+$$\text{raw\_confidence} = 0.50 + s_{\text{match}} + s_{\text{cov}} + s_{\text{spec}} + s_{\text{phrase}} + s_{\text{rep}}$$
 
-$$final\_confidence = base\_confidence \times conf\_mult$$
+$$\text{final\_confidence} = \text{clamp}(\text{raw\_confidence} \times \text{conf\_mult},\ 0.05,\ 0.95)$$
+
+โดยแต่ละองค์ประกอบมีเพดานของตัวเองคือ $s_{\text{match}} = \min(0.24, 0.10 \cdot n_{\text{unique}})$, $s_{\text{cov}} = \min(0.10, \text{coverage} \cdot 0.18)$, $s_{\text{spec}} = \min(0.12, (\overline{\text{len}}/24) \cdot 0.12)$, $s_{\text{phrase}} \in \{0, 0.04\}$ ขึ้นกับการพบวลี และ $s_{\text{rep}} = \min(0.06, \max(0, \text{occ} - n_{\text{unique}}) \cdot 0.03)$ เพดานสูงสุดเชิงทฤษฎีของ raw confidence จึงอยู่ที่ `1.06` ซึ่งจะถูก clamp ไม่ให้เกิน `0.95`
 
 เงื่อนไขสำคัญมีดังนี้
 
@@ -127,8 +129,16 @@ $$final\_confidence = base\_confidence \times conf\_mult$$
 โค้ดอ้างอิงแบบย่อ:
 
 ```python
-base_confidence = min(0.95, 0.6 + len(matched) * 0.12)
-final_confidence = base_confidence * conf_mult
+# H2LDetector.py — _calculate_confidence (สูตรเต็มที่ใช้จริง)
+match_count_score = min(0.24, 0.10 * len(unique))
+coverage_score    = min(0.10, (len(unique) / max(len(all_keywords), 1)) * 0.18)
+specificity_score = min(0.12, (avg_keyword_length / 24) * 0.12)
+phrase_bonus      = 0.04 if any(len(k) >= 10 or " " in k for k in unique) else 0.0
+repetition_score  = min(0.06, max(0, occurrences - len(unique)) * 0.03)
+
+raw_confidence    = 0.50 + match_count_score + coverage_score + specificity_score \
+                  + phrase_bonus + repetition_score
+final_confidence  = max(0.05, min(0.95, raw_confidence * conf_mult))
 
 if is_valid and conf_mult >= 0.8:
     detection_level = "L1"
@@ -223,7 +233,7 @@ flowchart TD
 
     A1["Dirichlet Prior<br/>mu=2.0"]:::pre
     A2["Adaptive Alpha<br/>alpha0=1.0<br/>gamma=0.3 delta=0.5<br/>z_center=0.95"]:::pre
-    A3["Entropy + KL<br/>ENTROPY_DELTA=0.5<br/>KL_KAPPA=0.15"]:::pre
+    A3["Entropy + KL<br/>ENTROPY_SCALE_DELTA=0.5<br/>KL_KAPPA=0.15"]:::pre
     B1["Confidence Calibration<br/>T_base=0.5<br/>T_range=1.5"]:::per
     B2["Document-Problem Relevance<br/>semantic + keyword<br/>margin m=0.3 tau=0.15"]:::per
     B3["IDF Specificity<br/>N=500<br/>IDF_MAX=3.0"]:::per
@@ -386,7 +396,8 @@ if severity >= 3 and has_other and not has_self:
 
 | กลุ่ม | พารามิเตอร์ | ค่า |
 |---|---|---:|
-| L1 detection | base confidence | `min(0.95, 0.6 + 0.12 x kw_count)` |
+| L1 detection | raw confidence | `0.50 + match(<=0.24) + cov(<=0.10) + spec(<=0.12) + phrase(<=0.04) + rep(<=0.06)` |
+| L1 detection | final confidence | `clamp(raw x conf_mult, 0.05, 0.95)` |
 | L1 detection | clear L1 condition | `context_valid=True`, `conf_mult >= 0.8` |
 | L1 detection | L1 pre-filter | `context_valid=False`, `confidence < 0.30` |
 | L1/L2 output | final keep threshold | `confidence >= 0.25` |

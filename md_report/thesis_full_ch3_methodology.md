@@ -19,7 +19,7 @@
 ```mermaid
 flowchart LR
     A["ข้อความกรณีศึกษา<br/>Unstructured Case Text"] --> B["Text Preparation<br/>Normalize + Clean"]
-    B --> C["L1 Detection<br/>Keyword + Context Rules<br/>base_conf = min(0.95, 0.6 + 0.12 x kw_count)"]
+    B --> C["L1 Detection<br/>Keyword + Context Rules<br/>raw_conf = 0.50 + match + cov + spec + phrase + rep<br/>final = clamp(raw x conf_mult, 0.05, 0.95)"]
     C --> D1["L1 ชัดเจน<br/>context_valid=True<br/>conf_mult >= 0.8<br/>level=L1"]
     C --> D2["L1 กำกวม<br/>context_valid=False หรือ conflict<br/>level=L1-NeedsValidation"]
     C --> D3["L1 Filtered<br/>context_valid=False<br/>confidence &lt; 0.30"]
@@ -63,15 +63,25 @@ def analyze_case(case_text):
 โค้ดย่อข้างต้นสรุป logic ของระบบในระดับวิธีวิจัย กล่าวคือระบบเริ่มจากการตรวจจับปัญหา สร้าง problem profile ส่งต่อไปยัง retrieval pipeline และปรับคะแนนเอกสารด้วย H2L scoring ก่อนประกอบผลลัพธ์สุดท้าย โค้ดนี้เป็น pseudo-code เพื่ออธิบาย pipeline ไม่ใช่การคัดลอก implementation ทั้งหมดจากไฟล์ runtime
 
 ```python
-# H2LDetector.py
-base_confidence = min(0.95, 0.6 + len(matched) * 0.12)
-final_confidence = base_confidence * conf_mult
+# H2LDetector.py — _calculate_confidence (สูตรที่ใช้จริงในระบบ)
+unique = list(dict.fromkeys(matched_keywords))
+match_count_score = min(0.24, 0.10 * len(unique))
+coverage_score    = min(0.10, (len(unique) / max(len(all_keywords), 1)) * 0.18)
+specificity_score = min(0.12, (avg_keyword_length / 24) * 0.12)
+phrase_bonus      = 0.04 if any(len(k) >= 10 or " " in k for k in unique) else 0.0
+repetition_score  = min(0.06, max(0, occurrences - len(unique)) * 0.03)
+
+raw_confidence    = 0.50 + match_count_score + coverage_score + specificity_score \
+                  + phrase_bonus + repetition_score
+final_confidence  = max(0.05, min(0.95, raw_confidence * conf_mult))
 
 if is_valid and conf_mult >= 0.8:
     detection_level = "L1"
 else:
     detection_level = "L1-NeedsValidation"
 ```
+
+สูตร confidence ของ L1 จึงประกอบด้วยฐาน `0.50` บวกองค์ประกอบ 5 ส่วนที่สะท้อนคุณภาพของหลักฐาน ได้แก่ จำนวน keyword ที่พบ (cap ที่ `0.24`), ความครอบคลุมต่อ taxonomy (cap `0.10`), ความเฉพาะเจาะจงเชิงความยาวของ keyword (cap `0.12`), โบนัสกรณีพบวลี (cap `0.04`) และการพบซ้ำในข้อความเดียวกัน (cap `0.06`) จากนั้นคูณด้วยตัวคูณบริบท `conf_mult` แล้ว clamp ผลลัพธ์ไว้ในช่วง `[0.05, 0.95]` เพดานสูงสุดเชิงทฤษฎีของ raw confidence จึงอยู่ที่ `0.50 + 0.24 + 0.10 + 0.12 + 0.04 + 0.06 = 1.06` ซึ่งจะถูก clamp ไม่ให้เกิน `0.95`
 
 ### 3.2.1 Flow diagram ของระบบตั้งแต่การนำเข้าข้อมูลจนถึงการรายงานผล
 
@@ -212,14 +222,14 @@ return (
 
 ระดับ L1 ทำหน้าที่คัดกรองปัญหาเบื้องต้นจากข้อความกรณีศึกษา โดยใช้การจับคู่คำสำคัญของแต่ละ problem code กับข้อความที่ผู้ใช้ป้อน ระบบไม่ได้ตัดสินจากการพบ keyword เพียงอย่างเดียว แต่จะตรวจสอบบริบทของรหัสนั้นร่วมด้วย เช่น รหัสที่ต้องมีการกล่าวถึงตนเอง รหัสที่ต้องมี passive voice หรือรหัสที่ต้องมี actor เฉพาะในหมวดความสัมพันธ์ หากบริบทถูกต้อง ระบบจะให้ตัวคูณความเชื่อมั่นเป็น `1.0` แต่หากบริบทไม่ครบ ระบบจะลดตัวคูณลงตามชนิดของปัญหา
 
-สูตรการคำนวณความเชื่อมั่นเบื้องต้นของ L1 คือ `min(0.95, 0.6 + 0.12 x จำนวน keyword ที่พบ)` จากนั้นคูณด้วย `conf_mult` ซึ่งมาจากการตรวจสอบบริบท ดังนั้นหากพบ keyword 1 คำและบริบทถูกต้อง จะได้ confidence ประมาณ `0.72` หากพบ 2 คำจะได้ `0.84` และหากพบหลายคำจะชนเพดานที่ `0.95`
+สูตรการคำนวณความเชื่อมั่นเบื้องต้นของ L1 ใช้ฐาน `0.50` แล้วบวกองค์ประกอบ 5 ส่วน ได้แก่ จำนวน keyword ที่พบ (`min(0.24, 0.10 × n_unique)`), ความครอบคลุม keyword ใน taxonomy (`min(0.10, coverage × 0.18)`), ความเฉพาะเจาะจงเชิงความยาว (`min(0.12, (avg_len/24) × 0.12)`), โบนัสกรณีพบวลี (`0.04` ถ้ามี keyword ยาว ≥ 10 ตัวอักษรหรือมีช่องว่าง) และคะแนนการกล่าวซ้ำ (`min(0.06, max(0, occ - n_unique) × 0.03)`) จากนั้นคูณด้วย `conf_mult` แล้ว clamp ผลลัพธ์ไว้ที่ `[0.05, 0.95]` ดังนั้นหากพบ keyword 1 คำที่ไม่ใช่วลีและไม่ซ้ำในข้อความ บริบทถูกต้อง (`conf_mult=1.0`) จะได้ confidence ประมาณ `0.60-0.65` หากพบหลาย keyword ครอบคลุม taxonomy พร้อมวลีและการซ้ำจะเข้าใกล้เพดาน `0.95` รายละเอียดเต็มของแต่ละองค์ประกอบดูได้ที่ `H2LDetector.py` ฟังก์ชัน `_calculate_confidence`
 
 **ภาพที่ 3.3 flow การตัดสินใจของ L1 พร้อมค่า threshold**
 
 ```mermaid
 flowchart TD
     A["ข้อความกรณีศึกษา"] --> B["Keyword Matching<br/>matched keywords = kw_count"]
-    B --> C["Base Confidence<br/>min(0.95, 0.6 + 0.12 x kw_count)"]
+    B --> C["Raw Confidence<br/>0.50 + match(0.24) + cov(0.10)<br/>+ spec(0.12) + phrase(0.04) + rep(0.06)"]
     C --> D["Context Validation<br/>valid=1.0<br/>missing actor=0.4<br/>missing self=0.3<br/>wrong self-action=0.1"]
     D --> E["Final Confidence<br/>base_conf x conf_mult"]
     E --> F{"context_valid=True<br/>and conf_mult >= 0.8?"}
@@ -235,9 +245,16 @@ flowchart TD
 โค้ดอ้างอิงแบบย่อ:
 
 ```python
-# H2LDetector.py
-base_confidence = min(0.95, 0.6 + len(matched) * 0.12)
-final_confidence = base_confidence * conf_mult
+# H2LDetector.py — สูตรเต็มของ _calculate_confidence
+match_count_score = min(0.24, 0.10 * len(unique))
+coverage_score    = min(0.10, (len(unique) / max(len(all_keywords), 1)) * 0.18)
+specificity_score = min(0.12, (avg_keyword_length / 24) * 0.12)
+phrase_bonus      = 0.04 if any(len(k) >= 10 or " " in k for k in unique) else 0.0
+repetition_score  = min(0.06, max(0, occurrences - len(unique)) * 0.03)
+
+raw_confidence    = 0.50 + match_count_score + coverage_score + specificity_score \
+                  + phrase_bonus + repetition_score
+final_confidence  = max(0.05, min(0.95, raw_confidence * conf_mult))
 
 if is_valid and conf_mult >= 0.8:
     detection_level = "L1"
