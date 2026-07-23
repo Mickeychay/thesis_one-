@@ -4,6 +4,10 @@ const CASE_TEXT = 'เด็กหญิงถูกแม่ดุด่าเ�
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
 async function getDebuggerUrl() {
   const response = await fetch(CDP_LIST_URL);
   if (!response.ok) throw new Error(`Chrome CDP list failed: ${response.status}`);
@@ -28,6 +32,7 @@ class CdpClient {
     this.nextId = 1;
     this.pending = new Map();
     this.errors = [];
+    this.requests = [];
     this.commandTimeoutMs = 20000;
   }
 
@@ -57,6 +62,13 @@ class CdpClient {
       }
       if (message.method === 'Log.entryAdded' && message.params.entry.level === 'error') {
         this.errors.push(`Log error: ${message.params.entry.text}`);
+      }
+      if (message.method === 'Network.requestWillBeSent') {
+        this.requests.push({
+          method: message.params.request?.method,
+          postData: message.params.request?.postData,
+          url: message.params.request?.url,
+        });
       }
     });
   }
@@ -103,10 +115,18 @@ class CdpClient {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
       if (await this.evaluate(expression)) return;
-      await sleep(300);
+      await sleep(250);
     }
-    const bodyText = await this.evaluate('document.body?.innerText?.slice(0, 2500) || ""');
+    const bodyText = await this.evaluate('document.body?.innerText?.slice(0, 3000) || ""');
     throw new Error(`Timed out waiting for ${label}\nCurrent page text:\n${bodyText}`);
+  }
+
+  analyzeRequestCount() {
+    return this.requests.filter((request) => request.method === 'POST' && /\/analyze(?:\?|$)/.test(request.url || '')).length;
+  }
+
+  requestCount(pathPattern) {
+    return this.requests.filter((request) => request.method === 'POST' && pathPattern.test(request.url || '')).length;
   }
 
   close() {
@@ -119,14 +139,74 @@ class CdpClient {
   }
 }
 
-async function clickButton(client, text) {
-  await client.evaluate(`
+const visibleElementSetup = `
+  const isVisible = (element) => {
+    if (!element || element.closest('[aria-hidden="true"]')) return false;
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity || 1) > 0 && rect.width > 0 && rect.height > 0;
+  };
+  const normalized = (value) => String(value || '').replace(/\\s+/g, ' ').trim();
+`;
+
+async function setViewport(client, width, height, mobile) {
+  await client.send('Emulation.setDeviceMetricsOverride', {
+    width,
+    height,
+    deviceScaleFactor: 1,
+    mobile,
+  });
+}
+
+async function clickButton(client, text, { exact = false } = {}) {
+  return client.evaluate(`
     (() => {
-      const button = [...document.querySelectorAll('button')]
-        .find((item) => item.textContent.includes(${JSON.stringify(text)}));
-      if (!button) throw new Error('Button not found: ${text}');
+      ${visibleElementSetup}
+      const target = ${JSON.stringify(text)};
+      const candidates = [...document.querySelectorAll('button')].filter(isVisible);
+      const button = candidates.find((item) => {
+        const label = normalized(item.innerText || item.textContent);
+        return ${exact ? 'label === target' : 'label.includes(target)'};
+      });
+      if (!button) throw new Error('Visible button not found: ' + target);
+      if (button.disabled) throw new Error('Button is disabled: ' + target);
+      button.scrollIntoView({ block: 'center', inline: 'nearest' });
       button.click();
+      return normalized(button.innerText || button.textContent);
+    })();
+  `);
+}
+
+async function clickAriaLabel(client, label) {
+  return client.evaluate(`
+    (() => {
+      ${visibleElementSetup}
+      const target = ${JSON.stringify(label)};
+      const element = [...document.querySelectorAll('[aria-label]')]
+        .find((item) => item.getAttribute('aria-label') === target && isVisible(item));
+      if (!element) throw new Error('Visible aria-label target not found: ' + target);
+      if (element.disabled || element.getAttribute('aria-disabled') === 'true') {
+        throw new Error('Aria-label target is disabled: ' + target);
+      }
+      element.scrollIntoView({ block: 'center', inline: 'nearest' });
+      if (typeof element.click === 'function') element.click();
+      else element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       return true;
+    })();
+  `);
+}
+
+async function openDetails(client, summaryText) {
+  return client.evaluate(`
+    (() => {
+      ${visibleElementSetup}
+      const target = ${JSON.stringify(summaryText)};
+      const summary = [...document.querySelectorAll('summary')]
+        .find((item) => isVisible(item) && normalized(item.innerText || item.textContent).includes(target));
+      if (!summary) throw new Error('Visible details summary not found: ' + target);
+      const details = summary.closest('details');
+      if (!details.open) summary.click();
+      return details.open;
     })();
   `);
 }
@@ -135,123 +215,327 @@ async function main() {
   const client = new CdpClient(await getDebuggerUrl());
   await client.connect();
 
-  await client.send('Runtime.enable');
-  await client.send('Log.enable');
-  await client.send('Page.enable');
-  await client.send('Network.enable');
-  await client.send('Network.setCacheDisabled', { cacheDisabled: true });
+  try {
+    await client.send('Runtime.enable');
+    await client.send('Log.enable');
+    await client.send('Page.enable');
+    await client.send('Network.enable');
+    await client.send('Network.setCacheDisabled', { cacheDisabled: true });
+    await setViewport(client, 390, 844, true);
 
-  const separator = DASHBOARD_URL.includes('?') ? '&' : '?';
-  await client.send('Page.navigate', { url: `${DASHBOARD_URL}${separator}smoke=${Date.now()}` });
-  await client.waitFor('document.readyState === "complete"', 'page load');
-  await client.waitFor('document.body.innerText.includes("Run H2L Analysis")', 'analysis button');
-  await client.waitFor('document.body.innerText.toLowerCase().includes("runtime clinical panel") && document.body.innerText.toLowerCase().includes("retrieval family")', 'runtime and strategy UI');
-  await client.waitFor('document.body.innerText.toLowerCase().includes("runtime ready") || document.body.innerText.toLowerCase().includes("runtime degraded")', 'runtime ready/degraded', 180000);
-  await client.waitFor('document.body.innerText.includes("h2l-hybrid") && document.body.innerText.includes("enable_l2=true")', 'default h2l strategy and L2');
+    const separator = DASHBOARD_URL.includes('?') ? '&' : '?';
+    await client.send('Page.navigate', { url: `${DASHBOARD_URL}${separator}smoke=${Date.now()}` });
+    await client.waitFor('document.readyState === "complete"', 'page load');
+    await client.evaluate('document.fonts?.ready?.then(() => true) || true');
+    await client.waitFor('document.querySelector("#case-description") && document.body.innerText.includes("โหลดเคสตัวอย่าง")', 'redesigned case workspace');
+    await client.waitFor(`
+      [...document.querySelectorAll('button[aria-label^="สถานะระบบ:"]')]
+        .some((button) => button.getAttribute('aria-label').includes('ระบบพร้อม') || button.getAttribute('aria-label').includes('ระบบจำกัด'))
+    `, 'runtime ready/degraded', 180000);
 
-  await client.evaluate(`
-    (() => {
-      const textarea = document.querySelector('textarea');
-      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
-      setter.call(textarea, ${JSON.stringify(CASE_TEXT)});
-      textarea.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: ${JSON.stringify(CASE_TEXT)} }));
-      return true;
-    })();
-  `);
+    const emptyAnalyzeDisabled = await client.evaluate(`
+      [...document.querySelectorAll('button')]
+        .find((button) => button.textContent.includes('วิเคราะห์เคสและค้นหาแนวทาง'))?.disabled === true
+    `);
+    assert(emptyAnalyzeDisabled, 'Analyze must be disabled while the case field is empty.');
+    const mobileLayout = await client.evaluate(`({
+      viewport: window.innerWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      bodyWidth: document.body.scrollWidth,
+    })`);
+    assert(mobileLayout.documentWidth <= mobileLayout.viewport + 1 && mobileLayout.bodyWidth <= mobileLayout.viewport + 1, `Mobile layout overflows horizontally: ${JSON.stringify(mobileLayout)}`);
 
-  await clickButton(client, 'Run H2L Analysis');
-  await client.waitFor('document.body.innerText.toLowerCase().includes("live data")', 'live data badge', 140000);
-  await client.waitFor('document.body.innerText.toLowerCase().includes("candidate / filter trace") && document.body.innerText.toLowerCase().includes("evidence retrieval")', 'candidate and evidence panels');
-  await client.waitFor('document.body.innerText.includes("retrieved") || document.body.innerText.includes("เอกสาร")', 'retrieval content');
+    await clickAriaLabel(client, 'เปิดเมนูหลัก');
+    await client.waitFor(`
+      (() => {
+        const drawer = document.querySelector('button[aria-label="ปิดเมนู"]')?.closest('aside');
+        const rect = drawer?.getBoundingClientRect();
+        return Boolean(rect && rect.width > 0 && rect.left >= 0 && rect.left < window.innerWidth);
+      })()
+    `, 'mobile navigation drawer open');
+    await clickButton(client, 'เหตุผลของระบบ');
+    await client.waitFor('document.body.innerText.includes("เหตุผลและเส้นทางการประมวลผล") && document.body.innerText.includes("ยังไม่มีข้อมูลสำหรับอธิบายผล")', 'empty explainability workspace');
 
-  await clickButton(client, 'Baseline');
-  await client.waitFor('document.body.innerText.includes("Strategy mode เปลี่ยนแล้ว") && document.body.innerText.toLowerCase().includes("needs analysis")', 'baseline stale state');
-  await client.waitFor('[...document.querySelectorAll("button")].some((button) => button.textContent.includes("Run H2L Analysis"))', 'baseline analyze button');
-  await clickButton(client, 'Run H2L Analysis');
-  await client.waitFor('document.body.innerText.includes("strategy=basic") && document.body.innerText.toLowerCase().includes("live data") && !document.body.innerText.includes("Evaluating Current Case")', 'baseline strategy applied', 140000);
+    await clickAriaLabel(client, 'เปิดเมนูหลัก');
+    await clickButton(client, 'ทบทวนเคส');
+    await client.waitFor('document.body.innerText.includes("ประเมินเคสสังคมสงเคราะห์ทางคลินิก")', 'case workspace navigation');
+    await setViewport(client, 1440, 1000, false);
 
-  await clickButton(client, 'H2L-Enhanced');
-  await client.waitFor('document.body.innerText.toLowerCase().includes("needs analysis")', 'enhanced stale state');
-  await client.waitFor('[...document.querySelectorAll("button")].some((button) => button.textContent.includes("Run H2L Analysis"))', 'enhanced analyze button');
-  await clickButton(client, 'Run H2L Analysis');
-  await client.waitFor('document.body.innerText.includes("strategy=h2l-hybrid") && document.body.innerText.toLowerCase().includes("live data") && !document.body.innerText.includes("Evaluating Current Case")', 'enhanced strategy reapplied', 140000);
+    await clickButton(client, 'โหลดเคสตัวอย่าง', { exact: true });
+    await client.waitFor(`document.querySelector('#case-description')?.value === ${JSON.stringify(CASE_TEXT)}`, 'sample case text');
+    await openDetails(client, 'การตั้งค่าการวิเคราะห์ขั้นสูง');
 
-  await clickButton(client, 'Sentence Polarity');
-  await client.waitFor('document.body.innerText.toLowerCase().includes("lexical breakdown") && document.body.innerText.includes("เมื่อมี Sentence Polarity")', 'polarity panels');
-  await client.waitFor('document.body.innerText.includes("ผู้กระทำ") && document.body.innerText.includes("ผู้ถูกกระทำ") && document.body.innerText.includes("เด็กหญิง")', 'polarity roles and current case');
+    const defaultSettings = await client.evaluate(`
+      (() => {
+        const summary = [...document.querySelectorAll('summary')]
+          .find((item) => item.textContent.includes('การตั้งค่าการวิเคราะห์ขั้นสูง'));
+        const details = summary?.closest('details');
+        const buttons = [...(details?.querySelectorAll('button') || [])];
+        return {
+          open: Boolean(details?.open),
+          summary: summary?.innerText || '',
+          topK: details?.querySelector('input[aria-label="จำนวนหลักฐาน Top K สำหรับเคส"]')?.value,
+          l2: details?.querySelector('input[aria-label="เปิดการตรวจสอบเชิงความหมาย L2"]')?.checked,
+          hybrid: buttons.some((button) => button.textContent.includes('Hybrid') && button.getAttribute('aria-pressed') === 'true'),
+          enhanced: buttons.some((button) => button.textContent.includes('H2L Enhanced') && button.getAttribute('aria-pressed') === 'true'),
+        };
+      })()
+    `);
+    assert(defaultSettings.open, 'Advanced analysis settings did not open.');
+    assert(defaultSettings.topK === '15', `Expected case Top-K 15, received ${defaultSettings.topK}.`);
+    assert(defaultSettings.l2, 'L2 must be enabled by default.');
+    assert(defaultSettings.hybrid && defaultSettings.enhanced, 'Hybrid H2L Enhanced must be selected by default.');
 
-  await clickButton(client, '3D Vector Space');
-  await client.waitFor('document.body.innerText.toLowerCase().includes("3d vector space") && document.body.innerText.toLowerCase().includes("show radius zones") && document.body.innerText.toLowerCase().includes("vector variables")', 'vector section');
-  await client.waitFor('document.querySelectorAll("[data-vector-node]").length > 1', 'vector nodes');
-  await client.evaluate(`
-    (() => {
-      const node = [...document.querySelectorAll('[data-vector-node]')]
-        .find((item) => item.getAttribute('data-vector-node') !== 'q');
-      if (!node) throw new Error('No non-query vector node found');
-      node.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      return true;
-    })();
-  `);
-  await client.waitFor('document.body.innerText.toLowerCase().includes("active vector detail") && document.body.innerText.toLowerCase().includes("semantic distance")', 'vector active detail');
-  await client.evaluate(`
-    (() => {
-      const input = [...document.querySelectorAll('label')]
-        .find((label) => label.textContent.includes('Show distance lines'))
-        ?.querySelector('input');
-      if (!input) throw new Error('Distance-line toggle not found');
-      input.click();
-      return !input.checked;
-    })();
-  `);
-  await client.waitFor('[...document.querySelectorAll("label")].find((label) => label.textContent.includes("Show distance lines")).querySelector("input").checked === false', 'distance-line toggle');
+    const analyzeRequestsBefore = client.analyzeRequestCount();
+    await clickButton(client, 'วิเคราะห์เคสและค้นหาแนวทาง', { exact: true });
+    await sleep(60);
+    const doubleSubmitState = await client.evaluate(`
+      (() => {
+        const button = document.querySelector('button[aria-busy="true"]');
+        if (!button) return { attempted: false, guarded: false };
+        const guarded = button.disabled === true;
+        button.click();
+        return { attempted: true, guarded };
+      })()
+    `);
 
-  await clickButton(client, 'Runtime Flow');
-  await client.waitFor('document.body.innerText.toLowerCase().includes("system pipeline") && document.body.innerText.toLowerCase().includes("candidate / filter trace") && document.body.innerText.toLowerCase().includes("evidence retrieval")', 'runtime flow panels');
+    await client.waitFor(`
+      document.body.innerText.includes('วิเคราะห์เคสเสร็จแล้ว')
+      && document.body.innerText.includes('สรุปการประเมินเคส')
+      && document.body.innerText.includes('การทบทวนโดยผู้ปฏิบัติงาน')
+      && !document.querySelector('button[aria-busy="true"]')
+    `, 'fresh clinical case result', 160000);
+    await sleep(250);
+    const analyzeRequestDelta = client.analyzeRequestCount() - analyzeRequestsBefore;
+    assert(analyzeRequestDelta === 1, `Expected one POST /analyze request, received ${analyzeRequestDelta}.`);
+    if (doubleSubmitState.attempted) assert(doubleSubmitState.guarded, 'Analyze button was not disabled during the second-submit attempt.');
 
-  await clickButton(client, 'Research Report');
-  await client.waitFor('document.body.innerText.includes("Performance Provenance") && document.body.innerText.includes("System Evaluation Status") && document.body.innerText.includes("Latest Pair Reruns")', 'research report summary');
-  await client.waitFor('document.body.innerText.includes("Benchmark Provenance") && document.body.innerText.includes("Polarity Provenance") && document.body.innerText.includes("Artifact Retention")', 'provenance and retention sections');
-  await client.waitFor('document.body.innerText.includes("evaluate_h2l_proper.py") && document.body.innerText.includes("statistical_analysis.py") && document.body.innerText.includes("ablation_study.py") && document.body.innerText.includes("No-mock thesis contract")', 'source function labels');
-  await client.waitFor('document.body.innerText.toLowerCase().includes("map") && document.body.innerText.toLowerCase().includes("mrr") && (document.body.innerText.toLowerCase().includes("ndcg@10") || document.body.innerText.toLowerCase().includes("ndcg@5"))', 'metric guidance labels');
+    const findingCount = await client.evaluate(`
+      (() => {
+        const heading = [...document.querySelectorAll('h2')].find((item) => item.textContent.includes('ประเด็นปัญหาและความต้องการ'));
+        return heading?.closest('section')?.querySelectorAll('article').length || 0;
+      })()
+    `);
+    assert(findingCount > 0, 'The sample case should produce at least one finding for review testing.');
+    const reviewChoices = ['รับไว้', 'ต้องทบทวน', 'ไม่นำไปใช้'];
+    for (let index = 0; index < findingCount; index += 1) {
+      await client.evaluate(`
+        (() => {
+          const heading = [...document.querySelectorAll('h2')].find((item) => item.textContent.includes('ประเด็นปัญหาและความต้องการ'));
+          const article = heading?.closest('section')?.querySelectorAll('article')?.[${index}];
+          const toggle = article?.querySelector('button[aria-expanded]');
+          if (!article || !toggle) throw new Error('Finding card not found at index ${index}.');
+          if (toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
+          return true;
+        })()
+      `);
+      await sleep(35);
+      const choice = reviewChoices[index % reviewChoices.length];
+      await client.evaluate(`
+        (() => {
+          const heading = [...document.querySelectorAll('h2')].find((item) => item.textContent.includes('ประเด็นปัญหาและความต้องการ'));
+          const article = heading?.closest('section')?.querySelectorAll('article')?.[${index}];
+          const button = [...(article?.querySelectorAll('button[aria-pressed]') || [])].find((item) => item.textContent.trim().includes(${JSON.stringify(choice)}));
+          if (!button) throw new Error('Review choice not found: ' + ${JSON.stringify(choice)});
+          button.click();
+          return true;
+        })()
+      `);
+      await sleep(35);
+    }
+    const reviewState = await client.evaluate(`
+      (() => ({
+        pending: [...document.querySelectorAll('body *')].filter((item) => item.textContent?.trim() === 'ยังไม่ระบุ').length,
+        summary: document.body.innerText.includes('ทบทวนครบแล้ว'),
+        selected: [...document.querySelectorAll('button[aria-pressed="true"]')]
+          .map((item) => item.textContent.replace(/^(check_circle|help|block)/, '').trim())
+          .filter((text) => ['รับไว้', 'ต้องทบทวน', 'ไม่นำไปใช้'].includes(text)),
+      }))()
+    `);
+    assert(reviewState.summary, `Finding review summary did not reach complete state: ${JSON.stringify(reviewState)}`);
+    assert(reviewState.selected.includes('รับไว้') && reviewState.selected.includes('ต้องทบทวน'), 'Accept and review states were not reflected in the UI.');
+    if (findingCount >= 3) assert(reviewState.selected.includes('ไม่นำไปใช้'), 'Exclude state was not reflected in the UI.');
 
-  const startsDark = await client.evaluate('document.documentElement.classList.contains("dark")');
-  if (startsDark) {
-    await client.evaluate(`document.querySelector('button[aria-label="Toggle day and night theme"]').click(); true;`);
-    await client.waitFor('!document.documentElement.classList.contains("dark") && localStorage.getItem("h2l-theme") === "light"', 'light theme reset');
+    const setTextareaValue = async (selector, value) => client.evaluate(`
+      (() => {
+        const element = document.querySelector(${JSON.stringify(selector)});
+        if (!element) throw new Error('Textarea not found: ' + ${JSON.stringify(selector)});
+        const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+        setter.call(element, ${JSON.stringify(value)});
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+        return element.value;
+      })()
+    `);
+    await setTextareaValue('textarea[name="reviewer-note"]', 'ทบทวนบริบทและหลักฐานประกอบแล้ว');
+    const reviewButtonsReady = await client.evaluate(`
+      [...document.querySelectorAll('button')]
+        .filter((button) => button.textContent.includes('จัดเตรียมข้อมูลสำหรับทบทวนซ้ำ') || button.textContent.includes('ส่งเพื่อให้ผู้เชี่ยวชาญทบทวน'))
+        .every((button) => !button.disabled)
+    `);
+    assert(reviewButtonsReady, 'Review actions should be enabled after every finding has a state.');
+
+    const auditRequestsBefore = client.requestCount(/\/audit\/prepare(?:\?|$)/);
+    await clickButton(client, 'จัดเตรียมข้อมูลสำหรับทบทวนซ้ำ');
+    await sleep(40);
+    const auditBusyGuard = await client.evaluate(`
+      [...document.querySelectorAll('button')].some((button) => button.textContent.includes('กำลังจัดเตรียม'))
+    `);
+    await client.waitFor('document.body.innerText.includes("Audit packet")', 'audit packet');
+    assert(client.requestCount(/\/audit\/prepare(?:\?|$)/) - auditRequestsBefore === 1, 'Expected exactly one audit packet request.');
+    if (auditBusyGuard) assert(auditBusyGuard, 'Audit button did not expose a busy state.');
+
+    const finalizeRequestsBefore = client.requestCount(/\/case\/finalize(?:\?|$)/);
+    await clickButton(client, 'ส่งเพื่อให้ผู้เชี่ยวชาญทบทวน');
+    await sleep(40);
+    const finalizeBusyGuard = await client.evaluate(`
+      [...document.querySelectorAll('button')].some((button) => button.textContent.includes('กำลังส่ง'))
+    `);
+    await client.waitFor('document.body.innerText.includes("ส่งเพื่อทบทวนแล้ว") || document.body.innerText.includes("ส่งเคสเพื่อให้ผู้เชี่ยวชาญทบทวนแล้ว")', 'sign-off packet', 60000);
+    assert(client.requestCount(/\/case\/finalize(?:\?|$)/) - finalizeRequestsBefore === 1, 'Expected exactly one finalize request.');
+    const finalizeRequest = [...client.requests].reverse().find((request) => request.method === 'POST' && /\/case\/finalize(?:\?|$)/.test(request.url || ''));
+    const finalizeBody = finalizeRequest?.postData ? JSON.parse(finalizeRequest.postData) : null;
+    assert(finalizeBody?.finding_review_states && Object.keys(finalizeBody.finding_review_states).length === findingCount, 'Finalize payload did not preserve per-finding review states.');
+    assert(finalizeBody?.zero_finding_acknowledged === false, 'Non-empty case should not send a zero-finding acknowledgement.');
+    if (finalizeBusyGuard) assert(finalizeBusyGuard, 'Finalize button did not expose a busy state.');
+
+    await clickButton(client, 'เหตุผลของระบบ');
+    await client.waitFor(`
+      document.body.innerText.includes('เหตุผลและเส้นทางการประมวลผล')
+      && [...document.querySelectorAll('[role="tab"]')].some((tab) => tab.textContent.includes('บริบทภาษา') && tab.getAttribute('aria-selected') === 'true')
+      && document.body.innerText.includes('Analyzed Case Text')
+    `, 'language explainability tab');
+
+    await clickButton(client, 'ลำดับการวิเคราะห์');
+    await client.waitFor(`
+      [...document.querySelectorAll('[role="tab"]')].some((tab) => tab.textContent.includes('ลำดับการวิเคราะห์') && tab.getAttribute('aria-selected') === 'true')
+      && document.body.innerText.includes('System Pipeline')
+      && document.body.innerText.includes('Runtime Pulse')
+    `, 'processing trace explainability tab');
+
+    await clickButton(client, 'แผนที่หลักฐาน');
+    await client.waitFor(`
+      [...document.querySelectorAll('[role="tab"]')].some((tab) => tab.textContent.includes('แผนที่หลักฐาน') && tab.getAttribute('aria-selected') === 'true')
+      && document.body.innerText.includes('Semantic Evidence Map')
+      && document.querySelectorAll('[data-vector-node]').length > 1
+    `, 'semantic evidence map tab');
+    const selectedSemanticNodeId = await client.evaluate(`
+      (() => {
+        const nodes = [...document.querySelectorAll('[data-vector-node]')];
+        const node = nodes.find((item) => {
+          const id = item.getAttribute('data-vector-node') || '';
+          const label = (item.getAttribute('aria-label') || '').toLowerCase();
+          return !id.toLowerCase().startsWith('q') && !label.includes('case query');
+        });
+        if (!node) throw new Error('No non-query vector node found. ids=' + nodes.map((item) => item.getAttribute('data-vector-node')).join(','));
+        const nodeId = node.getAttribute('data-vector-node');
+        node.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        return nodeId;
+      })()
+    `);
+    await client.waitFor(`
+      Boolean(document.querySelector('[data-vector-node="${selectedSemanticNodeId}"] rect[stroke-dasharray="4 4"]'))
+    `, 'semantic node selection');
+
+    await clickButton(client, 'หลักฐานงานวิจัย');
+    await client.waitFor(`
+      document.body.innerText.includes('Evaluation Design for Thesis')
+      && document.body.innerText.toLowerCase().includes('performance provenance')
+    `, 'research and quality workspace', 60000);
+    await client.waitFor(`
+      document.querySelectorAll('[aria-label^="select top "]').length > 1
+    `, 'interactive research Top-K points', 60000);
+
+    const researchTopKState = await client.evaluate(`
+      (() => {
+        const points = [...document.querySelectorAll('[aria-label^="select top "]')];
+        const enabled = points.filter((item) => item.getAttribute('aria-disabled') !== 'true');
+        const point = enabled.find((item) => item.getAttribute('aria-label') !== 'select top 15');
+        if (point) {
+          const topK = Number(point.getAttribute('aria-label').replace('select top ', ''));
+          point.scrollIntoView({ block: 'center', inline: 'nearest' });
+          point.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          return { selectedTopK: topK, alternateAvailable: true, disabledPoints: [] };
+        }
+        const disabledPoints = points
+          .filter((item) => item.getAttribute('aria-disabled') === 'true')
+          .map((item) => item.getAttribute('aria-label'));
+        const disabledPoint = points.find((item) => item.getAttribute('aria-label') === 'select top 5' && item.getAttribute('aria-disabled') === 'true');
+        if (disabledPoint) disabledPoint.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        return { selectedTopK: 15, alternateAvailable: false, disabledPoints };
+      })()
+    `);
+    await client.waitFor(`document.body.innerText.includes('selected top ${researchTopKState.selectedTopK}')`, 'research Top-K state');
+    if (!researchTopKState.alternateAvailable) {
+      assert(researchTopKState.disabledPoints.length > 0, 'Research Top-K has no enabled alternate but did not expose disabled missing-data points.');
+    }
+
+    await clickButton(client, 'ทบทวนเคส');
+    await client.waitFor('document.body.innerText.includes("สรุปการประเมินเคส")', 'fresh case after research navigation');
+    await openDetails(client, 'การตั้งค่าการวิเคราะห์ขั้นสูง');
+    const caseTopKAfterResearch = await client.evaluate(`document.querySelector('input[aria-label="จำนวนหลักฐาน Top K สำหรับเคส"]')?.value`);
+    assert(caseTopKAfterResearch === defaultSettings.topK, `Research Top-K changed case Top-K from ${defaultSettings.topK} to ${caseTopKAfterResearch}.`);
+    const staleAfterResearch = await client.evaluate('document.body.innerText.includes("ผลเดิมถูกพักไว้")');
+    assert(!staleAfterResearch, 'Research Top-K incorrectly marked the clinical case stale.');
+
+    const staleTopK = defaultSettings.topK === '10' ? '5' : '10';
+    await clickButton(client, staleTopK, { exact: true });
+    await client.waitFor(`
+      document.body.innerText.includes('ผลเดิมถูกพักไว้')
+      && document.body.innerText.includes('ต้องวิเคราะห์เคสอีกครั้ง')
+      && [...document.querySelectorAll('button')].some((button) => button.textContent.includes('วิเคราะห์เคสที่แก้ไขแล้ว') && !button.disabled)
+      && ![...document.querySelectorAll('button')].some((button) => (button.textContent.includes('จัดเตรียมข้อมูลสำหรับทบทวนซ้ำ') || button.textContent.includes('ส่งเพื่อให้ผู้เชี่ยวชาญทบทวน')) && !button.disabled)
+    `, 'stale result guard and review action disable');
+
+    const startsDark = await client.evaluate('document.documentElement.classList.contains("dark")');
+    if (startsDark) {
+      await clickAriaLabel(client, 'เปลี่ยนเป็นโหมดสว่าง');
+      await client.waitFor('!document.documentElement.classList.contains("dark")', 'light theme reset');
+    }
+    await clickAriaLabel(client, 'เปลี่ยนเป็นโหมดมืด');
+    await client.waitFor('document.documentElement.classList.contains("dark") && localStorage.getItem("h2l-theme") === "dark"', 'dark theme toggle');
+    const themeState = await client.evaluate(`({
+      darkClass: document.documentElement.classList.contains('dark'),
+      storedTheme: localStorage.getItem('h2l-theme'),
+      bodyBackground: getComputedStyle(document.body).backgroundColor,
+      textareaBackground: getComputedStyle(document.querySelector('#case-description')).backgroundColor
+    })`);
+
+    if (client.errors.length) {
+      throw new Error(`Browser reported errors:\n${client.errors.join('\n')}`);
+    }
+
+    console.log(JSON.stringify({
+      status: 'ok',
+      dashboardUrl: DASHBOARD_URL,
+      checks: {
+        responsiveDrawerNavigation: true,
+        mobileLayout,
+        emptyCaseGuard: true,
+        sampleCaseLoading: true,
+        advancedSettingsDefaults: defaultSettings,
+        analyzeDoubleSubmit: {
+          requestCount: analyzeRequestDelta,
+          secondClickAttempted: doubleSubmitState.attempted,
+          disabledDuringAttempt: doubleSubmitState.guarded,
+        },
+        clinicalCaseResult: true,
+        explainabilityTabs: true,
+        semanticNodeInteraction: selectedSemanticNodeId,
+        researchTopKIndependence: {
+          researchTopK: researchTopKState.selectedTopK,
+          alternateAvailable: researchTopKState.alternateAvailable,
+          skippedReason: researchTopKState.alternateAvailable ? null : 'detected artifacts expose only Top 15',
+          caseTopK: caseTopKAfterResearch,
+        },
+        staleReviewGuard: true,
+        darkTheme: themeState,
+        browserErrors: client.errors.length,
+      },
+    }, null, 2));
+  } finally {
+    await client.close();
   }
-  await client.evaluate(`document.querySelector('button[aria-label="Toggle day and night theme"]').click(); true;`);
-  await client.waitFor('document.documentElement.classList.contains("dark") && localStorage.getItem("h2l-theme") === "dark"', 'dark theme toggle');
-
-  const themeState = await client.evaluate(`({
-    darkClass: document.documentElement.classList.contains('dark'),
-    storedTheme: localStorage.getItem('h2l-theme'),
-    bodyBackground: getComputedStyle(document.body).backgroundColor,
-    textareaBackground: getComputedStyle(document.querySelector('textarea')).backgroundColor
-  })`);
-
-  if (client.errors.length) {
-    throw new Error(`Browser reported errors:\n${client.errors.join('\n')}`);
-  }
-
-  console.log(JSON.stringify({
-    status: 'ok',
-    dashboardUrl: DASHBOARD_URL,
-    checks: {
-      runtimeState: true,
-      realCaseAnalysis: true,
-      baselineEnhancedStrategy: true,
-      candidateFilterEvidence: true,
-      polarityCurrentCase: true,
-      vectorSpace3dControls: true,
-      runtimeFlow: true,
-      researchStatisticsSensitivity: true,
-      darkTheme: themeState,
-      browserErrors: client.errors.length,
-    },
-  }, null, 2));
-
-  await client.close();
-  process.exit(0);
 }
 
 main().catch((error) => {

@@ -1,0 +1,84 @@
+- generic [ref=e3]:
+  - link "ข้ามไปยังเนื้อหาหลัก" [ref=e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - complementary [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: health_and_safety
+      - generic [ref=e10]:
+        - generic [ref=e11]: H2L Clinical Social Work
+        - generic [ref=e12]: Health decision support
+    - navigation "เมนูหลัก" [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: งานสังคมสงเคราะห์คลินิก
+        - button "ทบทวนเคส Case review and professional assessment" [ref=e18] [cursor=pointer]:
+          - generic [ref=e19]: clinical_notes
+          - generic [ref=e20]:
+            - generic [ref=e21]: ทบทวนเคส
+            - generic [ref=e22]: Case review and professional assessment
+      - generic [ref=e23]:
+        - generic [ref=e24]: ความโปร่งใสและการตรวจสอบ
+        - button "เหตุผลของระบบ Language, evidence map and processing trace" [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: manage_search
+          - generic [ref=e28]:
+            - generic [ref=e29]: เหตุผลของระบบ
+            - generic [ref=e30]: Language, evidence map and processing trace
+      - generic [ref=e31]:
+        - generic [ref=e32]: คุณภาพและงานวิจัย
+        - button "หลักฐานงานวิจัย Benchmark, statistics and provenance" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: query_stats
+          - generic [ref=e36]:
+            - generic [ref=e37]: หลักฐานงานวิจัย
+            - generic [ref=e38]: Benchmark, statistics and provenance
+    - generic [ref=e39]:
+      - button "ตรวจสอบระบบ" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: monitor_heart
+        - text: ตรวจสอบระบบ
+      - generic [ref=e42]:
+        - generic [ref=e43]: shield_person
+        - generic [ref=e44]: ใช้ข้อมูลที่ลดการระบุตัวบุคคล และให้ผู้เชี่ยวชาญทบทวนก่อนตัดสินใจเสมอ
+  - banner [ref=e45]:
+    - generic [ref=e46]:
+      - generic [ref=e48]:
+        - generic [ref=e49]: ทบทวนเคส
+        - generic [ref=e50]: Case review and professional assessment
+      - generic [ref=e51]:
+        - 'button "สถานะระบบ: ระบบพร้อม. กดเพื่อตรวจสอบอีกครั้ง" [ref=e52] [cursor=pointer]':
+          - generic [ref=e54]: ระบบพร้อม
+        - button "เปลี่ยนเป็นโหมดมืด" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: dark_mode
+        - generic [ref=e57]: ยังไม่ได้ประเมิน
+  - main [ref=e58]:
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e64]: Clinical case workspace
+            - heading "ประเมินเคสสังคมสงเคราะห์ทางคลินิก" [level=1] [ref=e65]
+            - paragraph [ref=e66]: บันทึกสถานการณ์ทางสังคม สุขภาพ ครอบครัว และความเสี่ยงที่เกี่ยวข้อง เพื่อใช้ประกอบการทบทวนโดยผู้ปฏิบัติงาน
+          - generic [ref=e67]: ยังไม่ได้ประเมิน
+        - generic [ref=e69]:
+          - generic [ref=e70]: รายละเอียดสถานการณ์และบริบทสุขภาพ *
+          - textbox "รายละเอียดสถานการณ์และบริบทสุขภาพ *" [ref=e71]:
+            - /placeholder: ระบุสถานการณ์ ความสัมพันธ์ สภาพครอบครัว ปัจจัยสุขภาพ ความเสี่ยง และสิ่งสนับสนุนที่เกี่ยวข้อง
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - generic [ref=e74]: shield_person
+              - text: หลีกเลี่ยงชื่อ เลขประจำตัว ที่อยู่ หรือข้อมูลที่ระบุตัวบุคคลได้
+            - button "โหลดเคสตัวอย่าง" [ref=e75] [cursor=pointer]
+        - group [ref=e76]:
+          - generic "การตั้งค่าการวิเคราะห์ขั้นสูง h2l-hybrid · L2 qwen2.5:7b · Top 15 · ตำแหน่งคำสำคัญ 0" [ref=e77] [cursor=pointer]:
+            - generic [ref=e78]:
+              - generic [ref=e79]: tune
+              - generic [ref=e80]:
+                - generic [ref=e81]: การตั้งค่าการวิเคราะห์ขั้นสูง
+                - generic [ref=e82]: h2l-hybrid · L2 qwen2.5:7b · Top 15 · ตำแหน่งคำสำคัญ 0
+            - generic [ref=e83]: expand_more
+          - option "Qwen 2.5 7B (ค่าเริ่มต้น)" [selected]
+          - option "Typhoon 2 8B Instruct"
+        - generic [ref=e84]:
+          - paragraph [ref=e85]: พร้อมวิเคราะห์เคสและค้นหาแนวทางจากเอกสารจริง
+          - button "วิเคราะห์เคสและค้นหาแนวทาง" [disabled] [ref=e86]
+      - generic [ref=e87]:
+        - generic [ref=e88]: clinical_notes
+        - heading "ยังไม่มีผลการประเมิน" [level=2] [ref=e90]
+        - paragraph [ref=e91]: กรอกรายละเอียดเคสด้านบน ระบบจะแสดงประเด็นที่ควรทบทวน เครื่องมือประเมิน และหลักฐานที่เกี่ยวข้องโดยไม่สรุปแทนผู้ปฏิบัติงาน

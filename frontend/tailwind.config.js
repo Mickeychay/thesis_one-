@@ -12,7 +12,7 @@ export default {
     extend: {
       colors: {
           "primary-fixed": "#d6e4f9",
-          "primary": "#000000",
+          "primary": "#0d2734",
           "on-tertiary": "#ffffff",
           "on-secondary-fixed-variant": "#3a485b",
           "on-background": "#191c1e",
@@ -25,7 +25,7 @@ export default {
           "background": "#f7f9fb",
           "on-tertiary-container": "#0c9488",
           "tertiary-fixed": "#89f5e7",
-          "tertiary": "#000000",
+          "tertiary": "#0f766e",
           "primary-fixed-dim": "#bac8dc",
           "inverse-surface": "#2d3133",
           "inverse-on-surface": "#eff1f3",
@@ -60,15 +60,15 @@ export default {
           "secondary": "#515f74"
       },
       borderRadius: {
-          "DEFAULT": "0.125rem",
-          "lg": "0.25rem",
+          "DEFAULT": "0.25rem",
+          "lg": "0.375rem",
           "xl": "0.5rem",
-          "full": "0.75rem"
+          "full": "9999px"
       },
       fontFamily: {
-          "headline": ["Manrope"],
-          "body": ["Inter"],
-          "label": ["Inter"]
+          "headline": ["Noto Sans Thai", "Thonburi", "Leelawadee UI", "Tahoma", "Arial", "sans-serif"],
+          "body": ["Noto Sans Thai", "Thonburi", "Leelawadee UI", "Tahoma", "Arial", "sans-serif"],
+          "label": ["Noto Sans Thai", "Thonburi", "Leelawadee UI", "Tahoma", "Arial", "sans-serif"]
       }
     },
   },

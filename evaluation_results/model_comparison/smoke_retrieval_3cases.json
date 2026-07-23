@@ -1,0 +1,565 @@
+{
+  "metadata": {
+    "created_at": "2026-07-22T17:21:01.541862+00:00",
+    "ground_truth": "expanded_ground_truth.json",
+    "test_cases": 3,
+    "repeats": 1,
+    "models": [
+      "qwen2.5:7b",
+      "scb10x/llama3.1-typhoon2-8b-instruct:latest"
+    ],
+    "with_retrieval": true,
+    "top_k": 15,
+    "controlled_variables": {
+      "embedding_model": "intfloat/multilingual-e5-base",
+      "rerank_model": "BAAI/bge-reranker-v2-m3",
+      "retrieval_strategy": "h2l-hybrid",
+      "h2l_formula": "bayesian_v6_unchanged",
+      "h2l_core_sha256": "2ecd82a9e8ad9ece7a31f0c4cfa408a857a9c76255c4c673165646221ba3a9b2",
+      "temperature": 0.2,
+      "seed": 42
+    }
+  },
+  "aggregates": {
+    "qwen2.5:7b": {
+      "all_cases": {
+        "cases": 3,
+        "macro_precision": 0.19444444444444442,
+        "macro_recall": 0.2222222222222222,
+        "macro_f1": 0.20634920634920637,
+        "mean_jaccard": 0.12222222222222223,
+        "exact_match_rate": 0.0,
+        "micro_precision": 0.14285714285714285,
+        "micro_recall": 0.2,
+        "micro_f1": 0.16666666666666666
+      },
+      "l2_triggered_subset": {
+        "cases": 3,
+        "macro_precision": 0.19444444444444442,
+        "macro_recall": 0.2222222222222222,
+        "macro_f1": 0.20634920634920637,
+        "mean_jaccard": 0.12222222222222223,
+        "exact_match_rate": 0.0
+      },
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rate": 0.0,
+      "latency_ms": {
+        "median_l2": 23519.79,
+        "p95_l2": 24251.09,
+        "mean_total_detection": 20943.996666666666
+      },
+      "retrieval": {
+        "cases": 3,
+        "MAP": 0.38397435897435894,
+        "MRR": 0.5,
+        "nDCG@5": 0.329487947272509,
+        "nDCG@10": 0.3928570340742272,
+        "P@5": 0.20000000000000004
+      }
+    },
+    "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+      "all_cases": {
+        "cases": 3,
+        "macro_precision": 0.19444444444444442,
+        "macro_recall": 0.2222222222222222,
+        "macro_f1": 0.20634920634920637,
+        "mean_jaccard": 0.12222222222222223,
+        "exact_match_rate": 0.0,
+        "micro_precision": 0.14285714285714285,
+        "micro_recall": 0.2,
+        "micro_f1": 0.16666666666666666
+      },
+      "l2_triggered_subset": {
+        "cases": 3,
+        "macro_precision": 0.19444444444444442,
+        "macro_recall": 0.2222222222222222,
+        "macro_f1": 0.20634920634920637,
+        "mean_jaccard": 0.12222222222222223,
+        "exact_match_rate": 0.0
+      },
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rate": 0.0,
+      "latency_ms": {
+        "median_l2": 20840.34,
+        "p95_l2": 25492.28,
+        "mean_total_detection": 20398.086666666666
+      },
+      "retrieval": {
+        "cases": 3,
+        "MAP": 0.38397435897435894,
+        "MRR": 0.5,
+        "nDCG@5": 0.329487947272509,
+        "nDCG@10": 0.3928570340742272,
+        "P@5": 0.20000000000000004
+      }
+    }
+  },
+  "per_case": {
+    "qwen2.5:7b": [
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 1,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 23519.79,
+        "total_detection_ms": 23527.21,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชายอายุ 12 ปี",
+          "relationship": "บิดาและบุตร",
+          "demographic_group": "child",
+          "has_crisis": true
+        },
+        "retrieval_metrics": {
+          "total_docs": 15,
+          "total_relevant": 4,
+          "MAP": 0.6519230769230768,
+          "MRR": 1.0,
+          "P@3": 0.6666666666666666,
+          "R@3": 0.5,
+          "F1@3": 0.5714285714285715,
+          "nDCG@3": 0.39480936517049525,
+          "P@5": 0.4,
+          "R@5": 0.5,
+          "F1@5": 0.4444444444444445,
+          "nDCG@5": 0.35753408824606947,
+          "P@10": 0.3,
+          "R@10": 0.75,
+          "F1@10": 0.4285714285714285,
+          "nDCG@10": 0.5476413486512239,
+          "retrieval_ms": 6435.092083003838,
+          "doc_ids": [
+            3,
+            84,
+            1,
+            12,
+            37,
+            89,
+            85,
+            81,
+            0,
+            87,
+            88,
+            4,
+            42,
+            26,
+            2
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 1,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0206",
+          "0303",
+          "0301"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 24251.09,
+        "total_detection_ms": 24252.91,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "แม่",
+          "relationship": "ความสัมพันธ์ในครอบครัว",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        },
+        "retrieval_metrics": {
+          "total_docs": 15,
+          "total_relevant": 0,
+          "MAP": 0.0,
+          "MRR": 0.0,
+          "P@3": 0.0,
+          "R@3": 0.0,
+          "F1@3": 0.0,
+          "nDCG@3": 0.0,
+          "P@5": 0.0,
+          "R@5": 0.0,
+          "F1@5": 0.0,
+          "nDCG@5": 0.0,
+          "P@10": 0.0,
+          "R@10": 0.0,
+          "F1@10": 0.0,
+          "nDCG@10": 0.0,
+          "retrieval_ms": 3558.8255409966223,
+          "doc_ids": [
+            6,
+            62,
+            66,
+            68,
+            60,
+            14,
+            64,
+            30,
+            10,
+            18,
+            8,
+            38,
+            65,
+            59,
+            47
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 1,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 15049.23,
+        "total_detection_ms": 15051.87,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตนเอง",
+          "relationship": "ความสัมพันธ์กับตัวเอง",
+          "demographic_group": "elderly",
+          "has_crisis": false
+        },
+        "retrieval_metrics": {
+          "total_docs": 15,
+          "total_relevant": 1,
+          "MAP": 0.5,
+          "MRR": 0.5,
+          "P@3": 0.3333333333333333,
+          "R@3": 1.0,
+          "F1@3": 0.5,
+          "nDCG@3": 0.6309297535714575,
+          "P@5": 0.2,
+          "R@5": 1.0,
+          "F1@5": 0.33333333333333337,
+          "nDCG@5": 0.6309297535714575,
+          "P@10": 0.1,
+          "R@10": 1.0,
+          "F1@10": 0.18181818181818182,
+          "nDCG@10": 0.6309297535714575,
+          "retrieval_ms": 2460.353083035443,
+          "doc_ids": [
+            13,
+            62,
+            63,
+            59,
+            22,
+            68,
+            9,
+            39,
+            87,
+            36,
+            65,
+            18,
+            82,
+            67,
+            6
+          ]
+        }
+      }
+    ],
+    "scb10x/llama3.1-typhoon2-8b-instruct:latest": [
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 1,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 20840.34,
+        "total_detection_ms": 20844.93,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชายอายุ 12 ปี",
+          "relationship": "พ่อแม่/ผู้ปกครอง",
+          "demographic_group": "child",
+          "has_crisis": true
+        },
+        "retrieval_metrics": {
+          "total_docs": 15,
+          "total_relevant": 4,
+          "MAP": 0.6519230769230768,
+          "MRR": 1.0,
+          "P@3": 0.6666666666666666,
+          "R@3": 0.5,
+          "F1@3": 0.5714285714285715,
+          "nDCG@3": 0.39480936517049525,
+          "P@5": 0.4,
+          "R@5": 0.5,
+          "F1@5": 0.4444444444444445,
+          "nDCG@5": 0.35753408824606947,
+          "P@10": 0.3,
+          "R@10": 0.75,
+          "F1@10": 0.4285714285714285,
+          "nDCG@10": 0.5476413486512239,
+          "retrieval_ms": 5344.582292018458,
+          "doc_ids": [
+            3,
+            84,
+            1,
+            12,
+            37,
+            89,
+            85,
+            81,
+            0,
+            87,
+            88,
+            4,
+            42,
+            26,
+            2
+          ]
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 1,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0303",
+          "0301",
+          "0206"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 25492.28,
+        "total_detection_ms": 25494.8,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "หญิงอายุ 72 ปี",
+          "relationship": "แม่-ลูก",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        },
+        "retrieval_metrics": {
+          "total_docs": 15,
+          "total_relevant": 0,
+          "MAP": 0.0,
+          "MRR": 0.0,
+          "P@3": 0.0,
+          "R@3": 0.0,
+          "F1@3": 0.0,
+          "nDCG@3": 0.0,
+          "P@5": 0.0,
+          "R@5": 0.0,
+          "F1@5": 0.0,
+          "nDCG@5": 0.0,
+          "P@10": 0.0,
+          "R@10": 0.0,
+          "F1@10": 0.0,
+          "nDCG@10": 0.0,
+          "retrieval_ms": 4726.073208032176,
+          "doc_ids": [
+            6,
+            62,
+            66,
+            68,
+            60,
+            14,
+            64,
+            30,
+            10,
+            18,
+            8,
+            38,
+            65,
+            59,
+            47
+          ]
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 1,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 14851.85,
+        "total_detection_ms": 14854.53,
+        "context_analysis": {
+          "primary_actor": "ชายอายุ 69 ปี",
+          "target": "ตัวเอง",
+          "relationship": "ไม่ระบุ",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        },
+        "retrieval_metrics": {
+          "total_docs": 15,
+          "total_relevant": 1,
+          "MAP": 0.5,
+          "MRR": 0.5,
+          "P@3": 0.3333333333333333,
+          "R@3": 1.0,
+          "F1@3": 0.5,
+          "nDCG@3": 0.6309297535714575,
+          "P@5": 0.2,
+          "R@5": 1.0,
+          "F1@5": 0.33333333333333337,
+          "nDCG@5": 0.6309297535714575,
+          "P@10": 0.1,
+          "R@10": 1.0,
+          "F1@10": 0.18181818181818182,
+          "nDCG@10": 0.6309297535714575,
+          "retrieval_ms": 3454.816250014119,
+          "doc_ids": [
+            13,
+            62,
+            63,
+            59,
+            22,
+            68,
+            9,
+            39,
+            87,
+            36,
+            65,
+            18,
+            82,
+            67,
+            6
+          ]
+        }
+      }
+    ]
+  }
+}

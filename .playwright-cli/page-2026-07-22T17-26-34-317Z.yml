@@ -1,0 +1,445 @@
+- generic [ref=e3]:
+  - link "ข้ามไปยังเนื้อหาหลัก" [ref=e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - complementary [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: health_and_safety
+      - generic [ref=e10]:
+        - generic [ref=e11]: H2L Clinical Social Work
+        - generic [ref=e12]: Health decision support
+    - navigation "เมนูหลัก" [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: งานสังคมสงเคราะห์คลินิก
+        - button "ทบทวนเคส Case review and professional assessment" [ref=e18] [cursor=pointer]:
+          - generic [ref=e19]: clinical_notes
+          - generic [ref=e20]:
+            - generic [ref=e21]: ทบทวนเคส
+            - generic [ref=e22]: Case review and professional assessment
+      - generic [ref=e23]:
+        - generic [ref=e24]: ความโปร่งใสและการตรวจสอบ
+        - button "เหตุผลของระบบ Language, evidence map and processing trace" [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: manage_search
+          - generic [ref=e28]:
+            - generic [ref=e29]: เหตุผลของระบบ
+            - generic [ref=e30]: Language, evidence map and processing trace
+      - generic [ref=e31]:
+        - generic [ref=e32]: คุณภาพและงานวิจัย
+        - button "หลักฐานงานวิจัย Benchmark, statistics and provenance" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: query_stats
+          - generic [ref=e36]:
+            - generic [ref=e37]: หลักฐานงานวิจัย
+            - generic [ref=e38]: Benchmark, statistics and provenance
+    - generic [ref=e39]:
+      - button "ตรวจสอบระบบ" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: monitor_heart
+        - text: ตรวจสอบระบบ
+      - generic [ref=e42]:
+        - generic [ref=e43]: shield_person
+        - generic [ref=e44]: ใช้ข้อมูลที่ลดการระบุตัวบุคคล และให้ผู้เชี่ยวชาญทบทวนก่อนตัดสินใจเสมอ
+  - banner [ref=e45]:
+    - generic [ref=e46]:
+      - generic [ref=e48]:
+        - generic [ref=e49]: ทบทวนเคส
+        - generic [ref=e50]: Case review and professional assessment
+      - generic [ref=e51]:
+        - 'button "สถานะระบบ: ระบบพร้อม. กดเพื่อตรวจสอบอีกครั้ง" [ref=e52] [cursor=pointer]':
+          - generic [ref=e54]: ระบบพร้อม
+        - button "เปลี่ยนเป็นโหมดมืด" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: dark_mode
+        - generic [ref=e57]: มีผลเคสปัจจุบัน
+  - main [ref=e58]:
+    - generic [ref=e59]:
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - generic [ref=e176]: check_circle
+          - generic [ref=e177]:
+            - heading "วิเคราะห์เคสเสร็จแล้ว" [level=2] [ref=e267]
+            - paragraph [ref=e179]: เคส CASE_8a0fad0e25874f48b7093576c988a783 · วิธีที่ใช้จริง h2l-hybrid · L2 ไม่ได้เรียก · พบ 2 ประเด็น · หลักฐาน 5 รายการ
+        - button "ปิดข้อความสถานะ" [ref=e180] [cursor=pointer]:
+          - generic [ref=e181]: close
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - generic [ref=e63]:
+              - generic [ref=e64]: Clinical case workspace
+              - heading "ประเมินเคสสังคมสงเคราะห์ทางคลินิก" [level=1] [ref=e65]
+              - paragraph [ref=e66]: บันทึกสถานการณ์ทางสังคม สุขภาพ ครอบครัว และความเสี่ยงที่เกี่ยวข้อง เพื่อใช้ประกอบการทบทวนโดยผู้ปฏิบัติงาน
+            - generic [ref=e67]:
+              - generic [ref=e68]: เคส CASE_8a0fad0e25874f48b7093576c988a783
+              - generic [ref=e268]: ระดับ SEVERE
+          - generic [ref=e69]:
+            - generic [ref=e70]: รายละเอียดสถานการณ์และบริบทสุขภาพ *
+            - textbox "รายละเอียดสถานการณ์และบริบทสุขภาพ *" [ref=e71]:
+              - /placeholder: ระบุสถานการณ์ ความสัมพันธ์ สภาพครอบครัว ปัจจัยสุขภาพ ความเสี่ยง และสิ่งสนับสนุนที่เกี่ยวข้อง
+              - text: มารดาตีเด็กหลายครั้ง และมารดาดุด่าบุตรว่าเป็นภาระ
+            - generic [ref=e72]:
+              - generic [ref=e73]:
+                - generic [ref=e74]: shield_person
+                - text: หลีกเลี่ยงชื่อ เลขประจำตัว ที่อยู่ หรือข้อมูลที่ระบุตัวบุคคลได้
+              - button "โหลดเคสตัวอย่าง" [ref=e75] [cursor=pointer]
+          - group [ref=e76]:
+            - generic "การตั้งค่าการวิเคราะห์ขั้นสูง h2l-hybrid · L2 qwen2.5:7b · Top 5 · ตำแหน่งคำสำคัญ 0" [ref=e173] [cursor=pointer]:
+              - generic [ref=e78]:
+                - generic [ref=e79]: tune
+                - generic [ref=e80]:
+                  - generic [ref=e81]: การตั้งค่าการวิเคราะห์ขั้นสูง
+                  - generic [ref=e82]: h2l-hybrid · L2 qwen2.5:7b · Top 5 · ตำแหน่งคำสำคัญ 0
+              - generic [ref=e83]: expand_more
+            - generic [ref=e92]:
+              - generic [ref=e94]:
+                - generic [ref=e95]:
+                  - heading "ตำแหน่งคำหรือวลีสำคัญ" [level=2] [ref=e96]
+                  - paragraph [ref=e97]: เลือกข้อความในช่องเคส แล้วบันทึกตำแหน่งเมื่อคำเดียวกันปรากฏหลายครั้ง
+                - generic [ref=e98]:
+                  - generic [ref=e99]: 0 ตำแหน่ง
+                  - button "บันทึกช่วงที่เลือก" [disabled] [ref=e100]
+                  - button "ล้างทั้งหมด" [disabled] [ref=e101]
+              - group [ref=e102]:
+                - generic [ref=e103]:
+                  - generic [ref=e104]:
+                    - generic [ref=e105]: วิธีค้นคืนข้อมูล
+                    - paragraph [ref=e106]: เลือกเฉพาะเมื่อทำการเปรียบเทียบเชิงวิจัย
+                  - generic [ref=e107]: h2l-hybrid
+                - generic [ref=e108]:
+                  - button "BM25 ค้นจากคำตรงและคำใกล้เคียง เหมาะเป็นฐานเปรียบเทียบ lexical retrieval" [ref=e109] [cursor=pointer]:
+                    - generic [ref=e110]: BM25
+                    - generic [ref=e111]: ค้นจากคำตรงและคำใกล้เคียง เหมาะเป็นฐานเปรียบเทียบ lexical retrieval
+                  - button "Dense / Naive RAG ค้นด้วย embedding อย่างเดียว เพื่อดูผลของ semantic retrieval แบบพื้นฐาน" [ref=e112] [cursor=pointer]:
+                    - generic [ref=e113]: Dense / Naive RAG
+                    - generic [ref=e114]: ค้นด้วย embedding อย่างเดียว เพื่อดูผลของ semantic retrieval แบบพื้นฐาน
+                  - button "HyDE ให้ LLM สร้าง hypothetical document ก่อนค้น ถ้า LLM ไม่พร้อมจะ degraded อย่างชัดเจน" [ref=e115] [cursor=pointer]:
+                    - generic [ref=e116]: HyDE
+                    - generic [ref=e117]: ให้ LLM สร้าง hypothetical document ก่อนค้น ถ้า LLM ไม่พร้อมจะ degraded อย่างชัดเจน
+                  - button "Hybrid รวม BM25 + embedding + rerank เป็นค่าเริ่มต้นสำหรับเคสจริง" [pressed] [ref=e118] [cursor=pointer]:
+                    - generic [ref=e119]: Hybrid
+                    - generic [ref=e120]: รวม BM25 + embedding + rerank เป็นค่าเริ่มต้นสำหรับเคสจริง
+                - generic [ref=e121]:
+                  - generic [ref=e122]:
+                    - generic [ref=e123]: ระดับการประมวลผล
+                    - group "ระดับการประมวลผล" [ref=e124]:
+                      - button "Baseline basic" [ref=e125] [cursor=pointer]:
+                        - generic [ref=e126]: Baseline
+                        - generic [ref=e127]: basic
+                      - button "H2L Enhanced h2l-hybrid" [pressed] [ref=e128] [cursor=pointer]:
+                        - generic [ref=e129]: H2L Enhanced
+                        - generic [ref=e130]: h2l-hybrid
+                  - generic [ref=e131]:
+                    - generic [ref=e132]:
+                      - generic [ref=e133]: verified_user
+                      - generic [ref=e134]:
+                        - generic [ref=e135]: ตรวจสอบเชิงความหมาย L2
+                        - generic [ref=e136]: เพิ่มการตรวจบริบทโดยโมเดลภาษา
+                    - checkbox "เปิดการตรวจสอบเชิงความหมาย L2" [checked] [ref=e138]
+              - region [ref=e140]:
+                - generic [ref=e141]:
+                  - generic [ref=e142]:
+                    - generic [ref=e143]:
+                      - heading "โมเดลอ่านบริบท L2" [level=2] [ref=e144]
+                      - generic [ref=e145]: พร้อมใช้
+                    - paragraph [ref=e146]: เปลี่ยนเฉพาะ semantic validation โดย embedding, reranker และสูตร H2L คงเดิม
+                  - generic [ref=e147]:
+                    - generic [ref=e148]: เลือกโมเดลอ่านบริบท L2
+                    - combobox "เลือกโมเดลอ่านบริบท L2" [ref=e149]:
+                      - option "Qwen 2.5 7B (ค่าเริ่มต้น)" [selected]
+                      - option "Typhoon 2 8B Instruct"
+                    - paragraph [ref=e150]: 7.6B · 4.36 GiB · Current local baseline
+              - generic [ref=e152]:
+                - generic [ref=e153]:
+                  - generic [ref=e154]: จำนวนหลักฐานที่ค้นคืน
+                  - paragraph [ref=e155]: Top-K 5–20 รายการ
+                - generic [ref=e156]:
+                  - slider "จำนวนหลักฐาน Top K สำหรับเคส" [ref=e157] [cursor=pointer]: "5"
+                  - generic [ref=e158]:
+                    - button "5" [pressed] [ref=e159] [cursor=pointer]
+                    - button "10" [ref=e160] [cursor=pointer]
+                    - button "15" [ref=e161] [cursor=pointer]
+                    - button "20" [ref=e162] [cursor=pointer]
+                - generic [ref=e163]:
+                  - generic [ref=e164]: Top 5
+                  - generic [ref=e166]:
+                    - generic [ref=e167]: เฉพาะเจาะจง
+                    - generic [ref=e168]: ใช้กับเคสนี้
+          - generic [ref=e84]:
+            - paragraph [ref=e85]: พร้อมวิเคราะห์เคสและค้นหาแนวทางจากเอกสารจริง
+            - button "วิเคราะห์เคสและค้นหาแนวทาง" [ref=e269] [cursor=pointer]
+        - generic [ref=e270]:
+          - generic [ref=e271]:
+            - generic [ref=e272]:
+              - generic [ref=e273]:
+                - generic [ref=e274]:
+                  - generic [ref=e275]: Assessment summary
+                  - heading "สรุปการประเมินเคส" [level=2] [ref=e276]
+                - generic [ref=e277]: ผลจาก runtime ปัจจุบัน
+              - paragraph [ref=e278]: พบรหัสปัญหา 2 รายการ ระดับสูง 1 รายการ ระดับกลาง 1 รายการ และมีเอกสาร evidence จาก retrieval 5 รายการ ผลนี้เป็น decision support สำหรับ human review ไม่ใช่คำวินิจฉัยสุดท้าย
+              - generic [ref=e279]:
+                - generic "รายการที่ผ่านเกณฑ์ระบบ" [ref=e280]:
+                  - generic [ref=e281]: ประเด็นที่พบ
+                  - generic [ref=e282]: "2"
+                - generic "รายการที่ควรอ่านร่วมกับหลักฐาน" [ref=e284]:
+                  - generic [ref=e285]: ต้องทบทวน
+                  - generic [ref=e286]: "0"
+                - generic "เอกสารและแนวทางที่ค้นคืน" [ref=e288]:
+                  - generic [ref=e289]: หลักฐาน
+                  - generic [ref=e290]: "5"
+                - generic "1 รายการระดับสูง" [ref=e292]:
+                  - generic [ref=e293]: ระดับสูงสุด
+                  - generic [ref=e294]: "4"
+            - complementary [ref=e296]:
+              - generic [ref=e297]:
+                - generic [ref=e298]: ความปลอดภัยและความเร่งด่วน
+                - generic [ref=e299]: health_and_safety
+              - generic [ref=e300]: ต้องทบทวนโดยเร่งด่วน
+              - paragraph [ref=e301]: ระดับนี้อ้างอิงจาก severity สูงสุดของประเด็นที่ระบบพบ และต้องอ่านร่วมกับบริบทจริงโดยผู้ปฏิบัติงาน
+              - generic [ref=e302]:
+                - generic [ref=e303]:
+                  - generic [ref=e304]: High risk
+                  - strong [ref=e305]: "1"
+                - generic [ref=e306]:
+                  - generic [ref=e307]: Review load
+                  - strong [ref=e308]: "0"
+          - generic [ref=e309]:
+            - generic [ref=e310]:
+              - generic [ref=e311]:
+                - generic [ref=e312]:
+                  - heading "ประเด็นปัญหาและความต้องการ" [level=2] [ref=e313]
+                  - paragraph [ref=e314]: เปิดแต่ละรายการเพื่อดูเหตุผล ระบุผลการทบทวน และเชื่อมโยงหลักฐาน
+                - generic [ref=e315]:
+                  - generic [ref=e316]: 2 รายการ
+                  - generic [ref=e317]: ค้างทบทวน 2
+              - generic [ref=e318]:
+                - article [ref=e319]:
+                  - 'button "0206 การกระทำทารุณกรรมต่อบุตร/พ่อแม่ 02: ปัญหาระหว่างบิดา มารดา บุตร ระบบพบหลักฐานสนับสนุน ความรุนแรง 4/5 ความมั่นใจ 79.0% ซ่อนรายละเอียด" [expanded] [active] [ref=e499] [cursor=pointer]':
+                    - generic [ref=e321]:
+                      - generic [ref=e322]: "0206"
+                      - generic [ref=e323]:
+                        - generic [ref=e324]: การกระทำทารุณกรรมต่อบุตร/พ่อแม่
+                        - generic [ref=e325]: "02: ปัญหาระหว่างบิดา มารดา บุตร"
+                        - generic [ref=e326]:
+                          - generic [ref=e327]: ระบบพบหลักฐานสนับสนุน
+                          - generic [ref=e328]: ความรุนแรง 4/5
+                          - generic [ref=e329]: ความมั่นใจ 79.0%
+                    - generic [ref=e330]:
+                      - generic [ref=e331]: ซ่อนรายละเอียด
+                      - generic [ref=e332]: expand_more
+                  - generic [ref=e500]:
+                    - generic [ref=e501]:
+                      - generic [ref=e502]:
+                        - generic [ref=e503]:
+                          - generic [ref=e504]: rule
+                          - text: ระดับการตรวจพบ
+                        - paragraph [ref=e505]: L1
+                        - paragraph [ref=e506]: บริบทสนับสนุนผลที่พบ
+                      - generic [ref=e507]:
+                        - generic [ref=e508]: คำและวลีที่เชื่อมโยง
+                        - generic [ref=e509]:
+                          - generic [ref=e510]: ตี
+                          - generic [ref=e511]: ตีเด็ก
+                          - generic [ref=e512]: ดุด่า
+                    - generic [ref=e513]:
+                      - generic [ref=e514]: เหตุผลที่ระบบเชื่อมโยง
+                      - paragraph [ref=e515]: มารดามีการดุด่าต่อลูก จากบริบทว่า "มารดาดุด่าบุตรว่าเป็นภาระ" โดยมีข้อบ่งชี้คือ ตี, ตีเด็ก, ดุด่า
+                      - blockquote [ref=e516]: "ข้อความจากเคส: “มารดาดุด่าบุตรว่าเป็นภาระ”"
+                      - generic [ref=e517]:
+                        - generic [ref=e518]: มิติของเหตุการณ์ที่มีหลักฐานรองรับ
+                        - generic [ref=e519]:
+                          - generic [ref=e520]:
+                            - generic [ref=e521]: ความรุนแรงทางร่างกาย
+                            - paragraph [ref=e522]: มารดาเป็นผู้กระทำความรุนแรงทางร่างกายต่อผู้รับบริการ/เด็ก จากบริบทว่า "มารดาตีเด็กหลายครั้ง" โดยมีข้อบ่งชี้คือ ตีเด็ก, ตี
+                          - generic [ref=e523]:
+                            - generic [ref=e524]: ความรุนแรงทางจิตใจ
+                            - paragraph [ref=e525]: มารดาเป็นผู้กระทำความรุนแรงทางจิตใจต่อลูก จากบริบทว่า "มารดาดุด่าบุตรว่าเป็นภาระ" โดยมีข้อบ่งชี้คือ ดุด่า
+                      - group [ref=e526]:
+                        - generic "ดูเหตุผลจาก detector" [ref=e527] [cursor=pointer]
+                      - paragraph [ref=e528]:
+                        - strong [ref=e529]: "ข้อควรพิจารณา:"
+                        - text: "ความเสี่ยงสูง ต้องมีผู้เชี่ยวชาญทบทวน; detector มั่นใจสูง; keyword หลัก: ตี, ตีเด็ก, ดุด่า"
+                    - generic [ref=e530]:
+                      - generic [ref=e531]:
+                        - generic [ref=e532]:
+                          - generic [ref=e533]: การตัดสินใจของผู้ทบทวน
+                          - paragraph [ref=e534]: เลือกสถานะจากข้อมูลเคสจริง ระบบจะนำไปใช้เมื่อส่งต่อให้ผู้เชี่ยวชาญ
+                        - generic [ref=e535]: กำลังเชื่อมโยงหลักฐาน
+                      - group "สถานะการทบทวนประเด็น 0206" [ref=e536]:
+                        - button "รับไว้" [ref=e537] [cursor=pointer]:
+                          - generic [ref=e538]: check_circle
+                          - text: รับไว้
+                        - button "ต้องทบทวน" [ref=e539] [cursor=pointer]:
+                          - generic [ref=e540]: help
+                          - text: ต้องทบทวน
+                        - button "ไม่นำไปใช้" [ref=e541] [cursor=pointer]:
+                          - generic [ref=e542]: block
+                          - text: ไม่นำไปใช้
+                      - paragraph [ref=e543]: ยังไม่ได้ระบุสถานะรายการนี้
+                - article [ref=e333]:
+                  - 'button "0201 ปัญหาพฤติกรรมไม่เหมาะสม (พ่อ/แม่/ลูก) 02: ปัญหาระหว่างบิดา มารดา บุตร ระบบพบหลักฐานสนับสนุน ความรุนแรง 3/5 ความมั่นใจ 63.4% ดูเหตุผล" [ref=e334] [cursor=pointer]':
+                    - generic [ref=e335]:
+                      - generic [ref=e336]: "0201"
+                      - generic [ref=e337]:
+                        - generic [ref=e338]: ปัญหาพฤติกรรมไม่เหมาะสม (พ่อ/แม่/ลูก)
+                        - generic [ref=e339]: "02: ปัญหาระหว่างบิดา มารดา บุตร"
+                        - generic [ref=e340]:
+                          - generic [ref=e341]: ระบบพบหลักฐานสนับสนุน
+                          - generic [ref=e342]: ความรุนแรง 3/5
+                          - generic [ref=e343]: ความมั่นใจ 63.4%
+                    - generic [ref=e344]:
+                      - generic [ref=e345]: ดูเหตุผล
+                      - generic [ref=e346]: expand_more
+            - complementary [ref=e347]:
+              - generic [ref=e348]:
+                - generic [ref=e349]:
+                  - generic [ref=e350]: assignment
+                  - heading "เครื่องมือประเมินที่แนะนำ" [level=2] [ref=e351]
+                - generic [ref=e352]:
+                  - generic [ref=e353]:
+                    - generic [ref=e354]:
+                      - generic [ref=e355]: การติดตามเยี่ยมบ้าน
+                      - generic [ref=e356]: ต่ำ
+                    - generic [ref=e357]: ติดตามความก้าวหน้า
+                  - generic [ref=e358]:
+                    - generic [ref=e359]:
+                      - generic [ref=e360]: การประเมินความพร้อมครอบครัว (F.R.A.)
+                      - generic [ref=e361]: สูง
+                    - generic [ref=e362]: ประเมินความปลอดภัยครอบครัว
+                  - generic [ref=e363]:
+                    - generic [ref=e364]:
+                      - generic [ref=e365]: S.D.M.A. (ประเมินวินิจฉัยทางสังคม)
+                      - generic [ref=e366]: กลาง
+                    - generic [ref=e367]: เครื่องมือประเมินเบื้องต้น
+              - generic [ref=e368]:
+                - generic [ref=e369]:
+                  - generic [ref=e370]: tune
+                  - heading "วิธีที่ใช้วิเคราะห์" [level=2] [ref=e371]
+                - generic [ref=e372]:
+                  - generic [ref=e373]: Hybrid + H2L
+                  - paragraph [ref=e374]: รันผ่าน runtime retrieval จริง และใช้ H2L problem-aware scoring
+                  - generic [ref=e375]:
+                    - generic [ref=e376]:
+                      - term [ref=e377]: L2 model
+                      - definition [ref=e378]: ไม่ได้เรียกในเคสนี้
+                    - generic [ref=e379]:
+                      - term [ref=e380]: Embedding
+                      - definition [ref=e381]: intfloat/multilingual-e5-base
+                    - generic [ref=e382]:
+                      - term [ref=e383]: Reranker
+                      - definition [ref=e384]: BAAI/bge-reranker-v2-m3
+          - generic [ref=e385]:
+            - generic [ref=e386]:
+              - generic [ref=e387]:
+                - heading "หลักฐานและแนวทางที่เกี่ยวข้อง" [level=2] [ref=e388]
+                - paragraph [ref=e389]: เปิดแต่ละรายการเพื่อดูข้อความ แหล่งที่มา และเหตุผลเชื่อมโยง
+              - generic [ref=e390]:
+                - generic [ref=e391]: Top 5
+                - generic [ref=e392]: Returned 5
+                - generic [ref=e393]: h2l-hybrid
+            - status [ref=e544]:
+              - generic [ref=e545]:
+                - generic [ref=e546]: link
+                - generic [ref=e547]:
+                  - text: กำลังไฮไลต์หลักฐานของ
+                  - strong [ref=e548]: "0206"
+                  - text: · เชื่อมโยง 4 รายการ
+              - button "ล้างการไฮไลต์" [ref=e549] [cursor=pointer]
+            - generic [ref=e394]:
+              - group [ref=e395]:
+                - generic "1 Case CHILD_004 เด็กและเยาวชน เด็กชายอายุ 12 ปี ป.6 เข้ารับการรักษาจากอาการท้องเสียรุนแรง ตรวจพบว่าได้รับการทารุณกรรมจากบิดาเลี้ยง มีรอยช้ำที่แขนและหลังหลายจุด เด็กบอกว่าถูกตีบ่อยครั้งเพราะไม่ทำการบ้าน มารดาทำงานเป็นพนักงานบริษัทเอกชน กลับบ้านดึก ไม่ทราบเรื่องการทารุณกรรม บิดาเลี้ยงมีประวัติดื่มสุรา เด็กกลัวกลับบ้านและขอให้อยู่โรงพยาบาล คะแนน 2.74" [ref=e396] [cursor=pointer]:
+                  - generic [ref=e397]:
+                    - generic [ref=e398]: "1"
+                    - generic [ref=e399]:
+                      - generic [ref=e400]: Case CHILD_004
+                      - generic [ref=e401]: เด็กและเยาวชน
+                      - generic [ref=e402]: เด็กชายอายุ 12 ปี ป.6 เข้ารับการรักษาจากอาการท้องเสียรุนแรง ตรวจพบว่าได้รับการทารุณกรรมจากบิดาเลี้ยง มีรอยช้ำที่แขนและหลังหลายจุด เด็กบอกว่าถูกตีบ่อยครั้งเพราะไม่ทำการบ้าน มารดาทำงานเป็นพนักงานบริษัทเอกชน กลับบ้านดึก ไม่ทราบเรื่องการทารุณกรรม บิดาเลี้ยงมีประวัติดื่มสุรา เด็กกลัวกลับบ้านและขอให้อยู่โรงพยาบาล
+                  - generic [ref=e403]:
+                    - generic [ref=e404]: คะแนน 2.74
+                    - generic [ref=e405]: expand_more
+              - group [ref=e406]:
+                - generic "2 Case ELDER_008 ผู้สูงอายุ หญิงอายุ 75 ปี เข้ารับการรักษาจากถูกบุตรชายตี มีรอยช้ำที่ใบหน้า แขน และสะโพก กระดูกซี่โครงหัก 2 ซี่ บุตรชายอายุ 45 ปี ติดเหล้า ไม่มีงานทำ อาศัยอยู่กับมารดา ใช้เงินเบี้ยยังชีพของมารดาซื้อเหล้า เมื่อไม่มีเงินก็ใช้ความรุนแรง มารดาบอกว่าเกิดขึ้นบ่อยครั้งมาก 2 ปี แต่ไม่กล้าแจ้งตำรวจเพราะลูกคนเดียว กลัวถูกจับ บุตรชายปฏิเสธว่าทำร้าย อ้างว่ามารดาหกล้มเอง คะแนน 1.01" [ref=e407] [cursor=pointer]:
+                  - generic [ref=e408]:
+                    - generic [ref=e409]: "2"
+                    - generic [ref=e410]:
+                      - generic [ref=e411]: Case ELDER_008
+                      - generic [ref=e412]: ผู้สูงอายุ
+                      - generic [ref=e413]: หญิงอายุ 75 ปี เข้ารับการรักษาจากถูกบุตรชายตี มีรอยช้ำที่ใบหน้า แขน และสะโพก กระดูกซี่โครงหัก 2 ซี่ บุตรชายอายุ 45 ปี ติดเหล้า ไม่มีงานทำ อาศัยอยู่กับมารดา ใช้เงินเบี้ยยังชีพของมารดาซื้อเหล้า เมื่อไม่มีเงินก็ใช้ความรุนแรง มารดาบอกว่าเกิดขึ้นบ่อยครั้งมาก 2 ปี แต่ไม่กล้าแจ้งตำรวจเพราะลูกคนเดียว กลัวถูกจับ บุตรชายปฏิเสธว่าทำร้าย อ้างว่ามารดาหกล้มเอง
+                  - generic [ref=e414]:
+                    - generic [ref=e415]: คะแนน 1.01
+                    - generic [ref=e416]: expand_more
+              - group [ref=e417]:
+                - generic "3 Case CHILD_002 เด็กและเยาวชน เด็กชายอายุ 9 ปี ป.3 พิการทางสติปัญญาระดับปานกลาง IQ 52 ไม่สามารถอ่านออกเขียนได้ มีพฤติกรรมก้าวร้าว ตีเพื่อนบ่อยครั้ง มารดาเป็นโรคจิตเภท ไม่ได้รับยาสม่ำเสมอ บิดาทิ้งครอบครัวไปตั้งแต่เด็กอายุ 3 ขวบ ปัจจุบันอาศัยอยู่กับย่าอายุ 68 ปี รายได้จากเบี้ยยังชีพผู้สูงอายุ 600 บาทต่อเดือน โรงเรียนแจ้งว่าจะให้ลาออกเพราะเด็กทำร้ายเพื่อนหลายครั้ง ย่ากังวลเรื่องอนาคตของเด็กและไม่รู้จะจัดการพฤติกรรมอย่างไร คะแนน 0.93" [ref=e418] [cursor=pointer]:
+                  - generic [ref=e419]:
+                    - generic [ref=e420]: "3"
+                    - generic [ref=e421]:
+                      - generic [ref=e422]: Case CHILD_002
+                      - generic [ref=e423]: เด็กและเยาวชน
+                      - generic [ref=e424]: เด็กชายอายุ 9 ปี ป.3 พิการทางสติปัญญาระดับปานกลาง IQ 52 ไม่สามารถอ่านออกเขียนได้ มีพฤติกรรมก้าวร้าว ตีเพื่อนบ่อยครั้ง มารดาเป็นโรคจิตเภท ไม่ได้รับยาสม่ำเสมอ บิดาทิ้งครอบครัวไปตั้งแต่เด็กอายุ 3 ขวบ ปัจจุบันอาศัยอยู่กับย่าอายุ 68 ปี รายได้จากเบี้ยยังชีพผู้สูงอายุ 600 บาทต่อเดือน โรงเรียนแจ้งว่าจะให้ลาออกเพราะเด็กทำร้ายเพื่อนหลายครั้ง ย่ากังวลเรื่องอนาคตของเด็กและไม่รู้จะจัดการพฤติกรรมอย่างไร
+                  - generic [ref=e425]:
+                    - generic [ref=e426]: คะแนน 0.93
+                    - generic [ref=e427]: expand_more
+            - group [ref=e428]:
+              - generic "แสดงหลักฐานเพิ่มเติมอีก 2 รายการ" [ref=e429] [cursor=pointer]: expand_more
+            - group [ref=e432]:
+              - generic "รายละเอียดคะแนน H2L ของเอกสาร" [ref=e433] [cursor=pointer]: expand_more
+          - group [ref=e436]:
+            - generic [ref=e437] [cursor=pointer]:
+              - generic [ref=e438]:
+                - generic [ref=e439]: data_object
+                - text: รายละเอียดทางเทคนิค
+              - generic [ref=e440]: expand_more
+        - region [ref=e441]:
+          - generic [ref=e442]:
+            - generic [ref=e443]:
+              - generic [ref=e444]:
+                - generic [ref=e445]: fact_check
+                - heading "การทบทวนโดยผู้ปฏิบัติงาน" [level=2] [ref=e446]
+              - paragraph [ref=e447]: บันทึกประเด็นที่แตกต่างจากผลของระบบก่อนส่งเข้าสู่การทบทวนโดยผู้เชี่ยวชาญ
+            - generic [ref=e448]: รอการทบทวน
+          - generic "สรุปสถานะการทบทวนประเด็น" [ref=e449]:
+            - generic [ref=e450]:
+              - strong [ref=e451]: "0"
+              - generic [ref=e452]: รับไว้
+            - generic [ref=e453]:
+              - strong [ref=e454]: "0"
+              - generic [ref=e455]: ต้องทบทวน
+            - generic [ref=e456]:
+              - strong [ref=e457]: "0"
+              - generic [ref=e458]: ไม่นำไปใช้
+            - generic [ref=e459]:
+              - strong [ref=e460]: "2"
+              - generic [ref=e461]: ยังไม่ระบุ
+          - generic [ref=e462]:
+            - generic [ref=e463]:
+              - generic [ref=e464]:
+                - generic [ref=e465]:
+                  - generic [ref=e466]: เพิ่มประเด็นที่ระบบไม่พบ
+                  - textbox "เพิ่มประเด็นที่ระบบไม่พบ คั่นหลายรหัสด้วยเครื่องหมายจุลภาค" [ref=e467]:
+                    - /placeholder: เช่น 0102, F32
+                  - generic [ref=e468]: คั่นหลายรหัสด้วยเครื่องหมายจุลภาค
+                - generic [ref=e469]:
+                  - generic [ref=e470]: เพิ่มรหัสที่ไม่นำไปใช้
+                  - textbox "เพิ่มรหัสที่ไม่นำไปใช้ ใช้เมื่อข้อมูลจริงไม่สนับสนุนข้อเสนอของระบบ" [ref=e471]:
+                    - /placeholder: เช่น Z63
+                  - generic [ref=e472]: ใช้เมื่อข้อมูลจริงไม่สนับสนุนข้อเสนอของระบบ
+              - generic [ref=e473]:
+                - generic [ref=e474]: บันทึกของผู้ทบทวน
+                - textbox "บันทึกของผู้ทบทวน" [ref=e475]:
+                  - /placeholder: บันทึกข้อสังเกต การตรวจสอบเพิ่มเติม หรือเหตุผลประกอบการตัดสินใจ
+              - generic [ref=e476]:
+                - button "จัดเตรียมข้อมูลสำหรับทบทวนซ้ำ" [ref=e477] [cursor=pointer]
+                - button "ส่งเพื่อให้ผู้เชี่ยวชาญทบทวน" [disabled] [ref=e478]
+              - paragraph [ref=e479]: กรุณาระบุสถานะ finding ที่เหลือ 2 รายการก่อนส่ง
+            - complementary [ref=e480]:
+              - heading "สถานะการทบทวน" [level=3] [ref=e481]
+              - generic [ref=e482]:
+                - generic [ref=e483]:
+                  - generic [ref=e484]: check_circle
+                  - generic [ref=e485]: วิเคราะห์เคสปัจจุบันแล้ว
+                - generic [ref=e486]:
+                  - generic [ref=e487]: radio_button_unchecked
+                  - generic [ref=e488]: ระบุสถานะประเด็นครบแล้ว
+                - generic [ref=e489]:
+                  - generic [ref=e490]: radio_button_unchecked
+                  - generic [ref=e491]: บันทึกข้อสังเกตหรือ override (ถ้ามี)
+                - generic [ref=e492]:
+                  - generic [ref=e493]: radio_button_unchecked
+                  - generic [ref=e494]: ส่งเข้าสู่ human review
+        - generic [ref=e495]:
+          - generic [ref=e496]: API runtime-rag-h2l · เวลาประมวลผล 17.420 วินาที · runtime ready
+          - generic [ref=e497]: Decision support · Human review required

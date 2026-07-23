@@ -1,0 +1,229 @@
+- generic [ref=e3]:
+  - link "ข้ามไปยังเนื้อหาหลัก" [ref=e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - complementary [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: health_and_safety
+      - generic [ref=e10]:
+        - generic [ref=e11]: H2L Clinical Social Work
+        - generic [ref=e12]: Health decision support
+    - navigation "เมนูหลัก" [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: งานสังคมสงเคราะห์คลินิก
+        - button "ทบทวนเคส Case review and professional assessment" [ref=e18] [cursor=pointer]:
+          - generic [ref=e19]: clinical_notes
+          - generic [ref=e20]:
+            - generic [ref=e21]: ทบทวนเคส
+            - generic [ref=e22]: Case review and professional assessment
+      - generic [ref=e23]:
+        - generic [ref=e24]: ความโปร่งใสและการตรวจสอบ
+        - button "เหตุผลของระบบ Language, evidence map and processing trace" [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]: manage_search
+          - generic [ref=e28]:
+            - generic [ref=e29]: เหตุผลของระบบ
+            - generic [ref=e30]: Language, evidence map and processing trace
+      - generic [ref=e31]:
+        - generic [ref=e32]: คุณภาพและงานวิจัย
+        - button "หลักฐานงานวิจัย Benchmark, statistics and provenance" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: query_stats
+          - generic [ref=e36]:
+            - generic [ref=e37]: หลักฐานงานวิจัย
+            - generic [ref=e38]: Benchmark, statistics and provenance
+    - generic [ref=e39]:
+      - button "ตรวจสอบระบบ" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: monitor_heart
+        - text: ตรวจสอบระบบ
+      - generic [ref=e42]:
+        - generic [ref=e43]: shield_person
+        - generic [ref=e44]: ใช้ข้อมูลที่ลดการระบุตัวบุคคล และให้ผู้เชี่ยวชาญทบทวนก่อนตัดสินใจเสมอ
+  - banner [ref=e45]:
+    - generic [ref=e46]:
+      - generic [ref=e48]:
+        - generic [ref=e49]: ทบทวนเคส
+        - generic [ref=e50]: Case review and professional assessment
+      - generic [ref=e51]:
+        - 'button "สถานะระบบ: ระบบพร้อม. กดเพื่อตรวจสอบอีกครั้ง" [ref=e52] [cursor=pointer]':
+          - generic [ref=e54]: ระบบพร้อม
+        - button "เปลี่ยนเป็นโหมดมืด" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: dark_mode
+        - generic [ref=e57]: กำลังวิเคราะห์
+  - main [ref=e58]:
+    - generic [ref=e59]:
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - generic [ref=e176]: info
+          - generic [ref=e177]:
+            - heading "กำลังวิเคราะห์เคสและค้นหาแนวทาง" [level=2] [ref=e178]
+            - paragraph [ref=e179]: วิธีที่ร้องขอ h2l-hybrid · L2 qwen2.5:7b · หลักฐาน Top 5
+        - button "ปิดข้อความสถานะ" [ref=e180] [cursor=pointer]:
+          - generic [ref=e181]: close
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - generic [ref=e63]:
+              - generic [ref=e64]: Clinical case workspace
+              - heading "ประเมินเคสสังคมสงเคราะห์ทางคลินิก" [level=1] [ref=e65]
+              - paragraph [ref=e66]: บันทึกสถานการณ์ทางสังคม สุขภาพ ครอบครัว และความเสี่ยงที่เกี่ยวข้อง เพื่อใช้ประกอบการทบทวนโดยผู้ปฏิบัติงาน
+            - generic [ref=e67]: ยังไม่ได้ประเมิน
+          - generic [ref=e69]:
+            - generic [ref=e70]: รายละเอียดสถานการณ์และบริบทสุขภาพ *
+            - textbox "รายละเอียดสถานการณ์และบริบทสุขภาพ *" [ref=e71]:
+              - /placeholder: ระบุสถานการณ์ ความสัมพันธ์ สภาพครอบครัว ปัจจัยสุขภาพ ความเสี่ยง และสิ่งสนับสนุนที่เกี่ยวข้อง
+              - text: มารดาตีเด็กหลายครั้ง และมารดาดุด่าบุตรว่าเป็นภาระ
+            - generic [ref=e72]:
+              - generic [ref=e73]:
+                - generic [ref=e74]: shield_person
+                - text: หลีกเลี่ยงชื่อ เลขประจำตัว ที่อยู่ หรือข้อมูลที่ระบุตัวบุคคลได้
+              - button "โหลดเคสตัวอย่าง" [ref=e75] [cursor=pointer]
+          - group [ref=e76]:
+            - generic "การตั้งค่าการวิเคราะห์ขั้นสูง h2l-hybrid · L2 qwen2.5:7b · Top 5 · ตำแหน่งคำสำคัญ 0" [ref=e173] [cursor=pointer]:
+              - generic [ref=e78]:
+                - generic [ref=e79]: tune
+                - generic [ref=e80]:
+                  - generic [ref=e81]: การตั้งค่าการวิเคราะห์ขั้นสูง
+                  - generic [ref=e82]: h2l-hybrid · L2 qwen2.5:7b · Top 5 · ตำแหน่งคำสำคัญ 0
+              - generic [ref=e83]: expand_more
+            - generic [ref=e92]:
+              - generic [ref=e94]:
+                - generic [ref=e95]:
+                  - heading "ตำแหน่งคำหรือวลีสำคัญ" [level=2] [ref=e96]
+                  - paragraph [ref=e97]: เลือกข้อความในช่องเคส แล้วบันทึกตำแหน่งเมื่อคำเดียวกันปรากฏหลายครั้ง
+                - generic [ref=e98]:
+                  - generic [ref=e99]: 0 ตำแหน่ง
+                  - button "บันทึกช่วงที่เลือก" [disabled] [ref=e100]
+                  - button "ล้างทั้งหมด" [disabled] [ref=e101]
+              - group [ref=e102]:
+                - generic [ref=e103]:
+                  - generic [ref=e104]:
+                    - generic [ref=e105]: วิธีค้นคืนข้อมูล
+                    - paragraph [ref=e106]: เลือกเฉพาะเมื่อทำการเปรียบเทียบเชิงวิจัย
+                  - generic [ref=e107]: h2l-hybrid
+                - generic [ref=e108]:
+                  - button "BM25 ค้นจากคำตรงและคำใกล้เคียง เหมาะเป็นฐานเปรียบเทียบ lexical retrieval" [disabled] [ref=e109]:
+                    - generic [ref=e110]: BM25
+                    - generic [ref=e111]: ค้นจากคำตรงและคำใกล้เคียง เหมาะเป็นฐานเปรียบเทียบ lexical retrieval
+                  - button "Dense / Naive RAG ค้นด้วย embedding อย่างเดียว เพื่อดูผลของ semantic retrieval แบบพื้นฐาน" [disabled] [ref=e112]:
+                    - generic [ref=e113]: Dense / Naive RAG
+                    - generic [ref=e114]: ค้นด้วย embedding อย่างเดียว เพื่อดูผลของ semantic retrieval แบบพื้นฐาน
+                  - button "HyDE ให้ LLM สร้าง hypothetical document ก่อนค้น ถ้า LLM ไม่พร้อมจะ degraded อย่างชัดเจน" [disabled] [ref=e115]:
+                    - generic [ref=e116]: HyDE
+                    - generic [ref=e117]: ให้ LLM สร้าง hypothetical document ก่อนค้น ถ้า LLM ไม่พร้อมจะ degraded อย่างชัดเจน
+                  - button "Hybrid รวม BM25 + embedding + rerank เป็นค่าเริ่มต้นสำหรับเคสจริง" [disabled] [pressed] [ref=e118]:
+                    - generic [ref=e119]: Hybrid
+                    - generic [ref=e120]: รวม BM25 + embedding + rerank เป็นค่าเริ่มต้นสำหรับเคสจริง
+                - generic [ref=e121]:
+                  - generic [ref=e122]:
+                    - generic [ref=e123]: ระดับการประมวลผล
+                    - group "ระดับการประมวลผล" [ref=e124]:
+                      - button "Baseline basic" [disabled] [ref=e125]:
+                        - generic [ref=e126]: Baseline
+                        - generic [ref=e127]: basic
+                      - button "H2L Enhanced h2l-hybrid" [disabled] [pressed] [ref=e128]:
+                        - generic [ref=e129]: H2L Enhanced
+                        - generic [ref=e130]: h2l-hybrid
+                  - generic [ref=e131]:
+                    - generic [ref=e132]:
+                      - generic [ref=e133]: verified_user
+                      - generic [ref=e134]:
+                        - generic [ref=e135]: ตรวจสอบเชิงความหมาย L2
+                        - generic [ref=e136]: เพิ่มการตรวจบริบทโดยโมเดลภาษา
+                    - checkbox "เปิดการตรวจสอบเชิงความหมาย L2" [checked] [disabled] [ref=e138]
+              - region [ref=e140]:
+                - generic [ref=e141]:
+                  - generic [ref=e142]:
+                    - generic [ref=e143]:
+                      - heading "โมเดลอ่านบริบท L2" [level=2] [ref=e144]
+                      - generic [ref=e145]: พร้อมใช้
+                    - paragraph [ref=e146]: เปลี่ยนเฉพาะ semantic validation โดย embedding, reranker และสูตร H2L คงเดิม
+                  - generic [ref=e147]:
+                    - generic [ref=e148]: เลือกโมเดลอ่านบริบท L2
+                    - combobox "เลือกโมเดลอ่านบริบท L2" [disabled] [ref=e149]:
+                      - option "Qwen 2.5 7B (ค่าเริ่มต้น)" [selected]
+                      - option "Typhoon 2 8B Instruct"
+                    - paragraph [ref=e150]: 7.6B · 4.36 GiB · Current local baseline
+              - generic [ref=e152]:
+                - generic [ref=e153]:
+                  - generic [ref=e154]: จำนวนหลักฐานที่ค้นคืน
+                  - paragraph [ref=e155]: Top-K 5–20 รายการ
+                - generic [ref=e156]:
+                  - slider "จำนวนหลักฐาน Top K สำหรับเคส" [disabled] [ref=e157]: "5"
+                  - generic [ref=e158]:
+                    - button "5" [disabled] [pressed] [ref=e159]
+                    - button "10" [disabled] [ref=e160]
+                    - button "15" [disabled] [ref=e161]
+                    - button "20" [disabled] [ref=e162]
+                - generic [ref=e163]:
+                  - generic [ref=e164]: Top 5
+                  - generic [ref=e166]:
+                    - generic [ref=e167]: เฉพาะเจาะจง
+                    - generic [ref=e168]: ใช้กับเคสนี้
+          - generic [ref=e84]:
+            - paragraph [ref=e85]: พร้อมวิเคราะห์เคสและค้นหาแนวทางจากเอกสารจริง
+            - button "กำลังวิเคราะห์เคส…" [disabled] [ref=e182]
+        - generic [ref=e184]:
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - generic [ref=e188]: data_object
+              - generic [ref=e190]:
+                - generic [ref=e191]: Live Processing
+                - heading "กำลังประมวลผลเคสจริง" [level=3] [ref=e192]
+                - paragraph [ref=e193]: Runtime กำลังวิเคราะห์ด้วย h2l-hybrid; หน้านี้เป็น live progress ระหว่างรอผลลัพธ์จาก API จริง
+            - generic [ref=e194]:
+              - generic [ref=e195]: 6.0s
+              - generic [ref=e196]: ready
+          - generic [ref=e198]:
+            - generic [ref=e199]: Estimated runtime progress
+            - generic [ref=e200]: 72%
+          - generic [ref=e203]:
+            - button "done Prepare Case ส่งข้อความเคสและ strategy ไปยัง runtime จริง" [ref=e204] [cursor=pointer]:
+              - generic [ref=e205]:
+                - generic [ref=e206]: check
+                - generic [ref=e208]: done
+              - heading "Prepare Case" [level=4] [ref=e209]
+              - paragraph [ref=e210]: ส่งข้อความเคสและ strategy ไปยัง runtime จริง
+            - button "done Sentence Profile อ่าน polarity, actors, negation และบริบทประโยค" [ref=e211] [cursor=pointer]:
+              - generic [ref=e212]:
+                - generic [ref=e213]: check
+                - generic [ref=e215]: done
+              - heading "Sentence Profile" [level=4] [ref=e216]
+              - paragraph [ref=e217]: อ่าน polarity, actors, negation และบริบทประโยค
+            - button "done L1 Detection ค้น candidate problem codes ด้วย keyword และ rule layer" [ref=e218] [cursor=pointer]:
+              - generic [ref=e219]:
+                - generic [ref=e220]: check
+                - generic [ref=e222]: done
+              - heading "L1 Detection" [level=4] [ref=e223]
+              - paragraph [ref=e224]: ค้น candidate problem codes ด้วย keyword และ rule layer
+            - button "running Evidence Retrieval ดึงเอกสารหลักฐานด้วย retrieval strategy ที่เลือก" [ref=e225] [cursor=pointer]:
+              - generic [ref=e226]:
+                - generic [ref=e227]: travel_explore
+                - generic [ref=e229]: running
+              - heading "Evidence Retrieval" [level=4] [ref=e230]
+              - paragraph [ref=e231]: ดึงเอกสารหลักฐานด้วย retrieval strategy ที่เลือก
+            - button "queued L2 Validation ตรวจ semantic/context ด้วย qwen2.5:7b" [ref=e232] [cursor=pointer]:
+              - generic [ref=e233]:
+                - generic [ref=e234]: auto_awesome
+                - generic [ref=e236]: queued
+              - heading "L2 Validation" [level=4] [ref=e237]
+              - paragraph [ref=e238]: ตรวจ semantic/context ด้วย qwen2.5:7b
+            - button "queued Compose Result รวม final problems, trace, metrics และ visualization payload" [ref=e239] [cursor=pointer]:
+              - generic [ref=e240]:
+                - generic [ref=e241]: fact_check
+                - generic [ref=e243]: queued
+              - heading "Compose Result" [level=4] [ref=e244]
+              - paragraph [ref=e245]: รวม final problems, trace, metrics และ visualization payload
+          - generic [ref=e246]:
+            - generic [ref=e247]:
+              - generic [ref=e248]:
+                - generic [ref=e249]:
+                  - generic [ref=e250]: Current Stage
+                  - heading "Evidence Retrieval" [level=4] [ref=e251]
+                - generic [ref=e252]: travel_explore
+              - paragraph [ref=e254]: ดึงเอกสารหลักฐานด้วย retrieval strategy ที่เลือก
+            - generic [ref=e255]:
+              - generic [ref=e256]: Request Telemetry
+              - generic [ref=e257]:
+                - generic [ref=e258]: chars 49
+                - generic [ref=e259]: h2l-hybrid
+                - generic [ref=e260]: L2 true
+                - generic [ref=e261]: Top 5
+              - paragraph [ref=e262]: ระบบยังไม่แสดงผลลัพธ์เดิมปนกับเคสนี้ จนกว่า API จะส่ง response กลับมาและสร้าง trace ใหม่สำเร็จ

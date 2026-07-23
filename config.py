@@ -19,6 +19,11 @@ def _as_bool(s: str, default=False):
         return default
     return str(s).lower() in {"1", "true", "yes", "y", "on"}
 
+
+def _as_csv_list(value: str, default):
+    raw_values = str(value or "").split(",") if value else list(default)
+    return tuple(dict.fromkeys(item.strip() for item in raw_values if item and item.strip()))
+
 def _default_device() -> str:
     """Pick a safe default device for local Mac and Linux/cloud runtimes."""
     explicit_device = os.getenv("DEVICE")
@@ -87,6 +92,14 @@ class Config:
     LOCAL_LLM_BASE_URL = os.getenv("LOCAL_LLM_BASE_URL", "http://localhost:11434/v1")
     LOCAL_LLM_MODEL = os.getenv("LOCAL_LLM_MODEL", "qwen2.5:7b")
     OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+    L2_MODEL_OPTIONS = _as_csv_list(
+        os.getenv("L2_MODEL_OPTIONS"),
+        (
+            [LOCAL_LLM_MODEL, "scb10x/llama3.1-typhoon2-8b-instruct:latest"]
+            if USE_LOCAL_LLM
+            else [OPENROUTER_MODEL]
+        ),
+    )
     LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "2048"))
     LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.3"))
 

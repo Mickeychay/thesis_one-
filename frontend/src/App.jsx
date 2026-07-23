@@ -1,10 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import ClinicalShell from './components/ClinicalShell.jsx';
 
 const configuredApiBase = import.meta.env.VITE_API_BASE_URL?.trim();
 const API_BASE_URL = (configuredApiBase || (import.meta.env.DEV ? '/api' : '')).replace(/\/$/, '');
 const REQUEST_TIMEOUT_MS = 120000;
 const DOC_SCALING_OPTIONS = [5, 10, 15, 20];
 const DEFAULT_DOC_TOP_K = 15;
+const DEFAULT_L2_MODEL = 'qwen2.5:7b';
+const SAMPLE_CASE = 'เด็กหญิงถูกแม่ดุด่าเป็นประจำ ครอบครัวรายได้น้อย เครียดมากและไม่อยากไปโรงเรียน';
+const PUBLIC_DEMO_MODE = import.meta.env.VITE_PUBLIC_DEMO === 'true';
 
 const DEFAULT_STRATEGY_PAIRS = [
   { family: 'bm25', label: 'BM25', baseline: 'bm25_only', enhanced: 'h2l-bm25', description: 'ค้นจากคำตรงและคำใกล้เคียง' },
@@ -26,7 +30,7 @@ const emptyResult = {
   top_k: DEFAULT_DOC_TOP_K,
   doc_scaling: { selected_top_k: DEFAULT_DOC_TOP_K, options: DOC_SCALING_OPTIONS },
   case_description: '',
-  severity_level: 'MILD',
+  severity_level: 'NOT_ASSESSED',
   problems: [],
   filtered_out: [],
   tools: [],
@@ -79,11 +83,42 @@ const emptyResult = {
 };
 
 const navItems = [
-  { id: 'analysis', label: 'Dashboard', icon: 'analytics' },
-  { id: 'pipeline', label: 'Runtime Flow', icon: 'account_tree' },
-  { id: 'keywords', label: 'Sentence Polarity', icon: 'biotech' },
-  { id: 'vectors', label: 'Semantic Map', icon: 'hub' },
-  { id: 'evaluation', label: 'Research Report', icon: 'query_stats' },
+  {
+    id: 'analysis',
+    label: 'ทบทวนเคส',
+    description: 'Case review and professional assessment',
+    icon: 'clinical_notes',
+    group: 'clinical',
+    groupLabel: 'งานสังคมสงเคราะห์คลินิก',
+  },
+  {
+    id: 'explainability',
+    label: 'เหตุผลของระบบ',
+    description: 'Language, evidence map and processing trace',
+    icon: 'manage_search',
+    group: 'explainability',
+    groupLabel: 'ความโปร่งใสและการตรวจสอบ',
+  },
+  {
+    id: 'evaluation',
+    label: 'หลักฐานงานวิจัย',
+    description: 'Benchmark, statistics and provenance',
+    icon: 'query_stats',
+    group: 'research',
+    groupLabel: 'คุณภาพและงานวิจัย',
+  },
+];
+
+const explainabilityTabs = [
+  { id: 'keywords', label: 'บริบทภาษา', icon: 'biotech' },
+  { id: 'pipeline', label: 'ลำดับการวิเคราะห์', icon: 'account_tree' },
+  { id: 'vectors', label: 'แผนที่หลักฐาน', icon: 'hub' },
+];
+
+const FINDING_REVIEW_OPTIONS = [
+  { id: 'accepted', label: 'รับไว้', icon: 'check_circle', tone: 'emerald' },
+  { id: 'review', label: 'ต้องทบทวน', icon: 'help', tone: 'amber' },
+  { id: 'excluded', label: 'ไม่นำไปใช้', icon: 'block', tone: 'slate' },
 ];
 
 function formatPercent(value) {
@@ -197,20 +232,20 @@ function statusTone(status) {
 
 function StatusBadge({ label, tone = 'neutral' }) {
   const toneClass = {
-    live: 'bg-teal-600 text-white',
-    warning: 'bg-yellow-100 text-yellow-950 dark:bg-yellow-900/70 dark:text-yellow-100',
-    error: 'bg-error-container text-on-error-container',
-    neutral: 'bg-surface-container-high text-on-surface-variant',
+    live: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200',
+    warning: 'bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-200',
+    error: 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-200',
+    neutral: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
   }[tone] || 'bg-surface-container-high text-on-surface-variant';
 
-  return <span className={`rounded px-2.5 py-1 text-[11px] font-bold uppercase ${toneClass}`}>{label}</span>;
+  return <span className={`inline-flex min-h-6 items-center rounded-full px-2.5 py-1 text-xs font-semibold leading-none ${toneClass}`}>{label}</span>;
 }
 
 function MetricTile({ label, value, hint, tone = 'bg-surface-container-lowest' }) {
   return (
-    <div className={`rounded-xl p-4 ${tone}`}>
-      <div className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{label}</div>
-      <div className="mt-2 font-headline text-2xl font-extrabold text-on-surface">{value}</div>
+    <div className={`min-h-[116px] rounded-lg p-4 transition-colors duration-200 ${tone}`} title={hint || label}>
+      <div className="text-xs font-semibold text-on-surface-variant">{label}</div>
+      <div className="mt-2 font-headline text-2xl font-bold tabular-nums text-on-surface">{value}</div>
       {hint && <div className="mt-1 text-xs leading-relaxed text-on-surface-variant">{hint}</div>}
     </div>
   );
@@ -258,7 +293,7 @@ function problemInterpretation(problem) {
 
 function resultInterpretation(result) {
   const problems = result.problems || [];
-  if (!problems.length) return 'ยังไม่มีผลจากเคสปัจจุบัน หรือ runtime ยังไม่พร้อมสำหรับการวิเคราะห์';
+  if (!problems.length) return 'ระบบไม่พบประเด็นที่ผ่านเกณฑ์จากข้อความที่ให้ ผลนี้ไม่ใช่การยืนยันว่าปลอดภัย ผู้ปฏิบัติงานยังต้องตรวจข้อมูลต้นฉบับ บริบทความเสี่ยง และข้อมูลที่อาจยังไม่ได้บันทึก';
   const high = problems.filter((item) => Number(item.severity || 1) >= 4).length;
   const moderate = problems.filter((item) => Number(item.severity || 1) === 3).length;
   const docs = result.retrieved_docs_count || 0;
@@ -331,107 +366,112 @@ function RuntimeBanner({ runtimeStatus, onRefresh }) {
   const status = runtimeStatus?.status || 'loading';
   const components = runtimeStatus?.components || {};
   const loadedCount = Object.values(components).filter(Boolean).length;
-  const totalCount = Object.keys(components).length || 1;
+  const totalCount = Object.keys(components).length;
   const errors = runtimeStatus?.errors || [];
-  const isWaiting = status === 'loading' || status === 'degraded';
+  const isLoading = status === 'loading';
+  const [expandedOverride, setExpandedOverride] = useState(null);
+  const detailsVisible = expandedOverride ?? status === 'error';
+  const percent = totalCount ? Math.round((loadedCount / totalCount) * 100) : status === 'ready' ? 100 : 0;
+  const statusMeta = {
+    ready: {
+      icon: 'verified',
+      title: 'ระบบพร้อมสำหรับการวิเคราะห์',
+      detail: 'โมเดล ดัชนีเอกสาร และระบบค้นคืนข้อมูลพร้อมใช้งาน',
+      tone: 'live',
+    },
+    degraded: {
+      icon: 'warning',
+      title: 'ระบบทำงานในโหมดจำกัด',
+      detail: 'บางองค์ประกอบไม่พร้อม ระบบจะระบุวิธีที่ใช้จริงในผลลัพธ์',
+      tone: 'warning',
+    },
+    loading: {
+      icon: 'progress_activity',
+      title: 'กำลังเตรียมระบบวิเคราะห์',
+      detail: 'กำลังโหลดโมเดลและดัชนีเอกสาร',
+      tone: 'neutral',
+    },
+    error: {
+      icon: 'error',
+      title: 'ไม่สามารถเชื่อมต่อระบบวิเคราะห์',
+      detail: 'ตรวจสอบ backend หรือกดตรวจสอบระบบอีกครั้ง',
+      tone: 'error',
+    },
+  }[status] || {
+    icon: 'info',
+    title: 'สถานะระบบไม่ทราบค่า',
+    detail: runtimeStatus?.stage || 'กรุณาตรวจสอบระบบ',
+    tone: 'neutral',
+  };
 
   return (
-    <section className={`mb-6 rounded-2xl p-6 shadow-sm border transition-all duration-500 ${
-      status === 'ready' 
-        ? 'bg-surface-container-low border-teal-500/20' 
-        : 'bg-surface-container-lowest border-yellow-500/30'
-    }`}>
-      <div className="flex flex-wrap items-start justify-between gap-6">
-        <div className="flex-1 min-w-[300px]">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-container-high text-teal-600">
-              <span className={`material-symbols-outlined text-2xl ${isWaiting ? 'animate-spin' : ''}`}>
-                {status === 'ready' ? 'verified' : 'sync'}
-              </span>
-            </div>
-            <div>
-              <h2 className="font-headline text-xl font-extrabold text-on-surface">System Core Runtime</h2>
-              <div className="flex gap-2 mt-1">
-                <StatusBadge 
-                  label={status === 'ready' ? 'System Ready' : status === 'degraded' ? 'Running Degraded' : status === 'loading' ? 'Models Loading' : 'Connection Error'} 
-                  tone={statusTone(status)} 
-                />
-                <StatusBadge 
-                  label={runtimeStatus?.l2_ready ? 'Semantic L2: OK' : 'Semantic L2: OFF'} 
-                  tone={runtimeStatus?.l2_ready ? 'live' : 'warning'} 
-                />
-              </div>
-            </div>
+    <section className="mb-5 overflow-hidden rounded-lg border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/60" aria-label="สถานะระบบวิเคราะห์">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${status === 'error' ? 'bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-300' : status === 'degraded' ? 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'}`}>
+            <span aria-hidden="true" className={`material-symbols-outlined text-[21px] ${isLoading ? 'animate-spin' : ''}`}>{statusMeta.icon}</span>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-on-surface-variant max-w-2xl">
-            <span className="font-bold text-on-surface">Stage:</span> {runtimeStatus?.stage || 'Initializing...'} — 
-            {status === 'loading' 
-              ? ' ระบบกำลังเตรียมโมเดลภาษาและการคำนวณเวกเตอร์ในพื้นหลัง กรุณารอสักครู่เพื่อให้การวิเคราะห์แม่นยำที่สุด' 
-              : status === 'degraded'
-              ? ' ระบบทำงานได้บางส่วน (Safe-Start) โดยจะใช้ BM25 เป็นหลัก หากต้องการใช้ Hybrid/Dense กรุณาตรวจสอบทรัพยากรเครื่อง'
-              : ' ระบบพร้อมทำงานเต็มประสิทธิภาพ ทั้ง Lexical Search และ Semantic Analysis'}
-          </p>
-          <div className="mt-5 flex items-center gap-4">
-            <div className="h-2.5 flex-1 max-w-[300px] overflow-hidden rounded-full bg-surface-container-high relative">
-              <div 
-                className={`h-full transition-all duration-1000 ease-out ${status === 'ready' ? 'bg-teal-500' : 'bg-yellow-400'}`} 
-                style={{ width: `${(loadedCount / totalCount) * 100}%` }}
-              />
-              {isWaiting && (
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-              )}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="truncate text-sm font-semibold text-on-surface">{statusMeta.title}</h2>
+              <StatusBadge label={runtimeStatus?.l2_ready ? 'L2 พร้อม' : 'L2 ไม่พร้อม'} tone={runtimeStatus?.l2_ready ? 'live' : 'warning'} />
             </div>
-            <span className="text-sm font-black text-on-surface tracking-tighter">
-              {Math.round((loadedCount / totalCount) * 100)}% COMPLETE
-            </span>
+            <p className="mt-0.5 truncate text-xs text-on-surface-variant">{statusMeta.detail}</p>
           </div>
         </div>
-        <button 
-          className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all active:scale-95 ${
-            isWaiting ? 'bg-teal-600 text-white animate-pulse' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
-          }`} 
-          onClick={onRefresh} 
-          type="button"
-        >
-          <span className={`material-symbols-outlined text-lg ${isWaiting ? 'animate-spin' : ''}`}>sync</span>
-          {isWaiting ? 'Loading Resources...' : 'Refresh Core'}
-        </button>
-      </div>
-      <div className="mt-8 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {Object.entries(components).map(([name, ready]) => (
-          <div 
-            key={name} 
-            className={`flex flex-col gap-1.5 rounded-xl p-3 text-xs transition-all border ${
-              ready 
-                ? 'bg-green-50 text-green-950 border-green-200 dark:bg-green-900/10 dark:text-green-100 dark:border-green-800' 
-                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/10 animate-pulse'
-            }`}
+        <div className="flex items-center gap-2">
+          <button
+            aria-label="ตรวจสอบสถานะระบบอีกครั้ง"
+            className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-slate-300 dark:hover:bg-slate-800"
+            onClick={onRefresh}
+            type="button"
           >
-            <div className="flex items-center justify-between">
-              <span className="font-black uppercase tracking-widest text-[9px] opacity-70">{ready ? 'Loaded' : 'Waiting'}</span>
-              <span className={`material-symbols-outlined text-sm ${ready ? 'text-green-600' : 'text-on-surface-variant/40 animate-spin'}`}>
-                {ready ? 'check_circle' : 'progress_activity'}
-              </span>
-            </div>
-            <span className="font-bold truncate text-sm text-on-surface">{name.replaceAll('_', ' ')}</span>
-          </div>
-        ))}
+            <span aria-hidden="true" className={`material-symbols-outlined text-[19px] ${isLoading ? 'animate-spin' : ''}`}>sync</span>
+            <span className="hidden sm:inline">ตรวจสอบอีกครั้ง</span>
+          </button>
+          <button
+            aria-expanded={detailsVisible}
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-slate-300 dark:hover:bg-slate-800"
+            onClick={() => setExpandedOverride(!detailsVisible)}
+            type="button"
+          >
+            <span aria-hidden="true" className={`material-symbols-outlined transition-transform ${detailsVisible ? 'rotate-180' : ''}`}>expand_more</span>
+            <span className="sr-only">{detailsVisible ? 'ซ่อนรายละเอียดระบบ' : 'แสดงรายละเอียดระบบ'}</span>
+          </button>
+        </div>
       </div>
-      {errors.length > 0 && (
-        <div className="mt-6 rounded-xl bg-yellow-50/50 p-4 text-sm text-yellow-950 border border-yellow-200 dark:bg-yellow-950/10 dark:text-yellow-100 dark:border-yellow-800 shadow-inner">
-          <div className="flex items-center gap-2 font-bold mb-2">
-            <span className="material-symbols-outlined text-lg">warning</span>
-            Degraded details
-          </div>
-          <ul className="space-y-1.5 opacity-90">
-            {errors.slice(0, 4).map((error, index) => (
-              <li key={`${error.component}-${index}`} className="flex items-start gap-2">
-                <span className="mt-1 h-1 w-1 rounded-full bg-yellow-600 shrink-0" />
-                <span className="font-semibold shrink-0">{error.component}:</span>
-                <span className="line-clamp-2 italic text-xs">{error.message}</span>
-              </li>
+
+      {isLoading && (
+        <div className="h-1 bg-slate-100 dark:bg-slate-800">
+          <div className="h-1 bg-teal-600 transition-[width] duration-300" style={{ width: `${percent}%` }} />
+        </div>
+      )}
+
+      {detailsVisible && (
+        <div className="border-t border-slate-200/80 bg-slate-50/70 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/30 sm:px-5">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {Object.entries(components).map(([name, ready]) => (
+              <div className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2.5 text-sm dark:bg-slate-900" key={name}>
+                <span className="truncate font-medium text-on-surface">{name.replaceAll('_', ' ')}</span>
+                <span aria-hidden="true" className={`material-symbols-outlined text-[18px] ${ready ? 'text-emerald-600 dark:text-emerald-300' : 'text-amber-500'}`}>{ready ? 'check_circle' : 'pending'}</span>
+              </div>
             ))}
-          </ul>
+            {!Object.keys(components).length && <div className="text-sm text-on-surface-variant">ยังไม่ได้รับรายละเอียดองค์ประกอบจาก runtime</div>}
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs text-on-surface-variant">
+            <span>Stage: <strong className="text-on-surface">{runtimeStatus?.stage || 'unknown'}</strong></span>
+            <span>พร้อม {loadedCount}/{totalCount || 0} องค์ประกอบ</span>
+          </div>
+          {errors.length > 0 && (
+            <div className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100" role="alert">
+              <div className="font-semibold">รายละเอียดที่ต้องตรวจสอบ</div>
+              <ul className="mt-2 space-y-1">
+                {errors.slice(0, 4).map((item, index) => (
+                  <li key={`${item.component}-${index}`}><strong>{item.component}:</strong> {item.message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </section>
@@ -447,166 +487,170 @@ function StrategySelector({ pairs, strategyOptions, selectedFamily, setSelectedF
   };
 
   return (
-    <div className="rounded-2xl bg-surface-container-lowest p-6 border border-outline-variant/10 shadow-sm">
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+    <fieldset className="rounded-lg bg-white p-4 dark:bg-slate-900/70 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h3 className="font-headline text-base font-bold text-on-surface">1. Select Retrieval Family</h3>
-              <p className="mt-1 text-xs text-on-surface-variant">เลือกฐานข้อมูลการค้นหา (Lexical vs Semantic)</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-on-surface-variant opacity-60 uppercase tracking-tighter">Current Strategy:</span>
-              <StatusBadge label={selectedStrategy} tone={selectedMode === 'enhanced' ? 'live' : 'neutral'} />
-            </div>
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {pairs.map((pair) => {
-              const baselineStatus = getOptionStatus(pair.baseline);
-              const enhancedStatus = getOptionStatus(pair.enhanced);
-              const isFamilyAvailable = baselineStatus.available || enhancedStatus.available;
-              const isActive = pair.family === selectedFamily;
-              
+          <legend className="font-headline text-base font-semibold text-on-surface">วิธีค้นคืนข้อมูล</legend>
+          <p className="mt-1 text-sm text-on-surface-variant">เลือกเฉพาะเมื่อทำการเปรียบเทียบเชิงวิจัย</p>
+        </div>
+        <StatusBadge label={selectedStrategy} tone={selectedMode === 'enhanced' ? 'live' : 'neutral'} />
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        {pairs.map((pair) => {
+          const baselineStatus = getOptionStatus(pair.baseline);
+          const enhancedStatus = getOptionStatus(pair.enhanced);
+          const isFamilyAvailable = baselineStatus.available || enhancedStatus.available;
+          const isActive = pair.family === selectedFamily;
+          return (
+            <button
+              aria-pressed={isActive}
+              className={`min-h-12 rounded-lg border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 ${
+                isActive
+                  ? 'border-teal-600 bg-teal-50 text-teal-900 dark:bg-teal-950/40 dark:text-teal-100'
+                  : 'border-slate-200 bg-slate-50 text-on-surface hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800/70 dark:hover:bg-slate-800'
+              }`}
+              disabled={disabled || !isFamilyAvailable}
+              key={pair.family}
+              onClick={() => setSelectedFamily(pair.family)}
+              type="button"
+            >
+              <span className="block text-sm font-semibold">{pair.label}</span>
+              <span className="mt-0.5 block line-clamp-1 text-xs text-on-surface-variant">{isFamilyAvailable ? pair.description : 'ไม่พร้อมใน runtime ปัจจุบัน'}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.7fr)] lg:items-start">
+        <div>
+          <div className="mb-2 text-sm font-semibold text-on-surface">ระดับการประมวลผล</div>
+          <div className="inline-grid w-full grid-cols-2 rounded-lg bg-slate-100 p-1 dark:bg-slate-800 sm:w-auto sm:min-w-[360px]" role="group" aria-label="ระดับการประมวลผล">
+            {[
+              { id: 'baseline', label: 'Baseline', strategy: selectedPair?.baseline },
+              { id: 'enhanced', label: 'H2L Enhanced', strategy: selectedPair?.enhanced },
+            ].map((mode) => {
+              const optionStatus = getOptionStatus(mode.strategy);
+              const active = selectedMode === mode.id;
               return (
                 <button
-                  key={pair.family}
-                  className={`group relative flex flex-col rounded-2xl border p-4 text-left transition-all ${
-                    isActive 
-                      ? 'border-teal-500 bg-teal-50/50 ring-2 ring-teal-500/20 dark:bg-teal-900/10' 
-                      : 'border-outline-variant/30 bg-surface-container-low hover:border-outline-variant hover:bg-surface-container'
-                  } ${!isFamilyAvailable ? 'opacity-70' : ''}`}
-                  disabled={disabled}
-                  onClick={() => setSelectedFamily(pair.family)}
+                  aria-pressed={active}
+                  className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 ${active ? 'bg-white text-[#0f766e] shadow-sm dark:bg-slate-700 dark:text-teal-200' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}
+                  disabled={disabled || !optionStatus.available}
+                  key={mode.id}
+                  onClick={() => setSelectedMode(mode.id)}
                   type="button"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className={`text-sm font-extrabold ${isActive ? 'text-teal-800 dark:text-teal-300' : 'text-on-surface'}`}>
-                      {pair.label}
-                    </span>
-                    {!isFamilyAvailable && (
-                      <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-[9px] font-black text-yellow-700 uppercase">fallback</span>
-                    )}
-                  </div>
-                  <span className="mt-2 text-[11px] leading-relaxed text-on-surface-variant group-hover:text-on-surface transition-colors">
-                    {pair.description}
-                  </span>
-                  {isActive && <div className="absolute -bottom-1.5 left-1/2 h-1.5 w-8 -translate-x-1/2 rounded-t-full bg-teal-500" />}
+                  <span className="block">{mode.label}</span>
+                  <span className="mt-0.5 block truncate text-xs font-normal opacity-70">{mode.strategy}</span>
                 </button>
               );
             })}
           </div>
         </div>
-        <div className="flex flex-col gap-4 border-l border-outline-variant/10 pl-0 lg:pl-6">
-          <div>
-            <h3 className="font-headline text-base font-bold text-on-surface">2. Enhancement Level</h3>
-            <p className="mt-1 text-xs text-on-surface-variant">เทียบผลระหว่าง RAG ปกติ กับ H2L-Scoring</p>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {(() => {
-              const status = getOptionStatus(selectedPair?.baseline);
-              return (
-                <button
-                  className={`relative flex flex-col rounded-2xl p-4 text-left transition-all ${
-                    selectedMode === 'baseline' ? 'bg-slate-900 text-white shadow-lg ring-4 ring-slate-900/10' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
-                  } ${!status.available ? 'opacity-70' : ''}`}
-                  disabled={disabled}
-                  onClick={() => setSelectedMode('baseline')}
-                  type="button"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase opacity-60">Baseline</span>
-                    {!status.available && <span className="text-[9px] font-black text-yellow-500">FALLBACK</span>}
-                  </div>
-                  <span className="mt-1 truncate font-headline text-lg font-black">{selectedPair?.baseline}</span>
-                  {selectedMode === 'baseline' && <span className="material-symbols-outlined absolute bottom-3 right-3 text-lg text-teal-400">check_circle</span>}
-                </button>
-              );
-            })()}
-            {(() => {
-              const status = getOptionStatus(selectedPair?.enhanced);
-              return (
-                <button
-                  className={`relative flex flex-col rounded-2xl p-4 text-left transition-all ${
-                    selectedMode === 'enhanced' ? 'bg-teal-600 text-white shadow-lg ring-4 ring-teal-600/10' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
-                  } ${!status.available ? 'opacity-70' : ''}`}
-                  disabled={disabled}
-                  onClick={() => setSelectedMode('enhanced')}
-                  type="button"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase opacity-80">H2L-Enhanced</span>
-                    {!status.available && <span className="text-[9px] font-black text-yellow-100">FALLBACK</span>}
-                  </div>
-                  <span className="mt-1 truncate font-headline text-lg font-black">{selectedPair?.enhanced}</span>
-                  {selectedMode === 'enhanced' && <span className="material-symbols-outlined absolute bottom-3 right-3 text-lg text-white">verified</span>}
-                </button>
-              );
-            })()}
-          </div>
-          <div className="flex-1 rounded-2xl bg-surface-container-low p-4">
-            {strategyOptions && !getOptionStatus(selectedStrategy).available && (
-              <div className="mb-3 rounded-xl border border-yellow-300 bg-yellow-50 px-3 py-2 text-xs font-semibold leading-relaxed text-yellow-900 dark:border-yellow-800 dark:bg-yellow-950/20 dark:text-yellow-100">
-                Strategy นี้เลือกเพื่อเทียบ/ส่ง request ได้ แต่ runtime safe-start ยังไม่มี dense/vector component จึงจะ fallback เป็นค่า default และรายงาน effective_strategy ในผลลัพธ์
-              </div>
-            )}
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex gap-3">
-                <span className="material-symbols-outlined text-teal-600 shrink-0">magic_button</span>
-                <div>
-                  <p className={`text-sm font-bold ${selectedMode === 'baseline' ? 'text-on-surface-variant opacity-50' : 'text-on-surface'}`}>L2 Semantic Guardrail</p>
-                  <p className="mt-1 text-[11px] leading-relaxed text-on-surface-variant">
-                    {selectedMode === 'baseline' 
-                      ? 'ถูกปิดโดยอัตโนมัติสำหรับ Baseline' 
-                      : 'ใช้ LLM ตรวจสอบความถูกต้องของปัญหาเชิงความหมาย'}
-                  </p>
-                </div>
-              </div>
-              <label className={`relative inline-flex items-center ${disabled || selectedMode === 'baseline' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
-                <input checked={enableL2 && selectedMode !== 'baseline'} className="peer sr-only" disabled={disabled || selectedMode === 'baseline'} onChange={(event) => setEnableL2(event.target.checked)} type="checkbox" />
-                <span className="h-6 w-11 rounded-full bg-slate-300 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-teal-600 peer-checked:after:translate-x-5" />
-              </label>
-            </div>
-          </div>
-        </div>
+
+        <label className={`flex min-h-14 items-center justify-between gap-4 rounded-lg bg-slate-50 px-3 py-2.5 dark:bg-slate-800/70 ${disabled || selectedMode === 'baseline' ? 'opacity-55' : ''}`}>
+          <span className="flex min-w-0 items-center gap-3">
+            <span aria-hidden="true" className="material-symbols-outlined shrink-0 text-[20px] text-teal-600 dark:text-teal-300">verified_user</span>
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold text-on-surface">ตรวจสอบเชิงความหมาย L2</span>
+              <span className="mt-0.5 block text-xs text-on-surface-variant">{selectedMode === 'baseline' ? 'ปิดในโหมด Baseline' : 'เพิ่มการตรวจบริบทโดยโมเดลภาษา'}</span>
+            </span>
+          </span>
+          <span className="relative inline-flex shrink-0 items-center">
+            <input
+              aria-label="เปิดการตรวจสอบเชิงความหมาย L2"
+              checked={enableL2 && selectedMode !== 'baseline'}
+              className="peer sr-only"
+              disabled={disabled || selectedMode === 'baseline'}
+              name="enable-l2"
+              onChange={(event) => setEnableL2(event.target.checked)}
+              type="checkbox"
+            />
+            <span className="h-6 w-11 rounded-full bg-slate-300 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-transform after:content-[''] peer-checked:bg-teal-600 peer-checked:after:translate-x-5 peer-focus-visible:ring-2 peer-focus-visible:ring-teal-600 peer-focus-visible:ring-offset-2" />
+          </span>
+        </label>
       </div>
-    </div>
+    </fieldset>
   );
 }
+
+
+function L2ModelSelector({ disabled, enabled, modelOptions, onChange, value }) {
+  const selected = modelOptions.find((option) => option.id === value);
+  const controlDisabled = disabled || !enabled;
+
+  return (
+    <section className={`rounded-lg bg-white p-4 dark:bg-slate-900/70 sm:p-5 ${controlDisabled ? 'opacity-60' : ''}`} aria-labelledby="l2-model-label">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,0.9fr)_minmax(260px,1.1fr)] lg:items-center">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-sm font-semibold text-on-surface" id="l2-model-label">โมเดลอ่านบริบท L2</h2>
+            {selected && <StatusBadge label={selected.available ? 'พร้อมใช้' : 'ไม่พร้อม'} tone={selected.available ? 'live' : 'warning'} />}
+          </div>
+          <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">เปลี่ยนเฉพาะ semantic validation โดย embedding, reranker และสูตร H2L คงเดิม</p>
+        </div>
+        <div>
+          <label className="sr-only" htmlFor="l2-model-select">เลือกโมเดลอ่านบริบท L2</label>
+          <select
+            aria-describedby="l2-model-detail"
+            className="min-h-12 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-base font-semibold text-on-surface focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:cursor-not-allowed dark:border-slate-700 dark:bg-slate-950"
+            disabled={controlDisabled}
+            id="l2-model-select"
+            onChange={(event) => onChange(event.target.value)}
+            value={value}
+          >
+            {modelOptions.map((option) => (
+              <option disabled={!option.available} key={option.id} value={option.id}>
+                {option.label}{option.default ? ' (ค่าเริ่มต้น)' : ''}{option.available ? '' : ' - ไม่พร้อม'}
+              </option>
+            ))}
+          </select>
+          <p className="mt-2 text-xs text-on-surface-variant" id="l2-model-detail">
+            {selected ? `${selected.parameters || 'N/A'} · ${selected.size_gb ? `${selected.size_gb.toFixed(2)} GiB` : 'ไม่ระบุขนาด'} · ${selected.detail}` : 'กำลังอ่านรายการโมเดลจาก runtime'}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 function DocScalingSelector({ value, onChange, disabled }) {
   const currentIndex = Math.max(0, DOC_SCALING_OPTIONS.indexOf(Number(value)));
   const progress = currentIndex / (DOC_SCALING_OPTIONS.length - 1 || 1);
   const currentLabel = {
-    5: 'focused',
-    10: 'balanced',
-    15: 'wide',
-    20: 'max evidence',
+    5: 'เฉพาะเจาะจง',
+    10: 'สมดุล',
+    15: 'ครอบคลุม',
+    20: 'สูงสุด',
   }[Number(value)] || 'custom';
   const handleScaleChange = (event) => {
     onChange(Number(event.target.value));
   };
 
   return (
-    <div className="mt-4 rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3">
+    <div className="rounded-lg bg-white px-4 py-4 dark:bg-slate-900/70">
       <div className="grid gap-3 lg:grid-cols-[minmax(170px,0.9fr)_minmax(280px,1.6fr)_auto] lg:items-center">
         <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Evidence Document Scaling</div>
-          <p className="mt-0.5 truncate text-xs text-on-surface-variant">Top-K scale 5-20</p>
+          <div className="text-sm font-semibold text-on-surface">จำนวนหลักฐานที่ค้นคืน</div>
+          <p className="mt-0.5 text-xs text-on-surface-variant">Top-K 5–20 รายการ</p>
         </div>
 
         <div className="relative pt-3">
           <div className="pointer-events-none absolute left-0 right-0 top-[24px] h-1.5 rounded-full bg-surface-container-high">
             <div
-              className="h-1.5 rounded-full bg-teal-600 transition-all"
+              className="h-1.5 rounded-full bg-teal-600 transition-[width]"
               style={{ width: `${progress * 100}%` }}
             />
           </div>
           <input
-            aria-label="Evidence document top K scale"
+            aria-label="จำนวนหลักฐาน Top K สำหรับเคส"
             className="relative z-10 h-7 w-full cursor-pointer appearance-none bg-transparent accent-teal-600 disabled:cursor-not-allowed disabled:opacity-50 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-teal-600 [&::-moz-range-thumb]:shadow-md [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:-mt-1.5 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-teal-600 [&::-webkit-slider-thumb]:shadow-md"
             disabled={disabled}
             max="20"
             min="5"
+            name="case-evidence-top-k"
             onChange={handleScaleChange}
             step="5"
             type="range"
@@ -617,7 +661,8 @@ function DocScalingSelector({ value, onChange, disabled }) {
               const isActive = option === Number(value);
               return (
                 <button
-                  className={`rounded px-1.5 py-1 text-center text-[11px] font-bold transition-all ${isActive ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'}`}
+                  aria-pressed={isActive}
+                  className={`min-h-10 rounded-md px-1.5 py-1 text-center text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 ${isActive ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'}`}
                   disabled={disabled}
                   key={option}
                   onClick={() => onChange(option)}
@@ -631,12 +676,12 @@ function DocScalingSelector({ value, onChange, disabled }) {
         </div>
 
         <div className="flex items-center justify-between gap-2 lg:justify-end">
-          <div className="rounded-lg bg-teal-600 px-3 py-1.5 text-right text-white shadow-sm">
-            <span className="font-headline text-xl font-extrabold leading-none">K={value}</span>
+          <div className="rounded-lg bg-[#0d2734] px-3 py-2 text-right text-white shadow-sm">
+            <span className="font-headline text-lg font-bold leading-none">Top {value}</span>
           </div>
           <div className="hidden min-w-[116px] text-xs lg:block">
-            <div className="font-bold uppercase tracking-widest text-on-surface-variant">{currentLabel}</div>
-            <div className="text-on-surface-variant">same K everywhere</div>
+            <div className="font-semibold text-on-surface">{currentLabel}</div>
+            <div className="text-on-surface-variant">ใช้กับเคสนี้</div>
           </div>
         </div>
       </div>
@@ -644,61 +689,137 @@ function DocScalingSelector({ value, onChange, disabled }) {
   );
 }
 
-function ProblemCard({ problem }) {
+function ProblemCard({ active, disabled, onFocus, onReviewChange, problem, reviewState = 'pending' }) {
   const severity = Number(problem.severity || 1);
   const confidence = Number(problem.confidence || 0);
   const tone = severityStyle(severity);
   const isL2 = String(problem.detection_level || 'L1').includes('L2') || String(problem.detection_level || 'L1').includes('Implicit');
   const reviewTone = problem.review_tone || (problem.review_status === 'confirmed' ? 'live' : problem.review_status === 'filtered' ? 'neutral' : 'warning');
-  const reviewLabel = problem.review_label || problem.review_status || 'Needs Review';
+  const reviewLabel = problem.review_status === 'confirmed'
+    ? 'ระบบพบหลักฐานสนับสนุน'
+    : problem.review_status === 'filtered'
+      ? 'ระบบไม่นำไปใช้'
+      : problem.review_label || 'ต้องให้ผู้ปฏิบัติงานทบทวน';
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleExpanded = () => {
+    setExpanded((value) => !value);
+    onFocus?.(problem.code);
+  };
 
   return (
-    <article className={`relative overflow-hidden rounded-xl border-l-4 ${tone.line} ${tone.soft} p-5 shadow-sm`}>
-      <div className={`absolute right-0 top-0 rounded-bl-xl px-3 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm 
-        ${isL2 ? 'bg-violet-900 border-b border-l border-violet-700 text-violet-100' : 'bg-sky-900 border-b border-l border-sky-700 text-sky-100'}`}>
-        {isL2 ? '🪄 L2: LLM Semantic Verification' : '🔖 L1: Lexical & Context Rules'}
-      </div>
-      <div className="flex flex-wrap items-start justify-between gap-4 mt-2">
-        <div>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="font-headline text-2xl font-extrabold text-teal-700">{problem.code}</span>
-            <div>
-              <h3 className="font-bold text-on-surface">{problem.name}</h3>
-              <p className="text-xs text-on-surface-variant">{problem.category || 'Context-aware social diagnosis'}</p>
+    <article className={`overflow-hidden rounded-lg border-l-4 ${tone.line} bg-white shadow-sm shadow-slate-900/5 transition-shadow dark:bg-slate-900 ${active ? 'ring-2 ring-teal-500/60 ring-offset-2 ring-offset-surface-container-low' : ''}`}>
+      <button
+        aria-expanded={expanded}
+        className="flex min-h-[112px] w-full items-start justify-between gap-4 p-4 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-600 dark:hover:bg-slate-800/70 sm:p-5"
+        onClick={toggleExpanded}
+        type="button"
+      >
+        <span className="flex min-w-0 gap-3 sm:gap-4">
+          <span className={`flex h-11 min-w-14 shrink-0 items-center justify-center rounded-lg px-2 font-headline text-base font-bold ${tone.soft} text-on-surface`}>{problem.code}</span>
+          <span className="min-w-0">
+            <span className="block text-base font-semibold text-on-surface">{problem.name}</span>
+            <span className="mt-1 block text-sm text-on-surface-variant">{problem.category || 'บริบทสังคมและสุขภาพ'}</span>
+            <span className="mt-3 flex flex-wrap items-center gap-2">
+              <StatusBadge label={reviewLabel} tone={reviewTone} />
+              <StatusBadge label={`ความรุนแรง ${severity}/5`} tone={severity >= 4 ? 'error' : severity === 3 ? 'warning' : 'neutral'} />
+              <span className="text-xs font-semibold tabular-nums text-teal-700 dark:text-teal-300">ความมั่นใจ {formatPercent(confidence)}</span>
+            </span>
+          </span>
+        </span>
+        <span className="flex shrink-0 items-center gap-2 pt-1 text-xs font-semibold text-on-surface-variant">
+          <span className="hidden sm:inline">{expanded ? 'ซ่อนรายละเอียด' : 'ดูเหตุผล'}</span>
+          <span aria-hidden="true" className={`material-symbols-outlined text-[20px] transition-transform ${expanded ? 'rotate-180' : ''}`}>expand_more</span>
+        </span>
+      </button>
+
+      {expanded && (
+        <div className="border-t border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/30 sm:p-5">
+          <div className="grid gap-3 lg:grid-cols-3">
+            <div className="rounded-lg bg-white p-3 dark:bg-slate-900">
+              <div className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant">
+                <span aria-hidden="true" className="material-symbols-outlined text-[18px] text-sky-600 dark:text-sky-300">{isL2 ? 'auto_awesome' : 'rule'}</span>
+                ระดับการตรวจพบ
+              </div>
+              <p className="mt-2 text-sm font-semibold text-on-surface">{problem.detection_level || 'L1'}</p>
+              <p className="mt-1 text-xs text-on-surface-variant">{problem.context_valid ? 'บริบทสนับสนุนผลที่พบ' : 'ควรตรวจบริบทเพิ่มเติม'}</p>
+            </div>
+            <div className="rounded-lg bg-white p-3 dark:bg-slate-900 lg:col-span-2">
+              <div className="text-xs font-semibold text-on-surface-variant">คำและวลีที่เชื่อมโยง</div>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {(problem.matched_keywords || []).length ? problem.matched_keywords.map((keyword) => (
+                  <span key={`${problem.code}-${keyword}`} className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-on-surface dark:bg-slate-800">{keyword}</span>
+                )) : <span className="text-xs text-on-surface-variant">พบจากความหมายโดยรวม ไม่ได้อาศัยคำตรงเพียงอย่างเดียว</span>}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="text-right">
-          <div className="text-[10px] font-bold uppercase text-on-surface-variant">Confidence</div>
-          <div className="font-headline text-2xl font-extrabold text-teal-700">{formatPercent(confidence)}</div>
-          <span className={`mt-1 inline-block rounded px-2 py-0.5 text-[10px] font-bold ${tone.chip}`}>severity {severity}/5</span>
-        </div>
-      </div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-4">
-        <div className="rounded-lg bg-surface-container-low p-3">
-          <div className="text-[10px] font-bold uppercase text-on-surface-variant">Detection Level</div>
-          <p className={`mt-1 text-sm font-bold ${isL2 ? 'text-violet-600 dark:text-violet-400' : 'text-sky-600 dark:text-sky-400'}`}>{problem.detection_level || 'L1'}</p>
-          <p className="text-xs text-on-surface-variant">{problem.context_valid ? 'context valid' : 'needs context review'}</p>
-        </div>
-        <div className="rounded-lg bg-surface-container-low p-3">
-          <div className="text-[10px] font-bold uppercase text-on-surface-variant">Review Status</div>
-          <div className="mt-2"><StatusBadge label={reviewLabel} tone={reviewTone} /></div>
-          <p className="mt-2 text-xs text-on-surface-variant">{problem.review_note || 'ใช้สถานะนี้ช่วยตัดสินว่าควรรับไว้ ทบทวนเพิ่ม หรือตรวจเอกสาร'}</p>
-        </div>
-        <div className="rounded-lg bg-surface-container-low p-3 lg:col-span-2">
-          <div className="text-[10px] font-bold uppercase text-on-surface-variant">Matched Keywords</div>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {(problem.matched_keywords || []).length ? problem.matched_keywords.map((keyword) => (
-              <span key={`${problem.code}-${keyword}`} className="rounded bg-surface-container px-2 py-0.5 text-xs font-semibold text-on-surface">{keyword}</span>
-            )) : <span className="text-xs text-on-surface-variant italic">No explicit keyword (Implicit matching)</span>}
+          <div className="mt-3 rounded-lg bg-white p-4 dark:bg-slate-900">
+            <div className="text-xs font-semibold text-teal-700 dark:text-teal-300">เหตุผลที่ระบบเชื่อมโยง</div>
+            <p className="mt-2 text-sm leading-relaxed text-on-surface">{problem.grounded_explanation?.summary || problem.reasoning || 'ไม่มีเหตุผลประกอบ'}</p>
+            {problem.grounded_explanation?.evidence_quote && (
+              <blockquote className="mt-3 border-l-2 border-teal-600 pl-3 text-sm leading-relaxed text-on-surface-variant">
+                ข้อความจากเคส: “{problem.grounded_explanation.evidence_quote}”
+              </blockquote>
+            )}
+            {(problem.evidence_aspects || []).length > 0 && (
+              <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-700">
+                <div className="text-xs font-semibold text-on-surface-variant">มิติของเหตุการณ์ที่มีหลักฐานรองรับ</div>
+                <div className="mt-2 divide-y divide-slate-200 dark:divide-slate-700">
+                  {problem.evidence_aspects.map((aspect) => (
+                    <div className="py-3 first:pt-0 last:pb-0" key={aspect.id}>
+                      <div className="text-sm font-semibold text-on-surface">{aspect.label}</div>
+                      <p className="mt-1 text-sm leading-relaxed text-on-surface-variant">{aspect.summary}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {problem.reasoning && problem.grounded_explanation?.summary && (
+              <details className="clinical-details mt-3 text-xs text-on-surface-variant">
+                <summary className="min-h-11 py-2 font-semibold text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300">ดูเหตุผลจาก detector</summary>
+                <p className="pb-2 leading-relaxed">{problem.reasoning}</p>
+              </details>
+            )}
+            <p className="mt-3 text-sm leading-relaxed text-on-surface"><strong>ข้อควรพิจารณา:</strong> {problemInterpretation(problem)}</p>
+          </div>
+          <div className="mt-3 rounded-lg bg-white p-4 dark:bg-slate-900">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <div className="text-sm font-semibold text-on-surface">การตัดสินใจของผู้ทบทวน</div>
+                <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">เลือกสถานะจากข้อมูลเคสจริง ระบบจะนำไปใช้เมื่อส่งต่อให้ผู้เชี่ยวชาญ</p>
+              </div>
+              {active && <StatusBadge label="กำลังเชื่อมโยงหลักฐาน" tone="live" />}
+            </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3" role="group" aria-label={`สถานะการทบทวนประเด็น ${problem.code}`}>
+              {FINDING_REVIEW_OPTIONS.map((option) => {
+                const selected = reviewState === option.id;
+                const selectedClass = option.tone === 'emerald'
+                  ? 'border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
+                  : option.tone === 'amber'
+                    ? 'border-amber-500 bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100'
+                    : 'border-slate-500 bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100';
+                return (
+                  <button
+                    aria-pressed={selected}
+                    className={`flex min-h-11 items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 disabled:cursor-not-allowed disabled:opacity-50 ${selected ? selectedClass : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'}`}
+                    disabled={disabled}
+                    key={option.id}
+                    onClick={() => {
+                      onFocus?.(problem.code);
+                      onReviewChange?.(problem.code, option.id);
+                    }}
+                    type="button"
+                  >
+                    <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{option.icon}</span>
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+            {reviewState === 'pending' && <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">ยังไม่ได้ระบุสถานะรายการนี้</p>}
           </div>
         </div>
-      </div>
-      <div className="mt-4 rounded-lg bg-surface-container-low p-4">
-        <div className="text-[10px] font-bold uppercase text-teal-700">Validation Reason</div>
-        <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{problem.reasoning || 'ไม่มีเหตุผลประกอบ'}</p>
-        <p className="mt-3 text-sm leading-relaxed text-on-surface"><strong>แปลผล:</strong> {problemInterpretation(problem)}</p>
-      </div>
+      )}
     </article>
   );
 }
@@ -712,8 +833,8 @@ function CandidateFilterPanel({ displayResult }) {
     <section className="rounded-xl bg-surface-container-low p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-headline text-lg font-bold">Candidate / Filter Trace</h2>
-          <p className="mt-1 text-sm text-on-surface-variant">แสดง candidate ที่ detector พบ, ตัวที่ผ่าน, ตัวที่ถูก filter และเหตุผล</p>
+          <h2 className="font-headline text-lg font-bold">รายละเอียดการคัดกรอง</h2>
+          <p className="mt-1 text-sm text-on-surface-variant">รายการที่ระบบพิจารณา ผ่านเกณฑ์ หรือไม่นำไปใช้</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <StatusBadge label={`Candidates ${trace.candidate_count ?? candidates.length}`} />
@@ -727,8 +848,9 @@ function CandidateFilterPanel({ displayResult }) {
         <MetricTile label="Final Accepted" value={trace.final_accepted ?? 0} hint="kept after gates" tone="bg-green-50 dark:bg-green-950/40" />
         <MetricTile label="Filtered Out" value={trace.filtered_out ?? 0} hint="low confidence/context/L2" tone={(trace.filtered_out ?? 0) ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-lowest'} />
       </div>
-      <div className="mt-5 overflow-hidden rounded-lg bg-surface-container-lowest">
-        <div className="grid grid-cols-[90px_1fr_120px_120px_120px] gap-3 bg-surface-container-high px-4 py-3 text-[10px] font-bold uppercase text-on-surface-variant">
+      <div className="mt-5 overflow-x-auto rounded-lg bg-surface-container-lowest">
+        <div className="min-w-[760px]">
+        <div className="grid grid-cols-[90px_1fr_120px_120px_120px] gap-3 bg-surface-container-high px-4 py-3 text-xs font-semibold text-on-surface-variant">
           <span>Code</span>
           <span>Rule / Keywords</span>
           <span>Confidence</span>
@@ -749,7 +871,8 @@ function CandidateFilterPanel({ displayResult }) {
             <span>{candidate.needs_l2 ? 'needs L2' : 'not required'}</span>
             <span className={candidate.final_decision === 'filtered' ? 'font-bold text-yellow-700 dark:text-yellow-300' : 'font-bold text-teal-700'}>{candidate.final_decision}</span>
           </div>
-        )) : <div className="px-4 py-5 text-sm text-on-surface-variant">No candidate trace yet.</div>}
+        )) : <div className="px-4 py-5 text-sm text-on-surface-variant">ยังไม่มีรายละเอียดการคัดกรอง</div>}
+        </div>
       </div>
       {reasons.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
@@ -1063,7 +1186,7 @@ function H2LEquationBreakdown({ displayResult }) {
                 <span className="font-bold text-teal-700 dark:text-teal-300">{formatNumber(item.raw, 4)}</span>
               </div>
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-container-high">
-                <div className="h-full rounded-full bg-teal-500 transition-all" style={{ width: `${Math.round(item.value * 100)}%` }} />
+                <div className="h-full rounded-full bg-teal-500 transition-[width]" style={{ width: `${Math.round(item.value * 100)}%` }} />
               </div>
               <p className="mt-3 text-xs leading-relaxed text-on-surface">{item.purpose}</p>
               <div className="mt-3 space-y-2 text-[11px] leading-relaxed text-on-surface-variant">
@@ -1129,48 +1252,66 @@ function H2LEquationBreakdown({ displayResult }) {
   );
 }
 
-function EvidenceSection({ displayResult }) {
+function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
   const docs = displayResult.retrieved_docs || [];
   const trace = displayResult.retrieval_trace || {};
   const docScaling = displayResult.doc_scaling || {};
   const selectedTopK = displayResult.top_k || docScaling.selected_top_k || trace.docs_requested || docs.length;
   const hasErrors = (trace.errors || []).length > 0;
-  const topDocs = docs.slice(0, 5);
-  const extraDocs = docs.slice(5);
+  const topDocs = docs.slice(0, 3);
+  const extraDocs = docs.slice(3);
+  const getEvidenceCodes = (doc) => (doc.matched_problem_evidence || [])
+    .map((item) => (typeof item === 'string' ? item : item?.code))
+    .filter(Boolean);
+  const linkedDocumentCount = activeFindingCode
+    ? docs.filter((doc) => getEvidenceCodes(doc).includes(activeFindingCode)).length
+    : 0;
 
-  const renderDocCard = (doc) => (
-    <article key={`${doc.rank}-${doc.id}`} className="rounded-xl bg-surface-container-lowest p-4">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <div className="text-[10px] font-bold uppercase text-teal-700">Rank {doc.rank}</div>
-          <h3 className="mt-1 font-bold text-on-surface">{doc.title}</h3>
-          <p className="text-xs text-on-surface-variant">{doc.source}</p>
+  const renderDocCard = (doc) => {
+    const evidenceCodes = getEvidenceCodes(doc);
+    const linkedToActiveFinding = activeFindingCode && evidenceCodes.includes(activeFindingCode);
+    return (
+    <details key={`${doc.rank}-${doc.id}`} className={`clinical-details group rounded-lg bg-surface-container-lowest transition-shadow ${linkedToActiveFinding ? 'ring-2 ring-teal-500 ring-offset-2 ring-offset-surface-container-low' : ''}`}>
+      <summary className="flex min-h-[112px] items-start justify-between gap-3 p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-600">
+        <span className="flex min-w-0 gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-sm font-bold text-teal-700 dark:bg-teal-950/50 dark:text-teal-200">{doc.rank}</span>
+          <span className="min-w-0">
+            <span className="block line-clamp-2 font-semibold text-on-surface">{doc.title}</span>
+            <span className="mt-1 block truncate text-xs text-on-surface-variant">{doc.source}</span>
+            <span className="mt-2 block line-clamp-2 text-sm leading-relaxed text-on-surface-variant">{doc.snippet}</span>
+          </span>
+        </span>
+        <span className="flex shrink-0 items-center gap-2">
+          <StatusBadge label={`คะแนน ${formatNumber(doc.h2l_final_score ?? doc.score, 2)}`} tone="live" />
+          <span aria-hidden="true" className="details-chevron material-symbols-outlined text-[20px] text-on-surface-variant transition-transform">expand_more</span>
+        </span>
+      </summary>
+      <div className="border-t border-slate-200 p-4 dark:border-slate-800">
+        <p className="text-sm leading-relaxed text-on-surface">{doc.snippet}</p>
+        <div className="mt-4 grid grid-cols-3 gap-2 text-xs tabular-nums text-on-surface-variant">
+          <span className="rounded-md bg-slate-50 p-2 dark:bg-slate-800">Base <strong className="block text-on-surface">{formatNumber(doc.base_score, 3)}</strong></span>
+          <span className="rounded-md bg-slate-50 p-2 dark:bg-slate-800">Rerank <strong className="block text-on-surface">{formatNumber(doc.rerank_score, 3)}</strong></span>
+          <span className="rounded-md bg-slate-50 p-2 dark:bg-slate-800">H2L <strong className="block text-on-surface">{formatNumber(doc.h2l_final_score, 3)}</strong></span>
         </div>
-        <StatusBadge label={`score ${formatNumber(doc.h2l_final_score ?? doc.score, 2)}`} tone="live" />
+        <div className="mt-3 rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-on-surface dark:bg-slate-800/70">
+          {doc.reason}
+          {(doc.matched_problem_evidence || []).length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {evidenceCodes.map((code) => <span key={`${doc.id}-${code}`} className={`rounded-md px-2 py-1 font-semibold ${code === activeFindingCode ? 'bg-teal-600 text-white' : 'bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-200'}`}>{code}</span>)}
+            </div>
+          )}
+        </div>
       </div>
-      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-on-surface-variant">{doc.snippet}</p>
-      <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
-        <span>base: <strong>{formatNumber(doc.base_score, 3)}</strong></span>
-        <span>rerank: <strong>{formatNumber(doc.rerank_score, 3)}</strong></span>
-        <span>H2L: <strong>{formatNumber(doc.h2l_final_score, 3)}</strong></span>
-      </div>
-      <div className="mt-3 rounded bg-surface-container-low p-3 text-xs leading-relaxed text-on-surface">
-        {doc.reason}
-        {(doc.matched_problem_evidence || []).length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {doc.matched_problem_evidence.map((item) => <span key={`${doc.id}-${item.code}`} className="rounded bg-teal-50 px-2 py-0.5 font-bold text-teal-700">{item.code}</span>)}
-          </div>
-        )}
-      </div>
-    </article>
-  );
+    </details>
+    );
+  };
 
   return (
     <section className="rounded-xl bg-surface-container-low p-6">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-headline text-lg font-bold">Evidence Retrieval</h2>
-          <p className="mt-1 text-sm text-on-surface-variant">แสดงเอกสารที่ retrieval runtime ดึงมาจริง พร้อม score และเหตุผล</p>
+          <h2 className="font-headline text-lg font-bold">หลักฐานและแนวทางที่เกี่ยวข้อง</h2>
+          <p className="mt-1 text-sm text-on-surface-variant">เปิดแต่ละรายการเพื่อดูข้อความ แหล่งที่มา และเหตุผลเชื่อมโยง</p>
         </div>
         <div className="flex gap-2">
           <StatusBadge label={`Top ${selectedTopK}`} tone={docs.length ? 'live' : 'neutral'} />
@@ -1178,15 +1319,21 @@ function EvidenceSection({ displayResult }) {
           <StatusBadge label={trace.strategy || displayResult.requested_strategy || 'strategy'} />
         </div>
       </div>
-      <div className="mb-4 rounded-lg bg-surface-container-lowest p-3 text-sm leading-relaxed text-on-surface">
-        ค่า scale ตอนรันเคสนี้คือ top {selectedTopK}. ระบบให้ดู 5 อันดับแรกก่อนเพื่ออ่านง่าย ส่วนเอกสารอันดับถัดไปใช้ตรวจ coverage และเปิดดูได้จาก dropdown ด้านล่าง
-      </div>
+      {activeFindingCode && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-teal-50 p-3 text-sm text-teal-950 dark:bg-teal-950/40 dark:text-teal-100" role="status">
+          <span className="flex min-w-0 items-center gap-2">
+            <span className="material-symbols-outlined text-[19px]" aria-hidden="true">link</span>
+            <span>กำลังไฮไลต์หลักฐานของ <strong>{activeFindingCode}</strong> · เชื่อมโยง {linkedDocumentCount} รายการ</span>
+          </span>
+          <button className="min-h-11 rounded-lg px-3 py-2 font-semibold text-teal-800 transition-colors hover:bg-teal-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-100 dark:hover:bg-teal-900/60" onClick={onClearFinding} type="button">ล้างการไฮไลต์</button>
+        </div>
+      )}
       {hasErrors && (
         <div className="mb-4 rounded-lg bg-error-container p-3 text-sm text-on-error-container">
           Retrieval error: {(trace.errors || []).join('; ')}
         </div>
       )}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-3 xl:grid-cols-3">
         {!docs.length && !hasErrors && (
           <div className="rounded-xl bg-surface-container-lowest p-4 text-sm text-on-surface-variant">
             ยังไม่มี retrieved documents จาก runtime สำหรับเคสนี้
@@ -1196,82 +1343,177 @@ function EvidenceSection({ displayResult }) {
       </div>
       {extraDocs.length > 0 && (
         <details className="mt-4 rounded-xl bg-surface-container-lowest p-4">
-          <summary className="cursor-pointer text-sm font-bold text-teal-700">
-            แสดงเอกสารเพิ่มเติมอีก {extraDocs.length} รายการ
+          <summary className="flex min-h-11 items-center justify-between gap-3 text-sm font-semibold text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300">
+            <span>แสดงหลักฐานเพิ่มเติมอีก {extraDocs.length} รายการ</span>
+            <span aria-hidden="true" className="details-chevron material-symbols-outlined transition-transform">expand_more</span>
           </summary>
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <div className="mt-4 grid gap-3 xl:grid-cols-3">
             {extraDocs.map(renderDocCard)}
           </div>
         </details>
       )}
-      <H2LEquationBreakdown displayResult={displayResult} />
+      <details className="clinical-details mt-4 rounded-lg bg-surface-container-lowest p-4">
+        <summary className="flex min-h-11 items-center justify-between gap-3 text-sm font-semibold text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600">
+          <span>รายละเอียดคะแนน H2L ของเอกสาร</span>
+          <span aria-hidden="true" className="details-chevron material-symbols-outlined transition-transform">expand_more</span>
+        </summary>
+        <H2LEquationBreakdown displayResult={displayResult} />
+      </details>
     </section>
   );
 }
 
-function AnalysisTab({ displayResult }) {
+function AnalysisTab({ displayResult, findingReviewStates, onFindingReviewChange, reviewDisabled }) {
   const problems = displayResult.problems || [];
   const metrics = displayResult.metrics || {};
+  const maxSeverity = Number(metrics.max_severity ?? Math.max(0, ...problems.map((problem) => Number(problem.severity || 0))));
+  const highSeverityCount = Number(metrics.high_severity_count ?? problems.filter((problem) => Number(problem.severity || 0) >= 4).length);
+  const reviewCount = Number(displayResult.detection_info?.ambiguity_summary?.review_count ?? problems.filter((problem) => problem.review_status !== 'confirmed').length);
+  const priorityRank = { mandatory: 0, critical: 0, high: 1, medium: 2, moderate: 2, low: 3 };
+  const tools = [...(displayResult.tools || [])].sort((left, right) => {
+    const leftRank = priorityRank[String(left.priority || '').toLowerCase()] ?? 4;
+    const rightRank = priorityRank[String(right.priority || '').toLowerCase()] ?? 4;
+    return leftRank - rightRank || String(left.name || '').localeCompare(String(right.name || ''), 'th');
+  });
+  const topTools = tools.slice(0, 3);
+  const extraTools = tools.slice(3);
+  const [focusedFindingCode, setFocusedFindingCode] = useState('');
+  const activeFindingCode = problems.some((problem) => problem.code === focusedFindingCode) ? focusedFindingCode : '';
+  const reviewedFindingCount = problems.filter((problem) => Boolean(findingReviewStates[problem.code])).length;
+  const pendingFindingCount = Math.max(0, problems.length - reviewedFindingCount);
+  const safetyLabel = !problems.length
+    ? 'ยังสรุปความปลอดภัยไม่ได้'
+    : maxSeverity >= 4
+      ? 'ต้องทบทวนโดยเร่งด่วน'
+      : maxSeverity === 3
+        ? 'ควรทบทวนเพิ่มเติม'
+        : 'ติดตามตามบริบทของเคส';
+  const safetyTone = !problems.length ? 'text-slate-100' : maxSeverity >= 4 ? 'text-red-300' : maxSeverity === 3 ? 'text-amber-300' : 'text-emerald-300';
+
+  const renderTool = (tool) => {
+    const priority = tool.priority || tool.urgency;
+    const tone = ['mandatory', 'critical'].includes(String(priority || '').toLowerCase()) ? 'error' : String(priority || '').toLowerCase() === 'high' ? 'warning' : 'neutral';
+    return (
+      <div className="rounded-lg bg-white p-3 dark:bg-slate-900" key={tool.name}>
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div className="font-semibold text-on-surface">{tool.name}</div>
+          {priority && <StatusBadge label={priority} tone={tone} />}
+        </div>
+        <div className="mt-1 text-sm leading-relaxed text-on-surface-variant">{tool.reason}</div>
+      </div>
+    );
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.3fr)_minmax(340px,0.7fr)]">
-        <section className="rounded-xl bg-surface-container-low p-6">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <div className="page-enter space-y-5">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
+        <section className="rounded-lg bg-surface-container-low p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="font-headline text-lg font-bold">Problem Code Analysis</h2>
-              <p className="mt-1 text-sm text-on-surface-variant">ผลจากเคสปัจจุบันเท่านั้น ไม่มี sample/mock fallback</p>
+              <div className="text-xs font-semibold text-teal-700 dark:text-teal-300">Assessment summary</div>
+              <h2 className="mt-1 font-headline text-xl font-bold text-on-surface">สรุปการประเมินเคส</h2>
             </div>
-            <StatusBadge label={displayResult.status === 'empty' ? 'No Case Loaded' : displayResult.status === 'stale' ? 'Needs Analysis' : 'Live Data'} tone={displayResult.status === 'ok' ? 'live' : 'neutral'} />
+            <StatusBadge label="ผลจาก runtime ปัจจุบัน" tone="live" />
           </div>
-          <div className="mb-5 rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Case-Level Interpretation</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">{resultInterpretation(displayResult)}</p>
-          </div>
-          <div className="space-y-4">
-            {problems.length ? problems.map((problem) => <ProblemCard key={problem.code} problem={problem} />) : (
-              <div className="rounded-xl bg-surface-container-lowest p-5 text-sm text-on-surface-variant">ยังไม่พบรหัสปัญหา หรือยังไม่ได้วิเคราะห์เคสนี้</div>
-            )}
+          <p className="mt-4 max-w-4xl text-sm leading-relaxed text-on-surface">{resultInterpretation(displayResult)}</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <MetricTile label="ประเด็นที่พบ" value={metrics.accepted_count ?? problems.length} hint="รายการที่ผ่านเกณฑ์ระบบ" tone="bg-white dark:bg-slate-900" />
+            <MetricTile label="ต้องทบทวน" value={reviewCount} hint="รายการที่ควรอ่านร่วมกับหลักฐาน" tone={reviewCount ? 'bg-amber-50 dark:bg-amber-950/40' : 'bg-white dark:bg-slate-900'} />
+            <MetricTile label="หลักฐาน" value={metrics.retrieved_docs_count ?? displayResult.retrieved_docs_count ?? 0} hint="เอกสารและแนวทางที่ค้นคืน" tone="bg-white dark:bg-slate-900" />
+            <MetricTile label="ระดับสูงสุด" value={maxSeverity || 'N/A'} hint={`${highSeverityCount} รายการระดับสูง`} tone={severityStyle(maxSeverity || 1).soft} />
           </div>
         </section>
-        <aside className="grid gap-4 md:grid-cols-3 2xl:grid-cols-1">
-          <div className="rounded-xl bg-surface-container-low p-5">
-          <h2 className="font-headline font-bold">Case Operational Metrics</h2>
-          <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">
-            {metrics.note || 'ค่านี้เป็น runtime observation ของเคสปัจจุบัน ไม่ใช่ benchmark metric'}
-          </p>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <MetricTile label="Accepted" value={metrics.accepted_count ?? problems.length} hint={`ratio ${formatPercent(metrics.accepted_ratio)}`} tone="bg-green-50 dark:bg-green-950/40" />
-            <MetricTile label="Filtered" value={metrics.filtered_count ?? 0} hint={`ratio ${formatPercent(metrics.filtered_ratio)}`} tone={(metrics.filtered_count ?? 0) ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-lowest'} />
-            <MetricTile label="Evidence" value={metrics.retrieved_docs_count ?? displayResult.retrieved_docs_count ?? 0} hint="retrieved docs" />
-            <MetricTile label="Max Severity" value={metrics.max_severity ?? 0} hint={`${metrics.high_severity_count ?? 0} high-risk codes`} tone={severityStyle(metrics.max_severity || 1).soft} />
+
+        <aside className="rounded-lg bg-[#0d2734] p-5 text-white sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm font-semibold text-slate-300">ความปลอดภัยและความเร่งด่วน</div>
+            <span aria-hidden="true" className="material-symbols-outlined text-teal-300">health_and_safety</span>
           </div>
-          <p className="mt-3 text-xs leading-relaxed text-on-surface-variant">
-            Research metrics เช่น MAP/MRR/nDCG อยู่ใน Research Report เท่านั้น เพราะต้องใช้ ground truth artifact.
-          </p>
-          </div>
-          <div className="rounded-xl bg-surface-container-low p-5">
-            <h2 className="font-headline font-bold">Current Strategy</h2>
-            <div className="mt-3 rounded-lg bg-surface-container-lowest p-3">
-              <div className="font-semibold text-on-surface">{displayResult.strategy_profile?.label || displayResult.requested_strategy}</div>
-              <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">{displayResult.strategy_profile?.execution_note || displayResult.strategy_note}</p>
-            </div>
-          </div>
-          <div className="rounded-xl bg-surface-container-low p-5">
-            <h2 className="font-headline font-bold">Recommended Tools</h2>
-            <div className="mt-4 space-y-3">
-              {(displayResult.tools || []).length ? displayResult.tools.map((tool) => (
-                <div key={tool.name} className="rounded-lg bg-surface-container-lowest p-3">
-                  <div className="font-semibold text-on-surface">{tool.name}</div>
-                  <div className="mt-1 text-xs text-on-surface-variant">{tool.reason}</div>
-                </div>
-              )) : <div className="text-sm text-on-surface-variant">ยังไม่มีรายการเครื่องมือ</div>}
-            </div>
+          <div className={`mt-5 font-headline text-2xl font-bold ${safetyTone}`}>{safetyLabel}</div>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">{problems.length ? 'ระดับนี้อ้างอิงจาก severity สูงสุดของประเด็นที่ระบบพบ และต้องอ่านร่วมกับบริบทจริงโดยผู้ปฏิบัติงาน' : 'ระบบไม่พบสัญญาณจากข้อความที่ให้ แต่ไม่เท่ากับยืนยันว่าปลอดภัย ผู้ปฏิบัติงานยังต้องประเมินความเสี่ยงจากข้อมูลจริง'}</p>
+          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/10 pt-4 text-sm">
+            <div><span className="block text-xs text-slate-400">High risk</span><strong className="mt-1 block text-xl tabular-nums">{highSeverityCount}</strong></div>
+            <div><span className="block text-xs text-slate-400">Review load</span><strong className="mt-1 block text-xl tabular-nums">{reviewCount}</strong></div>
           </div>
         </aside>
       </div>
-      <CandidateFilterPanel displayResult={displayResult} />
-      <EvidenceSection displayResult={displayResult} />
+
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
+        <section className="rounded-lg bg-surface-container-low p-5 sm:p-6">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-headline text-lg font-bold">ประเด็นปัญหาและความต้องการ</h2>
+              <p className="mt-1 text-sm text-on-surface-variant">เปิดแต่ละรายการเพื่อดูเหตุผล ระบุผลการทบทวน และเชื่อมโยงหลักฐาน</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <StatusBadge label={`${problems.length} รายการ`} tone={problems.length ? 'live' : 'neutral'} />
+              <StatusBadge label={pendingFindingCount ? `ค้างทบทวน ${pendingFindingCount}` : 'ทบทวนครบแล้ว'} tone={pendingFindingCount ? 'warning' : 'live'} />
+            </div>
+          </div>
+          <div className="space-y-3">
+            {problems.length ? problems.map((problem) => (
+              <ProblemCard
+                active={activeFindingCode === problem.code}
+                disabled={reviewDisabled}
+                key={problem.code}
+                onFocus={setFocusedFindingCode}
+                onReviewChange={onFindingReviewChange}
+                problem={problem}
+                reviewState={findingReviewStates[problem.code] || 'pending'}
+              />
+            )) : (
+              <div className="rounded-lg bg-white p-5 text-sm text-on-surface-variant dark:bg-slate-900">ระบบไม่พบประเด็นที่ผ่านเกณฑ์ในเคสนี้ ควรพิจารณาข้อมูลต้นฉบับและบริบทเพิ่มเติม</div>
+            )}
+          </div>
+        </section>
+
+        <aside className="space-y-4">
+          <section className="rounded-lg bg-surface-container-low p-5">
+            <div className="flex items-center gap-2">
+              <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-teal-700 dark:text-teal-300">assignment</span>
+              <h2 className="font-headline font-bold">เครื่องมือประเมินที่แนะนำ</h2>
+            </div>
+            <div className="mt-4 space-y-3">
+              {topTools.length ? topTools.map(renderTool) : <div className="text-sm text-on-surface-variant">ยังไม่มีเครื่องมือที่ระบบแนะนำ</div>}
+            </div>
+            {extraTools.length > 0 && (
+              <details className="clinical-details mt-3">
+                <summary className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2 text-sm font-semibold text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300">
+                  <span>ดูเครื่องมือเพิ่มเติม {extraTools.length} รายการ</span>
+                  <span aria-hidden="true" className="details-chevron material-symbols-outlined transition-transform">expand_more</span>
+                </summary>
+                <div className="mt-2 space-y-3">{extraTools.map(renderTool)}</div>
+              </details>
+            )}
+          </section>
+
+          <section className="rounded-lg bg-surface-container-low p-5">
+            <div className="flex items-center gap-2">
+              <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-slate-500">tune</span>
+              <h2 className="font-headline font-bold">วิธีที่ใช้วิเคราะห์</h2>
+            </div>
+            <div className="mt-3 rounded-lg bg-white p-3 dark:bg-slate-900">
+              <div className="font-semibold text-on-surface">{displayResult.strategy_profile?.label || displayResult.effective_strategy || displayResult.requested_strategy}</div>
+              <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">{displayResult.strategy_profile?.execution_note || displayResult.strategy_note}</p>
+              <dl className="mt-3 space-y-2 border-t border-slate-200 pt-3 text-xs dark:border-slate-700">
+                <div className="flex items-start justify-between gap-3"><dt className="text-on-surface-variant">L2 model</dt><dd className="break-all text-right font-semibold text-on-surface">{displayResult.model_provenance?.effective_l2_model || 'ไม่ได้เรียกในเคสนี้'}</dd></div>
+                <div className="flex items-start justify-between gap-3"><dt className="text-on-surface-variant">Embedding</dt><dd className="break-all text-right font-semibold text-on-surface">{displayResult.model_provenance?.embedding_model || 'N/A'}</dd></div>
+                <div className="flex items-start justify-between gap-3"><dt className="text-on-surface-variant">Reranker</dt><dd className="break-all text-right font-semibold text-on-surface">{displayResult.model_provenance?.rerank_model || 'N/A'}</dd></div>
+              </dl>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <EvidenceSection activeFindingCode={activeFindingCode} displayResult={displayResult} onClearFinding={() => setFocusedFindingCode('')} />
+
+      <details className="clinical-details rounded-lg bg-surface-container-low p-4 sm:p-5">
+        <summary className="flex min-h-11 items-center justify-between gap-3 font-semibold text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600">
+          <span className="flex items-center gap-2"><span aria-hidden="true" className="material-symbols-outlined text-[20px] text-slate-500">data_object</span>รายละเอียดทางเทคนิค</span>
+          <span aria-hidden="true" className="details-chevron material-symbols-outlined transition-transform">expand_more</span>
+        </summary>
+        <div className="mt-4"><CandidateFilterPanel displayResult={displayResult} /></div>
+      </details>
     </div>
   );
 }
@@ -1279,7 +1521,6 @@ function AnalysisTab({ displayResult }) {
 function KeywordsTab({ displayResult }) {
   const analysis = displayResult.keyword_analysis || {};
   const rows = (analysis.rows || []).map((row) => ({ ...row, keywords: row.keywords || row.matched_keywords || [] }));
-  const filteredKeywordRows = (analysis.filtered_out || []).map((row) => ({ ...row, keywords: row.keywords || row.matched_keywords || [] }));
   const profile = displayResult.sentence_profile || {};
   const roles = profile.actor_roles || {};
   const agents = roles.agents || [];
@@ -1693,7 +1934,7 @@ function KeywordsTab({ displayResult }) {
                 <>
                   {activeToken.contextNote && (
                     <div className="mt-4 flex items-center gap-1.5 rounded-lg bg-yellow-50 p-2.5 text-[11px] font-medium text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200 border border-yellow-200/50">
-                      <span className="material-symbols-outlined text-sm">info</span>
+                      <span aria-hidden="true" className="material-symbols-outlined text-sm">info</span>
                       {activeToken.contextNote}
                     </div>
                   )}
@@ -1871,7 +2112,7 @@ function KeywordsTab({ displayResult }) {
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="rounded-lg bg-surface-container-low px-2.5 py-1 text-[11px] font-bold text-on-surface">{items.length} rows</span>
-                              <span className="material-symbols-outlined text-on-surface-variant">{isCollapsed ? 'expand_more' : 'expand_less'}</span>
+                              <span aria-hidden="true" className="material-symbols-outlined text-on-surface-variant">{isCollapsed ? 'expand_more' : 'expand_less'}</span>
                             </div>
                           </button>
                           {!isCollapsed && (
@@ -1995,26 +2236,28 @@ function KeywordsTab({ displayResult }) {
             </div>
             <StatusBadge label={`${polarityRows.length} candidate rows`} />
           </div>
-          <div className="mt-5 overflow-hidden rounded-lg bg-surface-container-lowest">
-            <div className="grid grid-cols-[90px_1fr_110px_110px_100px] gap-3 bg-surface-container-high px-4 py-3 text-[10px] font-bold uppercase text-on-surface-variant">
-              <span>Code</span>
-              <span>Actor / Target / Action</span>
-              <span>Before</span>
-              <span>After</span>
-              <span>Decision</span>
-            </div>
-            {polarityRows.length ? polarityRows.map((row, index) => (
-              <div key={`${row.code}-${index}`} className="grid grid-cols-[90px_1fr_110px_110px_100px] gap-3 px-4 py-4 text-sm">
-                <span className="font-headline font-extrabold text-teal-700">{row.code}</span>
-                <div>
-                  <div className="font-semibold text-on-surface">{row.actor} → {row.action} → {row.target}</div>
-                  <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">{row.explanation}</p>
-                </div>
-                <span>{formatPercent(row.before_confidence)}</span>
-                <span>{formatPercent(row.after_polarity_gate)}</span>
-                <span className={row.decision === 'filtered' ? 'font-bold text-yellow-700 dark:text-yellow-300' : 'font-bold text-teal-700'}>{row.decision}</span>
+          <div className="mt-5 overflow-x-auto rounded-lg bg-surface-container-lowest">
+            <div className="min-w-[620px]">
+              <div className="grid grid-cols-[90px_1fr_110px_110px_100px] gap-3 bg-surface-container-high px-4 py-3 text-[10px] font-bold uppercase text-on-surface-variant">
+                <span>Code</span>
+                <span>Actor / Target / Action</span>
+                <span>Before</span>
+                <span>After</span>
+                <span>Decision</span>
               </div>
-            )) : <div className="px-4 py-5 text-sm text-on-surface-variant">No polarity gate rows yet.</div>}
+              {polarityRows.length ? polarityRows.map((row, index) => (
+                <div key={`${row.code}-${index}`} className="grid grid-cols-[90px_1fr_110px_110px_100px] gap-3 px-4 py-4 text-sm">
+                  <span className="font-headline font-extrabold text-teal-700">{row.code}</span>
+                  <div>
+                    <div className="font-semibold text-on-surface">{row.actor} → {row.action} → {row.target}</div>
+                    <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">{row.explanation}</p>
+                  </div>
+                  <span>{formatPercent(row.before_confidence)}</span>
+                  <span>{formatPercent(row.after_polarity_gate)}</span>
+                  <span className={row.decision === 'filtered' ? 'font-bold text-yellow-700 dark:text-yellow-300' : 'font-bold text-teal-700'}>{row.decision}</span>
+                </div>
+              )) : <div className="px-4 py-5 text-sm text-on-surface-variant">ยังไม่มีผลจาก polarity gate</div>}
+            </div>
           </div>
         </div>
       </section>
@@ -2041,7 +2284,7 @@ function prettyNodeId(id) {
 function compactText(value, maxLength = 640) {
   const text = String(value || '').replace(/\s+/g, ' ').trim();
   if (!text) return '';
-  return text.length > maxLength ? `${text.slice(0, maxLength).trim()}...` : text;
+  return text.length > maxLength ? `${text.slice(0, maxLength).trim()}…` : text;
 }
 
 function nodeTypeLabel(type) {
@@ -2298,13 +2541,13 @@ function VectorScene({ nodes, edges, selectedNodeId, onSelectNode, retrievedDocs
       </div>
       <div className="p-5">
         <div className="mb-4 flex flex-wrap gap-2 text-xs">
-          <button className={`rounded-lg px-3 py-2 font-bold ${showZones ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} onClick={() => setShowZones((value) => !value)} type="button">Radius Zones</button>
-          <button className={`rounded-lg px-3 py-2 font-bold ${showLinks ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} onClick={() => setShowLinks((value) => !value)} type="button">Semantic Links</button>
-          <button className={`rounded-lg px-3 py-2 font-bold ${showSignal ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} onClick={() => setShowSignal((value) => !value)} type="button">Live Signal</button>
-          <button className={`rounded-lg px-3 py-2 font-bold ${showLabels ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} onClick={() => setShowLabels((value) => !value)} type="button">Labels</button>
-          <button className={`rounded-lg px-3 py-2 font-bold ${layoutMode === 'result' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-950' : 'bg-surface-container-high text-on-surface'}`} onClick={() => applyLayoutMode('result')} type="button">Layout: Result</button>
-          <button className={`rounded-lg px-3 py-2 font-bold ${layoutMode === 'category' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-950' : 'bg-surface-container-high text-on-surface'}`} onClick={() => applyLayoutMode('category')} type="button">Layout: Category</button>
-          <button className="rounded-lg bg-surface-container-high px-3 py-2 font-bold text-on-surface transition-colors hover:bg-surface-container-highest" onClick={resetManualLayout} type="button">Reset Layout</button>
+          <button aria-pressed={showZones} className={`min-h-11 rounded-lg px-3 py-2 font-semibold ${showZones ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} onClick={() => setShowZones((value) => !value)} type="button">Radius Zones</button>
+          <button aria-pressed={showLinks} className={`min-h-11 rounded-lg px-3 py-2 font-semibold ${showLinks ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} onClick={() => setShowLinks((value) => !value)} type="button">Semantic Links</button>
+          <button aria-pressed={showSignal} className={`min-h-11 rounded-lg px-3 py-2 font-semibold ${showSignal ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} onClick={() => setShowSignal((value) => !value)} type="button">Live Signal</button>
+          <button aria-pressed={showLabels} className={`min-h-11 rounded-lg px-3 py-2 font-semibold ${showLabels ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} onClick={() => setShowLabels((value) => !value)} type="button">Labels</button>
+          <button aria-pressed={layoutMode === 'result'} className={`min-h-11 rounded-lg px-3 py-2 font-semibold ${layoutMode === 'result' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-950' : 'bg-surface-container-high text-on-surface'}`} onClick={() => applyLayoutMode('result')} type="button">Layout: Result</button>
+          <button aria-pressed={layoutMode === 'category'} className={`min-h-11 rounded-lg px-3 py-2 font-semibold ${layoutMode === 'category' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-950' : 'bg-surface-container-high text-on-surface'}`} onClick={() => applyLayoutMode('category')} type="button">Layout: Category</button>
+          <button className="min-h-11 rounded-lg bg-surface-container-high px-3 py-2 font-semibold text-on-surface transition-colors hover:bg-surface-container-highest" onClick={resetManualLayout} type="button">Reset Layout</button>
         </div>
         <p className="mb-3 text-xs font-semibold text-on-surface-variant">
           ลาก query/problem/evidence node เพื่อจัดตำแหน่งใหม่ได้ เมื่อ node ทับเส้นหรือข้อมูลสำคัญ
@@ -2357,7 +2600,23 @@ function VectorScene({ nodes, edges, selectedNodeId, onSelectNode, retrievedDocs
             const scoreWidth = Math.max(16, Math.min(node.width - 24, Number(node.score || 0) * (node.width - 24)));
             const distance = node.semantic_distance_to_query ?? 0;
             return (
-              <g className="semantic-node" data-vector-node={node.id} key={node.id} onClick={() => handleNodeFocus(node)} onPointerDown={(event) => handleNodeDragStart(event, node)} onPointerEnter={() => !dragNodeId && handleNodeFocus(node, 'hover')}>
+              <g
+                aria-label={`${node.id} ${node.label || node.type || ''} score ${formatNumber(node.score, 2)}`}
+                className="semantic-node"
+                data-vector-node={node.id}
+                key={node.id}
+                onClick={() => handleNodeFocus(node)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleNodeFocus(node, 'keyboard');
+                  }
+                }}
+                onPointerDown={(event) => handleNodeDragStart(event, node)}
+                onPointerEnter={() => !dragNodeId && handleNodeFocus(node, 'hover')}
+                role="button"
+                tabIndex="0"
+              >
                 <rect fill={tone.fill} height={node.height} rx="8" stroke={tone.stroke} strokeOpacity={isActive ? 1 : 0.55} strokeWidth={isActive ? 2.5 : 1.4} width={node.width} x={node.px - node.width / 2} y={node.py - node.height / 2} />
                 <rect fill={tone.stroke} height="5" opacity="0.9" rx="2" width={scoreWidth} x={node.px - node.width / 2 + 12} y={node.py + node.height / 2 - 13} />
                 <text fill={tone.text} fontSize="13" fontWeight="800" x={node.px - node.width / 2 + 12} y={node.py - 12}>{node.id}</text>
@@ -2711,7 +2970,7 @@ function VectorTab({ displayResult }) {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="rounded-lg bg-surface-container-lowest px-2.5 py-1 text-[11px] font-bold text-on-surface">{group.items.length} nodes</span>
-                          <span className="material-symbols-outlined text-on-surface-variant">{isCollapsed ? 'expand_more' : 'expand_less'}</span>
+                          <span aria-hidden="true" className="material-symbols-outlined text-on-surface-variant">{isCollapsed ? 'expand_more' : 'expand_less'}</span>
                         </div>
                       </button>
                       {!isCollapsed && <div className="mt-3 space-y-2">{group.items.map(renderNodeButton)}</div>}
@@ -3184,7 +3443,7 @@ function PipelineTab({ displayResult, runtimeStatus }) {
                       style={{ transitionDelay: `${idx * 90}ms` }}>
                       <div className="flex items-start justify-between gap-3">
                         <span className={`pipeline-live-ring flex h-11 w-11 items-center justify-center rounded-lg transition-transform duration-300 ${isActive ? `${tone.icon} scale-100` : 'bg-surface-container-high text-on-surface-variant scale-90'}`}>
-                          <span className="material-symbols-outlined text-[22px]">{step.icon}</span>
+                          <span aria-hidden="true" className="material-symbols-outlined text-[22px]">{step.icon}</span>
                         </span>
                         <span className={`rounded bg-surface-container-lowest/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${step.status === 'complete' ? tone.text : step.status === 'skipped' ? 'text-on-surface-variant' : 'text-outline-variant'}`}>
                           {step.status === 'complete' ? 'Done' : step.status === 'skipped' ? 'Skip' : 'Wait'}
@@ -3212,7 +3471,7 @@ function PipelineTab({ displayResult, runtimeStatus }) {
                         <h4 className="mt-1 font-headline font-bold text-on-surface">{selectedStep?.label}</h4>
                       </div>
                       <span className={`flex h-10 w-10 items-center justify-center rounded-lg ${selectedTone.icon}`}>
-                        <span className="material-symbols-outlined text-[21px]">{selectedStep?.icon}</span>
+                        <span aria-hidden="true" className="material-symbols-outlined text-[21px]">{selectedStep?.icon}</span>
                       </span>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -3339,12 +3598,11 @@ function PipelineTab({ displayResult, runtimeStatus }) {
         </div>
       </section>
       <CandidateFilterPanel displayResult={displayResult} />
-      <EvidenceSection displayResult={displayResult} />
     </div>
   );
 }
 
-function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evidenceTopK, runtimeStatus, onOpenPipeline }) {
+function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evidenceTopK, runtimeStatus, selectedL2Model }) {
   const [elapsedMs, setElapsedMs] = useState(0);
   const [focusedStage, setFocusedStage] = useState(0);
 
@@ -3353,7 +3611,7 @@ function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evid
     { icon: 'rule', label: 'Sentence Profile', detail: 'อ่าน polarity, actors, negation และบริบทประโยค', tone: 'sky' },
     { icon: 'manage_search', label: 'L1 Detection', detail: 'ค้น candidate problem codes ด้วย keyword และ rule layer', tone: 'sky' },
     { icon: 'travel_explore', label: 'Evidence Retrieval', detail: 'ดึงเอกสารหลักฐานด้วย retrieval strategy ที่เลือก', tone: 'violet' },
-    { icon: enableL2 ? 'auto_awesome' : 'skip_next', label: enableL2 ? 'L2 Validation' : 'L2 Skipped', detail: enableL2 ? 'ตรวจ semantic/context gate เพื่อลด false positives' : 'baseline mode จะข้าม semantic validation', tone: enableL2 ? 'violet' : 'slate' },
+    { icon: enableL2 ? 'auto_awesome' : 'skip_next', label: enableL2 ? 'L2 Validation' : 'L2 Skipped', detail: enableL2 ? `ตรวจ semantic/context ด้วย ${selectedL2Model}` : 'baseline mode จะข้าม semantic validation', tone: enableL2 ? 'violet' : 'slate' },
     { icon: 'fact_check', label: 'Compose Result', detail: 'รวม final problems, trace, metrics และ visualization payload', tone: 'emerald' },
   ];
 
@@ -3388,7 +3646,7 @@ function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evid
         <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-start gap-4">
             <div className="processing-core flex h-14 w-14 items-center justify-center rounded-lg bg-teal-600 text-white shadow-[0_18px_38px_-20px_rgba(13,148,136,0.8)]">
-              <span className="material-symbols-outlined text-[28px]">data_object</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[28px]">data_object</span>
             </div>
             <div>
               <div className="text-[10px] font-bold uppercase tracking-widest text-teal-700">Live Processing</div>
@@ -3401,9 +3659,6 @@ function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evid
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge label={`${elapsedSeconds.toFixed(1)}s`} tone="neutral" />
             <StatusBadge label={runtimeStatus.status || 'runtime'} tone={runtimeTone} />
-            <button className="rounded-lg bg-surface-container-high px-3 py-2 text-xs font-bold text-on-surface transition-colors hover:bg-surface-container-highest" onClick={onOpenPipeline} type="button">
-              Open Runtime Flow
-            </button>
           </div>
         </div>
 
@@ -3413,7 +3668,7 @@ function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evid
             <span className="text-teal-700">{estimatedProgress}%</span>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface-container-high">
-            <div className="processing-progress h-full rounded-full bg-gradient-to-r from-teal-500 via-sky-400 to-emerald-500 transition-all duration-300" style={{ width: `${estimatedProgress}%` }} />
+            <div className="processing-progress h-full rounded-full bg-gradient-to-r from-teal-500 via-sky-400 to-emerald-500 transition-[width] duration-300" style={{ width: `${estimatedProgress}%` }} />
           </div>
         </div>
 
@@ -3431,7 +3686,7 @@ function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evid
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${isActive ? 'bg-teal-600 text-white' : isDone ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-200' : 'bg-surface-container-high text-on-surface-variant'}`}>
-                    <span className="material-symbols-outlined text-[20px]">{isDone ? 'check' : stage.icon}</span>
+                    <span aria-hidden="true" className="material-symbols-outlined text-[20px]">{isDone ? 'check' : stage.icon}</span>
                   </span>
                   <span className={`text-[10px] font-bold uppercase ${isActive ? 'text-teal-700 dark:text-teal-200' : 'text-on-surface-variant'}`}>{isDone ? 'done' : isActive ? 'running' : 'queued'}</span>
                 </div>
@@ -3450,7 +3705,7 @@ function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evid
                 <h4 className="mt-1 font-headline font-bold text-on-surface">{selectedStage.label}</h4>
               </div>
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-600 text-white">
-                <span className="material-symbols-outlined text-[21px]">{selectedStage.icon}</span>
+                <span aria-hidden="true" className="material-symbols-outlined text-[21px]">{selectedStage.icon}</span>
               </span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-on-surface-variant">{selectedStage.detail}</p>
@@ -3697,6 +3952,7 @@ function DocScalingPlot({ runs, selectedTopK, onSelectTopK }) {
                     </circle>
                   )}
                   <circle
+                    aria-disabled={missing}
                     aria-label={`select top ${topK}`}
                     className="topk-h2l-point cursor-pointer transition-all"
                     cx={xFor(topK)}
@@ -3704,21 +3960,24 @@ function DocScalingPlot({ runs, selectedTopK, onSelectTopK }) {
                     fill={missing ? '#cbd5e1' : isBest ? '#0f766e' : '#14b8a6'}
                     onClick={(event) => {
                       event.stopPropagation();
-                      if (!missing) setFocusedTopK(topK);
-                      onSelectTopK?.(topK);
+                      if (!missing) {
+                        setFocusedTopK(topK);
+                        onSelectTopK?.(topK);
+                      }
                     }}
                     onFocus={() => !missing && setFocusedTopK(topK)}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
                         if (!missing) setFocusedTopK(topK);
-                        onSelectTopK?.(topK);
+                        if (!missing) onSelectTopK?.(topK);
                       }
                     }}
                     opacity={missing ? 0.55 : isActive ? 1 : 0.88}
                     r={isSelected ? 9 : isActive ? 8 : 6}
                     role="button"
                     strokeWidth="2.5"
-                    tabIndex="0"
+                    tabIndex={missing ? '-1' : '0'}
                   />
                   {isBest && !missing && (
                     <text x={xFor(topK)} y={y - 18} textAnchor="middle" fill="currentColor" className="text-[11px] font-extrabold text-teal-700 dark:text-teal-200">best</text>
@@ -4177,15 +4436,25 @@ function QualityTradeoffScatter({ rows, selectedNdcgKey }) {
                     </circle>
                   )}
                   <circle
+                    aria-label={`${row.strategy}: ${xMetric} ${formatNumber(row.xValue)}, retrieval time ${formatNumber(row.yValue, 4)} seconds`}
                     className="cursor-pointer transition-all"
                     cx={xFor(row.xValue)}
                     cy={yFor(row.yValue)}
                     fill={isH2L ? '#14b8a6' : '#64748b'}
                     onClick={() => setActiveStrategy(row.strategy)}
+                    onFocus={() => setActiveStrategy(row.strategy)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setActiveStrategy(row.strategy);
+                      }
+                    }}
                     onMouseEnter={() => setActiveStrategy(row.strategy)}
                     r={highlightStyle ? 9 : isActive ? 9 : 6}
                     stroke={highlightStyle?.ring || (isH2L ? '#0f766e' : '#334155')}
                     strokeWidth="2"
+                    role="button"
+                    tabIndex="0"
                   />
                 </g>
               );
@@ -5086,18 +5355,17 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
         </div>
       </details>
 
-      <section className="rounded-xl bg-surface-container-low p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <details className="clinical-details rounded-lg bg-surface-container-low p-5">
+        <summary className="flex min-h-12 flex-wrap items-center justify-between gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600">
           <div>
-            <h2 className="font-headline text-lg font-bold">1. Case-Level Runtime Review</h2>
-            <p className="mt-1 text-sm text-on-surface-variant">ส่วนนี้อธิบายผลของเคสที่กำลังวิเคราะห์จาก runtime จริง ใช้เพื่อดูเหตุผลของระบบในเคสเดียว ไม่ใช่คะแนน benchmark</p>
+            <h2 className="font-headline text-lg font-bold">บริบทเคสปัจจุบัน (ข้อมูลเสริม)</h2>
+            <p className="mt-1 text-sm text-on-surface-variant">เปิดเมื่อจำเป็นต้องเทียบ runtime ของเคสเดียวกับขอบเขต benchmark</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <StatusBadge label={currentCaseReady ? 'live case result' : 'no current result'} tone={currentCaseReady ? 'live' : 'neutral'} />
-            <StatusBadge label="source /analyze" tone="neutral" />
-            <StatusBadge label="single case scope" tone="neutral" />
+            <span aria-hidden="true" className="details-chevron material-symbols-outlined text-on-surface-variant transition-transform">expand_more</span>
           </div>
-        </div>
+        </summary>
         <div className="mt-5 grid gap-3 lg:grid-cols-3">
           <div className="rounded-xl bg-surface-container-lowest p-4">
             <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Result Origin</div>
@@ -5137,7 +5405,7 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
             </div>
           ) : (
             <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <MetricTile label="Confirmed" value={reviewSummary.confirmed ?? 0} hint="พร้อมใช้เป็นปัญหาหลัก" tone={(reviewSummary.confirmed ?? 0) ? 'bg-green-50 dark:bg-green-950/40' : 'bg-surface-container-low'} />
+              <MetricTile label="System-supported" value={reviewSummary.confirmed ?? 0} hint="ระบบพบหลักฐานสนับสนุน รอผู้ปฏิบัติงานทบทวน" tone={(reviewSummary.confirmed ?? 0) ? 'bg-green-50 dark:bg-green-950/40' : 'bg-surface-container-low'} />
               <MetricTile label="Needs Review" value={reviewSummary.needs_review ?? 0} hint="ควรทบทวนบริบทเพิ่ม" tone={(reviewSummary.needs_review ?? 0) ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-low'} />
               <MetricTile label="Verify Documents" value={reviewSummary.verify_documents ?? 0} hint="ต้องยืนยันด้วยสิทธิ/ทะเบียน/เอกสาร" tone={(reviewSummary.verify_documents ?? 0) ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-low'} />
               <MetricTile label="Filtered" value={reviewSummary.filtered ?? 0} hint="ถูกตัดออกจากผลสุดท้าย" tone={(reviewSummary.filtered ?? 0) ? 'bg-surface-container-high' : 'bg-surface-container-low'} />
@@ -5152,7 +5420,7 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
         <div className="mt-5">
           <ProblemDocumentMatrix caseText={displayResult.case_description || ''} problems={displayResult.problems || []} docs={displayResult.retrieved_docs || []} />
         </div>
-      </section>
+      </details>
 
       <section className="rounded-xl bg-surface-container-low p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -5378,7 +5646,7 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex min-w-0 items-start gap-3">
-                        <span className={`material-symbols-outlined mt-0.5 ${isActive ? 'text-current' : 'text-on-surface-variant'}`}>{item.icon}</span>
+                        <span aria-hidden="true" className={`material-symbols-outlined mt-0.5 ${isActive ? 'text-current' : 'text-on-surface-variant'}`}>{item.icon}</span>
                         <div className="min-w-0">
                           <div className="font-bold">{item.title}</div>
                           <p className={`mt-1 text-xs leading-relaxed ${isActive ? 'text-current/85' : 'text-on-surface-variant'}`}>{item.summary}</p>
@@ -5797,110 +6065,282 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
   );
 }
 
-function AuditAndFinalizePanel({ auditPacket, signoffPacket, reviewerNote, setReviewerNote, expertOverrideAdded, setExpertOverrideAdded, expertOverrideRejected, setExpertOverrideRejected }) {
-  if (!auditPacket && !signoffPacket) return null;
+function AuditAndFinalizePanel({
+  auditLoading,
+  auditPacket,
+  disabled,
+  expertOverrideAdded,
+  expertOverrideRejected,
+  finalizeLoading,
+  onPrepareAudit,
+  onSubmitReview,
+  publicPreview,
+  reviewSummary,
+  reviewerNote,
+  setExpertOverrideAdded,
+  setExpertOverrideRejected,
+  setReviewerNote,
+  setZeroFindingAcknowledged,
+  signoffPacket,
+  zeroFindingAcknowledged,
+}) {
+  const busy = auditLoading || finalizeLoading;
+  const interactionDisabled = disabled || publicPreview || busy;
+  const reviewComplete = reviewSummary.pending === 0 && (reviewSummary.total > 0 || zeroFindingAcknowledged);
+  const submitDisabled = interactionDisabled || !reviewComplete || Boolean(signoffPacket);
+
   return (
-    <section className="mt-6 grid gap-4 lg:grid-cols-2">
-      {auditPacket && (
-        <div className="rounded-xl bg-surface-container-low p-5">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="font-headline font-bold">Secondary Audit Packet</h3>
-            <StatusBadge label={auditPacket.audit_id} tone="live" />
+    <section className="mt-5 rounded-lg bg-surface-container-low p-5 sm:p-6" aria-labelledby="professional-review-title">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <span aria-hidden="true" className="material-symbols-outlined text-[21px] text-teal-700 dark:text-teal-300">fact_check</span>
+            <h2 className="font-headline text-lg font-bold text-on-surface" id="professional-review-title">การทบทวนโดยผู้ปฏิบัติงาน</h2>
           </div>
-          <p className="mt-2 text-sm text-on-surface-variant">{auditPacket.objective}</p>
-          <div className="mt-4 grid gap-2 text-sm">
-            <span>Accepted: <strong>{(auditPacket.accepted_problems || []).length}</strong></span>
-            <span>Rejected: <strong>{(auditPacket.rejected_candidates || []).length}</strong></span>
-            <span>Evidence docs: <strong>{(auditPacket.evidence_docs || []).length}</strong></span>
-          </div>
-          <pre className="mt-4 max-h-48 overflow-auto rounded bg-surface-container-lowest p-3 text-xs text-on-surface-variant">{auditPacket.export_markdown}</pre>
+          <p className="mt-1 text-sm text-on-surface-variant">บันทึกประเด็นที่แตกต่างจากผลของระบบก่อนส่งเข้าสู่การทบทวนโดยผู้เชี่ยวชาญ</p>
+        </div>
+        <StatusBadge label={signoffPacket ? 'ส่งเพื่อทบทวนแล้ว' : 'รอการทบทวน'} tone={signoffPacket ? 'live' : 'warning'} />
+      </div>
+
+      {publicPreview && (
+        <div className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
+          โหมดสาธิตภายนอกปิดการจัดเตรียม audit packet และการส่งผลเพื่อทบทวน
         </div>
       )}
-      <div className="rounded-xl border border-sky-900/50 bg-surface-container-low p-5">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="font-headline font-bold flex items-center gap-2"><span className="material-symbols-outlined text-sky-500">fact_check</span> Human-in-the-Loop Audit</h3>
-          <StatusBadge label="Continuous Learning" tone="live" />
-        </div>
-        <p className="mt-1 text-sm text-slate-400">จดบันทึกความแตกต่างระหว่าง AI vs อาการจริง เพื่อนำไปเป็น Active Learning Target ล็อตถัดไป</p>
-        
-        <div className="mt-4 grid gap-3 lg:grid-cols-2">
-          <label className="block">
-            <span className="mb-2 block text-xs font-bold text-teal-400">Add Missing (Expert Added)</span>
-            <input type="text" placeholder="e.g. 0102, F32" className="w-full rounded bg-surface-container-lowest border border-outline-variant/30 px-3 py-2 text-sm text-on-surface" value={expertOverrideAdded} onChange={(e)=>setExpertOverrideAdded(e.target.value)} />
+
+      <div className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-700 sm:grid-cols-4" aria-label="สรุปสถานะการทบทวนประเด็น">
+        {[
+          { label: 'รับไว้', value: reviewSummary.accepted, tone: 'text-emerald-700 dark:text-emerald-300' },
+          { label: 'ต้องทบทวน', value: reviewSummary.review, tone: 'text-amber-700 dark:text-amber-300' },
+          { label: 'ไม่นำไปใช้', value: reviewSummary.excluded, tone: 'text-slate-700 dark:text-slate-200' },
+          { label: 'ยังไม่ระบุ', value: reviewSummary.pending, tone: reviewSummary.pending ? 'text-red-700 dark:text-red-300' : 'text-emerald-700 dark:text-emerald-300' },
+        ].map((item) => (
+          <div className="bg-white px-3 py-3 text-center dark:bg-slate-900" key={item.label}>
+            <strong className={`block text-xl tabular-nums ${item.tone}`}>{item.value}</strong>
+            <span className="mt-0.5 block text-xs text-on-surface-variant">{item.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(300px,0.75fr)]">
+        <div className="rounded-lg bg-white p-4 dark:bg-slate-900">
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-semibold text-on-surface">เพิ่มประเด็นที่ระบบไม่พบ</span>
+              <input
+                className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-on-surface focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-slate-700 dark:bg-slate-950"
+                autoComplete="off"
+                disabled={interactionDisabled}
+                name="expert-override-added"
+                onChange={(event) => setExpertOverrideAdded(event.target.value)}
+                placeholder="เช่น 0102, F32"
+                type="text"
+                value={expertOverrideAdded}
+              />
+              <span className="mt-1 block text-xs text-on-surface-variant">คั่นหลายรหัสด้วยเครื่องหมายจุลภาค</span>
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-semibold text-on-surface">เพิ่มรหัสที่ไม่นำไปใช้</span>
+              <input
+                className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-on-surface focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-slate-700 dark:bg-slate-950"
+                autoComplete="off"
+                disabled={interactionDisabled}
+                name="expert-override-rejected"
+                onChange={(event) => setExpertOverrideRejected(event.target.value)}
+                placeholder="เช่น Z63"
+                type="text"
+                value={expertOverrideRejected}
+              />
+              <span className="mt-1 block text-xs text-on-surface-variant">ใช้เมื่อข้อมูลจริงไม่สนับสนุนข้อเสนอของระบบ</span>
+            </label>
+          </div>
+
+          <label className="mt-4 block">
+            <span className="mb-1.5 block text-sm font-semibold text-on-surface">บันทึกของผู้ทบทวน</span>
+            <textarea
+              className="min-h-28 w-full rounded-lg border border-slate-300 bg-white p-3 text-sm text-on-surface focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-slate-700 dark:bg-slate-950"
+              autoComplete="off"
+              disabled={interactionDisabled}
+              name="reviewer-note"
+              onChange={(event) => setReviewerNote(event.target.value)}
+              placeholder="บันทึกข้อสังเกต การตรวจสอบเพิ่มเติม หรือเหตุผลประกอบการตัดสินใจ"
+              value={reviewerNote}
+            />
           </label>
-          <label className="block">
-            <span className="mb-2 block text-xs font-bold text-red-400">Reject Finding (Expert Rejected)</span>
-            <input type="text" placeholder="e.g. Z63" className="w-full rounded bg-surface-container-lowest border border-outline-variant/30 px-3 py-2 text-sm text-on-surface" value={expertOverrideRejected} onChange={(e)=>setExpertOverrideRejected(e.target.value)} />
-          </label>
+
+          {reviewSummary.total === 0 && (
+            <label className="mt-4 flex min-h-12 items-start gap-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100">
+              <input
+                checked={zeroFindingAcknowledged}
+                className="mt-0.5 h-5 w-5 rounded border-amber-400 text-teal-700 focus:ring-teal-600"
+                disabled={interactionDisabled}
+                onChange={(event) => setZeroFindingAcknowledged(event.target.checked)}
+                type="checkbox"
+              />
+              <span>
+                <strong className="block">ยืนยันการตรวจกรณีไม่พบประเด็น</strong>
+                <span className="mt-0.5 block leading-relaxed">ตรวจข้อมูลต้นฉบับและบริบทความปลอดภัยแล้ว และไม่พบประเด็นเพิ่มเติมจากข้อมูลที่มี</span>
+              </span>
+            </label>
+          )}
+
+          <div className="mt-4 flex flex-wrap justify-end gap-2">
+            <button
+              className="min-h-11 rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              disabled={interactionDisabled}
+              onClick={onPrepareAudit}
+              type="button"
+            >
+              {auditLoading ? 'กำลังจัดเตรียม…' : 'จัดเตรียมข้อมูลสำหรับทบทวนซ้ำ'}
+            </button>
+            <button
+              className="min-h-11 rounded-lg bg-[#0d2734] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#16394a] disabled:cursor-not-allowed disabled:bg-slate-400"
+              aria-describedby="review-submit-help"
+              disabled={submitDisabled}
+              onClick={onSubmitReview}
+              type="button"
+            >
+              {finalizeLoading ? 'กำลังส่ง…' : 'ส่งเพื่อให้ผู้เชี่ยวชาญทบทวน'}
+            </button>
+          </div>
+          <p className={`mt-2 text-right text-xs ${reviewComplete ? 'text-on-surface-variant' : 'font-semibold text-amber-700 dark:text-amber-300'}`} id="review-submit-help">
+            {signoffPacket
+              ? 'ส่งข้อมูลชุดนี้แล้ว แก้ไขบันทึกหรือสถานะ finding เพื่อจัดเตรียมฉบับใหม่'
+              : reviewComplete
+                ? 'พร้อมส่งเมื่อข้อมูลเคสและการตั้งค่าตรงกับผลวิเคราะห์ปัจจุบัน'
+                : reviewSummary.total === 0
+                  ? 'กรุณายืนยันว่าได้ตรวจข้อมูลต้นฉบับและบริบทความปลอดภัยแล้ว'
+                  : `กรุณาระบุสถานะ finding ที่เหลือ ${reviewSummary.pending} รายการก่อนส่ง`}
+          </p>
         </div>
 
-        <label className="mt-3 block">
-          <span className="mb-2 block text-xs font-bold text-on-surface-variant">Reviewer/Clinician Note</span>
-          <textarea className="h-16 w-full rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-3 text-sm text-on-surface focus:ring-1 focus:ring-sky-500" onChange={(event) => setReviewerNote(event.target.value)} value={reviewerNote} placeholder="บันทึกความเห็นทางการแพทย์..." />
-        </label>
-        {signoffPacket && (
-          <div className="mt-4">
-            <StatusBadge label={signoffPacket.status} tone="live" />
-            <div className="mt-3 space-y-2">
-              {(signoffPacket.checklist || []).map((item) => (
-                <div key={item.item} className="flex items-center gap-2 text-sm text-on-surface-variant">
-                  <span className={`material-symbols-outlined text-base ${item.done ? 'text-teal-600' : 'text-yellow-500'}`}>{item.done ? 'check_circle' : 'radio_button_unchecked'}</span>
-                  {item.item}
-                </div>
-              ))}
-            </div>
-            <pre className="mt-4 max-h-40 overflow-auto rounded bg-slate-950 p-3 text-xs text-teal-400 font-mono">
-              Expert Added: {(signoffPacket.expert_override_added || []).join(", ") || "None"}
-              {"\n"}Expert Rejected: {(signoffPacket.expert_override_rejected || []).join(", ") || "None"}
-            </pre>
+        <aside className="rounded-lg bg-white p-4 dark:bg-slate-900">
+          <h3 className="font-semibold text-on-surface">สถานะการทบทวน</h3>
+          <div className="mt-3 space-y-2 text-sm text-on-surface-variant">
+            {[
+              { label: 'วิเคราะห์เคสปัจจุบันแล้ว', done: !disabled },
+              { label: 'ระบุสถานะประเด็นครบแล้ว', done: reviewComplete },
+              { label: 'บันทึกข้อสังเกตหรือ override (ถ้ามี)', done: Boolean(reviewerNote.trim() || expertOverrideAdded.trim() || expertOverrideRejected.trim() || signoffPacket) },
+              { label: 'ส่งเข้าสู่ human review', done: Boolean(signoffPacket) },
+            ].map((item) => (
+              <div className="flex items-start gap-2" key={item.label}>
+                <span aria-hidden="true" className={`material-symbols-outlined mt-0.5 text-[18px] ${item.done ? 'text-emerald-600 dark:text-emerald-300' : 'text-slate-300 dark:text-slate-600'}`}>{item.done ? 'check_circle' : 'radio_button_unchecked'}</span>
+                <span>{item.label}</span>
+              </div>
+            ))}
           </div>
-        )}
+
+          {auditPacket && (
+            <details className="clinical-details mt-4 rounded-lg bg-slate-50 p-3 dark:bg-slate-800/70">
+              <summary className="flex min-h-11 items-center justify-between gap-3 text-sm font-semibold text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600">
+                <span>Audit packet {auditPacket.audit_id}</span>
+                <span aria-hidden="true" className="details-chevron material-symbols-outlined transition-transform">expand_more</span>
+              </summary>
+              <div className="mt-2 grid gap-1 text-xs text-on-surface-variant">
+                <span className="mb-1 font-semibold text-on-surface">ผลการคัดกรองจากระบบ</span>
+                <span>ระบบนำไปใช้: <strong>{(auditPacket.accepted_problems || []).length}</strong></span>
+                <span>ระบบกรองออก: <strong>{(auditPacket.rejected_candidates || []).length}</strong></span>
+                <span>เอกสารหลักฐาน: <strong>{(auditPacket.evidence_docs || []).length}</strong></span>
+              </div>
+              <pre className="mt-3 max-h-48 overflow-auto whitespace-pre-wrap rounded-md bg-slate-950 p-3 text-xs text-teal-200">{auditPacket.export_markdown}</pre>
+            </details>
+          )}
+
+          {signoffPacket && (
+            <div className="mt-4 rounded-lg bg-emerald-50 p-3 dark:bg-emerald-950/30">
+              <StatusBadge label={signoffPacket.status} tone="live" />
+              <div className="mt-3 space-y-2">
+                {(signoffPacket.checklist || []).map((item) => (
+                  <div className="flex items-start gap-2 text-sm text-on-surface-variant" key={item.item}>
+                    <span aria-hidden="true" className={`material-symbols-outlined mt-0.5 text-[18px] ${item.done ? 'text-emerald-600' : 'text-amber-500'}`}>{item.done ? 'check_circle' : 'radio_button_unchecked'}</span>
+                    {item.item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </aside>
       </div>
     </section>
   );
 }
 
+function WorkspaceEmptyState({ actionLabel, disabled, icon = 'clinical_notes', message, onAction, title }) {
+  return (
+    <section className="page-enter flex min-h-[320px] flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white px-5 py-12 text-center dark:border-slate-700 dark:bg-slate-900/60">
+      <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-200">
+        <span aria-hidden="true" className="material-symbols-outlined text-[28px]">{icon}</span>
+      </div>
+      <h2 className="mt-5 font-headline text-xl font-bold text-on-surface">{title}</h2>
+      <p className="mt-2 max-w-xl text-sm leading-relaxed text-on-surface-variant">{message}</p>
+      {onAction && (
+        <button
+          className="mt-6 min-h-11 rounded-lg bg-[#0d2734] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#16394a] disabled:bg-slate-400"
+          disabled={disabled}
+          onClick={onAction}
+          type="button"
+        >
+          {actionLabel}
+        </button>
+      )}
+    </section>
+  );
+}
+
 export default function App() {
-  const [caseDescription, setCaseDescription] = useState('เด็กหญิงถูกแม่ดุด่าเป็นประจำ ครอบครัวรายได้น้อย เครียดมากและไม่อยากไปโรงเรียน');
+  const [caseDescription, setCaseDescription] = useState('');
   const [analyzedCase, setAnalyzedCase] = useState('');
   const [userAdjustedSpans, setUserAdjustedSpans] = useState([]);
   const [pendingAnchorSpan, setPendingAnchorSpan] = useState(null);
   const [analyzedUserAdjustedSpans, setAnalyzedUserAdjustedSpans] = useState([]);
   const [analyzedStrategy, setAnalyzedStrategy] = useState('h2l-hybrid');
   const [analyzedL2, setAnalyzedL2] = useState(true);
+  const [analyzedL2Model, setAnalyzedL2Model] = useState(DEFAULT_L2_MODEL);
   const [analyzedTopK, setAnalyzedTopK] = useState(DEFAULT_DOC_TOP_K);
   const [selectedFamily, setSelectedFamily] = useState('hybrid');
   const [selectedMode, setSelectedMode] = useState('enhanced');
   const [enableL2, setEnableL2] = useState(true);
+  const [selectedL2Model, setSelectedL2Model] = useState(DEFAULT_L2_MODEL);
   const [evidenceTopK, setEvidenceTopK] = useState(DEFAULT_DOC_TOP_K);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [actionMessage, setActionMessage] = useState(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [activeTab, setActiveTab] = useState('analysis');
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = typeof window !== 'undefined' ? window.location.hash.replace(/^#\/?/, '') : '';
+    if (hash === 'explainability') return 'keywords';
+    return ['analysis', 'keywords', 'pipeline', 'vectors', 'evaluation'].includes(hash) ? hash : 'analysis';
+  });
   const [evaluationSummary, setEvaluationSummary] = useState(null);
   const [evaluationLastSyncedAt, setEvaluationLastSyncedAt] = useState(null);
+  const [benchmarkTopK, setBenchmarkTopK] = useState(DEFAULT_DOC_TOP_K);
   const [, setThesisStatus] = useState(null);
   const [runtimeStatus, setRuntimeStatus] = useState({ status: 'loading', stage: 'not-started', components: {}, errors: [] });
   const [theme, setTheme] = useState(() => localStorage.getItem('h2l-theme') || 'light');
   const [auditPacket, setAuditPacket] = useState(null);
   const [signoffPacket, setSignoffPacket] = useState(null);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [finalizeLoading, setFinalizeLoading] = useState(false);
   const [reviewerNote, setReviewerNote] = useState('');
   const [expertOverrideAdded, setExpertOverrideAdded] = useState('');
   const [expertOverrideRejected, setExpertOverrideRejected] = useState('');
+  const [findingReviewStates, setFindingReviewStates] = useState({});
+  const [zeroFindingAcknowledged, setZeroFindingAcknowledged] = useState(false);
   const publicOrigin = typeof window !== 'undefined' ? window.location.origin : '';
   const publicHostname = typeof window !== 'undefined' ? window.location.hostname : '';
-  const isPublicPreview = Boolean(
-    publicHostname
-    && publicHostname !== 'localhost'
-    && publicHostname !== '127.0.0.1'
-    && !publicHostname.endsWith('.local')
-  );
+  const isPublicPreview = PUBLIC_DEMO_MODE;
 
   const strategyPairs = runtimeStatus?.strategy_pairs || evaluationSummary?.strategy_pairs || DEFAULT_STRATEGY_PAIRS;
   const selectedPair = strategyPairs.find((pair) => pair.family === selectedFamily) || strategyPairs[0] || DEFAULT_STRATEGY_PAIRS[3];
   const selectedStrategy = selectedMode === 'baseline' ? selectedPair.baseline : selectedPair.enhanced;
+  const selectedStrategyUnavailable = runtimeStatus?.strategy_options
+    ?.find((option) => option.id === selectedStrategy)
+    ?.available === false;
+  const l2ModelOptions = runtimeStatus?.l2_model_options?.length
+    ? runtimeStatus.l2_model_options
+    : [{ id: DEFAULT_L2_MODEL, label: 'Qwen 2.5 7B', detail: 'Current local baseline', parameters: '7.6B', size_gb: 4.36, available: false, default: true }];
+  const selectedL2Option = l2ModelOptions.find((option) => option.id === selectedL2Model);
   const serializeUserAdjustedSpans = (spans) => JSON.stringify(
     (spans || [])
       .map((span) => ({
@@ -5912,11 +6352,35 @@ export default function App() {
   );
   const userAdjustedSignature = serializeUserAdjustedSpans(userAdjustedSpans);
   const analyzedUserAdjustedSignature = serializeUserAdjustedSpans(analyzedUserAdjustedSpans);
+  const activeWorkspace = explainabilityTabs.some((tab) => tab.id === activeTab) ? 'explainability' : activeTab;
+  const navigateWorkspace = (workspaceId) => {
+    if (workspaceId === 'explainability') {
+      setActiveTab((current) => explainabilityTabs.some((tab) => tab.id === current) ? current : 'keywords');
+      return;
+    }
+    setActiveTab(workspaceId);
+  };
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('h2l-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!runtimeStatus?.l2_model_options?.length) return;
+    const current = runtimeStatus.l2_model_options.find((option) => option.id === selectedL2Model);
+    if (current?.available) return;
+    const fallback = runtimeStatus.l2_model_options.find((option) => option.default && option.available)
+      || runtimeStatus.l2_model_options.find((option) => option.available);
+    if (fallback) setSelectedL2Model(fallback.id);
+  }, [runtimeStatus?.l2_model_options, selectedL2Model]);
+
+  useEffect(() => {
+    const nextHash = `#/${activeTab}`;
+    if (window.location.hash !== nextHash) window.history.replaceState(null, '', nextHash);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  }, [activeTab]);
 
   const refreshEvaluationSummary = async () => {
     try {
@@ -6001,7 +6465,7 @@ export default function App() {
     poll();
     
     // Dynamic polling interval: fast (2s) when loading/degraded, medium (10s) when ready
-    const isRuntimeWaiting = runtimeStatus.status === 'loading' || runtimeStatus.status === 'degraded';
+    const isRuntimeWaiting = runtimeStatus.status === 'loading';
     const pollInterval = isRuntimeWaiting ? 2000 : 10000;
     
     const interval = window.setInterval(poll, pollInterval);
@@ -6028,8 +6492,8 @@ export default function App() {
     setSignoffPacket(null);
     setActionMessage({
       tone: 'neutral',
-      title: 'กำลังประมวลผลเคสจริง',
-      detail: `runtime strategy=${selectedStrategy}; enable_l2=${String(enableL2)}; top_k=${evidenceTopK}. ถ้าโมเดลยังโหลดอยู่ backend จะส่งสถานะกลับมา ไม่ fallback เป็น mock`,
+      title: 'กำลังวิเคราะห์เคสและค้นหาแนวทาง',
+      detail: `วิธีที่ร้องขอ ${selectedStrategy} · L2 ${selectedMode === 'enhanced' && enableL2 ? selectedL2Model : 'ปิด'} · หลักฐาน Top ${evidenceTopK}`,
     });
     setHasSubmitted(true);
 
@@ -6041,21 +6505,28 @@ export default function App() {
           case_description: caseDescription,
           strategy: selectedStrategy,
           enable_l2: enableL2,
+          llm_model: selectedL2Model,
           top_k: evidenceTopK,
           user_adjusted_spans: userAdjustedSpans,
         }),
       });
       setResult(data);
+      setFindingReviewStates({});
+      setReviewerNote('');
+      setExpertOverrideAdded('');
+      setExpertOverrideRejected('');
+      setZeroFindingAcknowledged(false);
       setRuntimeStatus(data.runtime_status || runtimeStatus);
       setAnalyzedCase(trimmedCase);
       setAnalyzedUserAdjustedSpans(userAdjustedSpans);
       setAnalyzedStrategy(data.requested_strategy || selectedStrategy);
       setAnalyzedL2(enableL2);
+      setAnalyzedL2Model(data.model_provenance?.selected_l2_model || selectedL2Model);
       setAnalyzedTopK(data.top_k || evidenceTopK);
       setActionMessage({
         tone: data.runtime_status?.status === 'degraded' ? 'warning' : 'live',
-        title: 'ประเมินผลเสร็จแล้ว',
-        detail: `case=${data.case_id}; strategy=${data.requested_strategy}; top_k=${data.top_k || evidenceTopK}; anchors=${data.user_adjusted_span_count || 0}; problems=${(data.problems || []).length}; candidates=${data.candidate_count || 0}; evidence docs=${data.retrieved_docs_count || 0}; runtime=${data.runtime_status?.status}`,
+        title: 'วิเคราะห์เคสเสร็จแล้ว',
+        detail: `เคส ${data.case_id} · วิธีที่ใช้จริง ${data.effective_strategy || data.requested_strategy} · L2 ${data.model_provenance?.effective_l2_model || 'ไม่ได้เรียก'} · พบ ${data.problems?.length || 0} ประเด็น · หลักฐาน ${data.retrieved_docs_count || 0} รายการ${data.effective_strategy && data.requested_strategy !== data.effective_strategy ? ` · เปลี่ยนจาก ${data.requested_strategy} เนื่องจากข้อจำกัด runtime` : ''}`,
       });
       setActiveTab('analysis');
     } catch (err) {
@@ -6063,6 +6534,7 @@ export default function App() {
       const runtimePayload = err.payload?.detail?.runtime_status;
       if (runtimePayload) setRuntimeStatus(runtimePayload);
       setResult(null);
+      setFindingReviewStates({});
       setAnalyzedCase('');
       setAnalyzedUserAdjustedSpans([]);
       setError(err.name === 'AbortError' ? 'API ใช้เวลานานเกินกำหนด กรุณาดู Runtime Status ว่าโมเดล/index พร้อมหรือไม่' : `เชื่อมต่อ/ประมวลผล API ไม่สำเร็จ: ${err.message}`);
@@ -6083,8 +6555,8 @@ export default function App() {
         tone: 'neutral',
         title: 'ข้อความเคสเปลี่ยนแล้ว',
         detail: hadAnchors
-          ? 'ข้อความเคสเปลี่ยนแล้ว จึงล้างตำแหน่ง anchor เดิมเพื่อไม่ให้ offset เพี้ยน กด Run H2L Analysis เพื่อประเมินใหม่'
-          : 'ผลลัพธ์เดิมถูกพักไว้ กด Run H2L Analysis เพื่อประเมินเคสปัจจุบันใหม่',
+          ? 'ข้อความเคสเปลี่ยนแล้ว จึงล้างตำแหน่งคำสำคัญเดิมเพื่อป้องกันตำแหน่งคลาดเคลื่อน กรุณาวิเคราะห์ใหม่'
+          : 'ผลเดิมถูกพักไว้ กรุณาวิเคราะห์เคสปัจจุบันใหม่ก่อนทบทวนหรือส่งผล',
       });
     }
   };
@@ -6123,7 +6595,7 @@ export default function App() {
       setActionMessage({
         tone: 'neutral',
         title: 'เพิ่ม anchor position แล้ว',
-        detail: 'ตำแหน่งที่เลือกจะถูกส่งไป backend ในการวิเคราะห์รอบถัดไป กด Run H2L Analysis เพื่ออัปเดตผล',
+        detail: 'ตำแหน่งที่เลือกจะถูกใช้ในการวิเคราะห์รอบถัดไป กรุณาวิเคราะห์ใหม่เพื่ออัปเดตผล',
       });
     }
   };
@@ -6134,7 +6606,7 @@ export default function App() {
       setActionMessage({
         tone: 'neutral',
         title: 'ลบ anchor position แล้ว',
-        detail: 'ผลปัจจุบันยังอ้าง anchor เดิมอยู่ กด Run H2L Analysis เพื่อประเมินใหม่ตามตำแหน่งล่าสุด',
+        detail: 'ผลปัจจุบันยังอ้างตำแหน่งเดิมอยู่ กดวิเคราะห์เคสอีกครั้งเพื่อประเมินตามตำแหน่งล่าสุด',
       });
     }
   };
@@ -6146,53 +6618,99 @@ export default function App() {
       setActionMessage({
         tone: 'neutral',
         title: 'ล้าง anchor position แล้ว',
-        detail: 'ผลปัจจุบันยังอ้าง anchor เดิมอยู่ กด Run H2L Analysis เพื่อประเมินใหม่โดยไม่ใช้ตำแหน่งที่ผู้ใช้ fix ไว้',
+        detail: 'ผลปัจจุบันยังอ้างตำแหน่งเดิมอยู่ กดวิเคราะห์เคสอีกครั้งเพื่อประเมินโดยไม่ใช้ตำแหน่งที่กำหนดเอง',
       });
     }
   };
 
   const verifyDataset = async () => {
     setError('');
-    setActionMessage({ tone: 'neutral', title: 'Runtime Verification', detail: 'Checking /health and /runtime/status...' });
+    setActionMessage({ tone: 'neutral', title: 'กำลังตรวจสอบระบบ', detail: 'กำลังอ่านสถานะ API, runtime และข้อมูลประเมิน…' });
     try {
       const [health, runtime, thesis, evaluation] = await Promise.all([fetchJson('/health', {}, 15000), fetchJson('/runtime/status', {}, 15000), fetchJson('/thesis/status', {}, 20000), refreshEvaluationSummary()]);
       setRuntimeStatus(runtime);
       setThesisStatus(thesis);
       setActionMessage({
         tone: evaluation?.data_sources?.freshness?.needs_review ? 'warning' : thesis.status === 'ready' ? 'live' : thesis.status === 'degraded' ? 'warning' : 'neutral',
-        title: 'Runtime Verification',
+        title: 'ตรวจสอบสถานะระบบแล้ว',
         detail: `api=${health.status}; runtime=${runtime.status}; thesis=${thesis.status}; checks=${(thesis.checks || []).filter((check) => check.status === 'ready').length}/${(thesis.checks || []).length}; performance=${evaluation?.data_sources?.freshness?.needs_review ? 'needs review' : 'current'}; l2_ready=${String(runtime.l2_ready)}`,
       });
     } catch (err) {
-      setActionMessage({ tone: 'error', title: 'Runtime Verification Failed', detail: err.message });
+      setActionMessage({ tone: 'error', title: 'ตรวจสอบระบบไม่สำเร็จ', detail: `${err.message} กรุณาตรวจสอบ backend แล้วลองอีกครั้ง` });
     }
   };
 
   const reviewPerformanceSnapshot = async () => {
     setActionMessage({
       tone: 'neutral',
-      title: 'Reloading Performance Snapshot',
-      detail: 'Reading /evaluation-summary from the latest artifacts on disk...',
+      title: 'กำลังอัปเดตผลประเมินงานวิจัย',
+      detail: 'กำลังอ่าน evaluation artifacts ชุดล่าสุด…',
     });
     try {
       const [evaluation, thesis] = await Promise.all([refreshEvaluationSummary(), refreshThesisStatus()]);
+      if (!evaluation) throw new Error('ไม่สามารถอ่าน evaluation artifacts ล่าสุดได้');
       const freshness = evaluation?.data_sources?.freshness || {};
       setActionMessage({
         tone: freshness.needs_review ? 'warning' : 'live',
-        title: 'Performance Snapshot Updated',
+        title: 'อัปเดตผลประเมินงานวิจัยแล้ว',
         detail: freshness.interpretation || thesis?.interpretation || 'Updated evaluation summary from current artifacts.',
       });
     } catch (err) {
-      setActionMessage({ tone: 'error', title: 'Performance Snapshot Failed', detail: err.message });
+      setActionMessage({ tone: 'error', title: 'อัปเดตผลประเมินไม่สำเร็จ', detail: `${err.message} กรุณาตรวจสอบ artifacts แล้วลองอีกครั้ง` });
     }
   };
 
+  const invalidateSubmittedReview = () => {
+    if (!signoffPacket) return;
+    setSignoffPacket(null);
+    setActionMessage({
+      tone: 'neutral',
+      title: 'แก้ไขข้อมูลการทบทวนแล้ว',
+      detail: 'ฉบับที่ส่งก่อนหน้าถูกเก็บไว้ แต่หน้าจอนี้กลับมาเป็นฉบับร่าง กรุณาตรวจสอบและส่งใหม่เมื่อพร้อม',
+    });
+  };
+
+  const updateFindingReviewState = (code, state) => {
+    setFindingReviewStates((current) => ({ ...current, [code]: state }));
+    invalidateSubmittedReview();
+  };
+
+  const updateReviewerNote = (value) => {
+    setReviewerNote(value);
+    invalidateSubmittedReview();
+  };
+
+  const updateExpertOverrideAdded = (value) => {
+    setExpertOverrideAdded(value);
+    invalidateSubmittedReview();
+  };
+
+  const updateExpertOverrideRejected = (value) => {
+    setExpertOverrideRejected(value);
+    invalidateSubmittedReview();
+  };
+
+  const updateZeroFindingAcknowledged = (value) => {
+    setZeroFindingAcknowledged(value);
+    invalidateSubmittedReview();
+  };
+
   const requestSecondaryAudit = async () => {
-    const resultMatchesInput = result && caseDescription.trim() === analyzedCase && userAdjustedSignature === analyzedUserAdjustedSignature;
-    if (!resultMatchesInput) {
-      setActionMessage({ tone: 'warning', title: 'Secondary Audit', detail: 'Run analysis for the current case before preparing an audit packet.' });
+    if (isPublicPreview) {
+      setActionMessage({ tone: 'warning', title: 'โหมดสาธิตภายนอก', detail: 'การจัดเตรียม audit packet ถูกปิดในโหมดสาธิตภายนอก' });
       return;
     }
+    const resultMatchesInput = result
+      && caseDescription.trim() === analyzedCase
+      && userAdjustedSignature === analyzedUserAdjustedSignature
+      && selectedStrategy === analyzedStrategy
+      && enableL2 === analyzedL2
+      && evidenceTopK === analyzedTopK;
+    if (!resultMatchesInput) {
+      setActionMessage({ tone: 'warning', title: 'ผลเคสไม่ตรงกับการตั้งค่าปัจจุบัน', detail: 'กรุณาวิเคราะห์เคสอีกครั้งก่อนจัดเตรียมข้อมูลสำหรับทบทวนซ้ำ' });
+      return;
+    }
+    setAuditLoading(true);
     try {
       const packet = await fetchJson('/audit/prepare', {
         method: 'POST',
@@ -6200,21 +6718,52 @@ export default function App() {
         body: JSON.stringify({ case_id: result.case_id }),
       });
       setAuditPacket(packet);
-      setActionMessage({ tone: 'live', title: 'Secondary Audit Packet Ready', detail: `audit=${packet.audit_id}; evidence docs=${(packet.evidence_docs || []).length}; rejected=${(packet.rejected_candidates || []).length}` });
+      setActionMessage({ tone: 'live', title: 'จัดเตรียมข้อมูลสำหรับทบทวนซ้ำแล้ว', detail: `Audit ${packet.audit_id} · หลักฐาน ${(packet.evidence_docs || []).length} รายการ · รายการที่ระบบไม่นำไปใช้ ${(packet.rejected_candidates || []).length}` });
     } catch (err) {
-      setActionMessage({ tone: 'error', title: 'Secondary Audit Failed', detail: err.message });
+      setActionMessage({ tone: 'error', title: 'จัดเตรียมข้อมูลทบทวนไม่สำเร็จ', detail: err.message });
+    } finally {
+      setAuditLoading(false);
     }
   };
 
   const finalizeCase = async () => {
-    const resultMatchesInput = result && caseDescription.trim() === analyzedCase && userAdjustedSignature === analyzedUserAdjustedSignature;
-    if (!resultMatchesInput) {
-      setActionMessage({ tone: 'warning', title: 'Case Sign-Off', detail: 'Run analysis for the current case before sign-off review.' });
+    if (isPublicPreview) {
+      setActionMessage({ tone: 'warning', title: 'โหมดสาธิตภายนอก', detail: 'การส่งผลเพื่อให้ผู้เชี่ยวชาญทบทวนถูกปิดในโหมดสาธิตภายนอก' });
       return;
     }
+    const resultMatchesInput = result
+      && caseDescription.trim() === analyzedCase
+      && userAdjustedSignature === analyzedUserAdjustedSignature
+      && selectedStrategy === analyzedStrategy
+      && enableL2 === analyzedL2
+      && evidenceTopK === analyzedTopK;
+    if (!resultMatchesInput) {
+      setActionMessage({ tone: 'warning', title: 'ยังส่งผลเพื่อทบทวนไม่ได้', detail: 'ข้อความเคสหรือการตั้งค่าถูกเปลี่ยน กรุณาวิเคราะห์ใหม่ก่อนส่งผล' });
+      return;
+    }
+    const unresolvedFindings = (result.problems || []).filter((problem) => !findingReviewStates[problem.code]);
+    if (unresolvedFindings.length) {
+      setActionMessage({ tone: 'warning', title: 'ยังทบทวนประเด็นไม่ครบ', detail: `กรุณาระบุสถานะของ ${unresolvedFindings.map((problem) => problem.code).join(', ')} ก่อนส่งผล` });
+      return;
+    }
+    if (!(result.problems || []).length && !zeroFindingAcknowledged) {
+      setActionMessage({ tone: 'warning', title: 'ต้องยืนยันการตรวจข้อมูลต้นฉบับ', detail: 'ระบบไม่พบ finding จากข้อความที่ให้ กรุณาตรวจบริบทความปลอดภัยและยืนยันก่อนส่งผล' });
+      return;
+    }
+    setFinalizeLoading(true);
     try {
-      const addedList = expertOverrideAdded.split(',').map(s=>s.trim()).filter(Boolean);
-      const rejectedList = expertOverrideRejected.split(',').map(s=>s.trim()).filter(Boolean);
+      const normalizeCodes = (value) => [...new Set(value.split(',').map((code) => code.trim()).filter(Boolean))];
+      const addedList = normalizeCodes(expertOverrideAdded);
+      const reviewExcludedCodes = (result.problems || [])
+        .filter((problem) => findingReviewStates[problem.code] === 'excluded')
+        .map((problem) => problem.code);
+      const rejectedList = [...new Set([...normalizeCodes(expertOverrideRejected), ...reviewExcludedCodes])];
+      const invalidCodes = [...addedList, ...rejectedList].filter((code) => !/^[A-Za-z0-9._-]+$/.test(code));
+      if (invalidCodes.length) throw new Error(`รูปแบบรหัสไม่ถูกต้อง: ${invalidCodes.join(', ')}`);
+      const rejectedSet = new Set(rejectedList);
+      const conflictingCodes = addedList.filter((code) => rejectedSet.has(code));
+      if (conflictingCodes.length) throw new Error(`รหัสเดียวกันอยู่ทั้งรายการเพิ่มและไม่นำไปใช้: ${conflictingCodes.join(', ')}`);
+      const selectedFindings = (result.problems || []).map((problem) => problem.code).filter((code) => !rejectedSet.has(code));
 
       const packet = await fetchJson('/case/finalize', {
         method: 'POST',
@@ -6222,16 +6771,30 @@ export default function App() {
         body: JSON.stringify({
           case_id: result.case_id,
           reviewer_note: reviewerNote,
-          selected_findings: (result.problems || []).map((problem) => problem.code),
+          selected_findings: selectedFindings,
+          finding_review_states: findingReviewStates,
+          zero_finding_acknowledged: zeroFindingAcknowledged,
           expert_override_added: addedList,
           expert_override_rejected: rejectedList,
           final_status: 'Ready for Human Review',
         }),
       });
       setSignoffPacket(packet);
-      setActionMessage({ tone: 'live', title: 'Case Ready for Human Review', detail: `case=${packet.case_id}; checklist=${(packet.checklist || []).filter((item) => item.done).length}/${(packet.checklist || []).length}` });
+      setActionMessage({ tone: 'live', title: 'ส่งเคสเพื่อให้ผู้เชี่ยวชาญทบทวนแล้ว', detail: `เคส ${packet.case_id} · checklist ${(packet.checklist || []).filter((item) => item.done).length}/${(packet.checklist || []).length}` });
     } catch (err) {
-      setActionMessage({ tone: 'error', title: 'Case Sign-Off Failed', detail: err.message });
+      setActionMessage({ tone: 'error', title: 'ส่งเคสเพื่อทบทวนไม่สำเร็จ', detail: err.message });
+    } finally {
+      setFinalizeLoading(false);
+    }
+  };
+
+  const loadSampleCase = () => {
+    setCaseDescription(SAMPLE_CASE);
+    setPendingAnchorSpan(null);
+    setUserAdjustedSpans([]);
+    setError('');
+    if (result) {
+      setActionMessage({ tone: 'neutral', title: 'โหลดเคสตัวอย่างแล้ว', detail: 'กรุณาวิเคราะห์ใหม่เพื่อสร้างผลที่ตรงกับข้อความตัวอย่าง' });
     }
   };
 
@@ -6242,9 +6805,18 @@ export default function App() {
         || userAdjustedSignature !== analyzedUserAdjustedSignature
         || selectedStrategy !== analyzedStrategy
         || enableL2 !== analyzedL2
+        || selectedL2Model !== analyzedL2Model
         || evidenceTopK !== analyzedTopK
       )
     );
+  const hasFreshResult = Boolean(result && !isCaseDirty);
+  const reviewSummary = (result?.problems || []).reduce((summary, problem) => {
+    const state = findingReviewStates[problem.code];
+    if (state === 'accepted' || state === 'review' || state === 'excluded') summary[state] += 1;
+    else summary.pending += 1;
+    summary.total += 1;
+    return summary;
+  }, { accepted: 0, review: 0, excluded: 0, pending: 0, total: 0 });
   const displayResult = isCaseDirty ? { ...emptyResult, status: 'stale', case_description: analyzedCase || '' } : result || emptyResult;
   const dataTone = loading
     ? 'neutral'
@@ -6256,315 +6828,321 @@ export default function App() {
           ? 'warning'
           : 'neutral';
   const dataLabel = loading
-    ? 'Processing'
+    ? 'กำลังวิเคราะห์'
     : isCaseDirty
-      ? 'Needs Analysis'
+      ? 'ต้องวิเคราะห์ใหม่'
       : result
-        ? 'Live Data'
+        ? 'มีผลเคสปัจจุบัน'
         : error
-          ? 'API Error'
+          ? 'เกิดข้อผิดพลาด'
           : runtimeStatus.status === 'error'
-            ? 'Runtime Error'
+            ? 'ระบบไม่พร้อม'
             : runtimeStatus.status === 'loading'
-              ? 'Model Loading'
+              ? 'กำลังเตรียมระบบ'
               : runtimeStatus.status === 'degraded'
-                ? 'Runtime Degraded'
+                ? 'ระบบจำกัด'
                 : hasSubmitted
-                  ? 'Waiting'
-                  : 'Ready';
-  const analyzeDisabled = loading || runtimeStatus.status === 'loading' || runtimeStatus.status === 'error';
+                  ? 'รอผล'
+                  : 'ยังไม่ได้ประเมิน';
+  const selectedL2Unavailable = selectedMode === 'enhanced' && enableL2 && selectedL2Option?.available === false;
+  const analyzeDisabled = loading || !caseDescription.trim() || selectedStrategyUnavailable || selectedL2Unavailable || runtimeStatus.status === 'loading' || runtimeStatus.status === 'error';
 
   const runtimeHint = useMemo(() => {
-    if (runtimeStatus.status === 'loading') return 'Runtime ยังโหลด embedding/index/model อยู่ ปุ่มวิเคราะห์จะเปิดเมื่อ ready หรือ degraded';
-    if (runtimeStatus.status === 'degraded') return 'Runtime degraded: ระบบยังวิเคราะห์ได้ด้วย component ที่พร้อม และจะแสดงเหตุผลที่ component อื่นไม่พร้อม';
-    if (runtimeStatus.status === 'ready') return 'Runtime พร้อมสำหรับ RAG/H2L จริง';
-    return 'Runtime ยังไม่พร้อม กรุณาตรวจ backend';
-  }, [runtimeStatus.status]);
+    if (selectedStrategyUnavailable) return `วิธี ${selectedStrategy} ไม่พร้อมใน runtime ปัจจุบัน กรุณาเลือกวิธีอื่น`;
+    if (selectedL2Unavailable) return `โมเดล ${selectedL2Model} ไม่พร้อมใน local runtime กรุณาเลือกโมเดลอื่น`;
+    if (runtimeStatus.status === 'loading') return 'กำลังโหลดโมเดลและดัชนีเอกสาร';
+    if (runtimeStatus.status === 'degraded') return 'ระบบจะใช้เฉพาะองค์ประกอบที่พร้อม และระบุวิธีที่ใช้จริงในผลลัพธ์';
+    if (runtimeStatus.status === 'ready') return 'พร้อมวิเคราะห์เคสและค้นหาแนวทางจากเอกสารจริง';
+    return 'กรุณาตรวจสอบการเชื่อมต่อ backend';
+  }, [runtimeStatus.status, selectedL2Model, selectedL2Unavailable, selectedStrategy, selectedStrategyUnavailable]);
 
   return (
-    <div className="min-h-screen bg-background text-on-background">
-      <header className="fixed top-0 z-50 w-full bg-slate-50/90 shadow-sm shadow-slate-200/30 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-[1920px] items-center justify-between px-8">
-          <div className="flex items-center gap-8">
-            <span className="font-headline text-xl font-bold tracking-tight text-slate-900">AI Social Differential Diagnosis</span>
-            <nav className="hidden items-center gap-5 md:flex">
-              {navItems.slice(0, 4).map((tab) => (
-                <button key={tab.id} className={`text-sm font-bold transition-colors ${activeTab === tab.id ? 'text-teal-700' : 'text-slate-500 hover:text-slate-700'}`} onClick={() => setActiveTab(tab.id)} type="button">{tab.label}</button>
-              ))}
-            </nav>
+    <ClinicalShell
+      activeTab={activeWorkspace}
+      caseStatusLabel={dataLabel}
+      caseStatusTone={dataTone}
+      navItems={navItems}
+      onNavigate={navigateWorkspace}
+      onToggleTheme={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
+      onVerifyRuntime={verifyDataset}
+      runtimeStatus={runtimeStatus}
+      theme={theme}
+    >
+      {isPublicPreview && (
+        <section className="mb-5 flex flex-wrap items-start justify-between gap-3 rounded-lg bg-amber-50 p-4 text-amber-950 dark:bg-amber-950/40 dark:text-amber-100">
+          <div className="flex min-w-0 gap-3">
+            <span aria-hidden="true" className="material-symbols-outlined shrink-0 text-[21px]">public</span>
+            <div>
+              <h2 className="text-sm font-semibold">โหมดสาธิตผ่านลิงก์ภายนอก</h2>
+              <p className="mt-1 text-sm leading-relaxed">การวิเคราะห์ยังใช้งานได้เพื่อการสาธิต แต่ audit packet และการส่งเคสเพื่อทบทวนถูกปิด กรุณาอย่าป้อนข้อมูลระบุตัวบุคคลจริง</p>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <button className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100/50" onClick={verifyDataset} type="button"><span className="material-symbols-outlined">monitor_heart</span></button>
-            <button aria-label="Toggle day and night theme" className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100/50 dark:text-slate-300 dark:hover:bg-slate-800" onClick={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))} type="button"><span className="material-symbols-outlined">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span></button>
-            <StatusBadge label={dataLabel} tone={dataTone} />
-            <StatusBadge label={runtimeStatus.status || 'runtime'} tone={statusTone(runtimeStatus.status)} />
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-high text-[10px] font-bold text-teal-700">H2L</div>
-          </div>
-        </div>
-      </header>
+          <StatusBadge label={publicHostname || publicOrigin} tone="warning" />
+        </section>
+      )}
 
-      <aside className="fixed left-0 top-16 flex h-[calc(100vh-64px)] w-72 flex-col bg-slate-50 p-4">
-        <div className="mb-8 flex items-center gap-3 px-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-container"><span className="material-symbols-outlined text-white">science</span></div>
-          <div>
-            <h1 className="font-headline font-bold leading-none text-slate-900">H2L Research</h1>
-            <p className="mt-1 text-xs text-slate-500">Runtime Clinical Panel</p>
-          </div>
-        </div>
-        <nav className="flex flex-1 flex-col gap-1">
-          {navItems.map((tab) => (
-            <button key={tab.id} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition-all ${activeTab === tab.id ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-500 hover:bg-white/60 hover:text-slate-700'}`} onClick={() => setActiveTab(tab.id)} type="button">
-              <span className="material-symbols-outlined">{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </nav>
-        <div className="mt-auto space-y-4">
-          <button className="w-full rounded-xl bg-primary py-3 font-semibold text-on-primary transition-opacity hover:opacity-90" onClick={verifyDataset} type="button">Verify Runtime</button>
-          <button className="flex items-center gap-3 px-3 py-2 text-sm text-slate-500 hover:text-slate-900" onClick={() => setActiveTab('pipeline')} type="button"><span className="material-symbols-outlined text-lg">description</span>Runtime docs</button>
-        </div>
-      </aside>
+      {runtimeStatus.status !== 'ready' && <RuntimeBanner runtimeStatus={runtimeStatus} onRefresh={verifyDataset} />}
 
-      <main className="ml-72 min-h-screen p-8 pt-24">
-        {isPublicPreview && (
-          <section className="mb-6 rounded-xl bg-teal-50 p-4 text-teal-950 dark:bg-teal-950/40 dark:text-teal-100">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+      {error && (
+        <section className="mb-5 flex items-start justify-between gap-3 rounded-lg bg-red-50 p-4 text-red-900 dark:bg-red-950/50 dark:text-red-100" role="alert">
+          <div className="flex min-w-0 gap-3">
+            <span aria-hidden="true" className="material-symbols-outlined shrink-0 text-[21px]">error</span>
+            <div>
+              <h2 className="text-sm font-semibold">ไม่สามารถดำเนินการได้</h2>
+              <p className="mt-1 text-sm leading-relaxed">{error}</p>
+            </div>
+          </div>
+          <button aria-label="ปิดข้อความผิดพลาด" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg hover:bg-red-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 dark:hover:bg-red-900/50" onClick={() => setError('')} type="button">
+            <span aria-hidden="true" className="material-symbols-outlined">close</span>
+          </button>
+        </section>
+      )}
+
+      {actionMessage && (
+        <section
+          aria-live="polite"
+          className={`mb-5 flex items-start justify-between gap-3 rounded-lg p-4 ${actionMessage.tone === 'error' ? 'bg-red-50 text-red-900 dark:bg-red-950/50 dark:text-red-100' : actionMessage.tone === 'live' ? 'bg-emerald-50 text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-100' : actionMessage.tone === 'warning' ? 'bg-amber-50 text-amber-950 dark:bg-amber-950/40 dark:text-amber-100' : 'bg-slate-100 text-on-surface dark:bg-slate-800'}`}
+        >
+          <div className="flex min-w-0 gap-3">
+            <span aria-hidden="true" className="material-symbols-outlined shrink-0 text-[21px]">{actionMessage.tone === 'error' ? 'error' : actionMessage.tone === 'live' ? 'check_circle' : 'info'}</span>
+            <div>
+              <h2 className="text-sm font-semibold">{actionMessage.title}</h2>
+              <p className="mt-1 text-sm leading-relaxed">{actionMessage.detail}</p>
+            </div>
+          </div>
+          <button aria-label="ปิดข้อความสถานะ" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:hover:bg-white/10" onClick={() => setActionMessage(null)} type="button">
+            <span aria-hidden="true" className="material-symbols-outlined">close</span>
+          </button>
+        </section>
+      )}
+
+      {activeWorkspace === 'analysis' && (
+        <div>
+          <section className="mb-5 rounded-lg bg-surface-container-low p-5 sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-teal-700 dark:text-teal-200">Public Preview</div>
-                <h2 className="mt-1 font-headline text-lg font-bold">Temporary public demo is active</h2>
-                <p className="mt-2 max-w-4xl text-sm leading-relaxed text-teal-900 dark:text-teal-100">
-                  คุณกำลังเปิดหน้าเว็บผ่านลิงก์สาธารณะชั่วคราวเพื่อการสาธิตงานวิจัยเท่านั้น ข้อมูลผลวิเคราะห์และรายงานบนหน้านี้ยังคงอ่านจาก runtime และ artifact จริงของเครื่องต้นทาง
-                </p>
+                <div className="text-xs font-semibold text-teal-700 dark:text-teal-300">Clinical case workspace</div>
+                <h1 className="mt-1 font-headline text-2xl font-bold text-on-surface sm:text-3xl">ประเมินเคสสังคมสงเคราะห์ทางคลินิก</h1>
+                <p className="mt-2 max-w-3xl text-sm leading-relaxed text-on-surface-variant">บันทึกสถานการณ์ทางสังคม สุขภาพ ครอบครัว และความเสี่ยงที่เกี่ยวข้อง เพื่อใช้ประกอบการทบทวนโดยผู้ปฏิบัติงาน</p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <StatusBadge label="temporary public share" tone="live" />
-                <StatusBadge label={publicHostname} tone="neutral" />
+                <StatusBadge label={hasFreshResult ? `เคส ${result.case_id}` : 'ยังไม่ได้ประเมิน'} tone={hasFreshResult ? 'live' : 'neutral'} />
+                {hasFreshResult && (displayResult.problems || []).length > 0 && displayResult.severity_level && displayResult.severity_level !== 'NOT_ASSESSED' && (
+                  <StatusBadge label={`ระดับ ${displayResult.severity_level}`} tone={['CRITICAL', 'SEVERE'].includes(displayResult.severity_level) ? 'error' : displayResult.severity_level === 'MODERATE' ? 'warning' : 'neutral'} />
+                )}
               </div>
             </div>
-            <div className="mt-3 grid gap-3 lg:grid-cols-3">
-              <div className="rounded-lg bg-white/70 p-3 text-sm text-teal-950 dark:bg-slate-950/30 dark:text-teal-50">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-teal-700 dark:text-teal-200">Share URL</div>
-                <div className="mt-2 break-words font-medium">{publicOrigin}</div>
-              </div>
-              <div className="rounded-lg bg-white/70 p-3 text-sm text-teal-950 dark:bg-slate-950/30 dark:text-teal-50">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-teal-700 dark:text-teal-200">Mode</div>
-                <div className="mt-2 font-medium">Read-only public preview of the live thesis dashboard</div>
-              </div>
-              <div className="rounded-lg bg-white/70 p-3 text-sm text-teal-950 dark:bg-slate-950/30 dark:text-teal-50">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-teal-700 dark:text-teal-200">Reminder</div>
-                <div className="mt-2 font-medium">หลีกเลี่ยงการป้อนข้อมูลอ่อนไหวหรือข้อมูลระบุตัวตนจริงผ่านลิงก์ชั่วคราวนี้</div>
-              </div>
-            </div>
-          </section>
-        )}
 
-        <RuntimeBanner runtimeStatus={runtimeStatus} onRefresh={verifyDataset} />
+            <div className="mt-6">
+              <label className="block text-sm font-semibold text-on-surface" htmlFor="case-description">รายละเอียดสถานการณ์และบริบทสุขภาพ <span className="text-red-600">*</span></label>
+              <textarea
+                aria-describedby="case-description-help"
+                autoComplete="off"
+                className="mt-2 min-h-36 w-full resize-y rounded-lg border border-slate-300 bg-white p-4 text-base leading-relaxed text-on-surface placeholder:text-slate-400 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-slate-700 dark:bg-slate-950"
+                id="case-description"
+                name="case-description"
+                onChange={handleCaseDescriptionChange}
+                onSelect={handleCaseSelection}
+                placeholder="ระบุสถานการณ์ ความสัมพันธ์ สภาพครอบครัว ปัจจัยสุขภาพ ความเสี่ยง และสิ่งสนับสนุนที่เกี่ยวข้อง"
+                value={caseDescription}
+              />
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-on-surface-variant" id="case-description-help">
+                <span className="flex items-center gap-1.5"><span aria-hidden="true" className="material-symbols-outlined text-[17px] text-teal-700 dark:text-teal-300">shield_person</span>หลีกเลี่ยงชื่อ เลขประจำตัว ที่อยู่ หรือข้อมูลที่ระบุตัวบุคคลได้</span>
+                <button className="min-h-11 rounded-lg px-3 py-2 text-sm font-semibold text-teal-700 transition-colors hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300 dark:hover:bg-teal-950/40" onClick={loadSampleCase} type="button">โหลดเคสตัวอย่าง</button>
+              </div>
+            </div>
 
-        <section className="mb-6 rounded-xl bg-surface-container-low p-6">
-          <nav className="mb-3 flex items-center gap-2 text-xs text-on-surface-variant">
-            <span>Analysis Dashboard</span>
-            <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span>{result?.case_id || 'New Case'}</span>
-          </nav>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="font-headline text-3xl font-extrabold tracking-tight text-on-surface">Interactive Case Analysis</h2>
-              <p className="mt-2 text-sm text-on-surface-variant">Runtime จะโหลดโมเดล/index ไว้ล่วงหน้า แล้ววิเคราะห์เคสด้วย strategy ที่เลือกจริง</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <StatusBadge label={loading ? 'Evaluating' : isCaseDirty ? 'Case Edited' : result ? 'Analyzed Case' : 'Input Ready'} tone={!isCaseDirty && result ? 'live' : 'neutral'} />
-              <StatusBadge label={displayResult.severity_level || 'MILD'} tone={displayResult.severity_level === 'CRITICAL' || displayResult.severity_level === 'SEVERE' ? 'error' : displayResult.severity_level === 'MODERATE' ? 'warning' : 'neutral'} />
-            </div>
-          </div>
-          <textarea
-            className="mt-5 h-28 w-full rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-3 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-teal-600"
-            value={caseDescription}
-            onChange={handleCaseDescriptionChange}
-            onSelect={handleCaseSelection}
-          />
-          <div className="mt-3 rounded-xl bg-surface-container-lowest p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Position Anchors</div>
-                <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">
-                  ลากเลือกข้อความในกล่องเคสด้านบน แล้วเพิ่มเป็น anchor เพื่อบอก backend ให้ยึด occurrence เดียวกับที่ผู้ใช้เลือกจริง
-                </p>
+            <details className="clinical-details mt-4 rounded-lg bg-white dark:bg-slate-900/70">
+              <summary className="flex min-h-14 items-center justify-between gap-3 px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-600">
+                <span className="flex min-w-0 items-center gap-3">
+                  <span aria-hidden="true" className="material-symbols-outlined text-[21px] text-slate-500">tune</span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-on-surface">การตั้งค่าการวิเคราะห์ขั้นสูง</span>
+                    <span className="mt-0.5 block truncate text-xs text-on-surface-variant">{selectedStrategy} · L2 {selectedMode === 'enhanced' && enableL2 ? selectedL2Model : 'ปิด'} · Top {evidenceTopK} · ตำแหน่งคำสำคัญ {userAdjustedSpans.length}</span>
+                  </span>
+                </span>
+                <span aria-hidden="true" className="details-chevron material-symbols-outlined text-on-surface-variant transition-transform">expand_more</span>
+              </summary>
+              <div className="space-y-4 border-t border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/30">
+                <section className="rounded-lg bg-white p-4 dark:bg-slate-900/70">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h2 className="text-sm font-semibold text-on-surface">ตำแหน่งคำหรือวลีสำคัญ</h2>
+                      <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">เลือกข้อความในช่องเคส แล้วบันทึกตำแหน่งเมื่อคำเดียวกันปรากฏหลายครั้ง</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge label={`${userAdjustedSpans.length} ตำแหน่ง`} tone={userAdjustedSpans.length ? 'live' : 'neutral'} />
+                      <button className="min-h-11 rounded-lg bg-teal-600 px-3 py-2 text-sm font-semibold text-white disabled:bg-slate-300 dark:disabled:bg-slate-700" disabled={!pendingAnchorSpan || loading} onClick={addPendingAnchorSpan} type="button">บันทึกช่วงที่เลือก</button>
+                      <button className="min-h-11 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200" disabled={!userAdjustedSpans.length || loading} onClick={clearUserAdjustedSpans} type="button">ล้างทั้งหมด</button>
+                    </div>
+                  </div>
+                  {pendingAnchorSpan && (
+                    <div className="mt-3 rounded-lg bg-teal-50 p-3 text-sm text-teal-950 dark:bg-teal-950/40 dark:text-teal-100">ช่วงที่เลือก: {pendingAnchorSpan.start}–{pendingAnchorSpan.end} · “{pendingAnchorSpan.text}”</div>
+                  )}
+                  {userAdjustedSpans.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {userAdjustedSpans.map((span) => (
+                        <button aria-label={`ลบตำแหน่ง ${span.text}`} className="inline-flex min-h-11 max-w-full items-center gap-2 rounded-full bg-teal-100 px-3 py-2 text-xs font-semibold text-teal-950 transition-colors hover:bg-teal-200 dark:bg-teal-950/50 dark:text-teal-100" key={`${span.start}-${span.end}-${span.text}`} onClick={() => removeUserAdjustedSpan(span.start, span.end)} type="button">
+                          <span className="tabular-nums">{span.start}–{span.end}</span>
+                          <span className="max-w-[220px] truncate">“{span.text}”</span>
+                          <span aria-hidden="true" className="material-symbols-outlined text-[17px]">close</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
+                <StrategySelector
+                  disabled={loading}
+                  enableL2={enableL2}
+                  pairs={strategyPairs}
+                  selectedFamily={selectedFamily}
+                  selectedMode={selectedMode}
+                  selectedStrategy={selectedStrategy}
+                  setEnableL2={setEnableL2}
+                  setSelectedFamily={(family) => {
+                    setSelectedFamily(family);
+                    if (result) setActionMessage({ tone: 'neutral', title: 'เปลี่ยนวิธีค้นคืนข้อมูลแล้ว', detail: 'กรุณาวิเคราะห์เคสใหม่ก่อนทบทวนหรือส่งผล' });
+                  }}
+                  setSelectedMode={(mode) => {
+                    setSelectedMode(mode);
+                    if (result) setActionMessage({ tone: 'neutral', title: 'เปลี่ยนระดับการประมวลผลแล้ว', detail: 'กรุณาวิเคราะห์เคสใหม่ก่อนทบทวนหรือส่งผล' });
+                  }}
+                  strategyOptions={runtimeStatus?.strategy_options}
+                />
+                <L2ModelSelector
+                  disabled={loading || selectedMode === 'baseline'}
+                  enabled={enableL2 && selectedMode !== 'baseline'}
+                  modelOptions={l2ModelOptions}
+                  onChange={(model) => {
+                    setSelectedL2Model(model);
+                    if (result) setActionMessage({ tone: 'neutral', title: 'เปลี่ยนโมเดลอ่านบริบทแล้ว', detail: 'กรุณาวิเคราะห์เคสใหม่ก่อนทบทวนหรือส่งผล' });
+                  }}
+                  value={selectedL2Model}
+                />
+                <DocScalingSelector
+                  disabled={loading}
+                  onChange={(topK) => {
+                    setEvidenceTopK(topK);
+                    if (result) setActionMessage({ tone: 'neutral', title: 'เปลี่ยนจำนวนหลักฐานแล้ว', detail: `กรุณาวิเคราะห์ใหม่เพื่อใช้ Top ${topK} กับเคสปัจจุบัน` });
+                  }}
+                  value={evidenceTopK}
+                />
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge label={userAdjustedSpans.length ? `${userAdjustedSpans.length} anchor` : 'No Anchor'} tone={userAdjustedSpans.length ? 'live' : 'neutral'} />
-                <button
-                  className={`rounded-lg px-3 py-2 text-xs font-bold ${pendingAnchorSpan ? 'bg-teal-600 text-white hover:opacity-90' : 'bg-surface-container-high text-on-surface-variant'}`}
-                  disabled={!pendingAnchorSpan}
-                  onClick={addPendingAnchorSpan}
-                  type="button"
-                >
-                  ใช้ช่วงที่เลือก
-                </button>
-                <button
-                  className={`rounded-lg px-3 py-2 text-xs font-bold ${userAdjustedSpans.length ? 'bg-surface-container-high text-on-surface hover:bg-surface-container' : 'bg-surface-container-high text-on-surface-variant'}`}
-                  disabled={!userAdjustedSpans.length}
-                  onClick={clearUserAdjustedSpans}
-                  type="button"
-                >
-                  ล้างทั้งหมด
-                </button>
-              </div>
-            </div>
-            <div className="mt-3 space-y-3">
-              {pendingAnchorSpan ? (
-                <div className="rounded-lg bg-teal-50 p-3 text-sm text-teal-950 dark:bg-teal-950/30 dark:text-teal-50">
-                  ช่วงที่เลือกตอนนี้: {pendingAnchorSpan.start}-{pendingAnchorSpan.end} · “{pendingAnchorSpan.text}”
-                </div>
-              ) : (
-                <div className="rounded-lg bg-surface-container-low p-3 text-sm text-on-surface-variant">
-                  ยังไม่ได้เลือกข้อความ ถ้าต้องการ fix ตำแหน่ง ให้ลากเลือกคำหรือวลีในกล่องเคสก่อน
-                </div>
-              )}
-              {userAdjustedSpans.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {userAdjustedSpans.map((span) => (
-                    <button
-                      className="inline-flex items-center gap-2 rounded-full bg-teal-100 px-3 py-1.5 text-xs font-bold text-teal-950 transition-colors hover:bg-teal-200 dark:bg-teal-950/50 dark:text-teal-100 dark:hover:bg-teal-900/60"
-                      key={`${span.start}-${span.end}-${span.text}`}
-                      onClick={() => removeUserAdjustedSpan(span.start, span.end)}
-                      type="button"
-                    >
-                      <span>{span.start}-{span.end}</span>
-                      <span className="max-w-[240px] truncate">“{span.text}”</span>
-                      <span className="material-symbols-outlined text-sm">close</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="mt-4">
-            <StrategySelector
-              disabled={loading}
-              enableL2={enableL2}
-              pairs={strategyPairs}
-              strategyOptions={runtimeStatus?.strategy_options}
-              selectedFamily={selectedFamily}
-              selectedMode={selectedMode}
-              selectedStrategy={selectedStrategy}
-              setEnableL2={setEnableL2}
-              setSelectedFamily={(family) => {
-                setSelectedFamily(family);
-                if (result) setActionMessage({ tone: 'neutral', title: 'Strategy เปลี่ยนแล้ว', detail: 'ผลเดิมถูกพักไว้ กด Run H2L Analysis เพื่อรัน strategy ใหม่' });
-              }}
-              setSelectedMode={(mode) => {
-                setSelectedMode(mode);
-                if (result) setActionMessage({ tone: 'neutral', title: 'Strategy mode เปลี่ยนแล้ว', detail: 'ผลเดิมถูกพักไว้ กด Run H2L Analysis เพื่อเทียบ Baseline/H2L ใหม่' });
-              }}
-            />
-            <DocScalingSelector
-              disabled={loading}
-              onChange={(topK) => {
-                setEvidenceTopK(topK);
-                if (result) setActionMessage({ tone: 'neutral', title: 'Evidence scale เปลี่ยนแล้ว', detail: `ผลเดิมถูกพักไว้ กด Run H2L Analysis เพื่อรันใหม่ด้วย top ${topK}` });
-              }}
-              value={evidenceTopK}
-            />
-          </div>
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs text-on-surface-variant">{runtimeHint}</p>
-            <div className="flex flex-wrap items-center gap-2">
-              {(runtimeStatus.status === 'loading' || runtimeStatus.status === 'error') && (
-                <button
-                  className="rounded-xl bg-surface-container-high px-4 py-2.5 text-sm font-bold text-on-surface transition-colors hover:bg-surface-container-highest"
-                  onClick={verifyDataset}
-                  type="button"
-                >
-                  Verify Runtime
-                </button>
-              )}
-              <button className={`rounded-xl px-6 py-2.5 text-sm font-bold text-white transition-opacity ${analyzeDisabled ? 'cursor-not-allowed bg-slate-400' : 'bg-teal-600 hover:opacity-90'}`} disabled={analyzeDisabled} onClick={analyzeCase} type="button">
-                {loading ? 'Evaluating Current Case...' : isCaseDirty ? 'Run H2L Analysis for Edited Case' : 'Run H2L Analysis'}
+            </details>
+
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 dark:border-slate-800">
+              <p className="text-sm text-on-surface-variant">{runtimeHint}</p>
+              <button aria-busy={loading} className="min-h-12 w-full rounded-lg bg-teal-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-400 sm:w-auto" disabled={analyzeDisabled} onClick={analyzeCase} type="button">
+                {loading ? 'กำลังวิเคราะห์เคส…' : isCaseDirty ? 'วิเคราะห์เคสที่แก้ไขแล้ว' : 'วิเคราะห์เคสและค้นหาแนวทาง'}
               </button>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {loading && (
-          <ProcessingCasePanel
-            caseDescription={caseDescription}
-            enableL2={enableL2}
-            evidenceTopK={evidenceTopK}
-            onOpenPipeline={() => setActiveTab('pipeline')}
-            runtimeStatus={runtimeStatus}
-            selectedStrategy={selectedStrategy}
-          />
-        )}
+          {loading && (
+            <ProcessingCasePanel caseDescription={caseDescription} enableL2={selectedMode === 'enhanced' && enableL2} evidenceTopK={evidenceTopK} runtimeStatus={runtimeStatus} selectedL2Model={selectedL2Model} selectedStrategy={selectedStrategy} />
+          )}
 
-        {isCaseDirty && !loading && (
-          <section className="mb-6 rounded-xl bg-yellow-50 p-4 text-on-surface dark:bg-yellow-950/40">
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-yellow-500">pending_actions</span>
+          {isCaseDirty && !loading && (
+            <section className="mb-5 flex items-start gap-3 rounded-lg bg-amber-50 p-4 text-amber-950 dark:bg-amber-950/40 dark:text-amber-100" role="status">
+              <span aria-hidden="true" className="material-symbols-outlined text-[21px]">pending_actions</span>
               <div>
-                <h3 className="font-headline text-sm font-bold">ต้องประเมินเคสปัจจุบันใหม่</h3>
-                <p className="mt-1 text-sm text-on-surface-variant">ข้อความเคส, strategy, L2 setting หรือ evidence scale เปลี่ยนแล้ว ระบบจะไม่แสดงผลเก่าปนกับเคสใหม่</p>
+                <h2 className="text-sm font-semibold">ผลเดิมถูกพักไว้</h2>
+                <p className="mt-1 text-sm">ข้อความเคสหรือการตั้งค่าถูกเปลี่ยน ระบบจะไม่ใช้ผลเก่าในการ audit หรือส่งเพื่อทบทวน</p>
               </div>
+            </section>
+          )}
+
+          {hasFreshResult ? (
+            <>
+              <AnalysisTab
+                displayResult={result}
+                findingReviewStates={findingReviewStates}
+                onFindingReviewChange={updateFindingReviewState}
+                reviewDisabled={loading || auditLoading || finalizeLoading || isPublicPreview}
+              />
+              <AuditAndFinalizePanel
+                auditLoading={auditLoading}
+                auditPacket={auditPacket}
+                disabled={loading || isCaseDirty}
+                expertOverrideAdded={expertOverrideAdded}
+                expertOverrideRejected={expertOverrideRejected}
+                finalizeLoading={finalizeLoading}
+                onPrepareAudit={requestSecondaryAudit}
+                onSubmitReview={finalizeCase}
+                publicPreview={isPublicPreview}
+                reviewSummary={reviewSummary}
+                reviewerNote={reviewerNote}
+                setExpertOverrideAdded={updateExpertOverrideAdded}
+                setExpertOverrideRejected={updateExpertOverrideRejected}
+                setReviewerNote={updateReviewerNote}
+                setZeroFindingAcknowledged={updateZeroFindingAcknowledged}
+                signoffPacket={signoffPacket}
+                zeroFindingAcknowledged={zeroFindingAcknowledged}
+              />
+              <footer className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 py-5 text-xs text-on-surface-variant dark:border-slate-800">
+                <span>API {result.mode} · เวลาประมวลผล {formatNumber(result.execution_time, 3)} วินาที · runtime {runtimeStatus.status}</span>
+                <span className="flex flex-wrap gap-2">
+                  {(result.pii_redacted_count || 0) > 0 && <StatusBadge label={`ลดการระบุตัวบุคคล ${result.pii_redacted_count} จุด`} tone="live" />}
+                  <StatusBadge label="Decision support · Human review required" tone="neutral" />
+                </span>
+              </footer>
+            </>
+          ) : !loading && (
+            <WorkspaceEmptyState actionLabel={isCaseDirty ? 'วิเคราะห์เคสใหม่' : undefined} disabled={analyzeDisabled} icon={isCaseDirty ? 'pending_actions' : 'clinical_notes'} message={isCaseDirty ? 'ผลก่อนหน้าถูกพักไว้เพื่อป้องกันการใช้ข้อมูลที่ไม่ตรงกับข้อความหรือการตั้งค่าปัจจุบัน' : 'กรอกรายละเอียดเคสด้านบน ระบบจะแสดงประเด็นที่ควรทบทวน เครื่องมือประเมิน และหลักฐานที่เกี่ยวข้องโดยไม่สรุปแทนผู้ปฏิบัติงาน'} onAction={isCaseDirty ? analyzeCase : undefined} title={isCaseDirty ? 'ต้องวิเคราะห์เคสอีกครั้ง' : 'ยังไม่มีผลการประเมิน'} />
+          )}
+        </div>
+      )}
+
+      {activeWorkspace === 'explainability' && (
+        <div className="page-enter">
+          <section className="mb-5 rounded-lg bg-surface-container-low p-4 sm:p-5">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div className="text-xs font-semibold text-teal-700 dark:text-teal-300">Explainability workspace</div>
+                <h1 className="mt-1 font-headline text-2xl font-bold text-on-surface">เหตุผลและเส้นทางการประมวลผล</h1>
+                <p className="mt-2 text-sm text-on-surface-variant">ตรวจสอบบริบทภาษา ลำดับการคัดกรอง และความสัมพันธ์ระหว่างเคสกับหลักฐาน</p>
+              </div>
+              <StatusBadge label={hasFreshResult ? `เคส ${result.case_id}` : 'ยังไม่มีผลเคส'} tone={hasFreshResult ? 'live' : 'neutral'} />
+            </div>
+            <div className="mt-5 grid grid-cols-1 gap-2 rounded-lg bg-slate-100 p-1 dark:bg-slate-800 sm:grid-cols-3" role="tablist" aria-label="มุมมองเหตุผลของระบบ">
+              {explainabilityTabs.map((tab) => {
+                const selected = activeTab === tab.id;
+                return (
+                  <button aria-selected={selected} className={`flex min-h-11 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 ${selected ? 'bg-white text-teal-700 shadow-sm dark:bg-slate-700 dark:text-teal-200' : 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'}`} key={tab.id} onClick={() => setActiveTab(tab.id)} role="tab" type="button">
+                    <span aria-hidden="true" className="material-symbols-outlined text-[19px]">{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
           </section>
-        )}
 
-        {error && (
-          <section className="mb-6 rounded-xl bg-error-container p-4 text-on-error-container">
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined">error</span>
-              <div>
-                <h3 className="font-headline text-sm font-bold">API Error</h3>
-                <p className="mt-1 text-sm">{error}</p>
-                <p className="mt-2 text-xs opacity-80">One-server app expects FastAPI at http://127.0.0.1:8000/ and no Vite runtime is required after build.</p>
-              </div>
+          {hasFreshResult ? (
+            <div role="tabpanel">
+              {activeTab === 'keywords' && <KeywordsTab displayResult={result} />}
+              {activeTab === 'pipeline' && <PipelineTab displayResult={result} runtimeStatus={runtimeStatus} />}
+              {activeTab === 'vectors' && <VectorTab displayResult={result} />}
             </div>
-          </section>
-        )}
+          ) : (
+            <WorkspaceEmptyState actionLabel="ไปที่หน้าทบทวนเคส" icon="manage_search" message="มุมมองนี้ต้องใช้ผลจากเคสปัจจุบัน เพื่อให้บริบทภาษา แผนที่หลักฐาน และลำดับการประมวลผลอ้างอิงข้อมูลชุดเดียวกัน" onAction={() => setActiveTab('analysis')} title="ยังไม่มีข้อมูลสำหรับอธิบายผล" />
+          )}
+        </div>
+      )}
 
-        {actionMessage && (
-          <section className={`mb-6 rounded-xl p-4 ${actionMessage.tone === 'error' ? 'bg-error-container text-on-error-container' : actionMessage.tone === 'live' ? 'bg-teal-50 text-teal-900 dark:bg-teal-950 dark:text-teal-100' : actionMessage.tone === 'warning' ? 'bg-yellow-50 text-yellow-950 dark:bg-yellow-950/40 dark:text-yellow-100' : 'bg-surface-container-low text-on-surface'}`}>
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined">{actionMessage.tone === 'error' ? 'error' : 'info'}</span>
-              <div>
-                <h3 className="font-headline text-sm font-bold">{actionMessage.title}</h3>
-                <p className="mt-1 text-sm">{actionMessage.detail}</p>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {activeTab === 'analysis' && <AnalysisTab displayResult={displayResult} />}
-        {activeTab === 'keywords' && <KeywordsTab displayResult={displayResult} />}
-        {activeTab === 'vectors' && <VectorTab displayResult={displayResult} />}
-        {activeTab === 'evaluation' && (
+      {activeWorkspace === 'evaluation' && (
+        <div className="page-enter">
           <EvaluationTab
-            displayResult={displayResult}
+            displayResult={hasFreshResult ? result : emptyResult}
+            evaluationLastSyncedAt={evaluationLastSyncedAt}
             evaluationSummary={evaluationSummary}
             onRefreshPerformance={reviewPerformanceSnapshot}
-            evaluationLastSyncedAt={evaluationLastSyncedAt}
-            onSelectTopK={(topK) => {
-              setEvidenceTopK(topK);
-              if (result) setActionMessage({ tone: 'neutral', title: 'Evidence scale เปลี่ยนแล้ว', detail: `รายงานและเคสถัดไปจะใช้ top ${topK}; กด Run H2L Analysis เพื่อสร้าง evidence ใหม่ของเคสปัจจุบัน` });
-            }}
+            onSelectTopK={(topK) => setBenchmarkTopK(topK)}
             runtimeStatus={runtimeStatus}
-            selectedTopK={evidenceTopK}
+            selectedTopK={benchmarkTopK}
           />
-        )}
-        {activeTab === 'pipeline' && <PipelineTab displayResult={displayResult} runtimeStatus={runtimeStatus} />}
-
-        <AuditAndFinalizePanel auditPacket={auditPacket} reviewerNote={reviewerNote} setReviewerNote={setReviewerNote} signoffPacket={signoffPacket} expertOverrideAdded={expertOverrideAdded} setExpertOverrideAdded={setExpertOverrideAdded} expertOverrideRejected={expertOverrideRejected} setExpertOverrideRejected={setExpertOverrideRejected} />
-
-        <footer className="mt-12 flex flex-wrap items-center justify-between gap-4 py-6">
-          <p className="text-xs font-medium text-on-surface-variant flex items-center gap-2">
-            API mode: {displayResult.mode}; execution time: {formatNumber(displayResult.execution_time, 3)}s; runtime: {runtimeStatus.status}.
-            {(displayResult.pii_redacted_count || 0) > 0 && <span className="rounded bg-teal-900 px-2 py-0.5 text-teal-200">PII Redacted: {displayResult.pii_redacted_count} entities</span>}
-          </p>
-          <div className="flex gap-4">
-            <button className="rounded-xl bg-surface-container-high px-6 py-2.5 text-sm font-bold text-on-surface transition-colors hover:bg-surface-container-highest" onClick={requestSecondaryAudit} type="button">Request Secondary Audit</button>
-            <button className="rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90" onClick={finalizeCase} type="button">Finalize & Sign Off Case</button>
-          </div>
-        </footer>
-      </main>
-    </div>
+        </div>
+      )}
+    </ClinicalShell>
   );
 }

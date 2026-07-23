@@ -1548,7 +1548,8 @@ Output Format (JSON only):
         l1_candidates: List[DetectedProblem],
         needs_validation: List[str],
         conflicts: Dict[str, List[str]],
-        taxonomy: Dict = None
+        taxonomy: Dict = None,
+        model: Optional[str] = None,
     ) -> Tuple[List[DetectedProblem], List[DetectedProblem], Dict]:
         """
         Validate L1 candidates และค้นหา implicit problems
@@ -1564,8 +1565,9 @@ Output Format (JSON only):
         l1_info = self._format_l1_context(l1_candidates, needs_validation, conflicts)
         
         try:
+            selected_model = model or self.model
             response = self.client.chat.completions.create(
-                model=self.model,
+                model=selected_model,
                 messages=[
                     {"role": "system", "content": self.SYSTEM_PROMPT},
                     {"role": "user", "content": f"Case: \"{text}\"\n\n{l1_info}"}
@@ -1811,7 +1813,8 @@ class H2LDetectorV3:
     def detect_problems(
         self, 
         text: str, 
-        use_l2: bool = True
+        use_l2: bool = True,
+        l2_model: Optional[str] = None,
     ) -> List[Dict]:
         """
         Main detection method
@@ -1848,7 +1851,8 @@ class H2LDetectorV3:
                 logger.info("\n🔍 Running L2 Validation...")
                 l1_results, l2_results, context = self.l2_detector.validate_and_detect(
                     text, l1_results, needs_validation, conflicts,
-                    taxonomy=self.l1_detector.taxonomy
+                    taxonomy=self.l1_detector.taxonomy,
+                    model=l2_model,
                 )
                 logger.info(f"L2 Implicit: {len(l2_results)} problems")
         
@@ -1880,7 +1884,12 @@ class H2LDetectorV3:
         
         return [classify_review_status_dict(self._to_dict(p)) for p in all_results]
     
-    def detect_with_metadata(self, text: str, use_l2: bool = True) -> Dict:
+    def detect_with_metadata(
+        self,
+        text: str,
+        use_l2: bool = True,
+        l2_model: Optional[str] = None,
+    ) -> Dict:
         """
         Detection with full metadata
         
@@ -1941,6 +1950,9 @@ class H2LDetectorV3:
                     "needs_l2_validation": l1_metadata.get("needs_l2_validation", []),
                     "l1_filtered_out": [classify_review_status_dict(self._to_dict(p), filtered=True, baseline=True) for p in l1_metadata.get("l1_filtered_out", [])],
                     "context_analysis": {},
+                    "l2_model": None,
+                    "l2_attempted": False,
+                    "l2_ready": bool(self.l2_detector and self.l2_detector.is_ready),
                     "timings_ms": {
                         "l1": l1_ms,
                         "l2": 0.0,
@@ -1972,7 +1984,8 @@ class H2LDetectorV3:
                 l2_started = time.perf_counter()
                 l1_results, l2_results, context = self.l2_detector.validate_and_detect(
                     text, l1_results, needs_validation, conflicts,
-                    taxonomy=self.l1_detector.taxonomy
+                    taxonomy=self.l1_detector.taxonomy,
+                    model=l2_model,
                 )
                 l2_ms = round((time.perf_counter() - l2_started) * 1000, 2)
 
@@ -2049,6 +2062,7 @@ class H2LDetectorV3:
                 "needs_l2_validation": l1_metadata.get("needs_l2_validation", []),
                 "l1_filtered_out": [classify_review_status_dict(self._to_dict(p), filtered=True) for p in l1_metadata.get("l1_filtered_out", [])],
                 "context_analysis": context,
+                "l2_model": (l2_model or self.l2_detector.model) if l2_attempted and self.l2_detector else None,
                 "l2_ready": l2_ready,
                 "l2_attempted": l2_attempted,
                 "l2_degraded": use_l2 and ((not l2_ready) or (l2_attempted and not context and not l2_results)),

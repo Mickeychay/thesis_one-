@@ -12,7 +12,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Literal, Optional, Set, Tuple
+from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -222,6 +223,11 @@ def _social_action_config() -> Dict[str, Dict[str, Any]]:
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
+
+def _new_case_id() -> str:
+    return f"CASE_{uuid4().hex}"
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     runtime_manager.start()
@@ -246,6 +252,7 @@ class CaseRequest(BaseModel):
     case_description: str = Field(..., min_length=1)
     strategy: str = DEFAULT_STRATEGY
     enable_l2: bool = True
+    llm_model: Optional[str] = None
     top_k: int = Field(DEFAULT_DOC_TOP_K, ge=min(DOC_SCALING_OPTIONS), le=max(DOC_SCALING_OPTIONS))
     user_adjusted_spans: List[Dict[str, Any]] = Field(default_factory=list)
 
@@ -405,9 +412,11 @@ def _normalize_user_adjusted_spans(
 class FinalizeRequest(BaseModel):
     case_id: str
     reviewer_note: str = ""
-    selected_findings: List[str] = Field(default_factory=list)
+    selected_findings: Optional[List[str]] = None
+    finding_review_states: Dict[str, Literal["accepted", "review", "excluded"]] = Field(default_factory=dict)
     expert_override_added: List[str] = Field(default_factory=list)
     expert_override_rejected: List[str] = Field(default_factory=list)
+    zero_finding_acknowledged: bool = False
     final_status: str = "Ready for Human Review"
 
 
@@ -515,6 +524,7 @@ class RuntimeManager:
         self.shared: Optional[Dict[str, Any]] = None
         self.retrievers: Dict[str, Any] = {}
         self.l2_ready = False
+        self.available_l2_models: Set[str] = set()
 
     def start(self) -> None:
         with self._lock:
@@ -602,12 +612,24 @@ class RuntimeManager:
                 self.stage = "error"
 
     def _check_llm_ready(self, config) -> bool:
+        if not getattr(config, "USE_LOCAL_LLM", True):
+            self.available_l2_models = {str(getattr(config, "OPENROUTER_MODEL", ""))}
+            return bool(getattr(config, "OPENROUTER_API_KEY", ""))
+
         base_url = getattr(config, "LOCAL_LLM_BASE_URL", "http://localhost:11434/v1").rstrip("/")
         models_url = f"{base_url}/models"
         try:
             with urllib.request.urlopen(models_url, timeout=1.5) as response:
-                return 200 <= response.status < 500
+                payload = json.loads(response.read().decode("utf-8"))
+                self.available_l2_models = {
+                    str(item.get("id") or "")
+                    for item in payload.get("data", [])
+                    if item.get("id")
+                }
+                default_model = str(getattr(config, "LOCAL_LLM_MODEL", ""))
+                return 200 <= response.status < 500 and default_model in self.available_l2_models
         except Exception:
+            self.available_l2_models = set()
             return False
 
     def _load_shared_components(self, config) -> None:
@@ -720,6 +742,7 @@ class RuntimeManager:
                 "strategy_pairs": STRATEGY_PAIRS,
                 "strategy_options": _strategy_options(components),
                 "default_strategy": _default_strategy_for_components(components),
+                "l2_model_options": self.l2_model_options(),
                 "l2_ready": self.l2_ready,
                 "errors": list(self.errors),
                 "started_at": self.started_at,
@@ -728,13 +751,70 @@ class RuntimeManager:
                 "load_seconds": (self.ready_at - self.started_at) if self.ready_at and self.started_at else None,
             }
 
+    def l2_model_options(self) -> List[Dict[str, Any]]:
+        config = self.config
+        if config is None:
+            return []
+        default_model = str(
+            getattr(config, "LOCAL_LLM_MODEL", "")
+            if getattr(config, "USE_LOCAL_LLM", True)
+            else getattr(config, "OPENROUTER_MODEL", "")
+        )
+        configured = list(getattr(config, "L2_MODEL_OPTIONS", ()) or [default_model])
+        catalog = {
+            "qwen2.5:7b": {
+                "label": "Qwen 2.5 7B",
+                "detail": "Current local baseline",
+                "parameters": "7.6B",
+                "size_gb": 4.36,
+            },
+            "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+                "label": "Typhoon 2 8B Instruct",
+                "detail": "Thai-focused local comparator",
+                "parameters": "8.0B",
+                "size_gb": 4.58,
+            },
+        }
+        return [
+            {
+                "id": model,
+                **catalog.get(model, {"label": model, "detail": "Configured L2 model"}),
+                "available": (model in self.available_l2_models) if getattr(config, "USE_LOCAL_LLM", True) else model == default_model,
+                "default": model == default_model,
+            }
+            for model in configured
+        ]
+
+    def resolve_l2_model(self, requested_model: Optional[str]) -> str:
+        config = self.config
+        if config is None:
+            raise HTTPException(status_code=503, detail="Runtime configuration is not ready.")
+        default_model = str(
+            getattr(config, "LOCAL_LLM_MODEL", "")
+            if getattr(config, "USE_LOCAL_LLM", True)
+            else getattr(config, "OPENROUTER_MODEL", "")
+        )
+        selected = str(requested_model or default_model).strip()
+        allowed = {str(model) for model in getattr(config, "L2_MODEL_OPTIONS", ()) or [default_model]}
+        if selected not in allowed:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Unsupported L2 model '{selected}'. Allowed models: {', '.join(sorted(allowed))}",
+            )
+        if getattr(config, "USE_LOCAL_LLM", True) and selected not in self.available_l2_models:
+            raise HTTPException(
+                status_code=503,
+                detail=f"L2 model '{selected}' is allowed but is not installed in the local Ollama runtime.",
+            )
+        return selected
+
 
 runtime_manager = RuntimeManager()
 
 
 def _determine_severity(problems: List[Dict]) -> str:
     if not problems:
-        return "MILD"
+        return "NOT_ASSESSED"
     if any(p.get("code") == "X60-X84" for p in problems):
         return "CRITICAL"
     max_severity = max((p.get("severity", 1) for p in problems), default=1)
@@ -1981,8 +2061,7 @@ def _candidate_polarity_signal(
             between = text_lower[marker_end:term_start]
             if any(breaker in between for breaker in POLARITY_SCOPE_BREAKERS):
                 continue
-            immediate_negation = not between.strip()
-            if not immediate_negation and hardship_patterns and any(pattern in clause_text for pattern in hardship_patterns):
+            if hardship_patterns and any(pattern in clause_text for pattern in hardship_patterns):
                 continue
             negated_terms.append(term or case_text[term_start:int(span["end"])])
             break
@@ -2059,6 +2138,164 @@ def _apply_polarity_gate(
         })
 
     return updated_problems, updated_filtered
+
+
+ABUSE_EVIDENCE_ASPECTS = (
+    {
+        "id": "physical_violence",
+        "label": "ความรุนแรงทางร่างกาย",
+        "indicators": (
+            "ทำร้ายร่างกาย", "ทำโทษเกินเหตุ", "ทุบตี", "ตบตี",
+            "ตีเด็ก", "ตีลูก", "เตะ", "ตบ", "ตี",
+        ),
+    },
+    {
+        "id": "psychological_violence",
+        "label": "ความรุนแรงทางจิตใจ",
+        "indicators": (
+            "ทำร้ายจิตใจ", "ขู่เข็ญ", "ข่มขู่", "ด่าว่า", "ดุด่า",
+            "กดดัน", "เหยียด",
+        ),
+    },
+)
+
+
+def _event_exact_quote(event: Dict[str, Any], case_text: str) -> str:
+    start_value = event.get("span_start", -1)
+    end_value = event.get("span_end", -1)
+    start = int(start_value) if start_value is not None else -1
+    end = int(end_value) if end_value is not None else -1
+    if 0 <= start < end <= len(case_text):
+        return case_text[start:end].strip()
+    quote = str(event.get("evidence_span") or "").strip()
+    return quote if quote and quote in case_text else ""
+
+
+def _grounded_explanation(
+    item: Dict[str, Any],
+    case_text: str,
+    sentence_profile: Dict[str, Any],
+) -> Dict[str, Any]:
+    relation = {
+        "actor": str(item.get("polarity_actor") or "ไม่ชัดเจน"),
+        "target": str(item.get("polarity_target") or "ไม่ชัดเจน"),
+        "action": str(item.get("polarity_action") or "ไม่ชัดเจน"),
+    }
+    evidence_spans = _candidate_evidence_spans(item, case_text)
+    quote = ""
+    for span in evidence_spans:
+        start_value = span.get("start", -1)
+        end_value = span.get("end", -1)
+        start = int(start_value) if start_value is not None else -1
+        end = int(end_value) if end_value is not None else -1
+        if 0 <= start < end <= len(case_text):
+            quote = case_text[start:end].strip()
+            if quote:
+                break
+
+    indicator_scope = quote.lower() if quote else case_text.lower()
+    indicators = [
+        str(keyword)
+        for keyword in item.get("matched_keywords", []) or []
+        if str(keyword).strip() and str(keyword).lower() in indicator_scope
+    ]
+    indicators = list(dict.fromkeys(indicators))
+    name = str(item.get("name") or item.get("code") or "ประเด็นที่เกี่ยวข้อง")
+    if relation["actor"] != "ไม่ชัดเจน" and relation["action"] != "ไม่ชัดเจน":
+        target_suffix = f"ต่อ{relation['target']}" if relation["target"] != "ไม่ชัดเจน" else ""
+        lead = f"{relation['actor']}มีการ{relation['action']}{target_suffix}"
+    else:
+        lead = f"พบข้อบ่งชี้ที่สอดคล้องกับ {name}"
+    context_text = f" จากบริบทว่า \"{quote}\"" if quote else ""
+    indicator_text = f" โดยมีข้อบ่งชี้คือ {', '.join(indicators)}" if indicators else ""
+    return {
+        "summary": f"{lead}{context_text}{indicator_text}",
+        **relation,
+        "evidence_quote": quote,
+        "indicators": indicators,
+        "source": "deterministic_evidence",
+        "grounded": bool(quote and quote in case_text),
+    }
+
+
+def _abuse_evidence_aspects(
+    item: Dict[str, Any],
+    case_text: str,
+    sentence_profile: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    if str(item.get("code") or "") not in {"0102", "0206", "T74", "T74.1"}:
+        return []
+
+    text_lower = case_text.lower()
+    events = sentence_profile.get("events", []) or []
+    aspects: List[Dict[str, Any]] = []
+    for definition in ABUSE_EVIDENCE_ASPECTS:
+        indicators = [term for term in definition["indicators"] if term in text_lower]
+        if not indicators:
+            continue
+
+        matching_events = [
+            event
+            for event in events
+            if any(
+                term in str(event.get("action") or "").lower()
+                or str(event.get("action") or "").lower() in term
+                for term in indicators
+            )
+        ]
+        event = matching_events[0] if matching_events else None
+        quote = _event_exact_quote(event, case_text) if event else ""
+        if not quote:
+            for span in _candidate_evidence_spans(item, case_text):
+                start_value = span.get("start", -1)
+                end_value = span.get("end", -1)
+                start = int(start_value) if start_value is not None else -1
+                end = int(end_value) if end_value is not None else -1
+                if not (0 <= start < end <= len(case_text)):
+                    continue
+                candidate_quote = case_text[start:end].strip()
+                if any(term in candidate_quote.lower() for term in indicators):
+                    quote = candidate_quote
+                    break
+        if not quote or quote not in case_text:
+            continue
+
+        actor = str((event or {}).get("agent") or item.get("polarity_actor") or "ไม่ชัดเจน")
+        target = str((event or {}).get("target") or item.get("polarity_target") or "ไม่ชัดเจน")
+        action = str((event or {}).get("action") or item.get("polarity_action") or "ไม่ชัดเจน")
+        if actor != "ไม่ชัดเจน" and target != "ไม่ชัดเจน":
+            lead = f"{actor}เป็นผู้กระทำ{definition['label']}ต่อ{target}"
+        else:
+            lead = f"พบข้อบ่งชี้ของ{definition['label']}"
+        aspects.append({
+            "id": definition["id"],
+            "label": definition["label"],
+            "summary": f"{lead} จากบริบทว่า \"{quote}\" โดยมีข้อบ่งชี้คือ {', '.join(indicators)}",
+            "actor": actor,
+            "target": target,
+            "action": action,
+            "evidence_quote": quote,
+            "indicators": indicators,
+            "source": "deterministic_evidence",
+            "grounded": True,
+        })
+    return aspects
+
+
+def _attach_grounded_explanations(
+    case_text: str,
+    problems: List[Dict[str, Any]],
+    filtered_out: List[Dict[str, Any]],
+    sentence_profile: Dict[str, Any],
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    def annotate(item: Dict[str, Any]) -> Dict[str, Any]:
+        return {
+            **item,
+            "grounded_explanation": _grounded_explanation(item, case_text, sentence_profile),
+            "evidence_aspects": _abuse_evidence_aspects(item, case_text, sentence_profile),
+        }
+
+    return [annotate(item) for item in problems], [annotate(item) for item in filtered_out]
 
 
 def _apply_review_status(
@@ -4334,6 +4571,12 @@ def analyze_case(req: CaseRequest):
     # degraded. The detector will still apply deterministic context filtering
     # and will report semantic L2 readiness separately.
     enable_l2_effective = enable_l2_requested
+    requested_l2_model = str(req.llm_model or "").strip() or None
+    effective_l2_model = (
+        runtime_manager.resolve_l2_model(requested_l2_model)
+        if enable_l2_effective
+        else None
+    )
     
     if runtime_manager.detector:
         detector = runtime_manager.detector
@@ -4341,7 +4584,11 @@ def analyze_case(req: CaseRequest):
         detector = get_detector(enable_l2=True)
 
     try:
-        detection = detector.detect_with_metadata(case_description, use_l2=enable_l2_effective)
+        detection = detector.detect_with_metadata(
+            case_description,
+            use_l2=enable_l2_effective,
+            l2_model=effective_l2_model,
+        )
     except Exception as exc:
         logger.exception("Detector analysis failed")
         if enable_l2_effective:
@@ -4374,6 +4621,12 @@ def analyze_case(req: CaseRequest):
         filtered_out,
         sentence_profile,
         enabled=is_h2l_strategy,
+    )
+    problems, filtered_out = _attach_grounded_explanations(
+        case_description,
+        problems,
+        filtered_out,
+        sentence_profile,
     )
     problems, filtered_out = _apply_review_status(
         problems,
@@ -4415,7 +4668,7 @@ def analyze_case(req: CaseRequest):
     metrics = _calculate_metrics(problems, filtered_out, retrieved_docs)
 
     execution_time = time.time() - start_time
-    case_id = f"CASE_{int(start_time)}"
+    case_id = _new_case_id()
     runtime_status_after = runtime_manager.payload()
     phase_timings_ms = {
         "case_input": case_input_ms,
@@ -4431,6 +4684,17 @@ def analyze_case(req: CaseRequest):
         "mode": "runtime-rag-h2l",
         "requested_strategy": requested_strategy,
         "effective_strategy": effective_strategy,
+        "requested_l2_model": requested_l2_model,
+        "effective_l2_model": metadata.get("l2_model"),
+        "model_provenance": {
+            "requested_l2_model": requested_l2_model,
+            "selected_l2_model": effective_l2_model,
+            "effective_l2_model": metadata.get("l2_model"),
+            "l2_attempted": bool(metadata.get("l2_attempted", False)),
+            "embedding_model": runtime_status_after.get("models", {}).get("embedding_model"),
+            "rerank_model": runtime_status_after.get("models", {}).get("rerank_model"),
+            "h2l_formula": "bayesian_v6_unchanged",
+        },
         "requested_top_k": req.top_k,
         "top_k": requested_top_k,
         "doc_scaling": _doc_scaling_guidance(requested_top_k),
@@ -4457,8 +4721,10 @@ def analyze_case(req: CaseRequest):
         "execution_time": execution_time,
         "detection_info": {
             "l1_candidates": candidate_trace["l1_candidates"],
-            "l2_applied": enable_l2_effective and bool(metadata.get("l2_count", 0) or filtered_out),
+            "l2_applied": bool(metadata.get("l2_attempted", False)),
             "l2_requested": enable_l2_requested,
+            "requested_l2_model": requested_l2_model,
+            "effective_l2_model": metadata.get("l2_model"),
             "l2_ready": runtime_status_after.get("l2_ready", False),
             "l2_client_ready": bool(metadata.get("l2_ready", False)),
             "l2_semantic_ready": runtime_status_after.get("l2_ready", False),
@@ -4525,17 +4791,69 @@ def finalize_case(req: FinalizeRequest):
     if not analysis:
         raise HTTPException(status_code=404, detail="case_id not found. Run analysis before finalizing.")
 
-    selected = req.selected_findings or [problem.get("code") for problem in analysis.get("problems", [])]
+    def unique_codes(values: List[Any]) -> List[str]:
+        normalized: List[str] = []
+        seen: Set[str] = set()
+        for value in values:
+            code = str(value or "").strip()
+            if not code or code in seen:
+                continue
+            seen.add(code)
+            normalized.append(code)
+        return normalized
+
+    problems = analysis.get("problems", [])
+    analysis_codes = unique_codes([problem.get("code") for problem in problems])
+    if not analysis_codes and not req.zero_finding_acknowledged:
+        raise HTTPException(
+            status_code=422,
+            detail="Acknowledge the zero-finding result before finalizing this case.",
+        )
+
+    requested_review_states = dict(req.finding_review_states)
+    unknown_review_codes = sorted(set(requested_review_states) - set(analysis_codes))
+    if unknown_review_codes:
+        raise HTTPException(
+            status_code=422,
+            detail=f"finding_review_states contains codes not present in this analysis: {', '.join(unknown_review_codes)}",
+        )
+    review_states = {
+        code: requested_review_states[code]
+        for code in analysis_codes
+        if code in requested_review_states
+    }
+
+    selected = unique_codes(
+        list(req.selected_findings)
+        if req.selected_findings is not None
+        else analysis_codes
+    )
+    rejected = unique_codes(req.expert_override_rejected)
+    rejected_set = set(rejected)
+    selected = [code for code in selected if code not in rejected_set]
+    for code in analysis_codes:
+        state = review_states.get(code)
+        if state == "excluded":
+            selected = [selected_code for selected_code in selected if selected_code != code]
+            if code not in rejected:
+                rejected.append(code)
+        elif state in {"accepted", "review"}:
+            if code not in selected:
+                selected.append(code)
+            rejected = [rejected_code for rejected_code in rejected if rejected_code != code]
+
     summary = {
         "case_id": req.case_id,
         "finalized_at": _utc_now_iso(),
         "status": req.final_status,
         "reviewer_note": req.reviewer_note,
         "selected_findings": selected,
+        "finding_review_states": review_states,
         "expert_override_added": req.expert_override_added,
-        "expert_override_rejected": req.expert_override_rejected,
+        "expert_override_rejected": rejected,
+        "zero_finding_acknowledged": req.zero_finding_acknowledged,
         "checklist": [
-            {"item": "Reviewed accepted problem codes", "done": bool(selected)},
+            {"item": "Reviewed accepted problem codes", "done": bool(selected) or (not analysis_codes and req.zero_finding_acknowledged)},
             {"item": "Reviewed rejected/filter reasons", "done": True},
             {"item": "Reviewed evidence retrieval ranks", "done": bool(analysis.get("retrieved_docs"))},
             {"item": "Reviewed polarity actor/target/action notes", "done": True},
@@ -4545,10 +4863,19 @@ def finalize_case(req: FinalizeRequest):
             "case_id": req.case_id,
             "status": req.final_status,
             "selected_findings": selected,
+            "finding_review_states": review_states,
+            "expert_override_rejected": rejected,
+            "zero_finding_acknowledged": req.zero_finding_acknowledged,
             "severity_level": analysis.get("severity_level"),
             "runtime_status": analysis.get("runtime_status", {}).get("status"),
         },
-        "export_markdown": _signoff_markdown(analysis, req),
+        "export_markdown": _signoff_markdown(
+            analysis,
+            req,
+            selected,
+            review_states,
+            rejected,
+        ),
     }
     FINALIZED_CASES[req.case_id] = summary
     return summary
@@ -4582,15 +4909,29 @@ def _audit_markdown(analysis: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _signoff_markdown(analysis: Dict[str, Any], req: FinalizeRequest) -> str:
-    findings = req.selected_findings or [problem.get("code") for problem in analysis.get("problems", [])]
+def _signoff_markdown(
+    analysis: Dict[str, Any],
+    req: FinalizeRequest,
+    findings: List[str],
+    review_states: Dict[str, str],
+    rejected_findings: List[str],
+) -> str:
+    review_state_lines = [
+        f"- {code}: {state}"
+        for code, state in review_states.items()
+    ] or ["- None provided"]
     return "\n".join([
         f"# Case Sign-Off: {req.case_id}",
         "",
         f"Status: {req.final_status}",
         f"Reviewer note: {req.reviewer_note or 'N/A'}",
         f"Selected findings: {', '.join(findings) if findings else 'None'}",
+        f"Excluded findings: {', '.join(rejected_findings) if rejected_findings else 'None'}",
+        f"Zero-finding acknowledged: {'Yes' if req.zero_finding_acknowledged else 'No'}",
         f"Severity: {analysis.get('severity_level')}",
+        "",
+        "## Finding Review States",
+        *review_state_lines,
         "",
         "This summary is prepared for human review and is not a final clinical diagnosis.",
     ])
