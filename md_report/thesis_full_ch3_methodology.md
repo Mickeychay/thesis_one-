@@ -908,7 +908,7 @@ for case in test_cases:
 
 ### 3.11.2 Protocol การเปรียบเทียบ baseline กับ H2L
 
-การประเมิน retrieval ใช้ protocol เดียวกันทุกกลยุทธ์ ได้แก่ `problem_source=detected`, `top_k=15` และชุด test split เดียวกันจำนวน 68 เคส กลยุทธ์ที่นำมาเปรียบเทียบแบ่งเป็น 4 baseline และ 4 H2L-enhanced counterpart ดังนี้
+การประเมิน retrieval ใช้ protocol เดียวกันทุกกลยุทธ์ ได้แก่ `problem_source=detected`, `top_k=15` และชุด test split เดียวกันจำนวน 76 เคส กลยุทธ์ที่นำมาเปรียบเทียบแบ่งเป็น 4 baseline และ 4 H2L-enhanced counterpart ดังนี้
 
 | Baseline | H2L counterpart | ความหมายของคู่เปรียบเทียบ |
 |---|---|---|
