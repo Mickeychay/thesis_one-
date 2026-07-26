@@ -1573,7 +1573,13 @@ Output Format (JSON only):
                     {"role": "user", "content": f"Case: \"{text}\"\n\n{l1_info}"}
                 ],
                 temperature=0.2,  # Set to 0 for deterministic results
-                seed=42  # Add seed for reproducibility
+                seed=42,  # Add seed for reproducibility
+                max_tokens=(
+                    getattr(self.config, "LLM_MAX_TOKENS", 2048)
+                    if self.config
+                    else 2048
+                ),
+                response_format={"type": "json_object"},
             )
             
             data = self._parse_json(response.choices[0].message.content)

@@ -1,0 +1,2316 @@
+{
+  "metadata": {
+    "created_at": "2026-07-25T17:09:16.985249+00:00",
+    "ground_truth": "expanded_ground_truth.json",
+    "test_cases": 5,
+    "repeats": 3,
+    "models": [
+      "qwen2.5:7b",
+      "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+      "scb10x/typhoon2.1-gemma3-4b:latest"
+    ],
+    "with_retrieval": false,
+    "top_k": 15,
+    "ollama": {
+      "endpoint": "http://127.0.0.1:11435/api/tags",
+      "models": {
+        "qwen2.5:7b": {
+          "installed": true,
+          "size_bytes": 4683087332,
+          "parameter_size": "7.6B",
+          "quantization_level": "Q4_K_M",
+          "family": "qwen2"
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "installed": true,
+          "size_bytes": 4921252450,
+          "parameter_size": "8.0B",
+          "quantization_level": "Q4_K_M",
+          "family": "llama"
+        },
+        "scb10x/typhoon2.1-gemma3-4b:latest": {
+          "installed": true,
+          "size_bytes": 2615662352,
+          "parameter_size": "3.9B",
+          "quantization_level": "Q4_K_M",
+          "family": "gemma3"
+        }
+      }
+    },
+    "controlled_variables": {
+      "embedding_model": "intfloat/multilingual-e5-base",
+      "rerank_model": "BAAI/bge-reranker-v2-m3",
+      "retrieval_strategy": "not_run",
+      "h2l_formula": "bayesian_v6_unchanged",
+      "h2l_core_sha256": "2ecd82a9e8ad9ece7a31f0c4cfa408a857a9c76255c4c673165646221ba3a9b2",
+      "temperature": 0.2,
+      "seed": 42,
+      "max_tokens": 2048,
+      "response_format": "json_object"
+    }
+  },
+  "aggregates": {
+    "qwen2.5:7b": {
+      "all_cases": {
+        "cases": 15,
+        "macro_precision": 0.38333333333333336,
+        "macro_recall": 0.3433333333333334,
+        "macro_f1": 0.35873015873015873,
+        "mean_jaccard": 0.26666666666666666,
+        "exact_match_rate": 0.0,
+        "micro_precision": 0.3333333333333333,
+        "micro_recall": 0.3684210526315789,
+        "micro_f1": 0.35
+      },
+      "l2_triggered_subset": {
+        "cases": 15,
+        "macro_precision": 0.38333333333333336,
+        "macro_recall": 0.3433333333333334,
+        "macro_f1": 0.35873015873015873,
+        "mean_jaccard": 0.26666666666666666,
+        "exact_match_rate": 0.0
+      },
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rate": 0.0,
+      "high_severity_false_negatives": 12,
+      "latency_ms": {
+        "median_l2": 16598.46,
+        "p95_l2": 22492.27,
+        "mean_total_detection": 17195.01
+      },
+      "retrieval": {
+        "cases": 0,
+        "MAP": 0.0,
+        "MRR": 0.0,
+        "nDCG@5": 0.0,
+        "nDCG@10": 0.0,
+        "P@5": 0.0
+      }
+    },
+    "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+      "all_cases": {
+        "cases": 15,
+        "macro_precision": 0.38333333333333336,
+        "macro_recall": 0.3433333333333334,
+        "macro_f1": 0.35873015873015873,
+        "mean_jaccard": 0.26666666666666666,
+        "exact_match_rate": 0.0,
+        "micro_precision": 0.3333333333333333,
+        "micro_recall": 0.3684210526315789,
+        "micro_f1": 0.35
+      },
+      "l2_triggered_subset": {
+        "cases": 15,
+        "macro_precision": 0.38333333333333336,
+        "macro_recall": 0.3433333333333334,
+        "macro_f1": 0.35873015873015873,
+        "mean_jaccard": 0.26666666666666666,
+        "exact_match_rate": 0.0
+      },
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rate": 0.0,
+      "high_severity_false_negatives": 12,
+      "latency_ms": {
+        "median_l2": 15590.32,
+        "p95_l2": 24441.91,
+        "mean_total_detection": 17533.106666666667
+      },
+      "retrieval": {
+        "cases": 0,
+        "MAP": 0.0,
+        "MRR": 0.0,
+        "nDCG@5": 0.0,
+        "nDCG@10": 0.0,
+        "P@5": 0.0
+      }
+    },
+    "scb10x/typhoon2.1-gemma3-4b:latest": {
+      "all_cases": {
+        "cases": 15,
+        "macro_precision": 0.38333333333333336,
+        "macro_recall": 0.3433333333333334,
+        "macro_f1": 0.35873015873015873,
+        "mean_jaccard": 0.26666666666666666,
+        "exact_match_rate": 0.0,
+        "micro_precision": 0.35,
+        "micro_recall": 0.3684210526315789,
+        "micro_f1": 0.358974358974359
+      },
+      "l2_triggered_subset": {
+        "cases": 15,
+        "macro_precision": 0.38333333333333336,
+        "macro_recall": 0.3433333333333334,
+        "macro_f1": 0.35873015873015873,
+        "mean_jaccard": 0.26666666666666666,
+        "exact_match_rate": 0.0
+      },
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rate": 0.0,
+      "high_severity_false_negatives": 12,
+      "latency_ms": {
+        "median_l2": 13282.81,
+        "p95_l2": 15095.14,
+        "mean_total_detection": 12291.222666666667
+      },
+      "retrieval": {
+        "cases": 0,
+        "MAP": 0.0,
+        "MRR": 0.0,
+        "nDCG@5": 0.0,
+        "nDCG@10": 0.0,
+        "P@5": 0.0
+      }
+    }
+  },
+  "stability": {
+    "qwen2.5:7b": {
+      "assessed": true,
+      "cases": 5,
+      "stable_cases": 5,
+      "stable_case_rate": 1.0
+    },
+    "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+      "assessed": true,
+      "cases": 5,
+      "stable_cases": 5,
+      "stable_case_rate": 1.0
+    },
+    "scb10x/typhoon2.1-gemma3-4b:latest": {
+      "assessed": true,
+      "cases": 5,
+      "stable_cases": 5,
+      "stable_case_rate": 1.0
+    }
+  },
+  "paired_comparisons": [
+    {
+      "model_a": "qwen2.5:7b",
+      "model_b": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+      "paired_rows": 15,
+      "different_final_code_sets": 0,
+      "model_a_higher_case_f1": 0,
+      "model_b_higher_case_f1": 0,
+      "equal_case_f1": 15,
+      "mean_case_f1_delta_b_minus_a": 0.0,
+      "model_a_degraded_calls": 0,
+      "model_b_degraded_calls": 0
+    },
+    {
+      "model_a": "qwen2.5:7b",
+      "model_b": "scb10x/typhoon2.1-gemma3-4b:latest",
+      "paired_rows": 15,
+      "different_final_code_sets": 3,
+      "model_a_higher_case_f1": 0,
+      "model_b_higher_case_f1": 0,
+      "equal_case_f1": 15,
+      "mean_case_f1_delta_b_minus_a": 0.0,
+      "model_a_degraded_calls": 0,
+      "model_b_degraded_calls": 0
+    },
+    {
+      "model_a": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+      "model_b": "scb10x/typhoon2.1-gemma3-4b:latest",
+      "paired_rows": 15,
+      "different_final_code_sets": 3,
+      "model_a_higher_case_f1": 0,
+      "model_b_higher_case_f1": 0,
+      "equal_case_f1": 15,
+      "mean_case_f1_delta_b_minus_a": 0.0,
+      "model_a_degraded_calls": 0,
+      "model_b_degraded_calls": 0
+    }
+  ],
+  "per_case": {
+    "qwen2.5:7b": [
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 1,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 22492.27,
+        "total_detection_ms": 22493.42,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชายอายุ 12 ปี",
+          "relationship": "บิดาและบุตร",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 1,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0206",
+          "0303",
+          "0301"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 22547.83,
+        "total_detection_ms": 22549.15,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "แม่",
+          "relationship": "ความสัมพันธ์ในครอบครัว",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 1,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 14104.81,
+        "total_detection_ms": 14105.56,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตนเอง",
+          "relationship": "ความสัมพันธ์กับตัวเอง",
+          "demographic_group": "elderly",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 1,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 12843.06,
+        "total_detection_ms": 12844.33,
+        "context_analysis": {
+          "primary_actor": "หญิงอายุ 40 ปี",
+          "target": "สามีและลูก 2 คน",
+          "relationship": "ครอบครัว",
+          "demographic_group": "adult",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 1,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 18639.65,
+        "total_detection_ms": 18640.58,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิงอายุ 8 ปี",
+          "relationship": "บิดามารดาหย่าร้าง มารดาดูแลคนเดียว",
+          "demographic_group": "child",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 2,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 16553.97,
+        "total_detection_ms": 16555.06,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชายอายุ 12 ปี",
+          "relationship": "บิดาและบุตร",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 2,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0206",
+          "0303",
+          "0301"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 21478.92,
+        "total_detection_ms": 21480.11,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "แม่",
+          "relationship": "ความสัมพันธ์ในครอบครัว",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 2,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 14203.8,
+        "total_detection_ms": 14204.57,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตนเอง",
+          "relationship": "ความสัมพันธ์กับตัวเอง",
+          "demographic_group": "elderly",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 2,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 13047.15,
+        "total_detection_ms": 13048.35,
+        "context_analysis": {
+          "primary_actor": "หญิงอายุ 40 ปี",
+          "target": "สามีและลูก 2 คน",
+          "relationship": "ครอบครัว",
+          "demographic_group": "adult",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 2,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 18657.15,
+        "total_detection_ms": 18658.02,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิงอายุ 8 ปี",
+          "relationship": "บิดามารดาหย่าร้าง มารดาดูแลคนเดียว",
+          "demographic_group": "child",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 3,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 16598.46,
+        "total_detection_ms": 16599.55,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชายอายุ 12 ปี",
+          "relationship": "บิดาและบุตร",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 3,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0206",
+          "0303",
+          "0301"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 21431.68,
+        "total_detection_ms": 21432.88,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "แม่",
+          "relationship": "ความสัมพันธ์ในครอบครัว",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 3,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 14061.52,
+        "total_detection_ms": 14062.24,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตนเอง",
+          "relationship": "ความสัมพันธ์กับตัวเอง",
+          "demographic_group": "elderly",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 3,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 12799.57,
+        "total_detection_ms": 12800.73,
+        "context_analysis": {
+          "primary_actor": "หญิงอายุ 40 ปี",
+          "target": "สามีและลูก 2 คน",
+          "relationship": "ครอบครัว",
+          "demographic_group": "adult",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "qwen2.5:7b",
+        "repeat": 3,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "qwen2.5:7b",
+        "l2_ms": 18449.7,
+        "total_detection_ms": 18450.6,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิงอายุ 8 ปี",
+          "relationship": "บิดามารดาหย่าร้าง มารดาดูแลคนเดียว",
+          "demographic_group": "child",
+          "has_crisis": false
+        }
+      }
+    ],
+    "scb10x/llama3.1-typhoon2-8b-instruct:latest": [
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 1,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 19171.68,
+        "total_detection_ms": 19172.78,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชายอายุ 12 ปี",
+          "relationship": "พ่อแม่/ผู้ปกครอง",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 1,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0303",
+          "0301",
+          "0206"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 24521.97,
+        "total_detection_ms": 24523.36,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "หญิงอายุ 72 ปี",
+          "relationship": "แม่-ลูก",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 1,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 13071.87,
+        "total_detection_ms": 13072.65,
+        "context_analysis": {
+          "primary_actor": "ชายอายุ 69 ปี",
+          "target": "ตัวเอง",
+          "relationship": "ไม่ระบุ",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 1,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 15590.32,
+        "total_detection_ms": 15591.5,
+        "context_analysis": {
+          "primary_actor": "หญิงอายุ 40 ปี พิการทางการเคลื่อนไหว",
+          "target": "แผลกดทับที่สะโพก",
+          "relationship": "ไม่ระบุ",
+          "demographic_group": "adult",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 1,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 19215.26,
+        "total_detection_ms": 19216.16,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิงอายุ 8 ปี",
+          "relationship": "แม่-ลูก",
+          "demographic_group": "child",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 2,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 14195.36,
+        "total_detection_ms": 14196.44,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชายอายุ 12 ปี",
+          "relationship": "พ่อแม่/ผู้ปกครอง",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 2,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0303",
+          "0301",
+          "0206"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 24182.18,
+        "total_detection_ms": 24183.42,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "หญิงอายุ 72 ปี",
+          "relationship": "แม่-ลูก",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 2,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 12846.47,
+        "total_detection_ms": 12847.18,
+        "context_analysis": {
+          "primary_actor": "ชายอายุ 69 ปี",
+          "target": "ตัวเอง",
+          "relationship": "ไม่ระบุ",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 2,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 15463.42,
+        "total_detection_ms": 15464.63,
+        "context_analysis": {
+          "primary_actor": "หญิงอายุ 40 ปี พิการทางการเคลื่อนไหว",
+          "target": "แผลกดทับที่สะโพก",
+          "relationship": "ไม่ระบุ",
+          "demographic_group": "adult",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 2,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 19097.4,
+        "total_detection_ms": 19098.33,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิงอายุ 8 ปี",
+          "relationship": "แม่-ลูก",
+          "demographic_group": "child",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 3,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 13839.98,
+        "total_detection_ms": 13841.05,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชายอายุ 12 ปี",
+          "relationship": "พ่อแม่/ผู้ปกครอง",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 3,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0303",
+          "0301",
+          "0206"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 24441.91,
+        "total_detection_ms": 24443.17,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "หญิงอายุ 72 ปี",
+          "relationship": "แม่-ลูก",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 3,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 12968.83,
+        "total_detection_ms": 12969.7,
+        "context_analysis": {
+          "primary_actor": "ชายอายุ 69 ปี",
+          "target": "ตัวเอง",
+          "relationship": "ไม่ระบุ",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 3,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 15338.9,
+        "total_detection_ms": 15340.09,
+        "context_analysis": {
+          "primary_actor": "หญิงอายุ 40 ปี พิการทางการเคลื่อนไหว",
+          "target": "แผลกดทับที่สะโพก",
+          "relationship": "ไม่ระบุ",
+          "demographic_group": "adult",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "repeat": 3,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "l2_ms": 19035.24,
+        "total_detection_ms": 19036.14,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิงอายุ 8 ปี",
+          "relationship": "แม่-ลูก",
+          "demographic_group": "child",
+          "has_crisis": false
+        }
+      }
+    ],
+    "scb10x/typhoon2.1-gemma3-4b:latest": [
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 1,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 12068.39,
+        "total_detection_ms": 12069.46,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชาย",
+          "relationship": "พ่อลูก",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 1,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0303",
+          "0301"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 6,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 9180.34,
+        "total_detection_ms": 9181.53,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "หญิงอายุ 72 ปี (แม่)",
+          "relationship": "บุตร-มารดา",
+          "demographic_group": "adult",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 1,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 13663.03,
+        "total_detection_ms": 13663.75,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตนเอง",
+          "relationship": "none",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 1,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 15359.16,
+        "total_detection_ms": 15360.52,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตัวเอง",
+          "relationship": "none",
+          "demographic_group": "adult",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 1,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 13556.38,
+        "total_detection_ms": 13557.24,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิง",
+          "relationship": "บุตรและแม่",
+          "demographic_group": "general",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 2,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 9279.53,
+        "total_detection_ms": 9280.56,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชาย",
+          "relationship": "พ่อลูก",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 2,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0303",
+          "0301"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 6,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 9346.3,
+        "total_detection_ms": 9347.49,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "หญิงอายุ 72 ปี (แม่)",
+          "relationship": "บุตร-มารดา",
+          "demographic_group": "adult",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 2,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 13596.72,
+        "total_detection_ms": 13597.43,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตนเอง",
+          "relationship": "none",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 2,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 15095.14,
+        "total_detection_ms": 15096.31,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตัวเอง",
+          "relationship": "none",
+          "demographic_group": "adult",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 2,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 13282.81,
+        "total_detection_ms": 13283.69,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิง",
+          "relationship": "บุตรและแม่",
+          "demographic_group": "general",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 3,
+        "case_id": "CHILD_004",
+        "complexity": "moderate",
+        "category": "เด็กและเยาวชน",
+        "expected_codes": [
+          "T74.1",
+          "0201",
+          "1601"
+        ],
+        "expected_high_severity_codes": [
+          "T74.1",
+          "1601"
+        ],
+        "predicted_codes": [
+          "1601",
+          "0206",
+          "T74"
+        ],
+        "missed_high_severity_codes": [
+          "T74.1"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "precision": 0.3333333333333333,
+          "recall": 0.3333333333333333,
+          "f1": 0.3333333333333333,
+          "jaccard": 0.2,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 9278.26,
+        "total_detection_ms": 9279.3,
+        "context_analysis": {
+          "primary_actor": "บิดาเลี้ยง",
+          "target": "เด็กชาย",
+          "relationship": "พ่อลูก",
+          "demographic_group": "child",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 3,
+        "case_id": "ELDER_002",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "I69",
+          "0701",
+          "0101",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "I69"
+        ],
+        "predicted_codes": [
+          "X60-X84",
+          "I64",
+          "L89",
+          "F43.2",
+          "0303",
+          "0301"
+        ],
+        "missed_high_severity_codes": [
+          "I69"
+        ],
+        "detector_metrics": {
+          "tp": 0,
+          "fp": 6,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "jaccard": 0.0,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 9115.13,
+        "total_detection_ms": 9116.32,
+        "context_analysis": {
+          "primary_actor": "ลูกสาว",
+          "target": "หญิงอายุ 72 ปี (แม่)",
+          "relationship": "บุตร-มารดา",
+          "demographic_group": "adult",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 3,
+        "case_id": "ELDER_009",
+        "complexity": "moderate",
+        "category": "ผู้สูงอายุ",
+        "expected_codes": [
+          "G20",
+          "0303",
+          "1405"
+        ],
+        "expected_high_severity_codes": [],
+        "predicted_codes": [
+          "F43.0",
+          "G20",
+          "Z60.2",
+          "Z63"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 3,
+          "fn": 2,
+          "precision": 0.25,
+          "recall": 0.3333333333333333,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 13503.56,
+        "total_detection_ms": 13504.28,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตนเอง",
+          "relationship": "none",
+          "demographic_group": "elderly",
+          "has_crisis": true
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 3,
+        "case_id": "DISABLED_004",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "T91.3",
+          "L89.3",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "T91.3",
+          "L89.3"
+        ],
+        "predicted_codes": [
+          "L89",
+          "1001",
+          "1205"
+        ],
+        "missed_high_severity_codes": [
+          "L89.3",
+          "T91.3"
+        ],
+        "detector_metrics": {
+          "tp": 1,
+          "fp": 2,
+          "fn": 3,
+          "precision": 0.3333333333333333,
+          "recall": 0.25,
+          "f1": 0.28571428571428575,
+          "jaccard": 0.16666666666666666,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 14934.11,
+        "total_detection_ms": 14935.27,
+        "context_analysis": {
+          "primary_actor": "ผู้ป่วย",
+          "target": "ตัวเอง",
+          "relationship": "none",
+          "demographic_group": "adult",
+          "has_crisis": false
+        }
+      },
+      {
+        "model": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "repeat": 3,
+        "case_id": "DISABLED_006",
+        "complexity": "moderate",
+        "category": "คนพิการ",
+        "expected_codes": [
+          "G80.0",
+          "J18",
+          "0301",
+          "1001",
+          "1405"
+        ],
+        "expected_high_severity_codes": [
+          "G80.0"
+        ],
+        "predicted_codes": [
+          "G80.0",
+          "0301",
+          "J18",
+          "1001"
+        ],
+        "missed_high_severity_codes": [],
+        "detector_metrics": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "jaccard": 0.8,
+          "exact_match": 0.0
+        },
+        "l2_attempted": true,
+        "l2_degraded": false,
+        "l2_model_reported": "scb10x/typhoon2.1-gemma3-4b:latest",
+        "l2_ms": 13094.29,
+        "total_detection_ms": 13095.19,
+        "context_analysis": {
+          "primary_actor": "มารดา",
+          "target": "เด็กหญิง",
+          "relationship": "บุตรและแม่",
+          "demographic_group": "general",
+          "has_crisis": true
+        }
+      }
+    ]
+  }
+}

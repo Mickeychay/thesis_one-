@@ -47,6 +47,28 @@ The system defaults to `H2L_SAFE_START=false` (Full RAG) in `start.py`. To run o
 - The app does not silently fall back to mock/sample results when runtime analysis fails.
 - Stable aliases such as `proper_eval_latest_*`, `proper_eval_checkpoint_*`, and `sentence_polarity_latest.json` are the primary sources for the dashboard; timestamped history is retained only in a small rolling window to avoid artifact sprawl.
 
+## Typhoon 2.1 Gemma Runtime
+
+The upstream `scb10x/typhoon2.1-gemma3-4b:latest` model contains a chat template
+that Ollama's automatic llama-server parser cannot compile. Start Ollama with
+the Go template renderer before selecting this model:
+
+```bash
+OLLAMA_GO_TEMPLATE=1 ollama serve
+```
+
+For an isolated comparison server that does not replace an Ollama app already
+running on port 11434:
+
+```bash
+OLLAMA_HOST=127.0.0.1:11435 OLLAMA_GO_TEMPLATE=1 ollama serve
+LOCAL_LLM_BASE_URL=http://127.0.0.1:11435/v1 \
+  .venv/bin/python scripts/compare_l2_models.py
+```
+
+This compatibility setting changes only template rendering. The model weights,
+prompt, taxonomy, temperature, seed, and H2L scoring remain unchanged.
+
 ## Checks
 
 ```bash

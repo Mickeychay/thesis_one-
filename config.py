@@ -95,7 +95,11 @@ class Config:
     L2_MODEL_OPTIONS = _as_csv_list(
         os.getenv("L2_MODEL_OPTIONS"),
         (
-            [LOCAL_LLM_MODEL, "scb10x/llama3.1-typhoon2-8b-instruct:latest"]
+            [
+                LOCAL_LLM_MODEL,
+                "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+                "scb10x/typhoon2.1-gemma3-4b:latest",
+            ]
             if USE_LOCAL_LLM
             else [OPENROUTER_MODEL]
         ),

@@ -774,6 +774,12 @@ class RuntimeManager:
                 "parameters": "8.0B",
                 "size_gb": 4.58,
             },
+            "scb10x/typhoon2.1-gemma3-4b:latest": {
+                "label": "Typhoon 2.1 Gemma 3 4B",
+                "detail": "Smaller Thai-focused efficiency comparator",
+                "parameters": "3.9B",
+                "size_gb": 2.44,
+            },
         }
         return [
             {

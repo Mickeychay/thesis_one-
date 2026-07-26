@@ -60,6 +60,11 @@ class TestRequestScopedModelSelection(unittest.TestCase):
             self.completions.calls[0]["model"],
             "scb10x/llama3.1-typhoon2-8b-instruct:latest",
         )
+        self.assertEqual(
+            self.completions.calls[0]["response_format"],
+            {"type": "json_object"},
+        )
+        self.assertEqual(self.completions.calls[0]["max_tokens"], 2048)
         self.assertEqual(self.detector.model, "qwen2.5:7b")
 
     def test_concurrent_requests_keep_their_own_model(self):
@@ -91,11 +96,13 @@ class TestRuntimeModelAllowlist(unittest.TestCase):
             L2_MODEL_OPTIONS=(
                 "qwen2.5:7b",
                 "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+                "scb10x/typhoon2.1-gemma3-4b:latest",
             ),
         )
         self.runtime.available_l2_models = {
             "qwen2.5:7b",
             "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+            "scb10x/typhoon2.1-gemma3-4b:latest",
         }
 
     def test_allowed_installed_model_is_selected(self):
@@ -103,6 +110,12 @@ class TestRuntimeModelAllowlist(unittest.TestCase):
             "scb10x/llama3.1-typhoon2-8b-instruct:latest"
         )
         self.assertEqual(selected, "scb10x/llama3.1-typhoon2-8b-instruct:latest")
+
+    def test_compatible_gemma_model_is_selected(self):
+        selected = self.runtime.resolve_l2_model(
+            "scb10x/typhoon2.1-gemma3-4b:latest"
+        )
+        self.assertEqual(selected, "scb10x/typhoon2.1-gemma3-4b:latest")
 
     def test_unknown_model_is_rejected(self):
         with self.assertRaises(HTTPException) as context:

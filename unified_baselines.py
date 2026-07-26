@@ -186,11 +186,26 @@ class HyDEBaseline:
         # Try to init LLM client
         try:
             from openai import OpenAI
-            self.llm_client = OpenAI(
-                base_url="http://localhost:11434/v1",  # Ollama
-                api_key="ollama"
+            use_local_llm = getattr(config, 'USE_LOCAL_LLM', True)
+            base_url = (
+                getattr(config, 'LOCAL_LLM_BASE_URL', 'http://localhost:11434/v1')
+                if use_local_llm
+                else 'https://openrouter.ai/api/v1'
             )
-            self.llm_model = getattr(config, 'LLM_MODEL', 'llama3.2')
+            api_key = (
+                'ollama'
+                if use_local_llm
+                else getattr(config, 'OPENROUTER_API_KEY', '')
+            )
+            self.llm_client = OpenAI(
+                base_url=base_url,
+                api_key=api_key,
+            )
+            self.llm_model = (
+                getattr(config, 'LOCAL_LLM_MODEL', 'qwen2.5:7b')
+                if use_local_llm
+                else getattr(config, 'OPENROUTER_MODEL', 'openai/gpt-4o-mini')
+            )
         except Exception as e:
             logger.warning(f"HyDE: LLM not available, falling back to dense: {e}")
     
@@ -217,7 +232,8 @@ class HyDEBaseline:
                     {"role": "user", "content": query}
                 ],
                 max_tokens=200,
-                temperature=0.3
+                temperature=0.3,
+                seed=42,
             )
             return response.choices[0].message.content
         except Exception as e:
