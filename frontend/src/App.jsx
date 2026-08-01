@@ -6265,6 +6265,38 @@ function AuditAndFinalizePanel({
   );
 }
 
+function WorkflowStepper({ currentStep }) {
+  const steps = [
+    { id: 1, label: 'กรอกรายละเอียดเคส', icon: 'edit_note' },
+    { id: 2, label: 'วิเคราะห์เคส', icon: 'manage_search' },
+    { id: 3, label: 'ทบทวนผลลัพธ์', icon: 'fact_check' },
+    { id: 4, label: 'ยืนยันและส่งทบทวน', icon: 'verified' },
+  ];
+  return (
+    <div className="mb-5 flex items-center overflow-hidden rounded-xl border border-outline-variant/25 bg-surface-container-lowest px-5 py-4">
+      {steps.map((step, idx) => {
+        const isDone = step.id < currentStep;
+        const isActive = step.id === currentStep;
+        return (
+          <React.Fragment key={step.id}>
+            <div className="flex min-w-0 shrink items-center gap-2.5">
+              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors ${isActive ? 'bg-teal-600 text-white' : isDone ? 'bg-teal-100 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300' : 'bg-surface-container-high text-on-surface-variant'}`}>
+                {isDone
+                  ? <span className="material-symbols-outlined text-[17px]">check</span>
+                  : <span className="text-sm">{step.id}</span>}
+              </div>
+              <span className={`hidden truncate text-xs font-semibold sm:block ${isActive ? 'text-on-surface' : isDone ? 'text-on-surface-variant' : 'text-outline-variant'}`}>{step.label}</span>
+            </div>
+            {idx < steps.length - 1 && (
+              <div className={`mx-3 h-px min-w-[16px] flex-1 transition-colors ${step.id < currentStep ? 'bg-teal-300 dark:bg-teal-700' : 'bg-outline-variant/30'}`} />
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
 function WorkspaceEmptyState({ actionLabel, disabled, icon = 'clinical_notes', message, onAction, title }) {
   return (
     <section className="page-enter flex min-h-[320px] flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white px-5 py-12 text-center dark:border-slate-700 dark:bg-slate-900/60">
@@ -6818,6 +6850,10 @@ export default function App() {
     return summary;
   }, { accepted: 0, review: 0, excluded: 0, pending: 0, total: 0 });
   const displayResult = isCaseDirty ? { ...emptyResult, status: 'stale', case_description: analyzedCase || '' } : result || emptyResult;
+  const workflowStep = !caseDescription.trim() ? 1
+    : (loading || !hasFreshResult) ? 2
+    : (reviewSummary.pending > 0 || reviewSummary.total === 0) ? 3
+    : 4;
   const dataTone = loading
     ? 'neutral'
     : !isCaseDirty && result
@@ -6918,6 +6954,7 @@ export default function App() {
 
       {activeWorkspace === 'analysis' && (
         <div>
+          <WorkflowStepper currentStep={workflowStep} />
           <section className="mb-5 rounded-lg bg-surface-container-low p-5 sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
