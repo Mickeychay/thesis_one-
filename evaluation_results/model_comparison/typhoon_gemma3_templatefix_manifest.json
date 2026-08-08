@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "patched_at": "2026-08-08T09:16:38+07:00",
+  "path": "/Users/rischen/Documents/GitHub/thesis_one-/tmp/typhoon_gemma3_4b_templatefix.gguf",
+  "gguf_version": 3,
+  "tensor_count": 444,
+  "metadata_key": "tokenizer.chat_template",
+  "value_offset": 677,
+  "allocated_bytes": 6615,
+  "replacement_bytes": 421,
+  "padding_bytes": 6194,
+  "original_template_sha256": "153e460208805747c21744cda8b3751e65c32a8ecfe43e5f95f4058e2b4558b8",
+  "replacement_template_sha256": "6c90c3b1cc04e884e0a71eb8afeb75d125e38bcc3fc3db2fd1bb1e3d38f127a1",
+  "patched_file_sha256": "e70833c5f19c840b9697c8c1ed1e43d80a05fe02e3958ec30688b0371853172f",
+  "required_marker_removed": "selectattr"
+}

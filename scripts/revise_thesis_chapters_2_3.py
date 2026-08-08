@@ -14,6 +14,35 @@ from docx.oxml.ns import qn
 SOURCE = Path("/Users/rischen/Desktop/65130641_Riskie_Thesis_v2.docx")
 OUTPUT = Path("output/doc/65130641_Riskie_Thesis_v2_revised_final.docx")
 
+DATASET_CURRENT_TEXT = (
+    "เนื่องจากไม่มีชุดข้อมูลสาธารณะที่ครอบคลุมบริบทงานสังคมสงเคราะห์ทางการแพทย์ภาษาไทยโดยเฉพาะ "
+    "ผู้วิจัยจึงจัดทำชุดข้อมูลอ้างอิงในไฟล์ expanded_ground_truth.json ฉบับปัจจุบันมีทั้งหมด 220 เคส "
+    "แบ่งเป็นเคสต้นฉบับ 92 เคสและเคสที่สร้างหรือปรับเพิ่มเติม 128 เคส โดยเคสเพิ่มเติมประกอบด้วยการถอดความ "
+    "(Paraphrase) 44 เคส การเพิ่มระดับความซับซ้อน (Complexity Escalation) 10 เคส การลดระดับความซับซ้อน "
+    "(Complexity Reduction) 10 เคส เคสท้าทายระบบ (Adversarial Cases) 20 เคส ชุดเปรียบเทียบเชิงขั้วความหมาย "
+    "(Polarity Pairs) 18 คู่หรือ 36 เคส ข้อความสั้นที่ยังมีหลักฐานบ่งชี้ปัญหา (Short Evidenced Cases) 5 เคส "
+    "และข้อความสั้นมาก (Tiny Cases) 3 เคส"
+)
+
+SPLIT_CURRENT_TEXT = (
+    "การแบ่งข้อมูลส่วนหลักกำหนดสัดส่วนเป้าหมาย 70:30 และใช้ Family-Level Stratified Split ตามกลุ่มครอบครัวของเคส "
+    "และหมวดหมู่กรณีศึกษา โดยกำหนด seed เท่ากับ 42 จากนั้นตรึง Polarity Pairs ทั้ง 36 เคสและ Adversarial Cases "
+    "ทั้ง 20 เคสไว้ในชุดทดสอบเป็น stress-test slice และย้ายกลุ่ม near-duplicate ให้อยู่ชุดเดียวกัน จึงได้ชุดปัจจุบันเป็น "
+    "train 125 เคสและ test 95 เคส การกระจายความซับซ้อนทั้งชุดประกอบด้วย simple 72 เคส moderate 90 เคส และ "
+    "complex 58 เคส ส่วน test split ประกอบด้วย simple 35 เคส moderate 42 เคส และ complex 18 เคส การตรวจสอบ"
+    "ชุดข้อมูล 220 เคสไม่พบ family leakage ข้อความซ้ำแบบตรงตัว หรือคู่ข้อความข้ามชุดที่มีความคล้ายคลึงตั้งแต่ 0.90 "
+    "ขึ้นไป ทั้งนี้ ตัวเลขผลการทดลองในบทที่ 4 ยังอ้างอิง evaluation snapshot 205 เคส ซึ่งแบ่งเป็น train 129 เคสและ "
+    "test 76 เคส และยังไม่รวมผลการประเมิน Adversarial Cases ที่ขยายใหม่ครบทั้ง 20 เคส"
+)
+
+ADVERSARIAL_METHOD_TEXT = (
+    "เคสท้าทายระบบ (Adversarial Cases) คือกรณีที่จงใจใส่คำซึ่งอาจกระตุ้นรหัสผิด แต่บริบทระบุว่าคำนั้นไม่ใช่ปัญหา"
+    "ปัจจุบันของผู้รับบริการ เช่น คำถามคัดกรอง เหตุการณ์ในอดีต ข่าวหรือเอกสาร เนื้อหาในสื่อ ปัญหาของบุคคลอื่น "
+    "หรือข้อความปฏิเสธ แต่ละเคสกำหนด false_trigger_code สำหรับรหัสที่ระบบไม่ควรสรุป และกำหนดรหัสที่คาดหวังจาก"
+    "ปัญหาที่มีหลักฐานจริง ตัวอย่างเช่น แบบคัดกรองกล่าวถึงการฆ่าตัวตายแต่ผู้รับบริการปฏิเสธและมาขอความช่วยเหลือ"
+    "เพราะตกงาน จึงคาดหวังรหัส 1201 แทน X60-X84 ทั้ง 20 เคสถูกแยกไว้ใน evaluation_slice=adversarial_test"
+)
+
 
 def normalized(text: str) -> str:
     return " ".join((text or "").split())
@@ -57,6 +86,17 @@ def set_cell_text(cell, text: str, bold: bool = False) -> None:
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = paragraph.add_run(text)
     run.bold = bold
+
+
+def replace_cell_text(cell, text: str) -> None:
+    """Replace cell text while retaining the existing first-run formatting."""
+    paragraph = cell.paragraphs[0]
+    if paragraph.runs:
+        paragraph.runs[0].text = text
+        for run in paragraph.runs[1:]:
+            run.text = ""
+    else:
+        paragraph.add_run(text)
 
 
 def prevent_row_split(row) -> None:
@@ -179,12 +219,43 @@ def main() -> int:
         "การประเมินผลระบบ H2L ในงานวิจัยนี้ดำเนินการภายใต้กรอบการประเมินเชิงอันดับ (Rank-Aware Evaluation) ซึ่งพิจารณาทั้งความถูกต้องและลำดับของเอกสารที่ค้นคืนมา โดยแบ่งออกเป็น 3 ส่วนได้แก่ การสร้างชุดข้อมูลอ้างอิง การกำหนดตัวชี้วัด และการกำหนดกลยุทธ์เปรียบเทียบ":
             "การประเมินระบบ H2L พิจารณาทั้งคุณภาพการตรวจจับรหัสปัญหา คุณภาพการจัดอันดับเอกสาร ความหน่วงเวลา และความเสถียรของ runtime โดยใช้ test split เดียวกันในการเปรียบเทียบแบบจับคู่ ตัวแปรที่ไม่ได้เป็นประเด็นศึกษา ได้แก่ taxonomy, prompt, embedding, reranker และสูตร H2L จะถูกตรึงไว้เพื่อให้ผลต่างสะท้อนองค์ประกอบที่เปลี่ยนจริง",
         "เนื่องจากไม่มีชุดข้อมูลสาธารณะที่ครอบคลุมบริบทงานสังคมสงเคราะห์ทางการแพทย์ภาษาไทยโดยเฉพาะ ผู้วิจัยจึงสร้างชุดข้อมูลอ้างอิงขึ้นเอง โดยมีรายละเอียดดังนี้ชุดข้อมูลประกอบด้วยเคสทั้งหมด 197 เคส แบ่งเป็นเคสต้นฉบับที่ผู้เชี่ยวชาญสร้างขึ้น 92 เคส และเคสที่สังเคราะห์เพิ่มเติมด้วยวิธีการขยาย ชุดข้อมูล (Data Augmentation) 105 เคส โดยวิธีการขยายข้อมูลประกอบด้วย การถอดความ (Paraphrase) จำนวน 44 เคส การเพิ่มระดับความซับซ้อน (Complexity Escalation) 10 เคส การลดระดับความซับซ้อน (Complexity Reduction) 10 เคส และเคสแบบ Adversarial 5 เคส นอกจากนี้ยังมีเคสพิเศษที่ออกแบบเพื่อทดสอบกลไก Contextual Polarity Gates โดยตรงได้แก่ เคสที่มีการปฏิเสธ (Negation Cases) 18 เคส และเคส Polarity 18 เคส":
-            "เนื่องจากไม่มีชุดข้อมูลสาธารณะที่ครอบคลุมบริบทงานสังคมสงเคราะห์ทางการแพทย์ภาษาไทยโดยเฉพาะ ผู้วิจัยจึงจัดทำชุดข้อมูลอ้างอิงในไฟล์ expanded_ground_truth.json เวอร์ชันที่ใช้ในการทดลองมีทั้งหมด 205 เคส ประกอบด้วยเคสต้นฉบับ 92 เคสและเคสที่เพิ่มเพื่อทดสอบการถอดความ ความซับซ้อน ข้อความเชิงปฏิเสธ และข้อความสั้น โดยมีเคส negation ที่ระบุสถานะไว้ 18 เคส การรายงานจำนวนอ้างอิงจาก artifact เดียวกับที่ใช้รันจริงเพื่อป้องกันความคลาดเคลื่อนระหว่างตัวเล่มและชุดข้อมูล",
+            DATASET_CURRENT_TEXT,
         "การแบ่งชุดข้อมูลใช้อัตราส่วน 70:30 โดยใช้วิธี Family-Level Stratified Split จำแนกตามหมวดหมู่ปัญหา เพื่อให้ชุดฝึกและชุดทดสอบมีการกระจายของประเภทปัญหาอย่างสม่ำเสมอ ได้ชุดฝึก (Train) 129 เคส และชุดทดสอบ (Test) 68 เคส โดยกำหนดค่า Seed เท่ากับ 42 เพื่อความสามารถในการทำซ้ำ (Reproducibility) ชุดทดสอบมีการกระจายระดับความซับซ้อน 3ระดับ คือ Simple 56 เคส Moderate 71 เคส และ Complex 52 เคส แต่ละเคสประกอบด้วยข้อความกรณีศึกษา รายการรหัสปัญหาที่คาดหวัง พร้อมระดับความรุนแรง และชุดคำสำคัญอ้างอิงสำหรับการตัดสินความเกี่ยวข้องของเอกสาร โดยผู้วิจัยอธิบายรายละเอียดเพิ่มเติมในความหมายวิธีการขยายข้อมูล ดังนี้":
-            "การแบ่งชุดข้อมูลใช้ Family-Level Stratified Split ตามหมวดหมู่ปัญหาและ seed เท่ากับ 42 ได้ชุด train 129 เคสและชุด test 76 เคส รวม 205 เคส การกระจายความซับซ้อนทั้งชุดประกอบด้วย simple 72 เคส moderate 75 เคส และ complex 58 เคส ส่วน test split ประกอบด้วย simple 35 เคส moderate 23 เคส และ complex 18 เคส แต่ละเคสมีข้อความกรณีศึกษา expected problem codes ระดับความรุนแรง และ relevant keywords สำหรับการประเมิน detector และ retrieval",
+            SPLIT_CURRENT_TEXT,
+        "การลดความซับซ้อน (Complexity Reduction) คือการตัดทอนข้อมูลในเคสต้นฉบับให้เหลือเพียงปัญหาหลัก เพื่อทดสอบว่าระบบยังทำงานได้แม้ข้อความมีบริบทน้อยโดยมีตัวอย่าง ดังนี้ ":
+            "การลดความซับซ้อน (Complexity Reduction) คือการตัดทอนข้อมูลจากเคสต้นฉบับให้เหลือข้อความสั้นมากเพื่อทดสอบผลของการสูญเสียบริบท ในชุดข้อมูลปัจจุบัน เคส SIM จำนวน 10 เคสถูกกำหนด expected problem list เป็นค่าว่างโดยเจตนา เพราะข้อความที่เหลือไม่มีหลักฐานเพียงพอสำหรับการตรวจจับปัญหา ตัวอย่างดังนี้",
     }
     for old, new in replacements.items():
         replace_exact(document, old, new, changes)
+
+    paraphrase_paragraph = find_paragraph(
+        document,
+        "การถอดความ (Paraphrase) คือการเขียนข้อความกรณีศึกษาใหม่โดยเปลี่ยนสำนวนหรือคำศัพท์บางส่วน แต่ยังคงความหมายและรหัสปัญหาที่คาดหวังเหมือนเดิมทุกประการ เพื่อทดสอบว่าระบบสามารถตรวจจับปัญหาได้แม้ข้อความใช้คำต่างออกไปโดยมีตัวอย่าง ดังนี้",
+    )
+    dataset_paragraph = find_paragraph(document, DATASET_CURRENT_TEXT)
+    insert_before(paraphrase_paragraph, ADVERSARIAL_METHOD_TEXT, dataset_paragraph)
+    changes.append("Inserted adversarial-case definition and example")
+
+    # Keep the reduction example aligned with the current artifact. The
+    # previously used short-but-evidenced example is a separate SHORT_* case,
+    # not one of the ten SIM complexity-reduction variants.
+    reduction_table = next(
+        table
+        for table in document.tables
+        if len(table.rows) == 3
+        and table.cell(0, 0).text.strip() == "ต้นฉบับ"
+        and "การลด" in table.cell(1, 0).text
+    )
+    replace_cell_text(
+        reduction_table.cell(0, 1),
+        '"หญิงอายุ 78 ปี ติดเตียง 5 ปี จากอัมพฤกษ์-อัมพาต มีโรคเบาหวาน ความดันโลหิตสูง มีแผลเบาหวานที่เท้าซ้าย... ไม่มีญาติดูแล... ไม่มีรายได้นอกจากเบี้ยยังชีพ 1,000 บาทต่อเดือน ไม่มีบัตรประชาชน"',
+    )
+    replace_cell_text(reduction_table.cell(1, 1), '"หญิงอายุ 78 ปี"')
+    replace_cell_text(
+        reduction_table.cell(2, 1),
+        "เปลี่ยนจาก [I64, E11.5, 0303, 1001, 1405, Z59.0] เป็น [] (ไม่มีหลักฐานปัญหาที่ตรวจจับได้ในข้อความย่อ)",
+    )
+    changes.append("Corrected complexity-reduction example to ELDER_004_SIM_01")
 
     # Correct the five-feature summary without changing the formula or weights.
     summary = find_paragraph(
@@ -224,7 +295,7 @@ def main() -> int:
     evaluation_heading = find_paragraph(document, "3.9.1 การสร้างชุดข้อมูลอ้างอิง (Ground Truth Dataset)")
     evaluation_body = find_paragraph(
         document,
-        "การแบ่งชุดข้อมูลใช้ Family-Level Stratified Split ตามหมวดหมู่ปัญหาและ seed เท่ากับ 42 ได้ชุด train 129 เคสและชุด test 76 เคส รวม 205 เคส การกระจายความซับซ้อนทั้งชุดประกอบด้วย simple 72 เคส moderate 75 เคส และ complex 58 เคส ส่วน test split ประกอบด้วย simple 35 เคส moderate 23 เคส และ complex 18 เคส แต่ละเคสมีข้อความกรณีศึกษา expected problem codes ระดับความรุนแรง และ relevant keywords สำหรับการประเมิน detector และ retrieval",
+        SPLIT_CURRENT_TEXT,
     )
     caption_template = find_paragraph(document, "ตาราง 32 Pseudo Code ของกลไกควบคุมผลบวกลวง")
 

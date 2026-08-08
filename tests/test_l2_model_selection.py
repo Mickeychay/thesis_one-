@@ -35,6 +35,37 @@ class _FakeCompletions:
         )
 
 
+class _CorrectingCompletions:
+    def __init__(self):
+        self.calls = []
+
+    def create(self, **kwargs):
+        self.calls.append(dict(kwargs))
+        if len(self.calls) == 1:
+            content = json.dumps({
+                "validated_codes": ["invalid"],
+                "implicit_problems": ["invalid"],
+            })
+        else:
+            content = json.dumps({
+                "validated_codes": [],
+                "implicit_problems": [
+                    {
+                        "code": "1001",
+                        "name": "ปัญหาการเงิน",
+                        "severity": 3,
+                        "confidence": 0.8,
+                        "reasoning": "พบปัญหาการเงิน",
+                        "evidence": "ไม่มีเงิน",
+                    },
+                ],
+                "context_analysis": {"demographic_group": "adult"},
+            })
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
+        )
+
+
 class TestRequestScopedModelSelection(unittest.TestCase):
     def setUp(self):
         self.completions = _FakeCompletions()
@@ -86,6 +117,34 @@ class TestRequestScopedModelSelection(unittest.TestCase):
         )
         self.assertEqual(self.detector.model, "qwen2.5:7b")
 
+    def test_malformed_schema_is_retried_with_corrective_instructions(self):
+        correcting = _CorrectingCompletions()
+        self.detector.client = SimpleNamespace(
+            chat=SimpleNamespace(completions=correcting)
+        )
+        validated, implicit, context = self.detector.validate_and_detect(
+            "ผู้รับบริการไม่มีเงิน",
+            [],
+            [],
+            {},
+            taxonomy={
+                "1001": {
+                    "name": "ปัญหาการเงิน",
+                    "category": "การเงิน",
+                    "severity": 3,
+                    "keywords": ["ไม่มีเงิน"],
+                }
+            },
+        )
+
+        self.assertEqual(validated, [])
+        self.assertEqual([problem.code for problem in implicit], ["1001"])
+        self.assertEqual(context, {"demographic_group": "adult"})
+        self.assertEqual(len(correcting.calls), 2)
+        self.assertEqual(correcting.calls[1]["temperature"], 0)
+        self.assertEqual(correcting.calls[1]["seed"], 43)
+        self.assertIn("previous response was malformed", correcting.calls[1]["messages"][-1]["content"])
+
 
 class TestRuntimeModelAllowlist(unittest.TestCase):
     def setUp(self):
@@ -96,13 +155,13 @@ class TestRuntimeModelAllowlist(unittest.TestCase):
             L2_MODEL_OPTIONS=(
                 "qwen2.5:7b",
                 "scb10x/llama3.1-typhoon2-8b-instruct:latest",
-                "scb10x/typhoon2.1-gemma3-4b:latest",
+                "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
             ),
         )
         self.runtime.available_l2_models = {
             "qwen2.5:7b",
             "scb10x/llama3.1-typhoon2-8b-instruct:latest",
-            "scb10x/typhoon2.1-gemma3-4b:latest",
+            "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
         }
 
     def test_allowed_installed_model_is_selected(self):
@@ -113,9 +172,9 @@ class TestRuntimeModelAllowlist(unittest.TestCase):
 
     def test_compatible_gemma_model_is_selected(self):
         selected = self.runtime.resolve_l2_model(
-            "scb10x/typhoon2.1-gemma3-4b:latest"
+            "h2l/typhoon-gemma3-4b-templatefix-v2:latest"
         )
-        self.assertEqual(selected, "scb10x/typhoon2.1-gemma3-4b:latest")
+        self.assertEqual(selected, "h2l/typhoon-gemma3-4b-templatefix-v2:latest")
 
     def test_unknown_model_is_rejected(self):
         with self.assertRaises(HTTPException) as context:

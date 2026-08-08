@@ -22,6 +22,7 @@ Usage:
 import json
 import sys
 import logging
+import hashlib
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
@@ -47,6 +48,15 @@ logger = logging.getLogger(__name__)
 
 LATEST_POLARITY_ARTIFACT = Path("evaluation_results/sentence_polarity_latest.json")
 POLARITY_PROGRESS_ARTIFACT = Path("evaluation_results/sentence_polarity_progress.json")
+GATE_ATTENUATION_THRESHOLD = 1.0
+
+
+def _sha256(path: Path):
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def _write_json(path: Path, payload):
@@ -83,7 +93,7 @@ def _prune_polarity_history(keep_history: int = 2):
 
 
 def load_polarity_cases(gt_path="expanded_ground_truth.json"):
-    """Load only the polarity test cases from ground truth."""
+    """Load every held-out test case used by the polarity evaluation."""
     with open(gt_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
@@ -113,18 +123,222 @@ def load_problems_from_taxonomy(taxonomy_path="problem_codes.json"):
         taxonomy = json.load(f)
 
     problems = {}
-    for cat in taxonomy.get("categories", []):
-        for prob in cat.get("problems", []):
-            code = prob.get("code", "")
-            problems[code] = {
-                "code": code,
-                "name": prob.get("name", ""),
-                "severity": prob.get("severity", 1),
-                "keywords": prob.get("keywords", []),
-                "category_id": cat.get("id", ""),
-                "category_name": cat.get("name", "Unknown Category")
-            }
+    categories = taxonomy.get("categories") if isinstance(taxonomy, dict) else None
+    if isinstance(categories, list):
+        # Backward-compatible schema: {"categories": [{"problems": [...]}]}.
+        for cat in categories:
+            if not isinstance(cat, dict):
+                continue
+            for prob in cat.get("problems", []):
+                if not isinstance(prob, dict):
+                    continue
+                code = str(prob.get("code", "")).strip()
+                if not code:
+                    continue
+                problems[code] = {
+                    "code": code,
+                    "name": prob.get("name", ""),
+                    "severity": prob.get("severity", 1),
+                    "keywords": list(prob.get("keywords") or []),
+                    "category_id": cat.get("id", ""),
+                    "category_name": cat.get("name", "Unknown Category")
+                }
+        return problems
+
+    if not isinstance(taxonomy, dict):
+        raise ValueError("Problem taxonomy must be a JSON object")
+
+    # Current schema: {"CODE": {"name": ..., "category": ..., ...}}.
+    for raw_code, prob in taxonomy.items():
+        if not isinstance(prob, dict):
+            continue
+        code = str(raw_code).strip()
+        if not code:
+            continue
+        category_name = prob.get("category", "Unknown Category")
+        problems[code] = {
+            "code": code,
+            "name": prob.get("name", ""),
+            "severity": prob.get("severity", 1),
+            "keywords": list(prob.get("keywords") or []),
+            "category_id": prob.get("category_id", category_name),
+            "category_name": category_name,
+        }
     return problems
+
+
+def _normalize_gate_result(gate_result):
+    """Return all polarity gates even for legacy numeric results."""
+    if isinstance(gate_result, dict):
+        gate_neg = float(gate_result.get("gate_neg", gate_result.get("gate_total", 1.0)))
+        return {
+            "gate_total": float(gate_result.get("gate_total", gate_neg)),
+            "gate_neg": gate_neg,
+            "gate_len": float(gate_result.get("gate_len", 1.0)),
+            "gate_sub": float(gate_result.get("gate_sub", 1.0)),
+        }
+
+    gate_value = float(gate_result)
+    return {
+        "gate_total": gate_value,
+        "gate_neg": gate_value,
+        "gate_len": 1.0,
+        "gate_sub": 1.0,
+    }
+
+
+def _evaluate_adversarial_false_trigger(case, query, problems_db, config):
+    """Evaluate the contextually invalid code embedded in an adversarial case."""
+    augmentation = case.get("augmentation") or {}
+    false_code = str(augmentation.get("false_trigger_code") or "").strip()
+    if not false_code:
+        return None
+
+    taxonomy_problem = problems_db.get(false_code)
+    problem = dict(taxonomy_problem or {})
+    trigger_word = str(augmentation.get("trigger_word") or "").strip()
+    keywords = list(problem.get("keywords") or [])
+    if trigger_word and trigger_word not in keywords:
+        keywords.append(trigger_word)
+    query_lower = query.lower()
+    matched_keywords = [
+        keyword for keyword in keywords
+        if isinstance(keyword, str) and keyword.lower() in query_lower
+    ]
+
+    problem.update({
+        "code": false_code,
+        "name": problem.get("name") or trigger_word or false_code,
+        "severity": problem.get("severity", 3),
+        "keywords": keywords,
+    })
+    gates = _normalize_gate_result(calculate_sentence_polarity(problem, query, config))
+    return {
+        "code": false_code,
+        "trigger_word": trigger_word,
+        "taxonomy_problem_found": taxonomy_problem is not None,
+        "keywords_used": keywords,
+        "matched_keywords": matched_keywords,
+        "evaluated": bool(matched_keywords),
+        "gates": gates,
+        "negation_suppressed": gates["gate_neg"] < GATE_ATTENUATION_THRESHOLD,
+        "subject_suppressed": gates["gate_sub"] < GATE_ATTENUATION_THRESHOLD,
+        "contextually_suppressed": gates["gate_total"] < GATE_ATTENUATION_THRESHOLD,
+    }
+
+
+def _safe_rate(numerator, denominator):
+    return numerator / denominator if denominator else None
+
+
+def _safe_mean(values):
+    return sum(values) / len(values) if values else None
+
+
+def _format_optional_rate(value):
+    return "N/A" if value is None else f"{value:.1%}"
+
+
+def _summarize_adversarial_cases(cases):
+    """Summarize target preservation and false-trigger attenuation separately."""
+    positive_cases = [case for case in cases if not case["is_negated"]]
+    negated_cases = [case for case in cases if case["is_negated"]]
+    target_evaluated = [case for case in positive_cases if case.get("target_gate_evaluated")]
+    target_preserved = [case for case in target_evaluated if case.get("target_preserved")]
+    target_false_suppressed = [case for case in target_evaluated if not case.get("target_preserved")]
+    false_trigger_cases = [
+        case for case in cases
+        if isinstance(case.get("adversarial_false_trigger"), dict)
+        and case["adversarial_false_trigger"].get("evaluated")
+    ]
+    false_trigger_negated = [
+        case for case in false_trigger_cases
+        if case["adversarial_false_trigger"]["negation_suppressed"]
+    ]
+    false_trigger_subject = [
+        case for case in false_trigger_cases
+        if case["adversarial_false_trigger"]["subject_suppressed"]
+    ]
+    false_trigger_contextual = [
+        case for case in false_trigger_cases
+        if case["adversarial_false_trigger"]["contextually_suppressed"]
+    ]
+    joint_eligible = [
+        case for case in target_evaluated
+        if isinstance(case.get("adversarial_false_trigger"), dict)
+        and case["adversarial_false_trigger"].get("evaluated")
+    ]
+    joint_passes = [
+        case for case in joint_eligible
+        if case.get("target_preserved")
+        and case["adversarial_false_trigger"]["contextually_suppressed"]
+    ]
+
+    return {
+        "n_cases": len(cases),
+        "n_positive": len(positive_cases),
+        "n_negated": len(negated_cases),
+        "target_evaluated_count": len(target_evaluated),
+        "target_preserved_count": len(target_preserved),
+        "target_preservation_rate": _safe_rate(len(target_preserved), len(target_evaluated)),
+        "false_suppression_count": len(target_false_suppressed),
+        "false_suppression_rate": _safe_rate(len(target_false_suppressed), len(target_evaluated)),
+        "false_trigger_evaluated_count": len(false_trigger_cases),
+        "false_trigger_negation_suppression_count": len(false_trigger_negated),
+        "false_trigger_negation_suppression_rate": _safe_rate(
+            len(false_trigger_negated), len(false_trigger_cases)
+        ),
+        "false_trigger_subject_suppression_count": len(false_trigger_subject),
+        "false_trigger_subject_suppression_rate": _safe_rate(
+            len(false_trigger_subject), len(false_trigger_cases)
+        ),
+        "false_trigger_contextual_suppression_count": len(false_trigger_contextual),
+        "false_trigger_contextual_suppression_rate": _safe_rate(
+            len(false_trigger_contextual), len(false_trigger_cases)
+        ),
+        "mean_false_trigger_gate_neg": _safe_mean([
+            case["adversarial_false_trigger"]["gates"]["gate_neg"]
+            for case in false_trigger_cases
+        ]),
+        "mean_false_trigger_gate_sub": _safe_mean([
+            case["adversarial_false_trigger"]["gates"]["gate_sub"]
+            for case in false_trigger_cases
+        ]),
+        "mean_false_trigger_gate_total": _safe_mean([
+            case["adversarial_false_trigger"]["gates"]["gate_total"]
+            for case in false_trigger_cases
+        ]),
+        "joint_pass_count": len(joint_passes),
+        "joint_pass_eligible_count": len(joint_eligible),
+        "joint_pass_rate": _safe_rate(len(joint_passes), len(joint_eligible)),
+        "thresholds": {
+            "attenuation_threshold": GATE_ATTENUATION_THRESHOLD,
+            "comparison": "strictly_less_than",
+        },
+        "semantics": {
+            "target_preservation_rate": (
+                "Share of evaluated positive-target cases where no expected target code has gate_neg < 1.0."
+            ),
+            "false_suppression_rate": (
+                "Share of evaluated positive-target cases where at least one expected target code has "
+                "gate_neg < 1.0; "
+                "this matches the existing false-positive-rate convention."
+            ),
+            "false_trigger_negation_suppression_rate": (
+                "Share of evaluated false-trigger codes with gate_neg < 1.0."
+            ),
+            "false_trigger_subject_suppression_rate": (
+                "Share of evaluated false-trigger codes with gate_sub < 1.0."
+            ),
+            "false_trigger_contextual_suppression_rate": (
+                "Share of evaluated false-trigger codes with gate_total < 1.0."
+            ),
+            "joint_pass_rate": (
+                "Share of cases with evaluated positive targets and matched false-trigger evidence whose "
+                "target is preserved by gate_neg and whose false trigger is attenuated by gate_total."
+            ),
+        },
+    }
 
 
 def evaluate_sentence_polarity(gt_path="expanded_ground_truth.json",
@@ -155,6 +369,13 @@ def evaluate_sentence_polarity(gt_path="expanded_ground_truth.json",
         "metadata": {
             "timestamp": datetime.now().isoformat(),
             "gt_file": gt_path,
+            "ground_truth_sha256": _sha256(Path(gt_path)),
+            "taxonomy_file": taxonomy_path,
+            "taxonomy_sha256": _sha256(Path(taxonomy_path)),
+            "evaluator_sha256": _sha256(Path(__file__).resolve()),
+            "h2l_core_sha256": _sha256(Path(__file__).resolve().parent / "H2L_core.py"),
+            "evaluation_scope": "all_split_test_cases",
+            "total_test_cases": len(polarity_cases),
             "total_polarity_cases": len(polarity_cases),
             "polarity_markers": config.NEGATION_MARKERS,
             "window_size": 30
@@ -268,9 +489,19 @@ def evaluate_sentence_polarity(gt_path="expanded_ground_truth.json",
         min_g_neg = min(all_g)
         mean_g_neg = sum(all_g) / len(all_g)
         n_codes_negated = len(negated_codes)
+        false_trigger_result = _evaluate_adversarial_false_trigger(
+            case,
+            query,
+            problems_db,
+            config,
+        )
 
         case_result = {
             "case_id": case_id,
+            "category": case.get("category"),
+            "evaluation_slice": case.get("evaluation_slice"),
+            "augmentation": case.get("augmentation") or {},
+            "polarity_type": case.get("polarity_type"),
             "is_negated": is_negated,
             "length_category": length_cat,
             "severity_level": severity_level,
@@ -283,7 +514,14 @@ def evaluate_sentence_polarity(gt_path="expanded_ground_truth.json",
             "n_codes_negated": n_codes_negated,
             "g_neg_details": g_neg_values,
             "g_full_details": g_full_details,
-            "correct": (is_negated == any_negation_detected)
+            "correct": (is_negated == any_negation_detected),
+            "target_gate_evaluated": bool(g_neg_values),
+            "target_preserved": (
+                not any_negation_detected
+                if not is_negated and g_neg_values
+                else None
+            ),
+            "adversarial_false_trigger": false_trigger_result,
         }
         results["per_case"].append(case_result)
         
@@ -406,6 +644,16 @@ def evaluate_sentence_polarity(gt_path="expanded_ground_truth.json",
                 
     results["category_summary"] = category_summary
 
+    adversarial_cases = [
+        case for case in results["per_case"]
+        if case.get("evaluation_slice") == "adversarial_test"
+    ]
+    results["slice_summaries"] = {}
+    if adversarial_cases:
+        results["slice_summaries"]["adversarial_test"] = _summarize_adversarial_cases(
+            adversarial_cases
+        )
+
     # Clean up defaultdict for JSON serialization
     results["per_length"] = dict(results["per_length"])
     results["per_severity"] = dict(results["per_severity"])
@@ -463,6 +711,20 @@ def format_results_text(results):
             s = results["per_severity_summary"][sev]
             lines.append(f"  {sev:8s}: NDR={s['ndr']:.1%}, FPR={s['fpr']:.1%}, "
                          f"G_pos={s['mean_g_pos']:.3f}, G_neg={s['mean_g_neg']:.3f}")
+
+    adversarial = results.get("slice_summaries", {}).get("adversarial_test")
+    if adversarial:
+        lines.extend([
+            "",
+            "Adversarial Test Slice:",
+            f"  Cases:                     {adversarial['n_cases']}",
+            f"  Target preservation:       {_format_optional_rate(adversarial['target_preservation_rate'])}",
+            f"  Target false suppression:  {_format_optional_rate(adversarial['false_suppression_rate'])}",
+            f"  False-trigger G_neg:        {_format_optional_rate(adversarial['false_trigger_negation_suppression_rate'])}",
+            f"  False-trigger G_sub:        {_format_optional_rate(adversarial['false_trigger_subject_suppression_rate'])}",
+            f"  False-trigger G_total:      {_format_optional_rate(adversarial['false_trigger_contextual_suppression_rate'])}",
+            f"  Joint pass:                 {_format_optional_rate(adversarial['joint_pass_rate'])}",
+        ])
 
     lines.extend(["", "📋 Per-Case Details:"])
     for c in results["per_case"]:

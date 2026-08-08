@@ -1,14 +1,18 @@
 # Ground Truth Audit
 
 - Source: `expanded_ground_truth.json`
-- Total cases: 197
-- Split counts: `{'train': 129, 'test': 68}`
-- Augmentation counts: `{'original': 92, 'paraphrase': 44, 'complexity_escalation': 10, 'complexity_reduction': 10, 'adversarial': 5, 'polarity': 36}`
+- Total cases: 220
+- Split counts: `{'train': 125, 'test': 95}`
+- Augmentation counts: `{'original': 100, 'paraphrase': 44, 'complexity_escalation': 10, 'complexity_reduction': 10, 'adversarial': 20, 'polarity': 36}`
 - Risk flags: `['generated_cases_present_report_separately']`
 
 ## Cross-Split Families
 
 No train/test family overlap detected.
+
+## Exact Duplicate Descriptions
+
+No identical normalized case descriptions detected.
 
 ## Near Duplicates Across Splits
 

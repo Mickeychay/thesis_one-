@@ -86,6 +86,14 @@ def main():
 
     for case in data["cases"]:
         c_id = case["case_id"]
+
+        # Adversarial examples are a deliberately held-out stress-test slice.
+        # Keep them out of ordinary category stratification so rerunning this
+        # script cannot move them into train by chance.
+        if case.get("augmentation", {}).get("type") == "adversarial":
+            case["split"] = "test"
+            case["evaluation_slice"] = "adversarial_test"
+            continue
         
         # Inject natural polarity labels to normal cases
         if not c_id.startswith("NEG_"):
@@ -131,14 +139,25 @@ def main():
     # Verify counts
     train_count = sum(1 for c in data["cases"] if c.get("split") == "train")
     test_count = sum(1 for c in data["cases"] if c.get("split") == "test")
-    base_aff_test = sum(1 for c in data["cases"] if c.get("split") == "test" and c.get("polarity_type") == "base_affirmative")
+    base_aff_test = sum(
+        1
+        for c in data["cases"]
+        if c.get("split") == "test"
+        and c.get("polarity_type") == "base_affirmative"
+        and c.get("augmentation", {}).get("type") != "adversarial"
+    )
+    contrastive_test = sum(
+        1
+        for c in data["cases"]
+        if c.get("split") == "test" and c.get("case_id", "").startswith("NEG_")
+    )
 
     print(f"✅ Split applied successfully.")
     print(f"Total Cases: {len(data['cases'])}")
     print(f"Train Set: {train_count} cases")
     print(f"Test Set: {test_count} cases")
     print(f"  - Base Affirmative Test Cases (Real FPR evaluation pool): {base_aff_test} cases")
-    print(f"  - Contrastive Polarity Test Cases: {sum(1 for c in data['cases'] if c.get('split') == 'test' and c.get('polarity_type') != 'base_affirmative')}")
+    print(f"  - Contrastive Polarity Test Cases: {contrastive_test}")
 
     negated_test = sum(1 for c in data["cases"] if c.get("split") == "test" and c.get("is_negated", c.get("has_negation", False)))
 
@@ -152,6 +171,13 @@ def main():
     data["metadata"]["test_cases"] = test_count
     data["metadata"]["test_affirmative_cases"] = base_aff_test
     data["metadata"]["test_negated_cases"] = negated_test
+    data["metadata"]["adversarial_test_slice"] = "adversarial_test"
+    data["metadata"]["adversarial_test_cases"] = sum(
+        1
+        for case in data["cases"]
+        if case.get("augmentation", {}).get("type") == "adversarial"
+        and case.get("split") == "test"
+    )
 
     if args.dry_run:
         print("🔎 Dry run only; ground truth file was not modified.")

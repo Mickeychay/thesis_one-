@@ -1,0 +1,6575 @@
+{
+  "method": {
+    "slice": "adversarial_test",
+    "target_preservation": "all expected target codes are present in predicted_codes",
+    "false_trigger_suppression": "augmentation.false_trigger_code is absent from predicted_codes",
+    "joint_pass": "target_preservation AND false_trigger_suppression",
+    "joint_scope": "Only the annotated false-trigger code is tested; other unexpected predictions do not change joint_pass.",
+    "target_code_recall": "micro recall over annotated target-code opportunities within each reported detector group",
+    "detector_aggregation": "by-model rates use model-case-repeat rows; detector_overall pools models and is descriptive, not an independent-sample estimate",
+    "per_case_aggregation": "pooled model-repeat rows for audit-oriented case summaries",
+    "retrieval_relevance": "graded against the expected target codes, not the false trigger",
+    "retrieval_aggregation": "mean within case across repeats, followed by an unweighted mean across adversarial cases",
+    "degraded_rows": "retained in all denominators and reported explicitly"
+  },
+  "detector_overall": {
+    "n_rows": 180,
+    "n_unique_cases": 20,
+    "target_code_opportunities": 189,
+    "target_code_hits": 162,
+    "target_code_misses": 27,
+    "target_code_recall": 0.8571428571428571,
+    "complete_target_preservation_count": 153,
+    "complete_target_preservation_rate": 0.85,
+    "false_trigger_suppression_count": 27,
+    "false_trigger_suppression_rate": 0.15,
+    "false_trigger_activation_count": 153,
+    "false_trigger_activation_rate": 0.85,
+    "joint_pass_count": 18,
+    "joint_pass_rate": 0.1,
+    "joint_failure_count": 162,
+    "l2_attempted_rows": 99,
+    "l2_attempt_rate": 0.55,
+    "l2_degraded_rows": 0,
+    "l2_degraded_rate": 0.0
+  },
+  "detector_by_model": {
+    "qwen2.5:7b": {
+      "n_rows": 60,
+      "n_unique_cases": 20,
+      "target_code_opportunities": 63,
+      "target_code_hits": 54,
+      "target_code_misses": 9,
+      "target_code_recall": 0.8571428571428571,
+      "complete_target_preservation_count": 51,
+      "complete_target_preservation_rate": 0.85,
+      "false_trigger_suppression_count": 9,
+      "false_trigger_suppression_rate": 0.15,
+      "false_trigger_activation_count": 51,
+      "false_trigger_activation_rate": 0.85,
+      "joint_pass_count": 6,
+      "joint_pass_rate": 0.1,
+      "joint_failure_count": 54,
+      "l2_attempted_rows": 33,
+      "l2_attempt_rate": 0.55,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0
+    },
+    "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+      "n_rows": 60,
+      "n_unique_cases": 20,
+      "target_code_opportunities": 63,
+      "target_code_hits": 54,
+      "target_code_misses": 9,
+      "target_code_recall": 0.8571428571428571,
+      "complete_target_preservation_count": 51,
+      "complete_target_preservation_rate": 0.85,
+      "false_trigger_suppression_count": 9,
+      "false_trigger_suppression_rate": 0.15,
+      "false_trigger_activation_count": 51,
+      "false_trigger_activation_rate": 0.85,
+      "joint_pass_count": 6,
+      "joint_pass_rate": 0.1,
+      "joint_failure_count": 54,
+      "l2_attempted_rows": 33,
+      "l2_attempt_rate": 0.55,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0
+    },
+    "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+      "n_rows": 60,
+      "n_unique_cases": 20,
+      "target_code_opportunities": 63,
+      "target_code_hits": 54,
+      "target_code_misses": 9,
+      "target_code_recall": 0.8571428571428571,
+      "complete_target_preservation_count": 51,
+      "complete_target_preservation_rate": 0.85,
+      "false_trigger_suppression_count": 9,
+      "false_trigger_suppression_rate": 0.15,
+      "false_trigger_activation_count": 51,
+      "false_trigger_activation_rate": 0.85,
+      "joint_pass_count": 6,
+      "joint_pass_rate": 0.1,
+      "joint_failure_count": 54,
+      "l2_attempted_rows": 33,
+      "l2_attempt_rate": 0.55,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0
+    }
+  },
+  "retrieval_by_model_strategy": {
+    "qwen2.5:7b": {
+      "bm25_only": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.06309297535714575,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.1941960806552209,
+        "nDCG@10": 0.06309297535714575,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.1941960806552209,
+        "MAP": 0.05,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.15389675281277312,
+        "MRR": 0.05,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.15389675281277312
+      },
+      "naive_rag": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06505149978319906,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.23010124840217913,
+        "MAP": 0.05555555555555556,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22367943273573423,
+        "MRR": 0.05555555555555556,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22367943273573423
+      },
+      "hyde": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.0,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.0,
+        "nDCG@10": 0.015773243839286438,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.07054009090064849,
+        "MAP": 0.009583333333333333,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.030977614064020734,
+        "MRR": 0.009583333333333333,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.030977614064020734
+      },
+      "basic": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06666666666666667,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.2319507913128198,
+        "MAP": 0.05714285714285714,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22420644162025583,
+        "MRR": 0.05714285714285714,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22420644162025583
+      },
+      "h2l-bm25": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05654648767857288,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.17533760646341678,
+        "nDCG@10": 0.07099972899446727,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.182210346550379,
+        "MAP": 0.04666666666666667,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.13130028972500915,
+        "MRR": 0.04666666666666667,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.13130028972500915
+      },
+      "h2l-naive_rag": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06781035935540111,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.23338681054931293,
+        "MAP": 0.058333333333333334,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22474807208613104,
+        "MRR": 0.058333333333333334,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22474807208613104
+      },
+      "h2l-hyde": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.05,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.22360679774997896,
+        "MAP": 0.05,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22360679774997896,
+        "MRR": 0.05,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22360679774997896
+      },
+      "h2l-hybrid": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.05,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.22360679774997896,
+        "MAP": 0.057417582417582415,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22302744994684337,
+        "MRR": 0.057417582417582415,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22302744994684337
+      }
+    },
+    "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+      "bm25_only": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.06309297535714575,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.1941960806552209,
+        "nDCG@10": 0.06309297535714575,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.1941960806552209,
+        "MAP": 0.05,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.15389675281277312,
+        "MRR": 0.05,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.15389675281277312
+      },
+      "naive_rag": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06505149978319906,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.23010124840217913,
+        "MAP": 0.05555555555555556,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22367943273573423,
+        "MRR": 0.05555555555555556,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22367943273573423
+      },
+      "hyde": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.0,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.0,
+        "nDCG@10": 0.015773243839286438,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.07054009090064849,
+        "MAP": 0.009583333333333333,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.030977614064020734,
+        "MRR": 0.009583333333333333,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.030977614064020734
+      },
+      "basic": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06666666666666667,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.2319507913128198,
+        "MAP": 0.05714285714285714,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22420644162025583,
+        "MRR": 0.05714285714285714,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22420644162025583
+      },
+      "h2l-bm25": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05654648767857288,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.17533760646341678,
+        "nDCG@10": 0.07099972899446727,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.182210346550379,
+        "MAP": 0.04666666666666667,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.13130028972500915,
+        "MRR": 0.04666666666666667,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.13130028972500915
+      },
+      "h2l-naive_rag": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06781035935540111,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.23338681054931293,
+        "MAP": 0.058333333333333334,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22474807208613104,
+        "MRR": 0.058333333333333334,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22474807208613104
+      },
+      "h2l-hyde": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.05,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.22360679774997896,
+        "MAP": 0.05,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22360679774997896,
+        "MRR": 0.05,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22360679774997896
+      },
+      "h2l-hybrid": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.05,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.22360679774997896,
+        "MAP": 0.057417582417582415,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22302744994684337,
+        "MRR": 0.057417582417582415,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22302744994684337
+      }
+    },
+    "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+      "bm25_only": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.06309297535714575,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.1941960806552209,
+        "nDCG@10": 0.06309297535714575,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.1941960806552209,
+        "MAP": 0.05,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.15389675281277312,
+        "MRR": 0.05,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.15389675281277312
+      },
+      "naive_rag": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06505149978319906,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.23010124840217913,
+        "MAP": 0.05555555555555556,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22367943273573423,
+        "MRR": 0.05555555555555556,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22367943273573423
+      },
+      "hyde": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.0,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.0,
+        "nDCG@10": 0.015773243839286438,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.07054009090064849,
+        "MAP": 0.009583333333333333,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.030977614064020734,
+        "MRR": 0.009583333333333333,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.030977614064020734
+      },
+      "basic": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06666666666666667,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.2319507913128198,
+        "MAP": 0.05714285714285714,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22420644162025583,
+        "MRR": 0.05714285714285714,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22420644162025583
+      },
+      "h2l-bm25": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05654648767857288,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.17533760646341678,
+        "nDCG@10": 0.07099972899446727,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.182210346550379,
+        "MAP": 0.04666666666666667,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.13130028972500915,
+        "MRR": 0.04666666666666667,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.13130028972500915
+      },
+      "h2l-naive_rag": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.06781035935540111,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.23338681054931293,
+        "MAP": 0.058333333333333334,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22474807208613104,
+        "MRR": 0.058333333333333334,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22474807208613104
+      },
+      "h2l-hyde": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.05,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.22360679774997896,
+        "MAP": 0.05,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22360679774997896,
+        "MRR": 0.05,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22360679774997896
+      },
+      "h2l-hybrid": {
+        "n_rows": 60,
+        "n_unique_cases": 20,
+        "repeats_per_case": [
+          3
+        ],
+        "aggregation_unit": "case mean across repeats, then unweighted mean across cases",
+        "nDCG@5": 0.05,
+        "nDCG@5_median_across_cases": 0.0,
+        "nDCG@5_std_across_cases": 0.22360679774997896,
+        "nDCG@10": 0.05,
+        "nDCG@10_median_across_cases": 0.0,
+        "nDCG@10_std_across_cases": 0.22360679774997896,
+        "MAP": 0.057417582417582415,
+        "MAP_median_across_cases": 0.0,
+        "MAP_std_across_cases": 0.22302744994684337,
+        "MRR": 0.057417582417582415,
+        "MRR_median_across_cases": 0.0,
+        "MRR_std_across_cases": 0.22302744994684337
+      }
+    }
+  },
+  "per_case": [
+    {
+      "case_id": "ADV_001",
+      "description": "ผู้ป่วยเล่าว่าเคยคิดฆ่าตัวตายเมื่อสิบปีก่อน แต่ปัจจุบันหายดีและไม่มีความคิดดังกล่าว วันนี้มาร้องเรียนเรื่องค่ารักษาพยาบาลส่วนเกินที่จ่ายไม่ไหว",
+      "target_codes": [
+        "1003"
+      ],
+      "false_trigger_code": "X60-X84",
+      "trigger_word": "คิดฆ่าตัวตาย",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "X60-X84"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_002",
+      "description": "ผู้รับบริการอ่านข่าวยาเสพติดระบาดในชุมชนจากหนังสือพิมพ์ ไม่ได้ใช้สารเสพติดเอง แต่บุตรหลานขาดเรียนเพราะครอบครัวไม่มีเงินซื้ออุปกรณ์การเรียน จึงขอคำปรึกษาเรื่องสิทธิการศึกษา",
+      "target_codes": [
+        "1104"
+      ],
+      "false_trigger_code": "1602",
+      "trigger_word": "ยาเสพติดระบาด",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 0,
+      "target_code_misses": 9,
+      "target_code_recall": 0.0,
+      "complete_target_preservation_count": 0,
+      "complete_target_preservation_rate": 0.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "1001",
+            "1101",
+            "1602"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_003",
+      "description": "ผู้รับบริการถูกเลิกจ้างจากงานพยาบาลหลังหน่วยงานปรับลดบุคลากร ในประวัติการทำงานเคยดูแลผู้ป่วยโรคจิต ปัจจุบันไม่มีรายได้และกำลังสมัครงานใหม่",
+      "target_codes": [
+        "1201"
+      ],
+      "false_trigger_code": "F20-F29",
+      "trigger_word": "โรคจิต",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 0,
+      "target_code_misses": 9,
+      "target_code_recall": 0.0,
+      "complete_target_preservation_count": 0,
+      "complete_target_preservation_rate": 0.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1001",
+            "1204",
+            "F20-F29"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_004",
+      "description": "ผู้ปกครองพบว่าลูกชายเล่นเกมออนไลน์ที่มีฉากการทำร้ายร่างกาย แต่เด็กไม่ได้ทำร้ายใคร ปัญหาคือเล่นจนอดนอนและขาดเรียนบ่อย",
+      "target_codes": [
+        "1101"
+      ],
+      "false_trigger_code": "T74",
+      "trigger_word": "การทำร้ายร่างกาย",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 9,
+      "false_trigger_suppression_rate": 1.0,
+      "false_trigger_activation_count": 0,
+      "false_trigger_activation_rate": 0.0,
+      "joint_pass_count": 9,
+      "joint_pass_rate": 1.0,
+      "joint_failure_count": 0,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": []
+    },
+    {
+      "case_id": "ADV_005",
+      "description": "ครูให้นักเรียนเขียนเรียงความหัวข้อการทำร้ายร่างกาย ไม่มีเหตุการณ์ทำร้ายเกิดขึ้นกับเด็ก ครอบครัวไม่มีเงินจ่ายค่าเล่าเรียนและค่าอุปกรณ์การเรียน",
+      "target_codes": [
+        "1001",
+        "1104"
+      ],
+      "false_trigger_code": "T74",
+      "trigger_word": "การทำร้ายร่างกาย",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 18,
+      "target_code_hits": 9,
+      "target_code_misses": 9,
+      "target_code_recall": 0.5,
+      "complete_target_preservation_count": 0,
+      "complete_target_preservation_rate": 0.0,
+      "false_trigger_suppression_count": 9,
+      "false_trigger_suppression_rate": 1.0,
+      "false_trigger_activation_count": 0,
+      "false_trigger_activation_rate": 0.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3010299956639812,
+            "MAP": 0.1111111111111111,
+            "MRR": 0.1111111111111111
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.31546487678572877,
+            "MAP": 0.125,
+            "MRR": 0.125
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.2890648263178879,
+            "MAP": 0.10000000000000002,
+            "MRR": 0.10000000000000002
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3562071871080222,
+            "MAP": 0.16666666666666666,
+            "MRR": 0.16666666666666666
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.07692307692307693,
+            "MRR": 0.07692307692307693
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3010299956639812,
+            "MAP": 0.1111111111111111,
+            "MRR": 0.1111111111111111
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.31546487678572877,
+            "MAP": 0.125,
+            "MRR": 0.125
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.2890648263178879,
+            "MAP": 0.10000000000000002,
+            "MRR": 0.10000000000000002
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3562071871080222,
+            "MAP": 0.16666666666666666,
+            "MRR": 0.16666666666666666
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.07692307692307693,
+            "MRR": 0.07692307692307693
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3010299956639812,
+            "MAP": 0.1111111111111111,
+            "MRR": 0.1111111111111111
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.31546487678572877,
+            "MAP": 0.125,
+            "MRR": 0.125
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.2890648263178879,
+            "MAP": 0.10000000000000002,
+            "MRR": 0.10000000000000002
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3562071871080222,
+            "MAP": 0.16666666666666666,
+            "MRR": 0.16666666666666666
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.07692307692307693,
+            "MRR": 0.07692307692307693
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": false,
+          "false_trigger_suppressed": true,
+          "predicted_codes": [
+            "1001"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_006",
+      "description": "แบบคัดกรองมาตรฐานมีคำถามว่าเคยคิดฆ่าตัวตายหรือไม่ ผู้รับบริการยืนยันว่าไม่เคยคิดและไม่มีอาการดังกล่าว ปัจจุบันมาขอความช่วยเหลือหลังตกงานและต้องการหางานใหม่",
+      "target_codes": [
+        "1201"
+      ],
+      "false_trigger_code": "X60-X84",
+      "trigger_word": "คิดฆ่าตัวตาย",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "X60-X84"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_007",
+      "description": "ผู้รับบริการอ่านข่าวยาเสพติดระบาดในชุมชนจากหนังสือพิมพ์ ไม่ได้ใช้สารเสพติดเอง แต่ขอคำปรึกษาเรื่องกลิ่นและเสียงรบกวนจากโรงงานข้างบ้าน",
+      "target_codes": [
+        "0804"
+      ],
+      "false_trigger_code": "1602",
+      "trigger_word": "ยาเสพติดระบาด",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1602"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_008",
+      "description": "ผู้รับบริการยืนยันว่าโรคจิตเภทเป็นการวินิจฉัยของพี่ชาย ไม่ใช่ของตนเอง ปัจจุบันโรงงานที่ทำงานปิดกิจการจึงตกงานและมาขอคำปรึกษาเรื่องสิทธิประโยชน์ว่างงาน",
+      "target_codes": [
+        "1201"
+      ],
+      "false_trigger_code": "F20-F29",
+      "trigger_word": "โรคจิต",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0804",
+            "1201",
+            "F20",
+            "F20-F29"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_009",
+      "description": "ผู้รับบริการซึ่งเป็นครูใช้คลิปจำลองการทำร้ายร่างกายในการอบรม ไม่ได้เกิดเหตุกับตนเอง แต่กำลังถูกทวงหนี้นอกระบบและค้างชำระหลายเดือน",
+      "target_codes": [
+        "1002"
+      ],
+      "false_trigger_code": "T74",
+      "trigger_word": "การทำร้ายร่างกาย",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.06666666666666667,
+            "MRR": 0.06666666666666667
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.5,
+            "nDCG@10": 0.5,
+            "MAP": 0.3333333333333333,
+            "MRR": 0.3333333333333333
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.06666666666666667,
+            "MRR": 0.06666666666666667
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.5,
+            "nDCG@10": 0.5,
+            "MAP": 0.3333333333333333,
+            "MRR": 0.3333333333333333
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.06666666666666667,
+            "MRR": 0.06666666666666667
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.5,
+            "nDCG@10": 0.5,
+            "MAP": 0.3333333333333333,
+            "MRR": 0.3333333333333333
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 1.0,
+            "nDCG@10": 1.0,
+            "MAP": 1.0,
+            "MRR": 1.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "T74"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_010",
+      "description": "ผู้รับบริการนำคู่มืออบรมเจ้าหน้าที่ซึ่งยกตัวอย่างการทำร้ายร่างกายมาให้ดู ไม่มีเหตุเกิดกับผู้รับบริการเอง แต่ไม่เข้าใจโรคของบุตรและไม่กินยาตามแพทย์สั่ง",
+      "target_codes": [
+        "1401"
+      ],
+      "false_trigger_code": "T74",
+      "trigger_word": "การทำร้ายร่างกาย",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 9,
+      "false_trigger_suppression_rate": 1.0,
+      "false_trigger_activation_count": 0,
+      "false_trigger_activation_rate": 0.0,
+      "joint_pass_count": 9,
+      "joint_pass_rate": 1.0,
+      "joint_failure_count": 0,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": []
+    },
+    {
+      "case_id": "ADV_011",
+      "description": "ผู้ดูแลยืนยันว่าไม่ดื่มสุราและไม่มีปัญหาแอลกอฮอล์ ปัจจุบันต้องดูแลมารดาอายุ 86 ปีที่ช่วยเหลือตัวเองไม่ได้เพียงลำพังจนเหนื่อยดูแล",
+      "target_codes": [
+        "0701"
+      ],
+      "false_trigger_code": "1601",
+      "trigger_word": "ดื่มสุรา",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1601"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_012",
+      "description": "มารดาพาบุตรเข้ารับการบำบัดยาบ้า ย้ำว่าตนเองไม่ใช้ยาเสพติด แต่ต้องดูแลผู้ป่วยสารเสพติดที่บ้านคนเดียวและเครียดดูแล",
+      "target_codes": [
+        "0702"
+      ],
+      "false_trigger_code": "1602",
+      "trigger_word": "ยาเสพติด",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "0703",
+            "1602"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "0703",
+            "1602"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "0703",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "1602"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "1602"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0201",
+            "0701",
+            "0702",
+            "1602"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_013",
+      "description": "ญาติกล่าวถึงพี่ชายที่เคยมีอาการโรคจิต ไม่ใช่การวินิจฉัยของผู้รับบริการเอง ผู้รับบริการไม่เข้าใจโรคของตนเองและไม่กินยาตามแพทย์สั่ง",
+      "target_codes": [
+        "1401"
+      ],
+      "false_trigger_code": "F20-F29",
+      "trigger_word": "อาการโรคจิต",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1401",
+            "F20-F29"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_014",
+      "description": "ผู้รับบริการอ่านข่าวคดีข่มขืนเพื่อเตรียมให้ปากคำในฐานะพยาน ยืนยันว่าไม่ได้เป็นผู้เสียหาย แต่กำลังขอคำปรึกษาด้านกฎหมายแพ่งเกี่ยวกับข้อพิพาทสัญญาเช่าบ้าน",
+      "target_codes": [
+        "1301"
+      ],
+      "false_trigger_code": "0601",
+      "trigger_word": "ข่มขืน",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0601",
+            "1301"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_015",
+      "description": "ผู้ป่วยยืนยันว่าไม่ได้ถูกทำร้ายร่างกาย บาดเจ็บจากรถจักรยานยนต์ล้มเอง และมีค่ารักษาพยาบาลส่วนเกินจ่ายไม่ไหว",
+      "target_codes": [
+        "1003"
+      ],
+      "false_trigger_code": "T74.1",
+      "trigger_word": "ถูกทำร้ายร่างกาย",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 9,
+      "l2_attempt_rate": 1.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "T74",
+            "T74.1"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_016",
+      "description": "ผู้รับบริการเข้าร่วมกิจกรรมเตรียมงานสำหรับผู้พ้นโทษในฐานะอาสาสมัคร ไม่เคยต้องโทษ ปัจจุบันไม่มีที่อยู่อาศัยและนอนในที่สาธารณะ",
+      "target_codes": [
+        "0801"
+      ],
+      "false_trigger_code": "Z65.1",
+      "trigger_word": "ผู้พ้นโทษ",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0801",
+            "Z65.1"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_017",
+      "description": "มารดาพาบุตรสาวที่ตั้งครรภ์ไม่พร้อมมาพบเจ้าหน้าที่ ยืนยันว่าตนเองไม่ได้ตั้งครรภ์ ปัญหาของมารดาคือค่าพาหนะมารักษาไม่พอ",
+      "target_codes": [
+        "1003"
+      ],
+      "false_trigger_code": "1701",
+      "trigger_word": "ตั้งครรภ์ไม่พร้อม",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1003",
+            "1701"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_018",
+      "description": "สามีของผู้รับบริการเป็นมะเร็งปอดและอยู่ระหว่างรักษา แต่ผู้รับบริการไม่มีโรคดังกล่าว ต้องดูแลผู้ป่วยเรื้อรังคนเดียวจนเหนื่อยดูแล",
+      "target_codes": [
+        "0702"
+      ],
+      "false_trigger_code": "C34",
+      "trigger_word": "มะเร็งปอด",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "0701",
+            "0702",
+            "1705",
+            "C34"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_019",
+      "description": "ผู้รับบริการช่วยมารดาควบคุมอาหารจากโรคเบาหวาน ไม่ได้เป็นโรคเบาหวานเอง ปัญหาที่มาปรึกษาคือมีหนี้นอกระบบและค้างชำระหลายเดือน",
+      "target_codes": [
+        "1002"
+      ],
+      "false_trigger_code": "E11",
+      "trigger_word": "โรคเบาหวาน",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3333333333333333,
+            "MAP": 0.14285714285714285,
+            "MRR": 0.14285714285714285
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.07142857142857142,
+            "MRR": 0.07142857142857142
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3333333333333333,
+            "MAP": 0.14285714285714285,
+            "MRR": 0.14285714285714285
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.07142857142857142,
+            "MRR": 0.07142857142857142
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.3333333333333333,
+            "MAP": 0.14285714285714285,
+            "MRR": 0.14285714285714285
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.6309297535714575,
+            "nDCG@10": 0.6309297535714575,
+            "MAP": 0.5,
+            "MRR": 0.5
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.07142857142857142,
+            "MRR": 0.07142857142857142
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1002",
+            "1705",
+            "E11"
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "ADV_020",
+      "description": "ผู้รับบริการอ่านแผ่นพับเรื่องวัณโรคปอดและผลตรวจของตนเองเป็นลบ ไม่ได้ติดเชื้อ ปัจจุบันตกงานหลังนายจ้างปิดกิจการ",
+      "target_codes": [
+        "1201"
+      ],
+      "false_trigger_code": "A15",
+      "trigger_word": "วัณโรคปอด",
+      "n_rows": 9,
+      "n_unique_cases": 1,
+      "target_code_opportunities": 9,
+      "target_code_hits": 9,
+      "target_code_misses": 0,
+      "target_code_recall": 1.0,
+      "complete_target_preservation_count": 9,
+      "complete_target_preservation_rate": 1.0,
+      "false_trigger_suppression_count": 0,
+      "false_trigger_suppression_rate": 0.0,
+      "false_trigger_activation_count": 9,
+      "false_trigger_activation_rate": 1.0,
+      "joint_pass_count": 0,
+      "joint_pass_rate": 0.0,
+      "joint_failure_count": 9,
+      "l2_attempted_rows": 0,
+      "l2_attempt_rate": 0.0,
+      "l2_degraded_rows": 0,
+      "l2_degraded_rate": 0.0,
+      "retrieval_by_model_strategy": {
+        "qwen2.5:7b": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        },
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "bm25_only": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "basic": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-bm25": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-naive_rag": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hyde": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          },
+          "h2l-hybrid": {
+            "n_rows": 3,
+            "nDCG@5": 0.0,
+            "nDCG@10": 0.0,
+            "MAP": 0.0,
+            "MRR": 0.0
+          }
+        }
+      },
+      "failed_rows": [
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        },
+        {
+          "model": "qwen2.5:7b",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        },
+        {
+          "model": "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 1,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 2,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        },
+        {
+          "model": "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
+          "repeat": 3,
+          "target_all_preserved": true,
+          "false_trigger_suppressed": false,
+          "predicted_codes": [
+            "1201",
+            "1705",
+            "A15"
+          ]
+        }
+      ]
+    }
+  ],
+  "status": "complete",
+  "metadata": {
+    "generated_at": "2026-08-08T16:27:15+07:00",
+    "artifact_type": "adversarial_stress_test_slice",
+    "matrix_path": "evaluation_results/model_comparison/l2_full_matrix_95cases_3models_3repeats_8strategies.json",
+    "matrix_created_at": "2026-08-08T07:37:14.740317+00:00",
+    "matrix_sha256": "2d116b0fe998d6588d48f466076755751d0c72322ef60b0a4525f6dbc737da73",
+    "matrix_run_signature": {
+      "ground_truth_path": "/Users/rischen/Documents/GitHub/thesis_one-/expanded_ground_truth.json",
+      "ground_truth_sha256": "158891430e1b2353e4ab11f5077ae79c23dbbae3302dae7610d2e5bbd5c53832",
+      "taxonomy_sha256": "4082c225399de877df767ec71f649e613ba2c2639847a5b2736b2c0697ff430e",
+      "detector_code_sha256": "538ceadb79c92c30d6b9b2e22b790ae3815c9b7e01f0f357daf4b46b19dc0026",
+      "h2l_core_sha256": "2ecd82a9e8ad9ece7a31f0c4cfa408a857a9c76255c4c673165646221ba3a9b2",
+      "evaluation_code_sha256": "8f44fe1c658f083bc7dbfc27efb6303d567b19dd8d326872d63b2c4b6415b94c",
+      "matrix_runner_sha256": "4568aeecff1d92d1f83e4c2d4b2230b8d2cea7c5468461e8a13d508699e75680",
+      "config_code_sha256": "eda8fb1a5a95ee3f3283747ed039ac277c9bfce891dd380559da808b1509ada9",
+      "retrieval_engine_sha256": "9c07dd83d745225b236be64d8674d2383cbcc36bc028702534e64a1828885ede",
+      "unified_baselines_sha256": "22bfbbe8e0eee00b9bf270189b0aab28c65460eef0494f9e468eca24e81c7431",
+      "metadata_store_path": "/Users/rischen/Documents/GitHub/thesis_one-/data/vector_db_lancedb/metadata.json",
+      "metadata_store_sha256": "738dd7dda72cb99f252738044789c2a8014eab835d1ac80722f00083d36f1fb5",
+      "index_store_path": "/Users/rischen/Documents/GitHub/thesis_one-/data/vector_db_lancedb/social_work_docs.lance",
+      "index_store_sha256": "2035cdeab5b0f6328c322bc9157c87bd33f5b2e36af9fd48f5503b16755e0ac9",
+      "runtime_config": {
+        "DB_TYPE": "lancedb",
+        "DB_PATH": "data/vector_db_lancedb/social_work_docs",
+        "METADATA_STORE": "data/vector_db_lancedb/metadata.json",
+        "EMBEDDING_MODEL": "intfloat/multilingual-e5-base",
+        "RERANK_MODEL": "BAAI/bge-reranker-v2-m3",
+        "DEVICE": "mps",
+        "ENABLE_DENSE_RUNTIME": true,
+        "USE_LOCAL_LLM": true,
+        "LOCAL_LLM_BASE_URL": "http://localhost:11434/v1",
+        "LOCAL_LLM_MODEL": "qwen2.5:7b",
+        "LLM_MAX_TOKENS": 2048,
+        "USE_RERANK": true,
+        "TOP_K": 15,
+        "BM25_K": 25,
+        "FUSION_K": 30,
+        "RRF_K": 60,
+        "MAX_HOPS": 2,
+        "ENABLE_L2_DETECTION": true,
+        "L2_SIMILARITY_THRESHOLD": 0.7,
+        "L2_TOP_K": 5,
+        "SEED": 42
+      },
+      "ollama_model_inventory": {
+        "endpoint": "http://localhost:11434/api/tags",
+        "models": {
+          "qwen2.5:7b": {
+            "installed": true,
+            "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+            "size_bytes": 4683087332,
+            "parameter_size": "7.6B",
+            "quantization_level": "Q4_K_M",
+            "family": "qwen2"
+          },
+          "scb10x/llama3.1-typhoon2-8b-instruct:latest": {
+            "installed": true,
+            "digest": "979081e0492e32b0166288e23a3bf4239b707e508fd9da0964a57692ca10c129",
+            "size_bytes": 4921252450,
+            "parameter_size": "8.0B",
+            "quantization_level": "Q4_K_M",
+            "family": "llama"
+          },
+          "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+            "installed": true,
+            "digest": "8a933309b32f4f80c14c962c76af92ab13fe9d003e37e55831308940bf52a2fa",
+            "size_bytes": 2615651885,
+            "parameter_size": "3.9B",
+            "quantization_level": "Q4_K_M",
+            "family": "gemma3"
+          }
+        }
+      },
+      "model_patch_provenance": {
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest": {
+          "manifest_path": "evaluation_results/model_comparison/typhoon_gemma3_templatefix_manifest.json",
+          "manifest_sha256": "f7c1719ec8adfe9de93bd770f9460a8a99946b57a26ad680a6f28b803b9e50f2",
+          "patched_file_sha256": "e70833c5f19c840b9697c8c1ed1e43d80a05fe02e3958ec30688b0371853172f",
+          "original_template_sha256": "153e460208805747c21744cda8b3751e65c32a8ecfe43e5f95f4058e2b4558b8",
+          "replacement_template_sha256": "6c90c3b1cc04e884e0a71eb8afeb75d125e38bcc3fc3db2fd1bb1e3d38f127a1",
+          "metadata_key": "tokenizer.chat_template"
+        }
+      },
+      "models": [
+        "qwen2.5:7b",
+        "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+        "h2l/typhoon-gemma3-4b-templatefix-v2:latest"
+      ],
+      "repeats": 3,
+      "with_retrieval": true,
+      "retrieval_strategies": [
+        "bm25_only",
+        "naive_rag",
+        "hyde",
+        "basic",
+        "h2l-bm25",
+        "h2l-naive_rag",
+        "h2l-hyde",
+        "h2l-hybrid"
+      ],
+      "top_k": 15,
+      "problem_source": "detected"
+    },
+    "ground_truth_path": "expanded_ground_truth.json",
+    "ground_truth_sha256": "158891430e1b2353e4ab11f5077ae79c23dbbae3302dae7610d2e5bbd5c53832",
+    "ground_truth_last_updated": "2026-07-30T20:15:36.738052",
+    "taxonomy_path": "problem_codes.json",
+    "taxonomy_sha256": "4082c225399de877df767ec71f649e613ba2c2639847a5b2736b2c0697ff430e",
+    "h2l_core_sha256": "2ecd82a9e8ad9ece7a31f0c4cfa408a857a9c76255c4c673165646221ba3a9b2",
+    "evaluation_code_sha256": "8f44fe1c658f083bc7dbfc27efb6303d567b19dd8d326872d63b2c4b6415b94c",
+    "problem_source": "detected",
+    "top_k": 15,
+    "n_test_cases": 95,
+    "n_adversarial_cases": 20,
+    "n_cases": 20,
+    "models": [
+      "qwen2.5:7b",
+      "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+      "h2l/typhoon-gemma3-4b-templatefix-v2:latest"
+    ],
+    "repeats": 3,
+    "strategies": [
+      "bm25_only",
+      "naive_rag",
+      "hyde",
+      "basic",
+      "h2l-bm25",
+      "h2l-naive_rag",
+      "h2l-hyde",
+      "h2l-hybrid"
+    ],
+    "validation": "complete_matrix_schema_and_provenance_verified"
+  }
+}

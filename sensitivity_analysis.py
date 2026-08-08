@@ -32,18 +32,41 @@ Usage:
 """
 
 import json
-import copy
+import hashlib
 import logging
 import argparse
+import math
 from pathlib import Path
 from datetime import datetime
-from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+EXPECTED_TOTAL_CASES = 220
+EXPECTED_TRAIN_CASES = 125
+EXPECTED_TEST_CASES = 95
+EXPECTED_EMPTY_TRAIN_CASES = 10
+EXPECTED_SCORED_TRAIN_CASES = 115
+ANALYSIS_SCOPE = "score_function_oat"
+SIMULATED_RERANK_SCORE = 0.5
+SIMULATED_DETECTION_CONFIDENCE = 0.8
+
+
+def file_sha256(path: Path) -> str:
+    """Return a content hash for a provenance-tracked input."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _now_iso() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
 
 # ============================================================================
 # PARAMETER DEFINITIONS
@@ -134,19 +157,96 @@ class SensitivityAnalyzer:
 
     def __init__(self, ground_truth_path: str = "ground_truth_train.json",
                  max_cases: int = None):
-        self.ground_truth_path = ground_truth_path
+        self.ground_truth_path = Path(ground_truth_path).resolve()
         self.max_cases = max_cases
+        self.ground_truth_metadata: Dict[str, Any] = {}
+        self.all_case_count = 0
+        self.train_case_count = 0
+        self.test_case_count = 0
+        self.skipped_case_ids: List[str] = []
+        self.scorable_cases: List[Dict] = []
         self.cases = self._load_cases()
 
     def _load_cases(self) -> List[Dict]:
-        """Load ground truth cases with problem definitions"""
+        """Load and validate the signed unified ground-truth split."""
         with open(self.ground_truth_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        cases = [c for c in data.get('cases', []) if c.get('split', 'train') == 'train']
-        if self.max_cases:
-            cases = cases[:self.max_cases]
-        logger.info(f"📊 Loaded {len(cases)} ground truth cases (Real-world queries mapped to expert problem lists)")
-        return cases
+
+        if not isinstance(data, dict) or not isinstance(data.get('cases'), list):
+            raise ValueError("Ground truth must be an object containing a cases list")
+
+        all_cases = data['cases']
+        self.ground_truth_metadata = data.get('metadata', {})
+        self.all_case_count = len(all_cases)
+        train_cases = [case for case in all_cases if case.get('split') == 'train']
+        test_cases = [case for case in all_cases if case.get('split') == 'test']
+        self.train_case_count = len(train_cases)
+        self.test_case_count = len(test_cases)
+
+        metadata_counts = {
+            'total_cases': EXPECTED_TOTAL_CASES,
+            'train_cases': EXPECTED_TRAIN_CASES,
+            'test_cases': EXPECTED_TEST_CASES,
+        }
+        actual_counts = {
+            'total_cases': self.all_case_count,
+            'train_cases': self.train_case_count,
+            'test_cases': self.test_case_count,
+        }
+        for key, expected in metadata_counts.items():
+            declared = self.ground_truth_metadata.get(key)
+            if declared != expected:
+                raise ValueError(
+                    f"Ground-truth metadata {key} mismatch: expected {expected}, got {declared!r}"
+                )
+            if actual_counts[key] != expected:
+                raise ValueError(
+                    f"Ground-truth {key} mismatch: expected {expected}, got {actual_counts[key]}"
+                )
+
+        train_ids = [case.get('case_id') for case in train_cases]
+        if any(not isinstance(case_id, str) or not case_id.strip() for case_id in train_ids):
+            raise ValueError("Every train case must have a non-empty string case_id")
+        if len(train_ids) != len(set(train_ids)):
+            duplicates = sorted({case_id for case_id in train_ids if train_ids.count(case_id) > 1})
+            raise ValueError(f"Duplicate train case IDs: {duplicates}")
+
+        if self.max_cases is not None:
+            if self.max_cases <= 0:
+                raise ValueError("max_cases must be a positive integer")
+            train_cases = train_cases[:self.max_cases]
+
+        self.skipped_case_ids = []
+        self.scorable_cases = []
+        for case in train_cases:
+            case_id = case['case_id']
+            query = case.get('case_description')
+            if not isinstance(query, str) or not query.strip():
+                raise ValueError(f"Train case {case_id} has an empty case_description")
+            if not self._build_problems_from_case(case):
+                self.skipped_case_ids.append(case_id)
+            else:
+                self.scorable_cases.append(case)
+
+        if self.max_cases is None:
+            if len(self.skipped_case_ids) != EXPECTED_EMPTY_TRAIN_CASES:
+                raise ValueError(
+                    "Empty train problem-list count mismatch: "
+                    f"expected {EXPECTED_EMPTY_TRAIN_CASES}, got {len(self.skipped_case_ids)}"
+                )
+            if len(self.scorable_cases) != EXPECTED_SCORED_TRAIN_CASES:
+                raise ValueError(
+                    "Scorable train case count mismatch: "
+                    f"expected {EXPECTED_SCORED_TRAIN_CASES}, got {len(self.scorable_cases)}"
+                )
+
+        logger.info(
+            "Loaded %d train cases: %d scorable, %d empty problem lists",
+            len(train_cases),
+            len(self.scorable_cases),
+            len(self.skipped_case_ids),
+        )
+        return train_cases
 
     def _build_problems_from_case(self, case: Dict) -> List[Dict]:
         """Extract problem list from a ground truth case"""
@@ -161,12 +261,12 @@ class SensitivityAnalyzer:
                 'code': code,
                 'name': p.get('category', ''),
                 'severity': p.get('severity', 3),
-                'confidence': 0.8,  # Simulated detection confidence
+                'confidence': SIMULATED_DETECTION_CONFIDENCE,
                 'keywords': keywords_map.get(code, []),
             })
         return problems
 
-    def run_single_config(self, config) -> Dict[str, float]:
+    def run_single_config(self, config) -> Dict[str, Any]:
         """
         Run scoring on all cases with a given config.
         Returns mean metrics across all cases.
@@ -178,43 +278,61 @@ class SensitivityAnalyzer:
         alphas = []
         scores = []
 
-        for case in self.cases:
+        scored_case_ids = []
+        for case in self.scorable_cases:
+            case_id = case['case_id']
             query = case.get('case_description', '')
             problems = self._build_problems_from_case(case)
-            if not problems or not query:
-                continue
-
-            # Simulate a rerank_score (base retrieval score)
-            rerank_score = 0.5
 
             try:
                 final_score, breakdown = calculate_final_score_probabilistic(
-                    rerank_score=rerank_score,
+                    rerank_score=SIMULATED_RERANK_SCORE,
                     problems=problems,
                     doc_text=query,  # Use case text as "retrieved doc"
+                    query_text=query,
                     config=config,
                 )
-
-                boosts.append(breakdown.get('boost', 1.0))
-                alphas.append(breakdown.get('α_eff', 1.0))
-                scores.append(final_score)
-
-                # Mean Φ_i across factors
-                factors = breakdown.get('factors', [])
-                if factors:
-                    mean_phi = np.mean([f.get('Φ_i', 0) for f in factors])
-                    phis.append(mean_phi)
-
             except Exception as e:
-                logger.warning(f"  ⚠️ Case {case.get('case_id', '?')}: {e}")
-                continue
+                raise RuntimeError(f"Scoring failed for case {case_id}: {e}") from e
+
+            if not isinstance(breakdown, dict):
+                raise RuntimeError(f"Scoring returned a non-dict breakdown for case {case_id}")
+            factors = breakdown.get('factors')
+            if not isinstance(factors, list) or not factors:
+                raise RuntimeError(f"Scoring returned no factors for case {case_id}")
+
+            try:
+                boost = float(breakdown['boost'])
+                alpha_eff = float(breakdown['α_eff'])
+                score = float(final_score)
+                phi_values = [float(factor['Φ_i']) for factor in factors]
+            except (KeyError, TypeError, ValueError) as exc:
+                raise RuntimeError(f"Scoring returned invalid metrics for case {case_id}: {exc}") from exc
+
+            metric_values = [boost, alpha_eff, score, *phi_values]
+            if not all(math.isfinite(value) for value in metric_values):
+                raise RuntimeError(f"Scoring returned non-finite metrics for case {case_id}")
+
+            boosts.append(boost)
+            alphas.append(alpha_eff)
+            scores.append(score)
+            phis.append(float(np.mean(phi_values)))
+            scored_case_ids.append(case_id)
+
+        expected_case_ids = [case['case_id'] for case in self.scorable_cases]
+        if scored_case_ids != expected_case_ids:
+            raise RuntimeError("Scored case IDs differ from the validated scorable train case set")
+        if not scores:
+            raise RuntimeError("No train cases were scored")
 
         return {
-            'mean_boost': float(np.mean(boosts)) if boosts else 0,
-            'mean_Φ_i': float(np.mean(phis)) if phis else 0,
-            'mean_α_eff': float(np.mean(alphas)) if alphas else 0,
-            'mean_score': float(np.mean(scores)) if scores else 0,
-            'std_score': float(np.std(scores)) if scores else 0,
+            'mean_boost': float(np.mean(boosts)),
+            'mean_Φ_i': float(np.mean(phis)),
+            'mean_α_eff': float(np.mean(alphas)),
+            'mean_score': float(np.mean(scores)),
+            'std_score': float(np.std(scores)),
+            'n_scored': len(scored_case_ids),
+            'scored_case_ids': scored_case_ids,
         }
 
     def run_sensitivity(self) -> Tuple[Dict, Dict]:
@@ -227,17 +345,27 @@ class SensitivityAnalyzer:
         """
         from H2L_core import H2LConfigV3
 
+        parameter_names = [sweep.name for sweep in PARAMETER_SWEEPS]
+        if len(parameter_names) != 8 or len(set(parameter_names)) != 8:
+            raise ValueError("Sensitivity analysis must define exactly eight unique parameters")
+        for sweep in PARAMETER_SWEEPS:
+            if sweep.values.count(sweep.default) != 1:
+                raise ValueError(
+                    f"Parameter {sweep.name} must include its default exactly once"
+                )
+
         # 1. Run baseline (all defaults)
-        logger.info("\n📐 Running baseline (default parameters)...")
+        logger.info("\nRunning baseline (default parameters)...")
         default_config = H2LConfigV3()
         baseline = self.run_single_config(default_config)
+        expected_case_ids = baseline['scored_case_ids']
         logger.info(f"   Baseline: boost={baseline['mean_boost']:.4f}, "
                     f"score={baseline['mean_score']:.4f}")
 
         # 2. Sweep each parameter
         results = {}
         for sweep in PARAMETER_SWEEPS:
-            logger.info(f"\n🔧 Sweeping {sweep.label} ({sweep.name})")
+            logger.info(f"\nSweeping {sweep.label} ({sweep.name})")
             param_results = {}
 
             for val in sweep.values:
@@ -248,9 +376,13 @@ class SensitivityAnalyzer:
                 config.__post_init__()
 
                 metrics = self.run_single_config(config)
+                if metrics['scored_case_ids'] != expected_case_ids:
+                    raise RuntimeError(
+                        f"Case-set invariant failed for {sweep.name}={val}"
+                    )
                 param_results[val] = metrics
 
-                is_default = "← default" if val == sweep.default else ""
+                is_default = "(default)" if val == sweep.default else ""
                 logger.info(f"   {sweep.name}={val:6.2f} → "
                             f"boost={metrics['mean_boost']:.4f}, "
                             f"score={metrics['mean_score']:.4f} {is_default}")
@@ -346,13 +478,13 @@ def generate_visualizations(results: Dict, baseline: Dict,
                             fontsize=8, color=color, fontweight='bold' if is_default else 'normal')
 
         plt.colorbar(im, ax=ax, label='Δ% from default', shrink=0.8)
-        ax.set_title('H2L V6 Parameter Sensitivity Analysis\n(Δ% change in mean score from default)',
+        ax.set_title('H2L V6 Score-Function Parameter Sensitivity\n(Δ% change in mean score from default)',
                      fontsize=14, fontweight='bold')
         ax.set_xlabel('Parameter Values (★ = default)', fontsize=11)
         plt.tight_layout()
         plt.savefig(output_dir / 'sensitivity_heatmap.png', dpi=300, bbox_inches='tight')
         plt.close()
-        logger.info(f"✅ Heatmap saved: {output_dir / 'sensitivity_heatmap.png'}")
+        logger.info(f"Heatmap saved: {output_dir / 'sensitivity_heatmap.png'}")
 
     # ── Tornado Plot ──
     # Shows max absolute Δ% for each parameter
@@ -412,20 +544,20 @@ def generate_visualizations(results: Dict, baseline: Dict,
         ax.set_yticklabels(labels, fontsize=11)
         ax.axvline(0, color='black', linewidth=0.8)
         ax.set_xlabel('Δ% from Default Score', fontsize=12)
-        ax.set_title('Parameter Impact Tornado Plot\n(Max score change when parameter is varied)',
+        ax.set_title('Score-Function Parameter Impact\n(Maximum mean-score change in the OAT sweep)',
                      fontsize=14, fontweight='bold')
         ax.grid(axis='x', alpha=0.3)
 
         # Add robustness indicator
         max_impact = max(imp['max_abs'] for imp in impacts)
         if max_impact < 5:
-            robustness = "✅ ROBUST (Stable: Score changes < 5%)"
+            robustness = "LOW SCORE-FUNCTION SENSITIVITY (< 5%)"
             color = '#2ECC71'
         elif max_impact < 10:
-            robustness = "⚠️ MODERATE (Score changes 5-10%)"
+            robustness = "MODERATE SCORE-FUNCTION SENSITIVITY (5-10%)"
             color = '#F39C12'
         else:
-            robustness = f"❌ SENSITIVE (Unstable: Score changes > 10%)"
+            robustness = "HIGH SCORE-FUNCTION SENSITIVITY (> 10%)"
             color = '#E74C3C'
 
         ax.text(0.02, 0.98, robustness, transform=ax.transAxes,
@@ -437,10 +569,11 @@ def generate_visualizations(results: Dict, baseline: Dict,
         plt.tight_layout()
         plt.savefig(output_dir / 'sensitivity_tornado.png', dpi=300, bbox_inches='tight')
         plt.close()
-        logger.info(f"✅ Tornado plot saved: {output_dir / 'sensitivity_tornado.png'}")
+        logger.info(f"Tornado plot saved: {output_dir / 'sensitivity_tornado.png'}")
 
 
-def generate_csv(results: Dict, baseline: Dict, output_dir: Path):
+def generate_csv(results: Dict, baseline: Dict, output_dir: Path,
+                 expected_n_scored: int):
     """Export raw data to CSV"""
     import csv
 
@@ -451,15 +584,24 @@ def generate_csv(results: Dict, baseline: Dict, output_dir: Path):
         writer = csv.writer(f)
         writer.writerow([
             'parameter', 'label', 'value', 'is_default',
-            'mean_boost', 'mean_Φ_i', 'mean_α_eff',
+            'mean_boost', 'mean_phi_i', 'mean_alpha_eff',
             'mean_score', 'std_score',
-            'Δ_score_%'
+            'delta_score_pct', 'n_scored'
         ])
 
         for sweep in PARAMETER_SWEEPS:
             if sweep.name not in results:
-                continue
+                raise ValueError(f"Missing sensitivity results for {sweep.name}")
+            default_rows = sum(value == sweep.default for value in results[sweep.name])
+            if default_rows != 1:
+                raise ValueError(f"Parameter {sweep.name} must have exactly one default row")
             for val, metrics in results[sweep.name].items():
+                n_scored = int(metrics.get('n_scored', -1))
+                if n_scored != expected_n_scored:
+                    raise ValueError(
+                        f"{sweep.name}={val} scored {n_scored} cases; "
+                        f"expected {expected_n_scored}"
+                    )
                 base_score = baseline['mean_score']
                 delta_pct = ((metrics['mean_score'] - base_score) / base_score * 100
                              if base_score > 0 else 0)
@@ -472,40 +614,45 @@ def generate_csv(results: Dict, baseline: Dict, output_dir: Path):
                     f"{metrics['mean_score']:.6f}",
                     f"{metrics['std_score']:.6f}",
                     f"{delta_pct:.2f}",
+                    n_scored,
                 ])
 
-    logger.info(f"✅ CSV saved: {csv_path}")
+    logger.info(f"CSV saved: {csv_path}")
 
 
-def generate_report(results: Dict, baseline: Dict, num_cases: int, output_dir: Path):
+def generate_report(results: Dict, baseline: Dict, selected_cases: int,
+                    scored_cases: int, skipped_cases: int, output_dir: Path):
     """Generate markdown summary report"""
     output_dir.mkdir(parents=True, exist_ok=True)
     report_path = output_dir / 'sensitivity_report.md'
 
     lines = [
-        "# H2L V6 Parameter Sensitivity Report",
+        "# H2L V6 Score-Function Parameter Sensitivity Report",
         f"\n**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        f"\n**Analysis scope**: `{ANALYSIS_SCOPE}`",
+        "**Retrieval executed**: `false`",
         f"\n**Baseline Score**: {baseline['mean_score']:.6f}",
         f"**Baseline Boost**: {baseline['mean_boost']:.4f}",
-        f"**Cases Evaluated**: {num_cases}",
+        f"**Train cases selected**: {selected_cases}",
+        f"**Cases scored**: {scored_cases}",
+        f"**Empty problem lists skipped by design**: {skipped_cases}",
         "",
-        "### 📌 แหล่งที่มาและประเภทของเคสทดสอบ (Test Cases Context)",
-        "เคสจำนวนทั้งหมด **" + str(num_cases) + "** เคส ถูกดึงมาจากไฟล์ Ground Truth ซึ่งสร้างขึ้นจากฐานข้อมูลปัญหาผู้ใช้งานจริง (Real-world user queries) และได้รับการเฉลย (Label/Annotate) โดยอิงตามแนวทางการประเมินผู้รับบริการจริง",
-        "**ประเภทเคสที่นำมาทดสอบครอบคลุม:**",
-        "- **เคสแจ้งเหตุวิกฤต/ฉุกเฉิน (High Severity)**: ทดสอบว่าโมเดลทำคะแนนได้ไวและแม่นยำแค่ไหนเมื่อเจอเคสอันตราย",
-        "- **เคสปัญหาสังคมทั่วไป (Standard Cases)**: ทดสอบมาตรฐานการให้คะแนนเคสทั่วไป",
-        "- **เคสที่มีรูปประโยคปฏิเสธหรือมีความซับซ้อนทางภาษา (Polarity & Negation Cases)**: ทดสอบว่าโมเดลฉลาดพอที่จะไม่โดนหลอกจากคำหลอก",
-        "เพื่อให้มั่นใจว่าเราได้ทดสอบความเสถียรของโมเดลครบทุกบริบทของการใช้งานจริง",
+        "### ขอบเขตและชุดข้อมูล (Analysis Scope and Dataset)",
+        "เลือกเคสชุดฝึก **" + str(selected_cases) + "** เคสจาก unified ground truth; "
+        "คำนวณได้จริง **" + str(scored_cases) + "** เคส และข้าม **" + str(skipped_cases) + "** เคสที่ expected problem list ว่างตามนิยามของชุดข้อมูล",
+        "การวิเคราะห์นี้ปรับพารามิเตอร์ครั้งละหนึ่งค่า โดยคงค่าอื่นไว้ที่ค่าปริยาย และเรียกเฉพาะ `calculate_final_score_probabilistic`",
+        "ไม่มีการรัน retrieval, L1/L2 detection, reranker หรือ embedding model ในการวิเคราะห์นี้ ดังนั้นผลลัพธ์จึงอธิบายความไวของฟังก์ชันคะแนนภายใต้สมมติฐานนี้ ไม่ใช่ประสิทธิภาพหรือความเสถียรของโมเดล retrieval ทั้งระบบ",
         "",
-        "### 💡 คำแนะนำในการอ่านผล (Interpretation Guide)",
-        "- **✅ Robust (เสถียร):** เมื่อปรับจูนค่าตัวแปรนี้ขึ้นหรือลงแล้ว คะแนนที่ระบบประเมินออกมาแทบจะไม่ผันผวน (เปลี่ยนไปจากเดิมน้อยกว่า 5%) แสดงว่าระบบของเราแข็งแกร่ง ไม่รวนง่ายแม้ตั้งค่าคลาดเคลื่อน",
-        "- **⚠️ Moderate (เสถียรปานกลาง):** การปรับจูนค่าตัวแปรมีผลกระทบต่อคะแนนรวมในระดับหนึ่ง (ประมาณ 5-10%)",
-        "- **❌ Sensitive (อ่อนไหว):** การเปลี่ยนแปลงค่าตัวแปรนี้แม้เพียงเล็กน้อย ทำให้คะแนนรวมระบบเปลี่ยนไปอย่างมาก (มากกว่า 10%) แสดงว่าเป็นตัวแปรควบคุมที่สำคัญมาก ต้องตั้งค่าอย่างระมัดระวังที่สุด",
+        "### เกณฑ์การตีความ (Interpretation Guide)",
+        "- **Low sensitivity:** ค่าเฉลี่ยของฟังก์ชันคะแนนเปลี่ยนแปลงน้อยกว่า 5% จากค่าปริยายภายในช่วงที่ทดสอบ",
+        "- **Moderate sensitivity:** ค่าเฉลี่ยของฟังก์ชันคะแนนเปลี่ยนแปลงตั้งแต่ 5% แต่ไม่ถึง 10%",
+        "- **High sensitivity:** ค่าเฉลี่ยของฟังก์ชันคะแนนเปลี่ยนแปลงตั้งแต่ 10% ขึ้นไป",
+        "- **Not exercised:** พารามิเตอร์อยู่ในสาขาการคำนวณที่ไม่ถูกเรียกใช้ภายใต้สมมติฐานนี้ จึงไม่สามารถสรุปความไวจาก delta เท่ากับศูนย์",
         "",
         "## Parameter Impact Summary",
         "",
-        "| Parameter | Default | Min Δ% | Max Δ% | Max |Δ| | Verdict |",
-        "|-----------|---------|--------|--------|---------|---------|",
+        "| Parameter | Default | Min delta | Max delta | Max absolute delta | Interpretation |",
+        "|-----------|---------|-----------|-----------|--------------------|----------------|",
     ]
 
     for sweep in PARAMETER_SWEEPS:
@@ -523,7 +670,14 @@ def generate_report(results: Dict, baseline: Dict, num_cases: int, output_dir: P
             min_d = min(deltas)
             max_d = max(deltas)
             max_abs = max(abs(min_d), abs(max_d))
-            verdict = "✅ Robust (เสถียร)" if max_abs < 5 else ("⚠️ Moderate (ปานกลาง)" if max_abs < 10 else "❌ Sensitive (อ่อนไหว)")
+            if sweep.name in {'MARGIN_M', 'L1_WEIGHT_BETA'}:
+                verdict = "Not exercised in this score-function setup"
+            elif max_abs < 5:
+                verdict = "Low sensitivity"
+            elif max_abs < 10:
+                verdict = "Moderate sensitivity"
+            else:
+                verdict = "High sensitivity"
             lines.append(
                 f"| {sweep.label} | {sweep.default} | {min_d:+.2f}% | {max_d:+.2f}% | {max_abs:.2f}% | {verdict} |"
             )
@@ -543,21 +697,110 @@ def generate_report(results: Dict, baseline: Dict, num_cases: int, output_dir: P
         overall_max = max(all_max)
         lines.extend([
             "",
-            "## สรุปภาพรวมความเสถียร (Overall Verdict)",
+            "## สรุปความไวของฟังก์ชันคะแนน (Overall Score-Function Sensitivity)",
             "",
         ])
         if overall_max < 5:
-            lines.append("> ✅ **มีความเสถียรสูง (ROBUST)**: ตัวแปรทุกตัวเมื่อถูกเปลี่ยนแปลง มีผลกระทบต่อคะแนนรวมของระบบน้อยกว่า 5%")
-            lines.append("> แสดงให้เห็นว่าการออกแบบสมการนี้ ซึ่งใช้ค่า Parameter อ้างอิงจากหลักเกณฑ์ผู้เชี่ยวชาญ (Domain Knowledge) เป็นค่าที่ไว้ใจได้ ระบบมีความแข็งแกร่ง ไม่ให้คะแนนมั่วแม้เจอความเบี่ยงเบนเล็กน้อย")
+            lines.append("> ภายในช่วงที่ทดสอบ พารามิเตอร์ที่ถูกกระตุ้นทุกตัวทำให้ค่าเฉลี่ยของฟังก์ชันคะแนนเปลี่ยนแปลงน้อยกว่า 5%")
         elif overall_max < 10:
-            lines.append(f"> ⚠️ **มีความเสถียรปานกลาง (MODERATE)**: มีบางตัวแปรส่งผลกระทบชัดเจนต่อคะแนน (สูงสุด {overall_max:.1f}%)")
+            lines.append(f"> ฟังก์ชันคะแนนมีความไวปานกลางต่อบางพารามิเตอร์ (สูงสุด {overall_max:.1f}%)")
         else:
-            lines.append(f"> ❌ **มีความอ่อนไหวสูง (SENSITIVE)**: โมเดลผันผวนสูงมากเมื่อเปลี่ยนค่าตัวแปรหลัก (คะแนนเหวี่ยงสูงสุด {overall_max:.1f}%) ควรมีการตรวจสอบการตั้งค่าตัวแปรนี้เพิ่มเติม")
+            lines.append(f"> ฟังก์ชันคะแนนมีความไวสูงต่อบางพารามิเตอร์ (ค่าเปลี่ยนแปลงสูงสุด {overall_max:.1f}%) ภายใต้ช่วงค่าที่ทดสอบ")
+
+        lines.extend([
+            "",
+            "### ข้อจำกัดในการตีความ",
+            "",
+            "`MARGIN_M` ไม่ถูกกระตุ้นเนื่องจากไม่ได้ส่ง document/problem embeddings เข้าสู่ฟังก์ชันคะแนน และ `L1_WEIGHT_BETA` ไม่ถูกกระตุ้นเนื่องจากใช้ detected problem list กับ confidence คงที่ ค่า delta เท่ากับศูนย์ของสองพารามิเตอร์นี้จึงไม่ใช่หลักฐานว่ามีความไวต่ำ",
+        ])
 
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines))
 
-    logger.info(f"✅ Report saved: {report_path}")
+    logger.info(f"Report saved: {report_path}")
+
+
+def build_run_metadata(analyzer: SensitivityAnalyzer, baseline: Dict[str, Any],
+                       started_at: str, status: str = 'complete',
+                       error: str = None) -> Dict[str, Any]:
+    """Build an auditable manifest for this exact OAT run."""
+    root = Path(__file__).resolve().parent
+    h2l_core_path = root / 'H2L_core.py'
+    scored_ids = list(baseline.get('scored_case_ids', []))
+    expected_ids = [case['case_id'] for case in analyzer.scorable_cases]
+    case_set_verified = scored_ids == expected_ids
+
+    if status == 'complete' and not case_set_verified:
+        raise ValueError("Cannot mark sensitivity metadata complete: case set is not verified")
+
+    public_baseline = {
+        key: value for key, value in baseline.items()
+        if key != 'scored_case_ids'
+    }
+    metadata = {
+        'status': status,
+        'analysis_scope': ANALYSIS_SCOPE,
+        'split': 'train',
+        'started_at': started_at,
+        'completed_at': _now_iso() if status == 'complete' else None,
+        'selected_cases': len(analyzer.cases),
+        'scored_cases': len(scored_ids),
+        'skipped_empty_problem_lists': len(analyzer.skipped_case_ids),
+        'skipped_case_ids': analyzer.skipped_case_ids,
+        'scored_case_ids': scored_ids,
+        'case_set_invariant_verified': case_set_verified,
+        'ground_truth_path': str(analyzer.ground_truth_path),
+        'ground_truth_sha256': file_sha256(analyzer.ground_truth_path),
+        'ground_truth_last_updated': analyzer.ground_truth_metadata.get('last_updated'),
+        'ground_truth_counts': {
+            'total': analyzer.all_case_count,
+            'train': analyzer.train_case_count,
+            'test': analyzer.test_case_count,
+        },
+        'h2l_core_path': str(h2l_core_path),
+        'h2l_core_sha256': file_sha256(h2l_core_path),
+        'analysis_code_path': str(Path(__file__).resolve()),
+        'analysis_code_sha256': file_sha256(Path(__file__).resolve()),
+        'parameter_count': len(PARAMETER_SWEEPS),
+        'configuration_rows': sum(len(sweep.values) for sweep in PARAMETER_SWEEPS),
+        'parameters': [
+            {
+                'name': sweep.name,
+                'label': sweep.label,
+                'default': sweep.default,
+                'values': sweep.values,
+                'description': sweep.description,
+            }
+            for sweep in PARAMETER_SWEEPS
+        ],
+        'scoring_assumptions': {
+            'method': 'one-at-a-time score-function sensitivity',
+            'retrieval_executed': False,
+            'rerank_score_fixed': SIMULATED_RERANK_SCORE,
+            'detection_confidence_fixed': SIMULATED_DETECTION_CONFIDENCE,
+            'doc_text_source': 'ground-truth case_description',
+            'query_text_source': 'ground-truth case_description',
+            'empty_problem_lists': 'excluded and disclosed; never scored as zero',
+            'not_exercised_parameters': {
+                'MARGIN_M': 'no document/problem embeddings were supplied',
+                'L1_WEIGHT_BETA': 'detected problems and confidence were held fixed',
+            },
+        },
+        'baseline': public_baseline,
+    }
+    if error:
+        metadata['error'] = error
+    return metadata
+
+
+def write_run_metadata(metadata: Dict[str, Any], output_dir: Path) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / 'run_metadata.json'
+    with path.open('w', encoding='utf-8') as handle:
+        json.dump(metadata, handle, ensure_ascii=False, indent=2)
+        handle.write('\n')
+    logger.info("Run metadata saved: %s", path)
+    return path
 
 
 # ============================================================================
@@ -578,20 +821,69 @@ def main():
     print("H2L V6 Parameter Sensitivity Analysis")
     print("=" * 60)
 
-    analyzer = SensitivityAnalyzer(
-        ground_truth_path=args.gt_path,
-        max_cases=args.max_cases,
-    )
+    output_dir = Path(args.output_dir).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    ground_truth_path = Path(args.gt_path).resolve()
+    h2l_core_path = Path(__file__).resolve().parent / 'H2L_core.py'
+    started_at = _now_iso()
+    initial_metadata = {
+        'status': 'running',
+        'analysis_scope': ANALYSIS_SCOPE,
+        'split': 'train',
+        'started_at': started_at,
+        'ground_truth_path': str(ground_truth_path),
+        'ground_truth_sha256': file_sha256(ground_truth_path),
+        'h2l_core_path': str(h2l_core_path),
+        'h2l_core_sha256': file_sha256(h2l_core_path),
+    }
+    write_run_metadata(initial_metadata, output_dir)
 
-    results, baseline = analyzer.run_sensitivity()
-    output_dir = Path(args.output_dir)
+    analyzer = None
+    baseline: Dict[str, Any] = {}
+    try:
+        analyzer = SensitivityAnalyzer(
+            ground_truth_path=str(ground_truth_path),
+            max_cases=args.max_cases,
+        )
+        results, baseline = analyzer.run_sensitivity()
+        n_scored = int(baseline['n_scored'])
 
-    generate_csv(results, baseline, output_dir)
-    generate_visualizations(results, baseline, output_dir)
-    generate_report(results, baseline, len(analyzer.cases), output_dir)
+        generate_csv(results, baseline, output_dir, n_scored)
+        generate_visualizations(results, baseline, output_dir)
+        generate_report(
+            results,
+            baseline,
+            len(analyzer.cases),
+            n_scored,
+            len(analyzer.skipped_case_ids),
+            output_dir,
+        )
+        complete_metadata = build_run_metadata(
+            analyzer,
+            baseline,
+            started_at,
+            status='complete',
+        )
+        write_run_metadata(complete_metadata, output_dir)
+    except Exception as exc:
+        failed_metadata = dict(initial_metadata)
+        failed_metadata.update({
+            'status': 'failed',
+            'failed_at': _now_iso(),
+            'error': f"{type(exc).__name__}: {exc}",
+        })
+        if analyzer is not None:
+            failed_metadata.update({
+                'selected_cases': len(analyzer.cases),
+                'scored_cases': int(baseline.get('n_scored', 0)),
+                'skipped_empty_problem_lists': len(analyzer.skipped_case_ids),
+                'skipped_case_ids': analyzer.skipped_case_ids,
+            })
+        write_run_metadata(failed_metadata, output_dir)
+        raise
 
     print(f"\n{'=' * 60}")
-    print(f"✅ Sensitivity analysis complete!")
+    print("Sensitivity analysis complete")
     print(f"   Results in: {output_dir.absolute()}")
     print(f"{'=' * 60}")
 

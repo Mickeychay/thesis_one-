@@ -39,6 +39,7 @@ Usage:
 import json
 import time
 import copy
+import hashlib
 import logging
 import argparse
 from pathlib import Path
@@ -64,6 +65,40 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
+def file_sha256(path: Path) -> str:
+    """Return a stable digest for experiment provenance."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def repository_path(path: Path) -> str:
+    """Prefer a repository-relative path in saved metadata."""
+    resolved = path.resolve()
+    try:
+        return str(resolved.relative_to(Path.cwd().resolve()))
+    except ValueError:
+        return str(resolved)
+
+
+def case_provenance_fields(case: Dict, split: str) -> Dict:
+    """Normalize slice metadata needed for held-out stress-test reporting."""
+    augmentation = case.get("augmentation")
+    augmentation = augmentation if isinstance(augmentation, dict) else {}
+    default_slice = "standard_test" if split == "test" else split
+    return {
+        "evaluation_slice": case.get("evaluation_slice") or default_slice,
+        "augmentation_type": (
+            augmentation.get("type")
+            or case.get("augmentation_type")
+            or "original"
+        ),
+        "false_trigger_code": augmentation.get("false_trigger_code"),
+    }
+
+
 # ============================================================================
 # ABLATION RUNNER — Central coordinator for all experiments
 # ============================================================================
@@ -77,12 +112,22 @@ class AblationRunner:
     """
 
     def __init__(self, ground_truth_path: str = "expanded_ground_truth.json",
-                 max_cases: int = None, top_k: int = 15):
+                 max_cases: int = None, top_k: int = 15,
+                 split: str = "all",
+                 detected_problems_cache_path: str = None,
+                 detected_problems_model: str = "qwen2.5:7b",
+                 detected_problems_repeat: int = 1):
         self.ground_truth_path = ground_truth_path
         self.max_cases = max_cases
         self.top_k = top_k
+        self.split = split
+        self.detected_problems_cache_path = detected_problems_cache_path
+        self.detected_problems_model = detected_problems_model
+        self.detected_problems_repeat = detected_problems_repeat
         self._runner = None
         self._gt_data = None
+        self._detected_problems_cache = None
+        self._detected_problems_cache_payload = None
 
     def _ensure_runner(self):
         """Lazy-initialize EvaluationRunner (loads models once)"""
@@ -101,9 +146,153 @@ class AblationRunner:
             with open(self.ground_truth_path, 'r', encoding='utf-8') as f:
                 self._gt_data = json.load(f)
         cases = self._gt_data.get('cases', [])
+        if self.split != "all":
+            cases = [case for case in cases if case.get("split") == self.split]
         if self.max_cases:
             cases = cases[:self.max_cases]
         return cases
+
+    def _load_detected_problems_cache(self) -> Dict[str, List[Dict]]:
+        if self._detected_problems_cache is not None:
+            return self._detected_problems_cache
+        if not self.detected_problems_cache_path:
+            self._detected_problems_cache = {}
+            return self._detected_problems_cache
+
+        with open(self.detected_problems_cache_path, 'r', encoding='utf-8') as handle:
+            payload = json.load(handle)
+        self._detected_problems_cache_payload = payload
+        model_rows = payload.get('per_case', {}).get(self.detected_problems_model, [])
+        cache = {}
+        duplicate_case_ids = []
+        for row in model_rows:
+            if int(row.get('repeat', 1)) != self.detected_problems_repeat:
+                continue
+            case_id = row.get('case_id')
+            if case_id:
+                if case_id in cache:
+                    duplicate_case_ids.append(case_id)
+                cache[case_id] = row.get('detected_problems', [])
+        if duplicate_case_ids:
+            raise ValueError(
+                "Duplicate case IDs in detected-problems cache for "
+                f"model={self.detected_problems_model!r}, "
+                f"repeat={self.detected_problems_repeat}: "
+                f"{sorted(set(duplicate_case_ids))[:10]}"
+            )
+        if not cache:
+            raise ValueError(
+                f"No cached detections for model={self.detected_problems_model!r}, "
+                f"repeat={self.detected_problems_repeat} in {self.detected_problems_cache_path}"
+            )
+        self._detected_problems_cache = cache
+        logger.info(
+            "Loaded cached detections for %s cases from %s (model=%s, repeat=%s)",
+            len(cache),
+            self.detected_problems_cache_path,
+            self.detected_problems_model,
+            self.detected_problems_repeat,
+        )
+        return cache
+
+    def validate_detected_problems_cache(self) -> Dict:
+        """Fail fast when a cached L2 matrix does not match the selected cases."""
+        cache = self._load_detected_problems_cache()
+        selected_cases = self._load_cases()
+        selected_case_ids = [str(case.get('case_id', '')) for case in selected_cases]
+        if len(selected_case_ids) != len(set(selected_case_ids)):
+            raise ValueError("Selected ground-truth split contains duplicate case IDs")
+
+        if not self.detected_problems_cache_path:
+            return {
+                'enabled': False,
+                'selected_cases': len(selected_cases),
+            }
+
+        expected_ids = set(selected_case_ids)
+        cached_ids = set(cache)
+        missing_ids = sorted(expected_ids - cached_ids)
+        extra_ids = sorted(cached_ids - expected_ids)
+        # A quick --max-cases smoke run intentionally selects a prefix of the
+        # final split, so its signed full-split cache is a valid superset. Full
+        # runs still require an exact case-set match.
+        exact_case_set_required = self.max_cases is None
+        if missing_ids or (exact_case_set_required and extra_ids):
+            raise ValueError(
+                "Detected-problems cache does not match the selected split: "
+                f"selected={len(expected_ids)}, cached={len(cached_ids)}, "
+                f"missing={missing_ids[:10]}, extra={extra_ids[:10]}"
+            )
+
+        payload = self._detected_problems_cache_payload or {}
+        metadata = payload.get('metadata', {})
+        metadata_models = metadata.get('models', [])
+        if metadata_models and self.detected_problems_model not in metadata_models:
+            raise ValueError(
+                f"Cache model {self.detected_problems_model!r} is absent from metadata models"
+            )
+        metadata_repeats = int(metadata.get('repeats', 0) or 0)
+        if metadata_repeats and not 1 <= self.detected_problems_repeat <= metadata_repeats:
+            raise ValueError(
+                f"Cache repeat {self.detected_problems_repeat} is outside 1..{metadata_repeats}"
+            )
+        if self.split == 'test' and exact_case_set_required:
+            metadata_test_cases = int(metadata.get('test_cases', -1) or -1)
+            if metadata_test_cases != len(selected_cases):
+                raise ValueError(
+                    "Cache metadata test_cases does not match the selected test split: "
+                    f"metadata={metadata_test_cases}, selected={len(selected_cases)}"
+                )
+
+        case_by_id = {str(case.get('case_id')): case for case in selected_cases}
+        selected_rows = [
+            row
+            for row in payload.get('per_case', {}).get(self.detected_problems_model, [])
+            if int(row.get('repeat', 1)) == self.detected_problems_repeat
+        ]
+        for row in selected_rows:
+            case_id = str(row.get('case_id', ''))
+            if case_id not in case_by_id:
+                continue
+            cached_expected = [str(code) for code in row.get('expected_codes', [])]
+            ground_truth_expected = [
+                str(problem.get('code'))
+                for problem in case_by_id[case_id].get('expected_diagnosis', {}).get('problem_list', [])
+                if problem.get('code')
+            ]
+            if cached_expected and cached_expected != ground_truth_expected:
+                raise ValueError(
+                    f"Expected codes changed since cache creation for case {case_id}: "
+                    f"cache={cached_expected}, ground_truth={ground_truth_expected}"
+                )
+
+        cache_path = Path(self.detected_problems_cache_path)
+        return {
+            'enabled': True,
+            'path': repository_path(cache_path),
+            'sha256': file_sha256(cache_path),
+            'created_at': metadata.get('created_at'),
+            'metadata_test_cases': metadata.get('test_cases'),
+            'metadata_repeats': metadata.get('repeats'),
+            'metadata_top_k': metadata.get('top_k'),
+            'metadata_strategies': metadata.get('retrieval_strategies', []),
+            'selected_model': self.detected_problems_model,
+            'selected_repeat': self.detected_problems_repeat,
+            'selected_cases': len(selected_cases),
+            'cached_cases': len(cache),
+            'case_set_validation': (
+                'exact' if exact_case_set_required else 'selected_subset_of_cache'
+            ),
+        }
+
+    def detected_problems_for_case(self, case: Dict, runner) -> List[Dict]:
+        cache = self._load_detected_problems_cache()
+        case_id = case.get('case_id')
+        if cache:
+            if case_id not in cache:
+                raise KeyError(f"Case {case_id!r} is missing from the detected-problems cache")
+            return copy.deepcopy(cache[case_id])
+        return runner.detect_problems(case.get('case_description', ''))
 
     def evaluate_strategy(self, strategy_name: str, cases: List[Dict] = None,
                           custom_retriever=None) -> Dict:
@@ -919,7 +1108,7 @@ class RQ6_V6ComponentAblation(AblationExperiment):
         """Use the mutated H2L score even for baseline wrappers with fixed final_score."""
         for attr in ("h2l_final_score", "rerank_score", "score", "final_score"):
             value = getattr(result, attr, None)
-            if isinstance(value, (int, float)):
+            if isinstance(value, (int, float, np.number)):
                 return float(value)
         return 0.0
 
@@ -956,7 +1145,7 @@ class RQ6_V6ComponentAblation(AblationExperiment):
 
             expected = case.get("expected_diagnosis", {}).get("problem_list", [])
             relevance_keywords = build_relevance_keywords(expected, runner.taxonomy)
-            detected_problems = runner.detect_problems(query)
+            detected_problems = ablation_runner.detected_problems_for_case(case, runner)
             expanded_query = (
                 expand_query_with_problems(query, detected_problems, base_retriever.h2l_config)
                 if detected_problems else query
@@ -979,7 +1168,11 @@ class RQ6_V6ComponentAblation(AblationExperiment):
             if (i + 1) % 10 == 0:
                 logger.info("    Candidate pools ready: %s/%s", i + 1, len(cases))
 
-        metric_names = ["P@5", "R@5", "F1@5", "nDCG@5", "MAP", "MRR"]
+        metric_names = [
+            "P@5", "R@5", "F1@5", "DCG@5", "IDCG@5", "nDCG@5",
+            "P@10", "R@10", "F1@10", "DCG@10", "IDCG@10", "nDCG@10",
+            "MAP", "MRR",
+        ]
 
         for variant_name, h2l_cfg in variant_configs.items():
             logger.info(f"\n  🔧 Configuration: {variant_name}")
@@ -995,6 +1188,7 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                 # from leaking across variants.
                 variant_results = [copy.deepcopy(r) for r in bundle["base_results"]]
                 base_order = [getattr(getattr(r, "doc", None), "id", id(r)) for r in variant_results[:5]]
+                base_order_at10 = [getattr(getattr(r, "doc", None), "id", id(r)) for r in variant_results[:10]]
                 base_scores = [
                     float(getattr(r, "rerank_score", getattr(r, "score", 0.0)) or 0.0)
                     for r in variant_results
@@ -1008,6 +1202,7 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                 variant_results.sort(key=self._score_key, reverse=True)
                 ranked = variant_results[:ablation_runner.top_k]
                 reranked_order = [getattr(getattr(r, "doc", None), "id", id(r)) for r in ranked[:5]]
+                reranked_order_at10 = [getattr(getattr(r, "doc", None), "id", id(r)) for r in ranked[:10]]
 
                 relevance_grades = []
                 for r in ranked:
@@ -1031,9 +1226,11 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                     "case_id": case.get("case_id", "unknown"),
                     "complexity": case.get("complexity", "unknown"),
                     "category": case.get("category", "unknown"),
+                    **case_provenance_fields(case, ablation_runner.split),
                     "metrics": m,
                     "relevance_grades": relevance_grades,
                     "rank_changed_at5": base_order != reranked_order,
+                    "rank_changed_at10": base_order_at10 != reranked_order_at10,
                     "mean_abs_score_delta": mean_score_delta,
                     "n_detected_problems": len(problems),
                     "h2l_mean_top5": h2l_mean_top5,
@@ -1049,13 +1246,25 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                     "case_id": case_result["case_id"],
                     "complexity": case_result["complexity"],
                     "category": case_result.get("category", "unknown"),
+                    "evaluation_slice": case_result["evaluation_slice"],
+                    "augmentation_type": case_result["augmentation_type"],
+                    "false_trigger_code": case_result["false_trigger_code"],
                     "P@5": m.get("P@5", 0),
                     "R@5": m.get("R@5", 0),
                     "F1@5": m.get("F1@5", 0),
+                    "DCG@5": m.get("DCG@5", 0),
+                    "IDCG@5": m.get("IDCG@5", 0),
                     "nDCG@5": m.get("nDCG@5", 0),
+                    "P@10": m.get("P@10", 0),
+                    "R@10": m.get("R@10", 0),
+                    "F1@10": m.get("F1@10", 0),
+                    "DCG@10": m.get("DCG@10", 0),
+                    "IDCG@10": m.get("IDCG@10", 0),
+                    "nDCG@10": m.get("nDCG@10", 0),
                     "MAP": m.get("MAP", 0),
                     "MRR": m.get("MRR", 0),
                     "rank_changed_at5": case_result["rank_changed_at5"],
+                    "rank_changed_at10": case_result["rank_changed_at10"],
                     "mean_abs_score_delta": case_result["mean_abs_score_delta"],
                     "n_detected_problems": case_result["n_detected_problems"],
                     "h2l_mean_top5": case_result.get("h2l_mean_top5", 0.0),
@@ -1079,10 +1288,11 @@ class RQ6_V6ComponentAblation(AblationExperiment):
                 "n_cases": len(per_case),
             }
             logger.info(
-                "    MAP: %.4f, MRR: %.4f, nDCG@5: %.4f, rank_changed@5: %.1f%%, score_delta: %.4f",
+                "    MAP: %.4f, MRR: %.4f, nDCG@5: %.4f, nDCG@10: %.4f, rank_changed@5: %.1f%%, score_delta: %.4f",
                 agg.get("MAP", {}).get("mean", 0),
                 agg.get("MRR", {}).get("mean", 0),
                 agg.get("nDCG@5", {}).get("mean", 0),
+                agg.get("nDCG@10", {}).get("mean", 0),
                 100.0 * np.mean([r["rank_changed_at5"] for r in per_case]) if per_case else 0.0,
                 np.mean([r["mean_abs_score_delta"] for r in per_case]) if per_case else 0.0,
             )
@@ -1091,11 +1301,11 @@ class RQ6_V6ComponentAblation(AblationExperiment):
 
     def visualize(self, results: pd.DataFrame, output_dir: Path):
         output_dir.mkdir(parents=True, exist_ok=True)
-        metrics = ["MAP", "MRR", "nDCG@5"]
+        metrics = ["MAP", "MRR", "nDCG@5", "nDCG@10"]
         avg = results.groupby("variant")[metrics].mean().sort_values("MAP", ascending=False)
 
         fig, ax = plt.subplots(figsize=(13, 6))
-        avg.plot(kind="bar", ax=ax, color=["#2ECC71", "#3498DB", "#F39C12"])
+        avg.plot(kind="bar", ax=ax, color=["#2ECC71", "#3498DB", "#F39C12", "#8E44AD"])
         ax.set_title("RQ6: V6 Component Ablation", fontsize=13, fontweight="bold")
         ax.set_ylabel("Mean score")
         ax.set_ylim([0, max(0.05, min(1.0, float(avg.max().max()) + 0.08))])
@@ -1596,7 +1806,10 @@ class BaselineComparison:
 # ============================================================================
 
 def run_pairwise_stats(df: pd.DataFrame, group_col: str,
-                       metric_col: str, case_col: str = 'case_id') -> Dict:
+                       metric_col: str, case_col: str = 'case_id',
+                       reference_group: str = None,
+                       adjust_method: str = None,
+                       test_method: str = 'auto') -> Dict:
     """
     Run paired statistical tests between groups.
 
@@ -1614,8 +1827,17 @@ def run_pairwise_stats(df: pd.DataFrame, group_col: str,
     for i in range(len(groups)):
         for j in range(i + 1, len(groups)):
             g1, g2 = groups[i], groups[j]
+            if reference_group is not None and reference_group not in (g1, g2):
+                continue
+            if reference_group is not None and g2 == reference_group:
+                g1, g2 = g2, g1
             df1 = df[df[group_col] == g1].set_index(case_col)[metric_col]
             df2 = df[df[group_col] == g2].set_index(case_col)[metric_col]
+
+            if not df1.index.is_unique or not df2.index.is_unique:
+                raise ValueError(
+                    f"Paired statistics require one row per {case_col} and {group_col}"
+                )
 
             common = df1.index.intersection(df2.index)
             if len(common) < 3:
@@ -1629,22 +1851,35 @@ def run_pairwise_stats(df: pd.DataFrame, group_col: str,
                 stat, p_val = 0.0, 1.0
                 test_name = "No difference"
             else:
-                # Normality check
-                try:
-                    _, p_norm1 = scipy_stats.shapiro(v1)
-                    _, p_norm2 = scipy_stats.shapiro(v2)
-                    is_normal = p_norm1 > 0.05 and p_norm2 > 0.05
-                except:
-                    is_normal = False
+                if test_method == 'wilcoxon':
+                    stat, p_val = scipy_stats.wilcoxon(
+                        diff,
+                        zero_method='wilcox',
+                        alternative='two-sided',
+                        method='auto',
+                    )
+                    test_name = "Wilcoxon"
+                else:
+                    # A paired t-test assumes normality of the paired differences.
+                    try:
+                        _, p_norm = scipy_stats.shapiro(diff)
+                        is_normal = p_norm > 0.05
+                    except Exception:
+                        is_normal = False
 
-                if is_normal:
+                if test_method != 'wilcoxon' and is_normal:
                     stat, p_val = scipy_stats.ttest_rel(v1, v2)
                     test_name = "paired t-test"
-                else:
+                elif test_method != 'wilcoxon':
                     try:
-                        stat, p_val = scipy_stats.wilcoxon(v1, v2)
+                        stat, p_val = scipy_stats.wilcoxon(
+                            diff,
+                            zero_method='wilcox',
+                            alternative='two-sided',
+                            method='auto',
+                        )
                         test_name = "Wilcoxon"
-                    except:
+                    except Exception:
                         stat, p_val = 0.0, 1.0
                         test_name = "N/A"
 
@@ -1656,17 +1891,41 @@ def run_pairwise_stats(df: pd.DataFrame, group_col: str,
 
             results[f"{g1} vs {g2}"] = {
                 'test': test_name,
-                'statistic': round(float(stat), 4),
-                'p_value': round(float(p_val), 6),
+                'metric': metric_col,
+                'reference': g1,
+                'comparison': g2,
+                'n_pairs': int(len(common)),
+                'n_nonzero_differences': int(np.count_nonzero(np.abs(diff) > 1e-15)),
+                'statistic': float(stat),
+                'p_value': float(p_val),
                 'significant': p_val < 0.05,
-                'cohens_d': round(d, 3),
+                'cohens_d': d,
                 'effect': ('large' if abs(d) >= 0.8 else
                            'medium' if abs(d) >= 0.5 else
                            'small' if abs(d) >= 0.2 else 'negligible'),
-                'mean_diff': round(float(np.mean(diff)), 4),
-                'ci_95': (round(float(np.mean(diff) - 1.96*np.std(diff)/np.sqrt(len(diff))), 4),
-                          round(float(np.mean(diff) + 1.96*np.std(diff)/np.sqrt(len(diff))), 4)),
+                'mean_diff': float(np.mean(diff)),
+                'median_diff': float(np.median(diff)),
+                'ci_95': (
+                    float(np.mean(diff) - 1.96*np.std(diff)/np.sqrt(len(diff))),
+                    float(np.mean(diff) + 1.96*np.std(diff)/np.sqrt(len(diff))),
+                ),
             }
+
+    if adjust_method == 'holm' and results:
+        ordered = sorted(results.items(), key=lambda item: item[1]['p_value'])
+        adjusted = {}
+        running_max = 0.0
+        count = len(ordered)
+        for rank, (pair, result) in enumerate(ordered):
+            raw_p = float(result['p_value'])
+            corrected = min(1.0, (count - rank) * raw_p)
+            running_max = max(running_max, corrected)
+            adjusted[pair] = min(1.0, running_max)
+        for pair, result in results.items():
+            result['raw_p_value'] = result['p_value']
+            result['p_value'] = adjusted[pair]
+            result['p_adjustment'] = 'Holm-Bonferroni'
+            result['significant'] = adjusted[pair] < 0.05
 
     return results
 
@@ -1717,7 +1976,11 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
         lines.append("")
 
         # Metrics table
-        metrics_cols = ['P@5', 'R@5', 'F1@5', 'nDCG@5', 'MAP', 'MRR']
+        metrics_cols = [
+            'P@5', 'R@5', 'F1@5', 'DCG@5', 'IDCG@5', 'nDCG@5',
+            'P@10', 'R@10', 'F1@10', 'DCG@10', 'IDCG@10', 'nDCG@10',
+            'MAP', 'MRR',
+        ]
         available_metrics = [m for m in metrics_cols if m in df.columns]
         avg = df.groupby(group_col)[available_metrics].agg(['mean', 'std'])
 
@@ -1733,31 +1996,59 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
             lines.append(f"| {row_name} | " + " | ".join(vals) + " |")
         lines.append("")
 
-        if rq_key == 'RQ6' and {'rank_changed_at5', 'mean_abs_score_delta', 'n_detected_problems'}.issubset(df.columns):
+        if rq_key == 'RQ6' and {'rank_changed_at5', 'rank_changed_at10', 'mean_abs_score_delta', 'n_detected_problems'}.issubset(df.columns):
             diag = df.groupby(group_col).agg(
                 rank_changed_at5=('rank_changed_at5', 'mean'),
+                rank_changed_at10=('rank_changed_at10', 'mean'),
                 mean_abs_score_delta=('mean_abs_score_delta', 'mean'),
                 mean_detected_problems=('n_detected_problems', 'mean'),
             ).sort_values('mean_abs_score_delta', ascending=False)
 
             lines.append("**Score/Ranking Diagnostics:**")
             lines.append("")
-            lines.append("| Configuration | rank_changed@5 | mean_abs_score_delta | mean_detected_problems |")
-            lines.append("|---|---:|---:|---:|")
+            lines.append("| Configuration | rank_changed@5 | rank_changed@10 | mean_abs_score_delta | mean_detected_problems |")
+            lines.append("|---|---:|---:|---:|---:|")
             for row_name in diag.index:
                 lines.append(
                     f"| {row_name} | "
                     f"{diag.loc[row_name, 'rank_changed_at5']:.1%} | "
+                    f"{diag.loc[row_name, 'rank_changed_at10']:.1%} | "
                     f"{diag.loc[row_name, 'mean_abs_score_delta']:.4f} | "
                     f"{diag.loc[row_name, 'mean_detected_problems']:.2f} |"
                 )
             lines.append("")
+            full_rows = df[df[group_col] == 'Full V6'].set_index('case_id')
+            rank_metrics_changed = False
+            for variant in df[group_col].unique():
+                if variant == 'Full V6':
+                    continue
+                variant_rows = df[df[group_col] == variant].set_index('case_id')
+                common = full_rows.index.intersection(variant_rows.index)
+                for metric in ('nDCG@5', 'nDCG@10', 'MAP', 'MRR'):
+                    if metric in df.columns and not np.allclose(
+                        full_rows.loc[common, metric],
+                        variant_rows.loc[common, metric],
+                    ):
+                        rank_metrics_changed = True
+                        break
+                if rank_metrics_changed:
+                    break
+            if rank_metrics_changed:
+                interpretation = (
+                    "Interpretation: at least one one-component-disabled variant changes "
+                    "a rank-aware relevance metric in this run. Statistical tests below "
+                    "determine whether those paired changes survive multiplicity correction."
+                )
+            else:
+                interpretation = (
+                    "Interpretation: rank-aware relevance metrics are unchanged across "
+                    "one-component-disabled variants in this run, although score and ordering "
+                    "diagnostics may still change."
+                )
+            lines.append(interpretation)
             lines.append(
-                "Interpretation: rank-aware relevance metrics are unchanged across "
-                "one-component-disabled variants in this run, but the diagnostic columns "
-                "show that component toggles alter H2L scores and top-5 ordering. Treat "
-                "this as component sensitivity evidence, not yet as causal component-level "
-                "effectiveness evidence."
+                "Treat score-only changes as component sensitivity evidence, not causal "
+                "component-level effectiveness evidence."
             )
             lines.append("")
 
@@ -1767,9 +2058,16 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
             lines.append("")
             for pair, test_result in stats.items():
                 sig = "✅ significant" if test_result['significant'] else "❌ not significant"
+                if 'raw_p_value' in test_result:
+                    p_text = (
+                        f"raw p={test_result['raw_p_value']:.4f}, "
+                        f"Holm p={test_result['p_value']:.4f}"
+                    )
+                else:
+                    p_text = f"p={test_result['p_value']:.4f}"
                 lines.append(
-                    f"- **{pair}**: {test_result['test']}, "
-                    f"p={test_result['p_value']:.4f} ({sig}), "
+                    f"- **{test_result.get('metric', 'metric')} — {pair}**: {test_result['test']}, "
+                    f"{p_text} ({sig}), "
                     f"Cohen's d={test_result['cohens_d']:.3f} ({test_result['effect']}), "
                     f"95% CI: {test_result['ci_95']}"
                 )
@@ -1887,6 +2185,75 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
     logger.info(f"✅ Report saved: {report_path}")
 
 
+def write_rq6_structured_artifacts(
+    frame: pd.DataFrame,
+    stats: Dict,
+    output_dir: Path,
+) -> None:
+    """Persist machine-readable RQ6 statistics and held-out slice summaries."""
+    stat_rows = []
+    for result in stats.values():
+        ci_low, ci_high = result.get('ci_95', (None, None))
+        stat_rows.append({
+            'metric': result.get('metric'),
+            'reference': result.get('reference'),
+            'comparison': result.get('comparison'),
+            'test': result.get('test'),
+            'n_pairs': result.get('n_pairs'),
+            'n_nonzero_differences': result.get('n_nonzero_differences'),
+            'reference_minus_comparison_mean': result.get('mean_diff'),
+            'median_difference': result.get('median_diff'),
+            'statistic': result.get('statistic'),
+            'raw_p': result.get('raw_p_value', result.get('p_value')),
+            'holm_p': result.get('p_value') if result.get('p_adjustment') else None,
+            'significant_0_05': result.get('significant'),
+            'cohens_d_paired': result.get('cohens_d'),
+            'effect': result.get('effect'),
+            'ci_95_low': ci_low,
+            'ci_95_high': ci_high,
+            'multiplicity_correction': result.get('p_adjustment'),
+        })
+    pd.DataFrame(stat_rows).to_csv(
+        output_dir / 'rq6_significance.csv',
+        index=False,
+        encoding='utf-8',
+    )
+
+    metric_columns = [
+        metric
+        for metric in (
+            'P@5', 'R@5', 'F1@5', 'DCG@5', 'IDCG@5', 'nDCG@5',
+            'P@10', 'R@10', 'F1@10', 'DCG@10', 'IDCG@10', 'nDCG@10',
+            'MAP', 'MRR',
+        )
+        if metric in frame.columns
+    ]
+    slices = [('all_test', frame)]
+    if 'evaluation_slice' in frame.columns:
+        slices.extend(
+            (str(slice_name), slice_frame)
+            for slice_name, slice_frame in frame.groupby('evaluation_slice', sort=False)
+        )
+
+    slice_rows = []
+    for slice_name, slice_frame in slices:
+        for variant, variant_frame in slice_frame.groupby('variant', sort=False):
+            row = {
+                'evaluation_slice': slice_name,
+                'variant': variant,
+                'n_cases': int(variant_frame['case_id'].nunique()),
+            }
+            for metric in metric_columns:
+                row[f'{metric}_mean'] = float(variant_frame[metric].mean())
+                row[f'{metric}_std'] = float(variant_frame[metric].std(ddof=1))
+            slice_rows.append(row)
+    pd.DataFrame(slice_rows).to_csv(
+        output_dir / 'rq6_slice_summary.csv',
+        index=False,
+        encoding='utf-8',
+    )
+
+
 # ============================================================================
 # MAIN EXECUTION
 # ============================================================================
@@ -1894,7 +2261,13 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
 def run_full_ablation_study(output_dir: str = "ablation_results",
                             max_cases: int = None,
                             rq_filter: List[int] = None,
-                            skip_baselines: bool = False):
+                            skip_baselines: bool = False,
+                            split: str = "all",
+                            ground_truth_path: str = "expanded_ground_truth.json",
+                            top_k: int = 15,
+                            detected_problems_cache_path: str = None,
+                            detected_problems_model: str = "qwen2.5:7b",
+                            detected_problems_repeat: int = 1):
     """
     Run all ablation experiments with real retrieval evaluation.
 
@@ -1903,6 +2276,10 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
         max_cases: Limit ground truth cases (for quick testing)
         rq_filter: Only run specific RQs (e.g. [1, 2])
         skip_baselines: Skip baseline comparison
+        split: Ground-truth split to evaluate (all, train, or test)
+        ground_truth_path: Split-annotated ground-truth JSON
+        top_k: Number of ranked documents retained for metric computation
+        detected_problems_cache_path: Optional L2 matrix with cached detector outputs
     """
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -1912,12 +2289,51 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
     logger.info("="*70)
     logger.info(f"Output: {output_path.absolute()}")
     logger.info(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info(f"Ground-truth split: {split}")
     if max_cases:
         logger.info(f"Max cases: {max_cases}")
     logger.info("="*70 + "\n")
 
     # Initialize
-    ablation = AblationRunner(max_cases=max_cases)
+    ablation = AblationRunner(
+        ground_truth_path=ground_truth_path,
+        max_cases=max_cases,
+        top_k=top_k,
+        split=split,
+        detected_problems_cache_path=detected_problems_cache_path,
+        detected_problems_model=detected_problems_model,
+        detected_problems_repeat=detected_problems_repeat,
+    )
+
+    cache_provenance = ablation.validate_detected_problems_cache()
+    ground_truth_file = Path(ablation.ground_truth_path)
+    ground_truth_payload = json.loads(ground_truth_file.read_text(encoding='utf-8'))
+    ground_truth_metadata = ground_truth_payload.get('metadata', {})
+    run_metadata = {
+        'status': 'running',
+        'generated_at': datetime.now().isoformat(),
+        'ground_truth_path': repository_path(ground_truth_file),
+        'ground_truth_sha256': file_sha256(ground_truth_file),
+        'ground_truth_total_cases': ground_truth_metadata.get('total_cases'),
+        'ground_truth_train_cases': ground_truth_metadata.get('train_cases'),
+        'ground_truth_test_cases': ground_truth_metadata.get('test_cases'),
+        'ground_truth_adversarial_cases': ground_truth_metadata.get('adversarial_test_cases'),
+        'h2l_core_sha256': file_sha256(Path('H2L_core.py')),
+        'split': split,
+        'available_cases_after_filter': len(ablation._load_cases()),
+        'max_cases': max_cases,
+        'top_k': top_k,
+        'candidate_pool_k': max(top_k * 3, 30),
+        'rq_filter': rq_filter,
+        'skip_baselines': skip_baselines,
+        'detected_problems_cache': cache_provenance,
+    }
+
+    def save_run_metadata() -> None:
+        with (output_path / 'run_metadata.json').open('w', encoding='utf-8') as handle:
+            json.dump(run_metadata, handle, ensure_ascii=False, indent=2)
+
+    save_run_metadata()
 
     # Define experiments
     experiments = {
@@ -1934,6 +2350,7 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
 
     all_results = {}
     all_stats = {}
+    failed_experiments = {}
 
     # ── Run RQ experiments ──
     for rq_num, exp in experiments.items():
@@ -1947,6 +2364,7 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
             logger.error(f"❌ {rq_key} failed: {e}")
             import traceback
             traceback.print_exc()
+            failed_experiments[rq_key] = str(e)
             continue
         elapsed = time.time() - start
 
@@ -1963,15 +2381,35 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
 
         # Statistical tests
         group_col = 'alpha' if rq_num == 2 else 'h2l_filter' if rq_num == 5 else 'variant'
-        metric_col = 'nDCG@5'
         try:
-            stats = run_pairwise_stats(df, group_col, metric_col)
+            if rq_num == 6:
+                stats = {}
+                for metric_col in ('nDCG@5', 'nDCG@10'):
+                    metric_stats = run_pairwise_stats(
+                        df,
+                        group_col,
+                        metric_col,
+                        reference_group='Full V6',
+                        adjust_method='holm',
+                        test_method='wilcoxon',
+                    )
+                    stats.update({f"{metric_col}: {pair}": result for pair, result in metric_stats.items()})
+            else:
+                stats = run_pairwise_stats(df, group_col, 'nDCG@5')
             all_stats[rq_key] = stats
         except Exception as e:
             logger.warning(f"  ⚠️ Stats failed: {e}")
             all_stats[rq_key] = {}
+            if rq_num == 6:
+                failed_experiments[f'{rq_key}_statistics'] = str(e)
 
         all_results[rq_key] = df
+        if rq_num == 6 and all_stats.get(rq_key):
+            write_rq6_structured_artifacts(
+                df,
+                all_stats[rq_key],
+                output_path,
+            )
 
     # ── Baseline comparison ──
     if not skip_baselines:
@@ -2013,6 +2451,20 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
     # ── Generate report ──
     generate_report(all_results, all_stats, output_path)
 
+    run_metadata['completed_at'] = datetime.now().isoformat()
+    run_metadata['failed_experiments'] = failed_experiments
+    run_metadata['status'] = 'complete' if not failed_experiments else 'failed'
+    run_metadata['generated_files'] = sorted(
+        path.name for path in output_path.iterdir() if path.is_file()
+    )
+    save_run_metadata()
+
+    if failed_experiments:
+        raise RuntimeError(
+            "Ablation study did not complete all requested outputs: "
+            + "; ".join(f"{key}={value}" for key, value in failed_experiments.items())
+        )
+
     logger.info("\n" + "="*70)
     logger.info("✅ Ablation study completed!")
     logger.info("="*70)
@@ -2038,6 +2490,18 @@ if __name__ == "__main__":
                         help='Skip baseline comparison')
     parser.add_argument('--output-dir', type=str, default='ablation_results',
                         help='Output directory')
+    parser.add_argument('--split', choices=['all', 'train', 'test'], default='all',
+                        help='Ground-truth split to evaluate (default: all)')
+    parser.add_argument('--ground-truth', default='expanded_ground_truth.json',
+                        help='Split-annotated ground-truth JSON')
+    parser.add_argument('--top-k', type=int, default=15,
+                        help='Number of ranked documents retained (default: 15)')
+    parser.add_argument('--detected-problems-cache', default=None,
+                        help='L2 matrix JSON containing per-case detected_problems')
+    parser.add_argument('--detected-problems-model', default='qwen2.5:7b',
+                        help='Model key to select from the detected-problems cache')
+    parser.add_argument('--detected-problems-repeat', type=int, default=1,
+                        help='Repeat number to select from the detected-problems cache')
 
     args = parser.parse_args()
 
@@ -2046,4 +2510,10 @@ if __name__ == "__main__":
         max_cases=args.max_cases,
         rq_filter=args.rq,
         skip_baselines=args.skip_baselines,
+        split=args.split,
+        ground_truth_path=args.ground_truth,
+        top_k=args.top_k,
+        detected_problems_cache_path=args.detected_problems_cache,
+        detected_problems_model=args.detected_problems_model,
+        detected_problems_repeat=args.detected_problems_repeat,
     )

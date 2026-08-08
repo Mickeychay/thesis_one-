@@ -1,22 +1,22 @@
 {
   "path": "expanded_ground_truth.json",
-  "total_cases": 197,
+  "total_cases": 220,
   "split_counts": {
-    "train": 129,
-    "test": 68
+    "train": 125,
+    "test": 95
   },
   "augmentation_counts": {
-    "original": 92,
+    "original": 100,
     "paraphrase": 44,
     "complexity_escalation": 10,
     "complexity_reduction": 10,
-    "adversarial": 5,
+    "adversarial": 20,
     "polarity": 36
   },
   "split_by_augmentation": {
     "original": {
       "train": 70,
-      "test": 22
+      "test": 30
     },
     "paraphrase": {
       "train": 36,
@@ -30,8 +30,7 @@
       "train": 10
     },
     "adversarial": {
-      "test": 1,
-      "train": 4
+      "test": 20
     },
     "polarity": {
       "test": 36
@@ -39,6 +38,7 @@
   },
   "missing_split": [],
   "cross_split_families": [],
+  "exact_duplicates": [],
   "near_duplicates": [],
   "duplicate_threshold": 0.9,
   "risk_flags": [

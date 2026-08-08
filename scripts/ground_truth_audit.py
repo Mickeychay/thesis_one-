@@ -66,6 +66,25 @@ def find_cross_split_families(cases: List[Dict]) -> List[Dict]:
     return leaks
 
 
+def find_exact_duplicates(cases: List[Dict]) -> List[Dict]:
+    """Find identical normalized descriptions, including within one split."""
+    grouped = defaultdict(list)
+    for case in cases:
+        text = " ".join(case.get("case_description", "").split())
+        if text:
+            grouped[text].append(
+                {
+                    "case_id": case.get("case_id", ""),
+                    "split": case.get("split", "missing"),
+                }
+            )
+    return [
+        {"case_ids": members, "normalized_text": text}
+        for text, members in grouped.items()
+        if len(members) > 1
+    ]
+
+
 def find_near_duplicates(cases: List[Dict], threshold: float) -> List[Dict]:
     duplicates = []
     normalized = [
@@ -110,6 +129,7 @@ def audit_ground_truth(path: str, duplicate_threshold: float = 0.9) -> Dict:
         split_by_aug[augmentation_type(case)][case.get("split", "missing")] += 1
 
     cross_split_families = find_cross_split_families(cases)
+    exact_duplicates = find_exact_duplicates(cases)
     near_duplicates = find_near_duplicates(cases, duplicate_threshold)
 
     risk_flags = []
@@ -117,6 +137,8 @@ def audit_ground_truth(path: str, duplicate_threshold: float = 0.9) -> Dict:
         risk_flags.append("missing_split_annotations")
     if cross_split_families:
         risk_flags.append("case_family_cross_split_leakage")
+    if exact_duplicates:
+        risk_flags.append("exact_duplicate_case_descriptions")
     if near_duplicates:
         risk_flags.append("near_duplicate_cross_split_cases")
     if augmentation_counts.get("paraphrase", 0) or augmentation_counts.get("polarity", 0):
@@ -130,6 +152,7 @@ def audit_ground_truth(path: str, duplicate_threshold: float = 0.9) -> Dict:
         "split_by_augmentation": {k: dict(v) for k, v in split_by_aug.items()},
         "missing_split": missing_split,
         "cross_split_families": cross_split_families,
+        "exact_duplicates": exact_duplicates,
         "near_duplicates": near_duplicates,
         "duplicate_threshold": duplicate_threshold,
         "risk_flags": risk_flags,
@@ -166,6 +189,19 @@ def write_markdown(report: Dict, output_path: str) -> None:
             lines.append(f"| ... | ... | {len(leaks) - 50} more families omitted |")
     else:
         lines.append("No train/test family overlap detected.")
+
+    lines.extend(["", "## Exact Duplicate Descriptions", ""])
+    exact_duplicates = report["exact_duplicates"]
+    if exact_duplicates:
+        lines.extend(["| Case IDs and Splits | Normalized Text |", "|---|---|"])
+        for duplicate in exact_duplicates[:50]:
+            labels = ", ".join(
+                f"{item['case_id']} ({item['split']})"
+                for item in duplicate["case_ids"]
+            )
+            lines.append(f"| {labels} | {duplicate['normalized_text']} |")
+    else:
+        lines.append("No identical normalized case descriptions detected.")
 
     lines.extend(["", "## Near Duplicates Across Splits", ""])
     duplicates = report["near_duplicates"]

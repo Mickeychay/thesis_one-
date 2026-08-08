@@ -276,25 +276,25 @@ def recall_at_k(relevance_grades: List[int], k: int, total_relevant: int) -> flo
     return sum(1 for g in top_k if g > 0) / total_relevant
 
 
+def dcg_at_k(relevance_grades: List[int], k: int) -> float:
+    """Discounted Cumulative Gain at K using exponential graded gain."""
+    result = 0.0
+    for i, grade in enumerate(relevance_grades[:k]):
+        result += (2**grade - 1) / math.log2(i + 2)
+    return result
+
+
+def ideal_dcg_at_k(relevance_grades: List[int], k: int) -> float:
+    """Ideal DCG at K for the same retrieved relevance-grade multiset."""
+    return dcg_at_k(sorted(relevance_grades, reverse=True), k)
+
+
 def ndcg_at_k(relevance_grades: List[int], k: int) -> float:
-    """
-    Normalized Discounted Cumulative Gain @K
-
-    DCG@K  = Σᵢ₌₁ᵏ (2^relᵢ - 1) / log₂(i + 1)
-    IDCG@K = DCG for perfect ranking
-    nDCG@K = DCG@K / IDCG@K
-    """
-    def dcg(grades, cutoff):
-        result = 0.0
-        for i, g in enumerate(grades[:cutoff]):
-            result += (2**g - 1) / math.log2(i + 2)  # i+2 because 0-indexed
-        return result
-
-    actual_dcg = dcg(relevance_grades, k)
+    """Normalized Discounted Cumulative Gain at K (DCG@K / IDCG@K)."""
+    actual_dcg = dcg_at_k(relevance_grades, k)
 
     # Ideal: sort grades descending
-    ideal_grades = sorted(relevance_grades, reverse=True)
-    ideal_dcg = dcg(ideal_grades, k)
+    ideal_dcg = ideal_dcg_at_k(relevance_grades, k)
 
     if ideal_dcg == 0:
         return 0.0
@@ -364,6 +364,8 @@ def compute_all_metrics(
         metrics[f'P@{k}'] = precision_at_k(relevance_grades, k)
         metrics[f'R@{k}'] = recall_at_k(relevance_grades, k, total_relevant)
         metrics[f'F1@{k}'] = f1_at_k(relevance_grades, k, total_relevant)
+        metrics[f'DCG@{k}'] = dcg_at_k(relevance_grades, k)
+        metrics[f'IDCG@{k}'] = ideal_dcg_at_k(relevance_grades, k)
         metrics[f'nDCG@{k}'] = ndcg_at_k(relevance_grades, k)
 
     return metrics

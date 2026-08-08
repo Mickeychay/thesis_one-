@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H2L V6 Ablation Study — Interactive Dashboard</title>
+    <style>
+        :root {
+            --surface-0: #05070C;
+            --surface-1: #0A0D12;
+            --surface-2: #0F131C;
+            --surface-3: #161D2B;
+            --surface-4: #1E2636;
+            --accent-cyan: #38BDF8;
+            --accent-emerald: #6EE7B7;
+            --accent-amber: #E9A568;
+            --text-primary: #E8EDF4;
+            --text-secondary: #9BA5B8;
+            --text-muted: #5A6478;
+            --error: #EF4444;
+            --success: #10B981;
+            --warning: #F59E0B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--surface-0);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: clamp(1rem, 3vw, 3rem);
+        }
+
+        header {
+            margin-bottom: clamp(2rem, 5vw, 4rem);
+        }
+
+        h1 {
+            font-size: clamp(1.75rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: var(--text-secondary);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            gap: clamp(1rem, 2vw, 2rem);
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        .card {
+            background: var(--surface-2);
+            border-radius: 16px;
+            padding: clamp(1.25rem, 2.5vw, 2rem);
+            border: 1px solid rgba(56, 189, 248, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--accent-cyan);
+            border-radius: 999px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-box {
+            background: var(--surface-3);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: clamp(1.5rem, 2.5vw, 2rem);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .metric-change.positive {
+            color: var(--success);
+        }
+
+        .metric-change.negative {
+            color: var(--error);
+        }
+
+        #waterfallChart, #radarChart, #heatmapChart {
+            width: 100%;
+            height: 400px;
+            position: relative;
+        }
+
+        .component-toggle {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .toggle-btn {
+            background: var(--surface-3);
+            border: 2px solid var(--surface-4);
+            color: var(--text-primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .toggle-btn.active {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: var(--surface-0);
+        }
+
+        .toggle-btn.disabled {
+            background: var(--surface-2);
+            border-color: var(--error);
+            opacity: 0.6;
+        }
+
+        canvas {
+            border-radius: 12px;
+        }
+
+        .tab-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--surface-3);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent-cyan);
+            border-bottom-color: var(--accent-cyan);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: var(--surface-4);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+            max-width: 280px;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--surface-3);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>H2L V6 Ablation Study Dashboard</h1>
+            <p class="subtitle">Interactive Component Impact Analysis • Real Retrieval Evaluation</p>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-box" style="border-left-color: var(--accent-cyan)">
+                <div class="metric-label">nDCG@5</div>
+                <div class="metric-value" id="ndcg5-value">0.2921</div>
+                <div class="metric-change" id="ndcg5-change"></div>
+            </div>
+            <div class="metric-box" style="border-left-color: var(--accent-emerald)">
+                <div class="metric-label">MAP</div>
+                <div class="metric-value" id="map-value">0.2916</div>
+                <div class="metric-change" id="map-change"></div>
+            </div>
+            <div class="metric-box" style="border-left-color: var(--accent-amber)">
+                <div class="metric-label">MRR</div>
+                <div class="metric-value" id="mrr-value">0.3351</div>
+                <div class="metric-change" id="mrr-change"></div>
+            </div>
+            <div class="metric-box" style="border-left-color: var(--warning)">
+                <div class="metric-label">P@5</div>
+                <div class="metric-value" id="p5-value">0.1500</div>
+                <div class="metric-change" id="p5-change"></div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card" style="grid-column: span 2;">
+                <h2 class="card-title">Component Impact Waterfall</h2>
+                <div class="component-toggle" id="componentToggles"></div>
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab active" data-metric="ndcg5">nDCG@5</button>
+                        <button class="tab" data-metric="map">MAP</button>
+                        <button class="tab" data-metric="mrr">MRR</button>
+                        <button class="tab" data-metric="p5">P@5</button>
+                    </div>
+                </div>
+                <div id="waterfallChart">
+                    <canvas id="waterfallCanvas"></canvas>
+                </div>
+                <div class="legend" id="waterfallLegend"></div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Multi-Metric Radar</h2>
+                <div id="radarChart">
+                    <canvas id="radarCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="card" style="grid-column: span 2;">
+                <h2 class="card-title">Per-Case Performance Heatmap</h2>
+                <div id="heatmapChart">
+                    <canvas id="heatmapCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Real data from ablation study
+        const ablationData = {
+            variants: [
+                { name: 'Full V6', ndcg5: 0.2921, map: 0.2916, mrr: 0.3351, p5: 0.1500, r5: 0.3193, f1_5: 0.1918 },
+                { name: 'Product Feature', ndcg5: 0.2975, map: 0.2933, mrr: 0.3351, p5: 0.1500, r5: 0.3215, f1_5: 0.1926 },
+                { name: 'w/o Adaptive α', ndcg5: 0.2975, map: 0.2933, mrr: 0.3351, p5: 0.1500, r5: 0.3215, f1_5: 0.1926 },
+                { name: 'w/o Bayesian Prior', ndcg5: 0.2921, map: 0.2916, mrr: 0.3351, p5: 0.1500, r5: 0.3193, f1_5: 0.1918 },
+                { name: 'w/o IDF', ndcg5: 0.2921, map: 0.2916, mrr: 0.3351, p5: 0.1500, r5: 0.3193, f1_5: 0.1918 },
+                { name: 'w/o KL Penalty', ndcg5: 0.2921, map: 0.2916, mrr: 0.3351, p5: 0.1500, r5: 0.3193, f1_5: 0.1918 },
+                { name: 'w/o Margin Activation', ndcg5: 0.2906, map: 0.2895, mrr: 0.3351, p5: 0.1500, r5: 0.3149, f1_5: 0.1909 },
+                { name: 'w/o Negation Gate', ndcg5: 0.2921, map: 0.2916, mrr: 0.3351, p5: 0.1500, r5: 0.3193, f1_5: 0.1918 }
+            ],
+            components: [
+                'Adaptive α',
+                'Bayesian Prior',
+                'IDF Specificity',
+                'KL Penalty',
+                'Margin Activation',
+                'Negation Gate'
+            ],
+            caseData: [
+                { id: 'CHILD_004', complexity: 'moderate', ndcg5: 0.3575, map: 0.6833, category: 'เด็กและเยาวชน' },
+                { id: 'ELDER_009', complexity: 'moderate', ndcg5: 0.6309, map: 0.5000, category: 'ผู้สูงอายุ' },
+                { id: 'DISABLED_006', complexity: 'moderate', ndcg5: 0.9328, map: 0.7000, category: 'คนพิการ' },
+                { id: 'MENTAL_006', complexity: 'complex', ndcg5: 0.5000, map: 0.3333, category: 'สุขภาพจิต' },
+                { id: 'BEDRIDDEN_003', complexity: 'moderate', ndcg5: 1.0000, map: 1.0000, category: 'ติดเตียง' },
+                { id: 'FINANCE_001', complexity: 'simple', ndcg5: 0.9448, map: 0.7500, category: 'การเงิน' }
+            ]
+        };
+
+        let activeComponents = new Set(ablationData.components);
+        let currentMetric = 'ndcg5';
+
+        // Initialize component toggles
+        function initToggles() {
+            const container = document.getElementById('componentToggles');
+            ablationData.components.forEach(comp => {
+                const btn = document.createElement('button');
+                btn.className = 'toggle-btn active';
+                btn.textContent = comp;
+                btn.onclick = () => toggleComponent(comp, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function toggleComponent(comp, btn) {
+            if (activeComponents.has(comp)) {
+                activeComponents.delete(comp);
+                btn.classList.remove('active');
+                btn.classList.add('disabled');
+            } else {
+                activeComponents.add(comp);
+                btn.classList.remove('disabled');
+                btn.classList.add('active');
+            }
+            updateCharts();
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentMetric = tab.dataset.metric;
+                updateCharts();
+            };
+        });
+
+        // Draw waterfall chart
+        function drawWaterfall() {
+            const canvas = document.getElementById('waterfallCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = 400 * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            const width = canvas.offsetWidth;
+            const height = 400;
+            const padding = { top: 40, right: 40, bottom: 60, left: 80 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Get baseline and variants
+            const baseline = ablationData.variants[0][currentMetric];
+            const values = ablationData.variants.map(v => v[currentMetric]);
+            const maxVal = Math.max(...values) * 1.1;
+
+            // Draw axes
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, padding.top);
+            ctx.lineTo(padding.left, height - padding.bottom);
+            ctx.lineTo(width - padding.right, height - padding.bottom);
+            ctx.stroke();
+
+            // Draw bars
+            const barWidth = chartWidth / ablationData.variants.length;
+            ablationData.variants.forEach((variant, i) => {
+                const value = variant[currentMetric];
+                const barHeight = (value / maxVal) * chartHeight;
+                const x = padding.left + i * barWidth + barWidth * 0.1;
+                const y = height - padding.bottom - barHeight;
+                const w = barWidth * 0.8;
+
+                // Bar
+                const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
+                if (i === 0) {
+                    gradient.addColorStop(0, '#38BDF8');
+                    gradient.addColorStop(1, '#0ea5e9');
+                } else {
+                    const diff = value - baseline;
+                    if (diff > 0) {
+                        gradient.addColorStop(0, '#6EE7B7');
+                        gradient.addColorStop(1, '#10B981');
+                    } else if (diff < 0) {
+                        gradient.addColorStop(0, '#EF4444');
+                        gradient.addColorStop(1, '#dc2626');
+                    } else {
+                        gradient.addColorStop(0, '#9BA5B8');
+                        gradient.addColorStop(1, '#5A6478');
+                    }
+                }
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, w, barHeight);
+
+                // Value label
+                ctx.fillStyle = '#E8EDF4';
+                ctx.font = '12px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText(value.toFixed(4), x + w / 2, y - 8);
+
+                // Variant label
+                ctx.save();
+                ctx.translate(x + w / 2, height - padding.bottom + 10);
+                ctx.rotate(-Math.PI / 4);
+                ctx.fillStyle = '#9BA5B8';
+                ctx.font = '11px system-ui';
+                ctx.textAlign = 'right';
+                ctx.fillText(variant.name, 0, 0);
+                ctx.restore();
+            });
+
+            // Y-axis labels
+            ctx.fillStyle = '#9BA5B8';
+            ctx.font = '11px system-ui';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const value = (maxVal / 5) * i;
+                const y = height - padding.bottom - (chartHeight / 5) * i;
+                ctx.fillText(value.toFixed(3), padding.left - 10, y + 4);
+
+                // Grid lines
+                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+            }
+        }
+
+        // Draw radar chart
+        function drawRadar() {
+            const canvas = document.getElementById('radarCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = 400 * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            const width = canvas.offsetWidth;
+            const height = 400;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 2 - 60;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const metrics = ['ndcg5', 'map', 'mrr', 'p5', 'r5', 'f1_5'];
+            const labels = ['nDCG@5', 'MAP', 'MRR', 'P@5', 'R@5', 'F1@5'];
+            const angleStep = (Math.PI * 2) / metrics.length;
+
+            // Draw grid
+            [0.2, 0.4, 0.6, 0.8, 1.0].forEach((level, idx) => {
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i <= metrics.length; i++) {
+                    const angle = i * angleStep - Math.PI / 2;
+                    const x = centerX + Math.cos(angle) * radius * level;
+                    const y = centerY + Math.sin(angle) * radius * level;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            });
+
+            // Draw axes
+            metrics.forEach((_, i) => {
+                const angle = i * angleStep - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+
+                // Labels
+                const labelX = centerX + Math.cos(angle) * (radius + 30);
+                const labelY = centerY + Math.sin(angle) * (radius + 30);
+                ctx.fillStyle = '#9BA5B8';
+                ctx.font = '12px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText(labels[i], labelX, labelY);
+            });
+
+            // Draw data
+            const baseline = ablationData.variants[0];
+            ctx.beginPath();
+            metrics.forEach((metric, i) => {
+                const angle = i * angleStep - Math.PI / 2;
+                const value = baseline[metric];
+                const x = centerX + Math.cos(angle) * radius * value;
+                const y = centerY + Math.sin(angle) * radius * value;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+            ctx.strokeStyle = '#38BDF8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(56,189,248,0.1)';
+            ctx.fill();
+
+            // Draw points
+            metrics.forEach((metric, i) => {
+                const angle = i * angleStep - Math.PI / 2;
+                const value = baseline[metric];
+                const x = centerX + Math.cos(angle) * radius * value;
+                const y = centerY + Math.sin(angle) * radius * value;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#38BDF8';
+                ctx.fill();
+                ctx.strokeStyle = '#0A0D12';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+        }
+
+        // Draw heatmap
+        function drawHeatmap() {
+            const canvas = document.getElementById('heatmapCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = 400 * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            const width = canvas.offsetWidth;
+            const height = 400;
+            const padding = { top: 40, right: 40, bottom: 80, left: 120 };
+
+            ctx.clearRect(0, 0, width, height);
+
+            const cellWidth = (width - padding.left - padding.right) / 2;
+            const cellHeight = (height - padding.top - padding.bottom) / ablationData.caseData.length;
+
+            // Draw cells
+            ablationData.caseData.forEach((caseItem, i) => {
+                ['ndcg5', 'map'].forEach((metric, j) => {
+                    const value = caseItem[metric];
+                    const x = padding.left + j * cellWidth;
+                    const y = padding.top + i * cellHeight;
+
+                    // Color based on value
+                    const hue = value * 120; // 0 (red) to 120 (green)
+                    ctx.fillStyle = `hsla(${hue}, 70%, 50%, 0.8)`;
+                    ctx.fillRect(x, y, cellWidth, cellHeight);
+
+                    // Value text
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = '14px system-ui';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(value.toFixed(3), x + cellWidth / 2, y + cellHeight / 2 + 5);
+                });
+
+                // Case ID
+                ctx.fillStyle = '#9BA5B8';
+                ctx.font = '11px system-ui';
+                ctx.textAlign = 'right';
+                ctx.fillText(caseItem.id, padding.left - 10, padding.top + i * cellHeight + cellHeight / 2 + 4);
+            });
+
+            // Column headers
+            ['nDCG@5', 'MAP'].forEach((label, j) => {
+                const x = padding.left + j * cellWidth + cellWidth / 2;
+                ctx.fillStyle = '#E8EDF4';
+                ctx.font = 'bold 13px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText(label, x, padding.top - 15);
+            });
+        }
+
+        function updateCharts() {
+            drawWaterfall();
+            drawRadar();
+            drawHeatmap();
+
+            // Update metrics
+            const baseline = ablationData.variants[0];
+            document.getElementById('ndcg5-value').textContent = baseline.ndcg5.toFixed(4);
+            document.getElementById('map-value').textContent = baseline.map.toFixed(4);
+            document.getElementById('mrr-value').textContent = baseline.mrr.toFixed(4);
+            document.getElementById('p5-value').textContent = baseline.p5.toFixed(4);
+        }
+
+        // Initialize
+        initToggles();
+        updateCharts();
+
+        // Responsive resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updateCharts, 250);
+        });
+    </script>
+</body>
+</html>

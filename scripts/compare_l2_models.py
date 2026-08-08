@@ -33,10 +33,151 @@ from evaluate_h2l_proper import (
 DEFAULT_MODELS = [
     "qwen2.5:7b",
     "scb10x/llama3.1-typhoon2-8b-instruct:latest",
-    "scb10x/typhoon2.1-gemma3-4b:latest",
+    "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
 ]
 
+MODEL_PATCH_MANIFESTS = {
+    "h2l/typhoon-gemma3-4b-templatefix-v2:latest": (
+        ROOT
+        / "evaluation_results"
+        / "model_comparison"
+        / "typhoon_gemma3_templatefix_manifest.json"
+    ),
+}
+
 DEFAULT_RETRIEVAL_STRATEGIES = list(STRATEGY_CONFIGS.keys())
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _sha256_tree(path: Path) -> str:
+    """Hash a file or a directory tree, including relative file names."""
+    path = path.resolve()
+    if path.is_file():
+        return _sha256(path)
+    if not path.is_dir():
+        raise FileNotFoundError(f"Provenance input does not exist: {path}")
+
+    digest = hashlib.sha256()
+    files = sorted(candidate for candidate in path.rglob("*") if candidate.is_file())
+    for candidate in files:
+        relative = candidate.relative_to(path).as_posix().encode("utf-8")
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        with candidate.open("rb") as handle:
+            for block in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(block)
+    return digest.hexdigest()
+
+
+def _index_store_path(config: Any) -> Path:
+    """Resolve the on-disk vector index used by the configured backend."""
+    configured = Path(config.DB_PATH)
+    if str(config.DB_TYPE).lower() == "lancedb":
+        configured = configured.with_name(f"{configured.name}.lance")
+    return configured.resolve()
+
+
+def _model_patch_provenance(models: Sequence[str]) -> Dict[str, Any]:
+    """Lock local model repairs that are part of the experiment protocol."""
+    result: Dict[str, Any] = {}
+    for model in models:
+        manifest_path = MODEL_PATCH_MANIFESTS.get(model)
+        if manifest_path is None:
+            continue
+        if not manifest_path.is_file():
+            raise FileNotFoundError(
+                f"Model patch provenance is missing for {model}: {manifest_path}"
+            )
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if payload.get("status") != "complete" or not payload.get(
+            "patched_file_sha256"
+        ):
+            raise ValueError(f"Model patch provenance is incomplete for {model}")
+        result[model] = {
+            "manifest_path": str(manifest_path.relative_to(ROOT)),
+            "manifest_sha256": _sha256(manifest_path),
+            "patched_file_sha256": payload["patched_file_sha256"],
+            "original_template_sha256": payload.get("original_template_sha256"),
+            "replacement_template_sha256": payload.get(
+                "replacement_template_sha256"
+            ),
+            "metadata_key": payload.get("metadata_key"),
+        }
+    return result
+
+
+def _runtime_config(config: Any) -> Dict[str, Any]:
+    """Capture non-secret settings that can change detector or retrieval output."""
+    keys = (
+        "DB_TYPE",
+        "DB_PATH",
+        "METADATA_STORE",
+        "EMBEDDING_MODEL",
+        "RERANK_MODEL",
+        "DEVICE",
+        "ENABLE_DENSE_RUNTIME",
+        "USE_LOCAL_LLM",
+        "LOCAL_LLM_BASE_URL",
+        "LOCAL_LLM_MODEL",
+        "LLM_MAX_TOKENS",
+        "USE_RERANK",
+        "TOP_K",
+        "BM25_K",
+        "FUSION_K",
+        "RRF_K",
+        "MAX_HOPS",
+        "ENABLE_L2_DETECTION",
+        "L2_SIMILARITY_THRESHOLD",
+        "L2_TOP_K",
+        "SEED",
+    )
+    return {key: str(getattr(config, key)) if isinstance(getattr(config, key), Path) else getattr(config, key) for key in keys}
+
+
+def _run_signature(
+    args: argparse.Namespace,
+    strategies: Sequence[str],
+    ground_truth_path: Path,
+    config: Any,
+) -> Dict[str, Any]:
+    """Describe every input that must remain fixed when resuming a run."""
+    metadata_store = Path(config.METADATA_STORE).resolve()
+    index_store = _index_store_path(config)
+    return {
+        "ground_truth_path": str(ground_truth_path),
+        "ground_truth_sha256": _sha256(ground_truth_path),
+        "taxonomy_sha256": _sha256(ROOT / "problem_codes.json"),
+        "detector_code_sha256": _sha256(ROOT / "H2LDetector.py"),
+        "h2l_core_sha256": _sha256(ROOT / "H2L_core.py"),
+        "evaluation_code_sha256": _sha256(ROOT / "evaluate_h2l_proper.py"),
+        "matrix_runner_sha256": _sha256(Path(__file__).resolve()),
+        "config_code_sha256": _sha256(ROOT / "config.py"),
+        "retrieval_engine_sha256": _sha256(ROOT / "retrieval_engine.py"),
+        "unified_baselines_sha256": _sha256(ROOT / "unified_baselines.py"),
+        "metadata_store_path": str(metadata_store),
+        "metadata_store_sha256": _sha256_tree(metadata_store),
+        "index_store_path": str(index_store),
+        "index_store_sha256": _sha256_tree(index_store),
+        "runtime_config": _runtime_config(config),
+        "ollama_model_inventory": _ollama_model_inventory(
+            config.LOCAL_LLM_BASE_URL,
+            args.models,
+        ) if bool(config.USE_LOCAL_LLM) else {"not_applicable": True},
+        "model_patch_provenance": _model_patch_provenance(args.models),
+        "models": list(args.models),
+        "repeats": int(args.repeats),
+        "with_retrieval": bool(args.with_retrieval),
+        "retrieval_strategies": list(strategies),
+        "top_k": int(args.top_k),
+        "problem_source": "detected",
+    }
 
 
 def _expected_codes(case: Dict[str, Any]) -> List[str]:
@@ -319,6 +460,7 @@ def _ollama_model_inventory(base_url: str, requested_models: Sequence[str]) -> D
         details = item.get("details", {})
         inventory[model] = {
             "installed": bool(item),
+            "digest": item.get("digest"),
             "size_bytes": int(item.get("size", 0) or 0),
             "parameter_size": details.get("parameter_size"),
             "quantization_level": details.get("quantization_level"),
@@ -333,6 +475,7 @@ def _write_checkpoint(
     phase: str,
     completed_units: int,
     total_units: int,
+    run_signature: Dict[str, Any],
 ) -> None:
     checkpoint = Path(f"{output_path}.checkpoint")
     payload = {
@@ -341,6 +484,7 @@ def _write_checkpoint(
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "completed_units": completed_units,
         "total_units": total_units,
+        "run_signature": run_signature,
         "per_case": rows_by_model,
     }
     temporary = checkpoint.with_suffix(f"{checkpoint.suffix}.tmp")
@@ -354,8 +498,18 @@ def _load_resume_rows(
     case_ids: set,
     repeats: int,
     require_detected_problems: bool,
+    expected_signature: Dict[str, Any],
+    retry_degraded: bool,
 ) -> Dict[str, List[Dict[str, Any]]]:
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    actual_signature = payload.get("run_signature") or payload.get("metadata", {}).get(
+        "run_signature"
+    )
+    if actual_signature != expected_signature:
+        raise ValueError(
+            "Resume artifact does not match the current run signature. "
+            "Use a fresh --output path or restore the exact dataset/code/configuration."
+        )
     source_rows = payload.get("per_case", {})
     if not isinstance(source_rows, dict):
         raise ValueError(f"Resume artifact has no per_case rows: {path}")
@@ -369,6 +523,8 @@ def _load_resume_rows(
             if key[0] not in case_ids or not 1 <= key[1] <= repeats or key in seen:
                 continue
             if require_detected_problems and "detected_problems" not in row:
+                continue
+            if retry_degraded and bool(row.get("l2_degraded")):
                 continue
             row["retrieval_metrics"] = _retrieval_metrics_by_strategy(row)
             rows_by_model[model].append(row)
@@ -442,9 +598,33 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
             f"Unknown retrieval strategies: {', '.join(unsupported_strategies)}"
         )
 
-    cases = load_test_cases_from_ground_truth(args.ground_truth)
+    ground_truth_path = Path(args.ground_truth).resolve()
+    cases = load_test_cases_from_ground_truth(str(ground_truth_path))
     if args.max_cases:
         cases = cases[:args.max_cases]
+    if args.expected_test_cases is not None and len(cases) != args.expected_test_cases:
+        raise ValueError(
+            f"Expected {args.expected_test_cases} test cases, loaded {len(cases)} "
+            f"from {ground_truth_path}"
+        )
+    run_signature = _run_signature(args, strategies, ground_truth_path, config)
+    if bool(config.USE_LOCAL_LLM):
+        model_inventory = run_signature["ollama_model_inventory"]
+        if model_inventory.get("error"):
+            raise RuntimeError(
+                "Could not inventory local Ollama models before evaluation: "
+                f"{model_inventory['error']}"
+            )
+        missing_models = [
+            model
+            for model, details in model_inventory.get("models", {}).items()
+            if not details.get("installed") or not details.get("digest")
+        ]
+        if missing_models:
+            raise ValueError(
+                "Requested Ollama models are missing or have no immutable digest: "
+                f"{', '.join(missing_models)}"
+            )
     detector = H2LDetectorV3(config=config)
     taxonomy = detector.get_taxonomy()
     case_ids = {
@@ -458,6 +638,8 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
             case_ids,
             args.repeats,
             require_detected_problems=bool(strategies),
+            expected_signature=run_signature,
+            retry_degraded=not args.keep_degraded_on_resume,
         )
     else:
         rows_by_model = {model: [] for model in args.models}
@@ -506,6 +688,8 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
                     "case_id": case_id,
                     "complexity": case.get("complexity"),
                     "category": case.get("category"),
+                    "evaluation_slice": case.get("evaluation_slice"),
+                    "augmentation": copy.deepcopy(case.get("augmentation")),
                     "expected_codes": expected,
                     "expected_high_severity_codes": expected_high_severity,
                     "predicted_codes": predicted,
@@ -532,6 +716,7 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
                         "detection",
                         completed_units,
                         total_units,
+                        run_signature,
                     )
 
     case_order = {
@@ -551,6 +736,7 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
         "detection_complete",
         completed_units,
         total_units,
+        run_signature,
     )
 
     if strategies:
@@ -601,6 +787,7 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
                             f"retrieval:{strategy}",
                             completed_units,
                             total_units,
+                            run_signature,
                         )
             _write_checkpoint(
                 args.output,
@@ -608,10 +795,21 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
                 f"retrieval_complete:{strategy}",
                 completed_units,
                 total_units,
+                run_signature,
             )
 
+    final_signature = _run_signature(args, strategies, ground_truth_path, config)
+    if final_signature != run_signature:
+        raise RuntimeError(
+            "Experiment inputs changed while the matrix was running; refusing to "
+            "write a mixed-provenance final artifact."
+        )
+
     aggregates = {model: _aggregate(rows) for model, rows in rows_by_model.items()}
-    h2l_hash = hashlib.sha256((ROOT / "H2L_core.py").read_bytes()).hexdigest()
+    evaluation_slices: Dict[str, int] = {}
+    for case in cases:
+        slice_name = str(case.get("evaluation_slice") or "overall_test")
+        evaluation_slices[slice_name] = evaluation_slices.get(slice_name, 0) + 1
     return {
         "metadata": {
             "created_at": datetime.now(timezone.utc).isoformat(),
@@ -622,8 +820,11 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
             "with_retrieval": args.with_retrieval,
             "retrieval_strategies": strategies,
             "top_k": args.top_k,
+            "problem_source": "detected",
+            "evaluation_slices": evaluation_slices,
             "resumed_from": args.resume_from,
-            "ollama": _ollama_model_inventory(config.LOCAL_LLM_BASE_URL, args.models),
+            "run_signature": run_signature,
+            "ollama": run_signature["ollama_model_inventory"],
             "controlled_variables": {
                 "embedding_model": config.EMBEDDING_MODEL,
                 "rerank_model": config.RERANK_MODEL,
@@ -634,9 +835,14 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
                 "hyde_generation_temperature": 0.3,
                 "hyde_generation_seed": 42,
                 "h2l_formula": "bayesian_v6_unchanged",
-                "h2l_core_sha256": h2l_hash,
+                "h2l_core_sha256": run_signature["h2l_core_sha256"],
+                "h2l_detector_sha256": _sha256(ROOT / "H2LDetector.py"),
                 "temperature": 0.2,
                 "seed": 42,
+                "l2_schema_validation": "validated_codes/implicit_problems arrays of objects; context_analysis object",
+                "l2_corrective_retry_max": 1,
+                "l2_corrective_retry_temperature": 0,
+                "l2_corrective_retry_seed": 43,
                 "max_tokens": config.LLM_MAX_TOKENS,
                 "response_format": "json_object",
             },
@@ -666,6 +872,11 @@ def main() -> None:
     parser.add_argument("--models", nargs="+", default=DEFAULT_MODELS)
     parser.add_argument("--ground-truth", default="expanded_ground_truth.json")
     parser.add_argument("--max-cases", type=int)
+    parser.add_argument(
+        "--expected-test-cases",
+        type=int,
+        help="Fail before evaluation unless the loaded test split has this size",
+    )
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--top-k", type=int, default=15)
     parser.add_argument("--with-retrieval", action="store_true")
@@ -683,6 +894,11 @@ def main() -> None:
     parser.add_argument(
         "--resume-from",
         help="Resume completed rows and retrieval metrics from an artifact or checkpoint",
+    )
+    parser.add_argument(
+        "--keep-degraded-on-resume",
+        action="store_true",
+        help="Keep degraded detector rows instead of retrying them when resuming",
     )
     args = parser.parse_args()
 

@@ -98,7 +98,7 @@ class Config:
             [
                 LOCAL_LLM_MODEL,
                 "scb10x/llama3.1-typhoon2-8b-instruct:latest",
-                "scb10x/typhoon2.1-gemma3-4b:latest",
+                "h2l/typhoon-gemma3-4b-templatefix-v2:latest",
             ]
             if USE_LOCAL_LLM
             else [OPENROUTER_MODEL]

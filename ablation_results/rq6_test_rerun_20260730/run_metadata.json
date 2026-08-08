@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-07-30T10:09:19.588263",
+  "ground_truth_path": "expanded_ground_truth.json",
+  "split": "test",
+  "available_cases_after_filter": 76,
+  "max_cases": null,
+  "rq_filter": [
+    6
+  ],
+  "skip_baselines": true
+}

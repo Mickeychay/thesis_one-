@@ -1,28 +1,28 @@
 {
   "metadata": {
     "version": "2.0-expanded",
-    "total_cases": 205,
+    "total_cases": 220,
     "original_cases": 92,
-    "generated_cases": 69,
+    "generated_cases": 84,
     "complexity_distribution": {
-      "moderate": 71,
-      "complex": 52,
-      "simple": 56
+      "moderate": 90,
+      "complex": 58,
+      "simple": 72
     },
     "augmentation_types": {
       "original": 92,
       "paraphrase": 44,
       "complexity_escalation": 10,
       "complexity_reduction": 10,
-      "adversarial": 5
+      "adversarial": 20
     },
     "generated_at": "2026-02-27T16:14:55.235461",
     "categories": 15,
     "negation_cases_added": 18,
-    "last_updated": "2026-07-22T20:28:54.501362",
-    "split_ratio": "70%/30%",
-    "train_cases": 129,
-    "test_cases": 76,
+    "last_updated": "2026-07-30T20:15:36.738052",
+    "split_ratio": "target 70%/30%; held-out adversarial test slice appended",
+    "train_cases": 125,
+    "test_cases": 95,
     "polarity_cases_added": 18,
     "test_affirmative_cases": 32,
     "test_negated_cases": 18,
@@ -36,7 +36,12 @@
     "tiny_cases_added": 3,
     "short_tiny_note": "SHORT_* (61-72 chars): short-but-evidenced cases testing detection on brief realistic notes. TINY_* (<22 chars): minimal cases that trigger G_len discount, verified against live detector 2026-07-19. All expected problems verified to match actual detector output (MISS=0).",
     "code_type_tagged": true,
-    "code_type_note": "Each expected problem now carries code_type: ICD (medical, ICD-10 pattern letter+digit) or SOCIAL (4-digit social problem code). Classification is deterministic by code pattern; verified 202 taxonomy codes split cleanly (98 ICD / 104 SOCIAL, no ambiguity)."
+    "code_type_note": "Each expected problem now carries code_type: ICD (medical, ICD-10 pattern letter+digit) or SOCIAL (4-digit social problem code). Classification is deterministic by code pattern; verified 202 taxonomy codes split cleanly (98 ICD / 104 SOCIAL, no ambiguity).",
+    "adversarial_cases_added": 15,
+    "adversarial_cases_total": 20,
+    "adversarial_test_slice": "adversarial_test",
+    "adversarial_test_cases": 20,
+    "headline_metrics_note": "Existing headline artifacts were generated before the 15-case adversarial extension and must be rerun before reporting updated 95-case test metrics."
   },
   "cases": [
     {
@@ -15559,15 +15564,15 @@
       "case_id": "ADV_001",
       "complexity": "moderate",
       "category": "adversarial_l2_test",
-      "case_description": "ผู้ป่วยเล่าว่าเคย คิดฆ่าตัวตาย ในอดีต แต่ปัจจุบันหายดีแล้ว มาร้องเรียนเรื่อง สิทธิสวัสดิการที่ไม่ได้รับ",
+      "case_description": "ผู้ป่วยเล่าว่าเคยคิดฆ่าตัวตายเมื่อสิบปีก่อน แต่ปัจจุบันหายดีและไม่มีความคิดดังกล่าว วันนี้มาร้องเรียนเรื่องค่ารักษาพยาบาลส่วนเกินที่จ่ายไม่ไหว",
       "expected_diagnosis": {
         "problem_list": [
           {
-            "code": "Z59.7",
-            "category": "Z59.7",
-            "severity": 2,
-            "details": "สิทธิสวัสดิการที่ไม่ได้รับ",
-            "code_type": "ICD"
+            "code": "1003",
+            "category": "10: ปัญหาการเงิน",
+            "severity": 3,
+            "details": "ปัญหาค่าใช้จ่ายในการรักษาพยาบาล",
+            "code_type": "SOCIAL"
           }
         ],
         "recommended_tools": [],
@@ -15580,28 +15585,38 @@
         "trigger_word": "คิดฆ่าตัวตาย"
       },
       "relevant_keywords": {
-        "Z59.7": [
-          "Z59.7",
-          "สิทธิสวัสดิการที่ไม่ได้รับ"
+        "1003": [
+          "ค่ารักษา",
+          "ค่าพยาบาล",
+          "จ่ายไม่ไหว",
+          "ค่าตรวจ",
+          "ค่าพาหนะ",
+          "ส่วนเกินค่ารักษา",
+          "มีส่วนเกิน",
+          "ค่ารักษาเกินสิทธิ์",
+          "เงินไม่พอจ่ายค่ารักษา",
+          "ปัญหาค่าใช้จ่ายในการรักษาพยาบาล",
+          "ค่ารักษาพยาบาลส่วนเกิน"
         ]
       },
       "is_negated": false,
       "polarity_type": "base_affirmative",
-      "split": "test"
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
     },
     {
       "case_id": "ADV_002",
       "complexity": "moderate",
       "category": "adversarial_l2_test",
-      "case_description": "อ่านข่าว ยาเสพติดระบาด ในหนังสือพิมพ์ ผู้รับบริการกังวลเกี่ยวกับ ความปลอดภัยของลูกหลานในละแวกบ้าน",
+      "case_description": "ผู้รับบริการอ่านข่าวยาเสพติดระบาดในชุมชนจากหนังสือพิมพ์ ไม่ได้ใช้สารเสพติดเอง แต่บุตรหลานขาดเรียนเพราะครอบครัวไม่มีเงินซื้ออุปกรณ์การเรียน จึงขอคำปรึกษาเรื่องสิทธิการศึกษา",
       "expected_diagnosis": {
         "problem_list": [
           {
-            "code": "Z63.0",
-            "category": "ปัญหาครอบครัว",
+            "code": "1104",
+            "category": "11: ปัญหาการศึกษา",
             "severity": 3,
-            "details": "ความปลอดภัยของลูกหลานในละแวกบ้าน",
-            "code_type": "ICD"
+            "details": "ขาดโอกาสทางการศึกษา",
+            "code_type": "SOCIAL"
           }
         ],
         "recommended_tools": [],
@@ -15610,33 +15625,41 @@
       "augmentation": {
         "type": "adversarial",
         "description": "L1 false positive: drug keyword in news context",
-        "false_trigger_code": "F10-F19",
+        "false_trigger_code": "1602",
         "trigger_word": "ยาเสพติดระบาด"
       },
       "relevant_keywords": {
-        "Z63.0": [
-          "ปัญหาความสัมพันธ์คู่รัก",
-          "ปัญหาครอบครัว",
-          "ความปลอดภัยของลูกหลานในละแวกบ้าน"
+        "1104": [
+          "ไม่มีค่าเทอม",
+          "ไม่มีค่าอุปกรณ์",
+          "เดินทางลำบาก",
+          "ระบบการศึกษาไม่เอื้อ",
+          "ขาดทุนเรียน",
+          "พ่อแม่ไม่สนับสนุน",
+          "ขาดโอกาสทางการศึกษา",
+          "ขาดเรียน",
+          "ไม่มีเงินซื้ออุปกรณ์การเรียน",
+          "สิทธิการศึกษา"
         ]
       },
       "is_negated": false,
       "polarity_type": "base_affirmative",
-      "split": "train"
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
     },
     {
       "case_id": "ADV_003",
       "complexity": "moderate",
       "category": "adversarial_l2_test",
-      "case_description": "ผู้รับบริการทำงานเป็นพยาบาลดูแลผู้ป่วย โรคจิต ต้องการคำปรึกษาเรื่องความเครียดจากงาน",
+      "case_description": "ผู้รับบริการถูกเลิกจ้างจากงานพยาบาลหลังหน่วยงานปรับลดบุคลากร ในประวัติการทำงานเคยดูแลผู้ป่วยโรคจิต ปัจจุบันไม่มีรายได้และกำลังสมัครงานใหม่",
       "expected_diagnosis": {
         "problem_list": [
           {
-            "code": "Z56",
-            "category": "Z56",
-            "severity": 2,
-            "details": "ความเครียดจากการทำงาน",
-            "code_type": "ICD"
+            "code": "1201",
+            "category": "12: ปัญหาการประกอบอาชีพ",
+            "severity": 3,
+            "details": "ไม่มีงานทำ/ว่างงาน",
+            "code_type": "SOCIAL"
           }
         ],
         "recommended_tools": [],
@@ -15649,28 +15672,38 @@
         "trigger_word": "โรคจิต"
       },
       "relevant_keywords": {
-        "Z56": [
-          "Z56",
-          "ความเครียดจากการทำงาน"
+        "1201": [
+          "ไม่มีงาน",
+          "ว่างงาน",
+          "ตกงาน",
+          "เลือกงาน",
+          "เปลี่ยนงานบ่อย",
+          "ไม่อยากทำงาน",
+          "เลี้ยงลูก",
+          "ไม่มีงานทำ/ว่างงาน",
+          "ถูกเลิกจ้าง",
+          "ไม่มีรายได้",
+          "สมัครงานใหม่"
         ]
       },
       "is_negated": false,
       "polarity_type": "base_affirmative",
-      "split": "train"
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
     },
     {
       "case_id": "ADV_004",
       "complexity": "moderate",
       "category": "adversarial_l2_test",
-      "case_description": "ลูกชายวัยรุ่นชอบเล่นเกมที่มีเนื้อหา ความรุนแรง ผู้ปกครองกังวลเรื่อง พฤติกรรมเด็กติดเกม",
+      "case_description": "ผู้ปกครองพบว่าลูกชายเล่นเกมออนไลน์ที่มีฉากการทำร้ายร่างกาย แต่เด็กไม่ได้ทำร้ายใคร ปัญหาคือเล่นจนอดนอนและขาดเรียนบ่อย",
       "expected_diagnosis": {
         "problem_list": [
           {
-            "code": "F63",
-            "category": "F63",
-            "severity": 2,
-            "details": "พฤติกรรมเด็กติดเกม",
-            "code_type": "ICD"
+            "code": "1101",
+            "category": "11: ปัญหาการศึกษา",
+            "severity": 3,
+            "details": "ปัญหาพฤติกรรมไม่สนใจเรียน",
+            "code_type": "SOCIAL"
           }
         ],
         "recommended_tools": [],
@@ -15680,37 +15713,50 @@
         "type": "adversarial",
         "description": "L1 false positive: violence keyword in game context",
         "false_trigger_code": "T74",
-        "trigger_word": "ความรุนแรง"
+        "trigger_word": "การทำร้ายร่างกาย"
       },
       "relevant_keywords": {
-        "F63": [
-          "F63",
-          "พฤติกรรมเด็กติดเกม"
+        "1101": [
+          "ไม่ได้เข้าเรียน",
+          "เรียนไม่จบ",
+          "ไม่สนใจเรียน",
+          "ออกจากโรงเรียน",
+          "โดดเรียน",
+          "ติดเกม",
+          "ไม่ได้เรียน",
+          "หนีเที่ยว",
+          "ไม่อยากไปโรงเรียน",
+          "ติดยา",
+          "ขาดเรียน",
+          "ปัญหาพฤติกรรมไม่สนใจเรียน",
+          "เล่นจนอดนอน",
+          "ขาดเรียนบ่อย"
         ]
       },
       "is_negated": false,
       "polarity_type": "base_affirmative",
-      "split": "train"
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
     },
     {
       "case_id": "ADV_005",
       "complexity": "moderate",
       "category": "adversarial_l2_test",
-      "case_description": "ครูรายงานว่านักเรียนเขียนเรียงความเรื่อง การทำร้ายร่างกาย ครอบครัวเด็กมีปัญหาเรื่อง ความยากจนและค่าเล่าเรียน",
+      "case_description": "ครูให้นักเรียนเขียนเรียงความหัวข้อการทำร้ายร่างกาย ไม่มีเหตุการณ์ทำร้ายเกิดขึ้นกับเด็ก ครอบครัวไม่มีเงินจ่ายค่าเล่าเรียนและค่าอุปกรณ์การเรียน",
       "expected_diagnosis": {
         "problem_list": [
           {
             "code": "1001",
             "category": "10: ปัญหาการเงิน",
             "severity": 3,
-            "details": "ความยากจนและค่าเล่าเรียน",
+            "details": "ไม่มีรายได้/รายได้ไม่เพียงพอ",
             "code_type": "SOCIAL"
           },
           {
-            "code": "1101",
+            "code": "1104",
             "category": "11: ปัญหาการศึกษา",
             "severity": 3,
-            "details": "ความยากจนและค่าเล่าเรียน",
+            "details": "ขาดโอกาสทางการศึกษา",
             "code_type": "SOCIAL"
           }
         ],
@@ -15739,29 +15785,25 @@
           "ไม่มีเงินกลับบ้าน",
           "ไม่มีเงิน",
           "ไม่มีรายได้/รายได้ไม่เพียงพอ",
-          "10: ปัญหาการเงิน",
-          "ความยากจนและค่าเล่าเรียน"
+          "ไม่มีเงินจ่ายค่าเล่าเรียน",
+          "ความยากจน"
         ],
-        "1101": [
-          "ไม่ได้เข้าเรียน",
-          "เรียนไม่จบ",
-          "ไม่สนใจเรียน",
-          "ออกจากโรงเรียน",
-          "โดดเรียน",
-          "ติดเกม",
-          "ไม่ได้เรียน",
-          "หนีเที่ยว",
-          "ไม่อยากไปโรงเรียน",
-          "ติดยา",
-          "ขาดเรียน",
-          "ปัญหาพฤติกรรมไม่สนใจเรียน",
-          "11: ปัญหาการศึกษา",
-          "ความยากจนและค่าเล่าเรียน"
+        "1104": [
+          "ไม่มีค่าเทอม",
+          "ไม่มีค่าอุปกรณ์",
+          "เดินทางลำบาก",
+          "ระบบการศึกษาไม่เอื้อ",
+          "ขาดทุนเรียน",
+          "พ่อแม่ไม่สนับสนุน",
+          "ขาดโอกาสทางการศึกษา",
+          "ค่าเล่าเรียน",
+          "ค่าอุปกรณ์การเรียน"
         ]
       },
       "is_negated": false,
       "polarity_type": "base_affirmative",
-      "split": "train"
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
     },
     {
       "case_id": "NEG_SH_POS",
@@ -17623,6 +17665,629 @@
       "split": "test",
       "length_category": "tiny",
       "annotation_note": "TINY case (2026-07-19): 17 chars, triggers G_len=0.9314. Dual-purpose: also verifies tone-exception bypass — begins with negation marker 'ไม่' but is a state description, G_neg stays 1.0."
+    },
+    {
+      "case_id": "ADV_006",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "แบบคัดกรองมาตรฐานมีคำถามว่าเคยคิดฆ่าตัวตายหรือไม่ ผู้รับบริการยืนยันว่าไม่เคยคิดและไม่มีอาการดังกล่าว ปัจจุบันมาขอความช่วยเหลือหลังตกงานและต้องการหางานใหม่",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1201",
+            "category": "12: ปัญหาการประกอบอาชีพ",
+            "severity": 3,
+            "details": "ไม่มีงานทำ/ว่างงาน",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1201": [
+          "ไม่มีงาน",
+          "ว่างงาน",
+          "ตกงาน",
+          "เลือกงาน",
+          "เปลี่ยนงานบ่อย",
+          "ไม่อยากทำงาน",
+          "เลี้ยงลูก",
+          "ไม่มีงานทำ/ว่างงาน",
+          "ต้องการหางานใหม่"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "screening question and denial are not evidence of self-harm; the current problem is unemployment",
+        "false_trigger_code": "X60-X84",
+        "trigger_word": "คิดฆ่าตัวตาย"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_007",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้รับบริการอ่านข่าวยาเสพติดระบาดในชุมชนจากหนังสือพิมพ์ ไม่ได้ใช้สารเสพติดเอง แต่ขอคำปรึกษาเรื่องกลิ่นและเสียงรบกวนจากโรงงานข้างบ้าน",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "0804",
+            "category": "08: ปัญหาที่อยู่อาศัย/สภาพแวดล้อม",
+            "severity": 3,
+            "details": "สภาพแวดล้อมเป็นพิษ",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "0804": [
+          "มลพิษ",
+          "กลิ่นเหม็น",
+          "โรงงาน",
+          "น้ำเสีย",
+          "สารพิษ",
+          "เสียงรบกวน",
+          "สภาพแวดล้อมเป็นพิษ",
+          "กลิ่น",
+          "โรงงานข้างบ้าน"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "a news report mentions drugs, while the client reports an environmental nuisance",
+        "false_trigger_code": "1602",
+        "trigger_word": "ยาเสพติดระบาด"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_008",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้รับบริการยืนยันว่าโรคจิตเภทเป็นการวินิจฉัยของพี่ชาย ไม่ใช่ของตนเอง ปัจจุบันโรงงานที่ทำงานปิดกิจการจึงตกงานและมาขอคำปรึกษาเรื่องสิทธิประโยชน์ว่างงาน",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1201",
+            "category": "12: ปัญหาการประกอบอาชีพ",
+            "severity": 3,
+            "details": "ไม่มีงานทำ/ว่างงาน",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1201": [
+          "ไม่มีงาน",
+          "ว่างงาน",
+          "ตกงาน",
+          "เลือกงาน",
+          "เปลี่ยนงานบ่อย",
+          "ไม่อยากทำงาน",
+          "เลี้ยงลูก",
+          "ไม่มีงานทำ/ว่างงาน",
+          "โรงงานปิดกิจการ"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the psychiatric term describes a former patient, not the client",
+        "false_trigger_code": "F20-F29",
+        "trigger_word": "โรคจิต"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_009",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้รับบริการซึ่งเป็นครูใช้คลิปจำลองการทำร้ายร่างกายในการอบรม ไม่ได้เกิดเหตุกับตนเอง แต่กำลังถูกทวงหนี้นอกระบบและค้างชำระหลายเดือน",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1002",
+            "category": "10: ปัญหาการเงิน",
+            "severity": 3,
+            "details": "มีหนี้สิน",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1002": [
+          "มีหนี้",
+          "มีหนี้สิน",
+          "ค้างชำระ",
+          "ติดหนี้",
+          "ถูกเรียกเก็บหนี้",
+          "ถูกฟ้อง",
+          "หนี้นอกระบบ",
+          "หนี้สินล้นพ้นตัว",
+          "ทวงหนี้นอกระบบ",
+          "ค้างชำระหลายเดือน"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the violence appears in a training simulation; the client's current problem is debt",
+        "false_trigger_code": "T74",
+        "trigger_word": "การทำร้ายร่างกาย"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_010",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้รับบริการนำคู่มืออบรมเจ้าหน้าที่ซึ่งยกตัวอย่างการทำร้ายร่างกายมาให้ดู ไม่มีเหตุเกิดกับผู้รับบริการเอง แต่ไม่เข้าใจโรคของบุตรและไม่กินยาตามแพทย์สั่ง",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1401",
+            "category": "14: ปัญหาที่เป็นอุปสรรคต่อการดูแลสุขภาพ",
+            "severity": 3,
+            "details": "ขาดความรู้/ความเข้าใจเกี่ยวกับโรค/การรักษา",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1401": [
+          "ขาดความรู้",
+          "ไม่เข้าใจโรค",
+          "ไม่ยอมรับการป่วย",
+          "ไม่ร่วมมือรักษา",
+          "ไม่กินยา",
+          "ไม่มาตามนัด",
+          "ขาดความรู้/ความเข้าใจเกี่ยวกับโรค/การรักษา",
+          "ไม่เข้าใจโรคของบุตร",
+          "ไม่กินยาตามแพทย์สั่ง"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the trigger is an example in a training manual, not an abuse event; the actual concern is treatment understanding",
+        "false_trigger_code": "T74",
+        "trigger_word": "การทำร้ายร่างกาย"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_011",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้ดูแลยืนยันว่าไม่ดื่มสุราและไม่มีปัญหาแอลกอฮอล์ ปัจจุบันต้องดูแลมารดาอายุ 86 ปีที่ช่วยเหลือตัวเองไม่ได้เพียงลำพังจนเหนื่อยดูแล",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "0701",
+            "category": "07: ปัญหาภาระในการดูแลผู้เจ็บป่วย/ผู้พิการ/ผู้สูงอายุ",
+            "severity": 3,
+            "details": "ภาระดูแลผู้สูงอายุ",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "0701": [
+          "ดูแลผู้สูงอายุ",
+          "ดูแลคนแก่",
+          "ภาระดูแล",
+          "ปัญหาสุขภาพจิตผู้ดูแล",
+          "เหนื่อยดูแล",
+          "เครียดดูแล",
+          "caregiver burden",
+          "ภาระดูแลผู้สูงอายุ",
+          "ดูแลมารดา",
+          "ช่วยเหลือตัวเองไม่ได้"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the alcohol phrase is explicitly denied; the client reports caregiver burden",
+        "false_trigger_code": "1601",
+        "trigger_word": "ดื่มสุรา"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_012",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "มารดาพาบุตรเข้ารับการบำบัดยาบ้า ย้ำว่าตนเองไม่ใช้ยาเสพติด แต่ต้องดูแลผู้ป่วยสารเสพติดที่บ้านคนเดียวและเครียดดูแล",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "0702",
+            "category": "07: ปัญหาภาระในการดูแลผู้เจ็บป่วย/ผู้พิการ/ผู้สูงอายุ",
+            "severity": 3,
+            "details": "ภาระดูแลผู้ป่วยเรื้อรัง/สารเสพติด",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "0702": [
+          "ดูแลผู้ป่วยเรื้อรัง",
+          "ดูแลคนพิการ",
+          "ดูแลผู้ป่วยติดเตียง",
+          "ดูแลผู้ป่วยสารเสพติด",
+          "ดูแลผู้ป่วยจิตเวช",
+          "ภาระดูแล",
+          "เหนื่อยดูแล",
+          "เครียดดูแล",
+          "caregiver burden",
+          "ภาระดูแลผู้ป่วยเรื้อรัง/พิการ/สารเสพติด/จิตเวช",
+          "ภาระดูแลผู้ป่วยเรื้อรัง/สารเสพติด",
+          "ดูแลที่บ้านคนเดียว"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "substance use belongs to the child; the client's problem is caring for that person",
+        "false_trigger_code": "1602",
+        "trigger_word": "ยาเสพติด"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_013",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ญาติกล่าวถึงพี่ชายที่เคยมีอาการโรคจิต ไม่ใช่การวินิจฉัยของผู้รับบริการเอง ผู้รับบริการไม่เข้าใจโรคของตนเองและไม่กินยาตามแพทย์สั่ง",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1401",
+            "category": "14: ปัญหาที่เป็นอุปสรรคต่อการดูแลสุขภาพ",
+            "severity": 3,
+            "details": "ขาดความรู้/ความเข้าใจเกี่ยวกับโรค/การรักษา",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1401": [
+          "ขาดความรู้",
+          "ไม่เข้าใจโรค",
+          "ไม่ยอมรับการป่วย",
+          "ไม่ร่วมมือรักษา",
+          "ไม่กินยา",
+          "ไม่มาตามนัด",
+          "ขาดความรู้/ความเข้าใจเกี่ยวกับโรค/การรักษา",
+          "ไม่กินยาตามแพทย์สั่ง"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the diagnosis is a relative's history; the client has a treatment-understanding problem",
+        "false_trigger_code": "F20-F29",
+        "trigger_word": "อาการโรคจิต"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_014",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้รับบริการอ่านข่าวคดีข่มขืนเพื่อเตรียมให้ปากคำในฐานะพยาน ยืนยันว่าไม่ได้เป็นผู้เสียหาย แต่กำลังขอคำปรึกษาด้านกฎหมายแพ่งเกี่ยวกับข้อพิพาทสัญญาเช่าบ้าน",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1301",
+            "category": "13: ปัญหาทางกฎหมาย",
+            "severity": 3,
+            "details": "ปัญหากฎหมาย",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1301": [
+          "กฎหมายแพ่ง",
+          "กฎหมายอาญา",
+          "ถูกจับ",
+          "ฟ้องร้อง",
+          "ดำเนินคดี",
+          "ผู้พิทักษ์",
+          "ผู้อนุบาล",
+          "หลอกลวง",
+          "เสียทรัพย์",
+          "เสียชื่อเสียง",
+          "ละเมิดสิทธิ",
+          "ปัญหาเกี่ยวกับกฎหมายแพ่ง/อาญา",
+          "ปัญหากฎหมาย",
+          "ให้ปากคำ",
+          "ข้อพิพาทสัญญาเช่าบ้าน"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the client is a witness to a news case, not a victim; the current issue is legal advice",
+        "false_trigger_code": "0601",
+        "trigger_word": "ข่มขืน"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_015",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้ป่วยยืนยันว่าไม่ได้ถูกทำร้ายร่างกาย บาดเจ็บจากรถจักรยานยนต์ล้มเอง และมีค่ารักษาพยาบาลส่วนเกินจ่ายไม่ไหว",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1003",
+            "category": "10: ปัญหาการเงิน",
+            "severity": 3,
+            "details": "ปัญหาค่าใช้จ่ายในการรักษาพยาบาล",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1003": [
+          "ค่ารักษา",
+          "ค่าพยาบาล",
+          "จ่ายไม่ไหว",
+          "ค่าตรวจ",
+          "ค่าพาหนะ",
+          "ส่วนเกินค่ารักษา",
+          "มีส่วนเกิน",
+          "ค่ารักษาเกินสิทธิ์",
+          "เงินไม่พอจ่ายค่ารักษา",
+          "ปัญหาค่าใช้จ่ายในการรักษาพยาบาล",
+          "ค่ารักษาพยาบาลส่วนเกิน"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the injury is an accident and violence is denied; the actual issue is treatment cost",
+        "false_trigger_code": "T74.1",
+        "trigger_word": "ถูกทำร้ายร่างกาย"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_016",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้รับบริการเข้าร่วมกิจกรรมเตรียมงานสำหรับผู้พ้นโทษในฐานะอาสาสมัคร ไม่เคยต้องโทษ ปัจจุบันไม่มีที่อยู่อาศัยและนอนในที่สาธารณะ",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "0801",
+            "category": "08: ปัญหาที่อยู่อาศัย/สภาพแวดล้อม",
+            "severity": 4,
+            "details": "ไม่มีที่อยู่อาศัย/เร่ร่อน",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "0801": [
+          "ไม่มีบ้าน",
+          "ไม่มีที่อยู่",
+          "เร่ร่อน",
+          "homeless",
+          "ไร้ที่พึ่ง",
+          "ข้างถนน",
+          "จรจัด",
+          "พักในที่สาธารณะ",
+          "อาศัยอยู่ที่สาธารณะ",
+          "อยู่ที่สาธารณะ",
+          "นอนในที่สาธารณะ",
+          "นอนท้ายกระบะ",
+          "ไม่มีที่อยู่อาศัย/เร่ร่อน",
+          "ไม่มีที่อยู่อาศัย"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the criminal-justice term describes the volunteer program; the client is homeless",
+        "false_trigger_code": "Z65.1",
+        "trigger_word": "ผู้พ้นโทษ"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_017",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "มารดาพาบุตรสาวที่ตั้งครรภ์ไม่พร้อมมาพบเจ้าหน้าที่ ยืนยันว่าตนเองไม่ได้ตั้งครรภ์ ปัญหาของมารดาคือค่าพาหนะมารักษาไม่พอ",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1003",
+            "category": "10: ปัญหาการเงิน",
+            "severity": 3,
+            "details": "ปัญหาค่าใช้จ่ายในการรักษาพยาบาล",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1003": [
+          "ค่ารักษา",
+          "ค่าพยาบาล",
+          "จ่ายไม่ไหว",
+          "ค่าตรวจ",
+          "ค่าพาหนะ",
+          "ส่วนเกินค่ารักษา",
+          "มีส่วนเกิน",
+          "ค่ารักษาเกินสิทธิ์",
+          "เงินไม่พอจ่ายค่ารักษา",
+          "ปัญหาค่าใช้จ่ายในการรักษาพยาบาล",
+          "ค่าพาหนะมารักษา",
+          "ไม่พอ"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the pregnancy belongs to the daughter; the client's issue is access cost",
+        "false_trigger_code": "1701",
+        "trigger_word": "ตั้งครรภ์ไม่พร้อม"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_018",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "สามีของผู้รับบริการเป็นมะเร็งปอดและอยู่ระหว่างรักษา แต่ผู้รับบริการไม่มีโรคดังกล่าว ต้องดูแลผู้ป่วยเรื้อรังคนเดียวจนเหนื่อยดูแล",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "0702",
+            "category": "07: ปัญหาภาระในการดูแลผู้เจ็บป่วย/ผู้พิการ/ผู้สูงอายุ",
+            "severity": 3,
+            "details": "ภาระดูแลผู้ป่วยเรื้อรัง/สารเสพติด",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "0702": [
+          "ดูแลผู้ป่วยเรื้อรัง",
+          "ดูแลคนพิการ",
+          "ดูแลผู้ป่วยติดเตียง",
+          "ดูแลผู้ป่วยสารเสพติด",
+          "ดูแลผู้ป่วยจิตเวช",
+          "ภาระดูแล",
+          "เหนื่อยดูแล",
+          "เครียดดูแล",
+          "caregiver burden",
+          "ภาระดูแลผู้ป่วยเรื้อรัง/พิการ/สารเสพติด/จิตเวช",
+          "ภาระดูแลผู้ป่วยเรื้อรัง/สารเสพติด",
+          "ดูแลคนเดียว"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the cancer belongs to the spouse; the client reports caregiver burden",
+        "false_trigger_code": "C34",
+        "trigger_word": "มะเร็งปอด"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_019",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้รับบริการช่วยมารดาควบคุมอาหารจากโรคเบาหวาน ไม่ได้เป็นโรคเบาหวานเอง ปัญหาที่มาปรึกษาคือมีหนี้นอกระบบและค้างชำระหลายเดือน",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1002",
+            "category": "10: ปัญหาการเงิน",
+            "severity": 3,
+            "details": "มีหนี้สิน",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1002": [
+          "มีหนี้",
+          "มีหนี้สิน",
+          "ค้างชำระ",
+          "ติดหนี้",
+          "ถูกเรียกเก็บหนี้",
+          "ถูกฟ้อง",
+          "หนี้นอกระบบ",
+          "หนี้สินล้นพ้นตัว",
+          "ค้างชำระหลายเดือน"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the medical condition belongs to the mother; the client has debt",
+        "false_trigger_code": "E11",
+        "trigger_word": "โรคเบาหวาน"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
+    },
+    {
+      "case_id": "ADV_020",
+      "complexity": "moderate",
+      "category": "adversarial_l2_test",
+      "case_description": "ผู้รับบริการอ่านแผ่นพับเรื่องวัณโรคปอดและผลตรวจของตนเองเป็นลบ ไม่ได้ติดเชื้อ ปัจจุบันตกงานหลังนายจ้างปิดกิจการ",
+      "expected_diagnosis": {
+        "problem_list": [
+          {
+            "code": "1201",
+            "category": "12: ปัญหาการประกอบอาชีพ",
+            "severity": 3,
+            "details": "ไม่มีงานทำ/ว่างงาน",
+            "code_type": "SOCIAL"
+          }
+        ],
+        "recommended_tools": [],
+        "service_plan": {}
+      },
+      "relevant_keywords": {
+        "1201": [
+          "ไม่มีงาน",
+          "ว่างงาน",
+          "ตกงาน",
+          "เลือกงาน",
+          "เปลี่ยนงานบ่อย",
+          "ไม่อยากทำงาน",
+          "เลี้ยงลูก",
+          "ไม่มีงานทำ/ว่างงาน",
+          "นายจ้างปิดกิจการ"
+        ]
+      },
+      "augmentation": {
+        "type": "adversarial",
+        "description": "the leaflet and negative test are not a diagnosis; the current issue is unemployment",
+        "false_trigger_code": "A15",
+        "trigger_word": "วัณโรคปอด"
+      },
+      "split": "test",
+      "evaluation_slice": "adversarial_test"
     }
   ]
 }

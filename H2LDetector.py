@@ -1566,37 +1566,77 @@ Output Format (JSON only):
         
         try:
             selected_model = model or self.model
-            response = self.client.chat.completions.create(
-                model=selected_model,
-                messages=[
-                    {"role": "system", "content": self.SYSTEM_PROMPT},
-                    {"role": "user", "content": f"Case: \"{text}\"\n\n{l1_info}"}
-                ],
-                temperature=0.2,  # Set to 0 for deterministic results
-                seed=42,  # Add seed for reproducibility
-                max_tokens=(
+            messages = [
+                {"role": "system", "content": self.SYSTEM_PROMPT},
+                {"role": "user", "content": f"Case: \"{text}\"\n\n{l1_info}"},
+            ]
+            request_options = {
+                "model": selected_model,
+                "messages": messages,
+                "temperature": 0.2,
+                "seed": 42,
+                "max_tokens": (
                     getattr(self.config, "LLM_MAX_TOKENS", 2048)
                     if self.config
                     else 2048
                 ),
-                response_format={"type": "json_object"},
-            )
-            
-            data = self._parse_json(response.choices[0].message.content)
-            
-            if not data:
+                "response_format": {"type": "json_object"},
+            }
+            response = self.client.chat.completions.create(**request_options)
+            response_content = response.choices[0].message.content
+            data = self._parse_json(response_content)
+
+            shape_errors = self._payload_shape_errors(data)
+            if shape_errors:
+                logger.warning(
+                    "Malformed L2 response schema (%s); retrying once with corrective instructions",
+                    ", ".join(shape_errors),
+                )
+                corrective_messages = messages + [
+                    {"role": "assistant", "content": response_content or ""},
+                    {
+                        "role": "user",
+                        "content": (
+                            "The previous response was malformed. Return one complete JSON object only. "
+                            "validated_codes and implicit_problems must be arrays of objects; "
+                            "context_analysis must be an object. Do not use prose fragments or omit fields."
+                        ),
+                    },
+                ]
+                retry_options = dict(request_options)
+                retry_options.update({
+                    "messages": corrective_messages,
+                    "temperature": 0,
+                    "seed": 43,
+                })
+                response = self.client.chat.completions.create(**retry_options)
+                data = self._parse_json(response.choices[0].message.content)
+                shape_errors = self._payload_shape_errors(data)
+
+            if shape_errors:
+                logger.error(
+                    "L2 response schema remains malformed after retry: %s",
+                    ", ".join(shape_errors),
+                )
                 return l1_candidates, [], {}
             
+            validation_data = self._dict_items(
+                data.get("validated_codes", []), "validated_codes"
+            )
+            implicit_data = self._dict_items(
+                data.get("implicit_problems", []), "implicit_problems"
+            )
+
             # Process validation results
             validated = self._process_validation(
                 l1_candidates,
-                data.get("validated_codes", []),
+                validation_data,
                 validation_targets=set(needs_validation or []),
             )
 
             # Process implicit problems
             implicit = self._process_implicit(
-                data.get("implicit_problems", []),
+                implicit_data,
                 l1_candidates,
                 full_text=text,
                 taxonomy=taxonomy,
@@ -1604,12 +1644,59 @@ Output Format (JSON only):
             
             # Get context analysis
             context = data.get("context_analysis", {})
+            if not isinstance(context, dict):
+                logger.warning(
+                    "Ignoring malformed L2 context_analysis of type %s",
+                    type(context).__name__,
+                )
+                context = {}
             
             return validated, implicit, context
             
         except Exception as e:
             logger.error(f"❌ L2 error: {e}")
             return l1_candidates, [], {}
+
+    @staticmethod
+    def _payload_shape_errors(value) -> List[str]:
+        """Return schema errors that require a corrective LLM retry."""
+        if not isinstance(value, dict) or not value:
+            return [f"root={type(value).__name__}"]
+
+        errors = []
+        for field_name in ("validated_codes", "implicit_problems"):
+            field_value = value.get(field_name)
+            if not isinstance(field_value, list):
+                errors.append(f"{field_name}={type(field_value).__name__}")
+            elif any(not isinstance(item, dict) for item in field_value):
+                errors.append(f"{field_name}=contains_non_object")
+        context = value.get("context_analysis")
+        if not isinstance(context, dict):
+            errors.append(f"context_analysis={type(context).__name__}")
+        return errors
+
+    @staticmethod
+    def _dict_items(value, field_name: str) -> List[Dict]:
+        """Keep valid object entries from occasionally malformed LLM arrays."""
+        if isinstance(value, dict):
+            value = [value]
+        if not isinstance(value, list):
+            logger.warning(
+                "Ignoring malformed L2 %s of type %s",
+                field_name,
+                type(value).__name__,
+            )
+            return []
+        valid = [item for item in value if isinstance(item, dict)]
+        dropped = len(value) - len(valid)
+        if dropped:
+            logger.warning(
+                "Ignored %d non-object entr%s in L2 %s",
+                dropped,
+                "y" if dropped == 1 else "ies",
+                field_name,
+            )
+        return valid
     
     def _format_l1_context(
         self, 

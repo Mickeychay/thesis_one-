@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-07-30T10:29:15.905011",
+  "ground_truth_path": "expanded_ground_truth.json",
+  "split": "test",
+  "available_cases_after_filter": 76,
+  "max_cases": null,
+  "rq_filter": [
+    6
+  ],
+  "skip_baselines": true,
+  "detected_problems_cache_path": "evaluation_results/model_comparison/l2_full_matrix_76cases_3models_3repeats_8strategies.json",
+  "detected_problems_model": "qwen2.5:7b",
+  "detected_problems_repeat": 1,
+  "detected_problems_cache_cases": 76
+}
