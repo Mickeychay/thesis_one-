@@ -1,0 +1,1388 @@
+2026-08-09 22:09:33,438 - INFO - 
+======================================================================
+2026-08-09 22:09:33,438 - INFO - H2L V6 ABLATION STUDY — Real Evaluation Pipeline
+2026-08-09 22:09:33,438 - INFO - ======================================================================
+2026-08-09 22:09:33,438 - INFO - Output: /Users/rischen/Documents/GitHub/thesis_one-/ablation_results/rq5_95cases_20260809
+2026-08-09 22:09:33,438 - INFO - Timestamp: 2026-08-09 22:09:33
+2026-08-09 22:09:33,438 - INFO - Ground-truth split: test
+2026-08-09 22:09:33,439 - INFO - ======================================================================
+
+2026-08-09 22:09:33,537 - INFO - Loaded cached detections for 95 cases from evaluation_results/model_comparison/l2_full_matrix_95cases_3models_3repeats_8strategies.json (model=qwen2.5:7b, repeat=1)
+2026-08-09 22:09:33,554 - INFO - 
+🔬 Starting RQ5: H2L Filter as Post-Processing
+2026-08-09 22:09:33,554 - INFO - 
+======================================================================
+2026-08-09 22:09:33,554 - INFO - Running RQ5: H2L Filter as Post-Processing
+2026-08-09 22:09:33,554 - INFO - ======================================================================
+
+2026-08-09 22:09:33,554 - INFO - 
+  🔧 bm25_only (no filter)
+2026-08-09 22:09:33,555 - INFO - 📦 Initializing EvaluationRunner (loading models)...
+2026-08-09 22:09:33,556 - INFO - ✅ EvaluationRunner ready
+2026-08-09 22:09:34,443 - INFO - 📦 Loading shared components...
+[22:09:34]   [Loader] Loading metadata from              retrieval_engine.py:249
+           'data/vector_db_lancedb/metadata.json'...                            
+2026-08-09 22:09:37,146 - INFO - Load pretrained SentenceTransformer: intfloat/multilingual-e5-base
+  - 🔍 [ThaiBM25] Starting tokenization for 92 docs...
+  - ✅ [ThaiBM25] BM25 index created successfully.
+2026-08-09 22:09:48,754 - INFO - ✅ Shared components ready. 92 docs loaded.
+2026-08-09 22:09:48,864 - INFO -   🔧 h2l-bm25 (with filter)
+2026-08-09 22:09:48,868 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,870 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,872 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,874 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,876 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,878 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,880 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,881 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,884 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,885 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,887 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,889 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,890 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,891 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,893 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,895 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,896 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,897 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,898 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,900 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,903 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,904 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,906 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,908 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,910 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,911 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,912 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,913 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,915 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,917 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,918 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,919 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,920 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,921 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,922 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,923 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,923 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,924 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,925 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,926 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,927 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,928 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,930 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,931 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,933 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,934 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,936 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,938 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,940 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,942 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,944 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,945 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,945 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,946 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,947 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,949 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,950 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,951 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,952 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,953 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,954 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,956 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,957 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,959 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,961 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,962 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,963 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,964 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,964 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,965 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,966 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,967 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,968 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,968 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,969 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,970 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,971 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,972 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,973 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,974 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,975 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,976 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,978 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,979 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,980 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,981 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,981 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,983 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,984 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,985 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:48,986 - INFO -     bm25_only        nDCG@5: 0.2221
+2026-08-09 22:09:48,986 - INFO -     h2l-bm25 nDCG@5: 0.2369
+2026-08-09 22:09:48,986 - INFO - 
+  🔧 naive_rag (no filter)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.93it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.93it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.32it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.05it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.33it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.82it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.06it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.27it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.80it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.99it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.58it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.06it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 29.28it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.95it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 135.74it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.09it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 29.84it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 125.77it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 144.49it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.37it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.51it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.40it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.82it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 32.12it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.60it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.72it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 43.36it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.44it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 43.41it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.98it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 96.01it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.73it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 148.72it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.60it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.37it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 102.36it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.95it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.23it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 43.03it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 121.02it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 100.55it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.38it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 159.87it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.20it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 102.41it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.52it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 114.56it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 93.29it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.35it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 57.28it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.95it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 28.09it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.67it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 76.72it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.82it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 137.15it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 140.19it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.49it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.87it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 115.77it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.31it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 32.05it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 124.85it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 76.30it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 110.95it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 152.98it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 103.86it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.82it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 88.94it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 127.34it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.69it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 102.12it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.85it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.87it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 153.80it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 168.52it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 160.08it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 166.00it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.01it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.15it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 142.81it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 125.39it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.18it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.46it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 87.38it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 147.80it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 154.80it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.28it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 142.57it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 149.08it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.33it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 123.61it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 113.21it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 114.98it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.43it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 73.62it/s]
+2026-08-09 22:09:51,722 - INFO -   🔧 h2l-naive_rag (with filter)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 80.71it/s]
+2026-08-09 22:09:51,738 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 28.28it/s]
+2026-08-09 22:09:51,777 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 74.74it/s]
+2026-08-09 22:09:51,794 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.17it/s]
+2026-08-09 22:09:51,827 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 33.36it/s]
+2026-08-09 22:09:51,861 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.78it/s]
+2026-08-09 22:09:51,892 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.87it/s]
+2026-08-09 22:09:51,921 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 83.33it/s]
+2026-08-09 22:09:51,936 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 108.74it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.30it/s]
+2026-08-09 22:09:51,981 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.96it/s]
+2026-08-09 22:09:52,012 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.39it/s]
+2026-08-09 22:09:52,048 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.58it/s]
+2026-08-09 22:09:52,079 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 92.01it/s]
+2026-08-09 22:09:52,094 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 89.99it/s]
+2026-08-09 22:09:52,108 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 81.49it/s]
+2026-08-09 22:09:52,124 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 66.21it/s]
+2026-08-09 22:09:52,143 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.27it/s]
+2026-08-09 22:09:52,173 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.05it/s]
+2026-08-09 22:09:52,202 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.95it/s]
+2026-08-09 22:09:52,238 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 63.04it/s]
+2026-08-09 22:09:52,258 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 80.03it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.84it/s]
+2026-08-09 22:09:52,304 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 28.81it/s]
+2026-08-09 22:09:52,343 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 79.03it/s]
+2026-08-09 22:09:52,359 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.73it/s]
+2026-08-09 22:09:52,391 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.42it/s]
+2026-08-09 22:09:52,420 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 123.23it/s]
+2026-08-09 22:09:52,431 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 85.84it/s]
+2026-08-09 22:09:52,447 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.86it/s]
+2026-08-09 22:09:52,482 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 75.44it/s]
+2026-08-09 22:09:52,499 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.03it/s]
+2026-08-09 22:09:52,529 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 127.86it/s]
+2026-08-09 22:09:52,540 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.86it/s]
+2026-08-09 22:09:52,575 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 87.98it/s]
+2026-08-09 22:09:52,591 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 102.98it/s]
+2026-08-09 22:09:52,604 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.78it/s]
+2026-08-09 22:09:52,632 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 61.11it/s]
+2026-08-09 22:09:52,653 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 87.74it/s]
+2026-08-09 22:09:52,668 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 121.20it/s]
+2026-08-09 22:09:52,680 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.31it/s]
+2026-08-09 22:09:52,712 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 109.42it/s]
+2026-08-09 22:09:52,725 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 65.96it/s]
+2026-08-09 22:09:52,744 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 81.04it/s]
+2026-08-09 22:09:52,760 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 82.30it/s]
+2026-08-09 22:09:52,776 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 121.57it/s]
+2026-08-09 22:09:52,788 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.90it/s]
+2026-08-09 22:09:52,818 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 131.64it/s]
+2026-08-09 22:09:52,829 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.51it/s]
+2026-08-09 22:09:52,861 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 94.20it/s]
+2026-08-09 22:09:52,876 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 80.82it/s]
+2026-08-09 22:09:52,892 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 108.21it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.02it/s]
+2026-08-09 22:09:52,936 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.98it/s]
+2026-08-09 22:09:52,966 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 150.78it/s]
+2026-08-09 22:09:52,977 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 152.28it/s]
+2026-08-09 22:09:52,986 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.81it/s]
+2026-08-09 22:09:53,015 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 91.18it/s]
+2026-08-09 22:09:53,029 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 78.80it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 100.28it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 63.67it/s]
+2026-08-09 22:09:53,077 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.66it/s]
+2026-08-09 22:09:53,109 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 93.48it/s]
+2026-08-09 22:09:53,124 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 123.90it/s]
+2026-08-09 22:09:53,136 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 32.33it/s]
+2026-08-09 22:09:53,171 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 91.74it/s]
+2026-08-09 22:09:53,186 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.50it/s]
+2026-08-09 22:09:53,231 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.76it/s]
+2026-08-09 22:09:53,261 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 104.29it/s]
+2026-08-09 22:09:53,275 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 76.07it/s]
+2026-08-09 22:09:53,292 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.32it/s]
+2026-08-09 22:09:53,321 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.95it/s]
+2026-08-09 22:09:53,352 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 91.87it/s]
+2026-08-09 22:09:53,366 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 90.29it/s]
+2026-08-09 22:09:53,381 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 133.31it/s]
+2026-08-09 22:09:53,392 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 87.80it/s]
+2026-08-09 22:09:53,407 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 90.34it/s]
+2026-08-09 22:09:53,421 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.24it/s]
+2026-08-09 22:09:53,451 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 78.89it/s]
+2026-08-09 22:09:53,467 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.02it/s]
+2026-08-09 22:09:53,498 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 60.28it/s]
+2026-08-09 22:09:53,518 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 78.80it/s]
+2026-08-09 22:09:53,534 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 84.72it/s]
+2026-08-09 22:09:53,549 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 95.79it/s]
+2026-08-09 22:09:53,563 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 94.37it/s]
+2026-08-09 22:09:53,578 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.55it/s]
+2026-08-09 22:09:53,607 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 93.44it/s]
+2026-08-09 22:09:53,621 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 134.77it/s]
+2026-08-09 22:09:53,632 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 125.85it/s]
+2026-08-09 22:09:53,644 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 103.20it/s]
+2026-08-09 22:09:53,657 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.62it/s]
+2026-08-09 22:09:53,685 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 143.56it/s]
+2026-08-09 22:09:53,696 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 94.56it/s]
+2026-08-09 22:09:53,710 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 90.92it/s]
+2026-08-09 22:09:53,724 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 115.21it/s]
+2026-08-09 22:09:53,736 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:09:53,738 - INFO -     naive_rag        nDCG@5: 0.2019
+2026-08-09 22:09:53,738 - INFO -     h2l-naive_rag nDCG@5: 0.2017
+2026-08-09 22:09:53,738 - INFO - 
+  🔧 hyde (no filter)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+2026-08-09 22:10:01,760 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.22it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.22it/s]
+2026-08-09 22:10:09,255 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.64it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.64it/s]
+2026-08-09 22:10:14,795 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.20it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.20it/s]
+2026-08-09 22:10:21,639 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.21it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.21it/s]
+2026-08-09 22:10:27,766 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.43it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.43it/s]
+2026-08-09 22:10:32,670 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.86it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.86it/s]
+2026-08-09 22:10:36,472 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.21it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.21it/s]
+2026-08-09 22:10:41,686 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.00it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.00it/s]
+2026-08-09 22:10:48,421 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.76it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.75it/s]
+2026-08-09 22:10:51,827 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.60it/s]
+2026-08-09 22:10:57,100 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.31it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.31it/s]
+2026-08-09 22:11:02,157 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.62it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.61it/s]
+2026-08-09 22:11:08,177 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.31it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.31it/s]
+2026-08-09 22:11:12,264 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.63it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.62it/s]
+2026-08-09 22:11:16,347 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.62it/s]
+2026-08-09 22:11:21,973 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.19it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.19it/s]
+2026-08-09 22:11:26,982 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.01it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.00it/s]
+2026-08-09 22:11:32,334 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.25it/s]
+2026-08-09 22:11:35,994 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.83it/s]
+2026-08-09 22:11:39,198 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.36it/s]
+2026-08-09 22:11:44,593 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]
+2026-08-09 22:11:49,410 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.82it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.82it/s]
+2026-08-09 22:11:55,406 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.71it/s]
+2026-08-09 22:12:01,526 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.45it/s]
+2026-08-09 22:12:07,284 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.70it/s]
+2026-08-09 22:12:12,632 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.37it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.37it/s]
+2026-08-09 22:12:16,900 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.34it/s]
+2026-08-09 22:12:22,255 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.05it/s]
+2026-08-09 22:12:25,940 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.24it/s]
+2026-08-09 22:12:30,369 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.30it/s]
+2026-08-09 22:12:35,472 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.81it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.81it/s]
+2026-08-09 22:12:39,946 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.96it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.95it/s]
+2026-08-09 22:12:44,187 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.84it/s]
+2026-08-09 22:12:48,060 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.52it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.52it/s]
+2026-08-09 22:12:52,365 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.13it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.13it/s]
+2026-08-09 22:12:57,698 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.48it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.48it/s]
+2026-08-09 22:13:00,804 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.64it/s]
+2026-08-09 22:13:04,360 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.22it/s]
+2026-08-09 22:13:08,073 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.96it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.95it/s]
+2026-08-09 22:13:12,492 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.66it/s]
+2026-08-09 22:13:16,072 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.25it/s]
+2026-08-09 22:13:19,782 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.28it/s]
+2026-08-09 22:13:24,704 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.75it/s]
+2026-08-09 22:13:30,269 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.06it/s]
+2026-08-09 22:13:35,090 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.07it/s]
+2026-08-09 22:13:39,073 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.75it/s]
+2026-08-09 22:13:43,199 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.77it/s]
+2026-08-09 22:13:47,146 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.29it/s]
+2026-08-09 22:13:51,657 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.42it/s]
+2026-08-09 22:13:55,745 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  8.89it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  8.88it/s]
+2026-08-09 22:14:01,620 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.39it/s]
+2026-08-09 22:14:05,047 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.62it/s]
+2026-08-09 22:14:10,104 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.16it/s]
+2026-08-09 22:14:14,706 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.59it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.57it/s]
+2026-08-09 22:14:17,471 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.29it/s]
+2026-08-09 22:14:21,206 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.50it/s]
+2026-08-09 22:14:25,390 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.48it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.48it/s]
+2026-08-09 22:14:29,031 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.35it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.35it/s]
+2026-08-09 22:14:34,309 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.08it/s]
+2026-08-09 22:14:37,971 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.77it/s]
+2026-08-09 22:14:41,775 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.54it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.54it/s]
+2026-08-09 22:14:46,361 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.02it/s]
+2026-08-09 22:14:51,398 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.71it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.71it/s]
+2026-08-09 22:14:56,949 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.18it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.18it/s]
+2026-08-09 22:15:00,795 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.66it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.66it/s]
+2026-08-09 22:15:05,500 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.91it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.91it/s]
+2026-08-09 22:15:12,089 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.43it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.43it/s]
+2026-08-09 22:15:16,205 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.28it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.28it/s]
+2026-08-09 22:15:21,095 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.04it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.04it/s]
+2026-08-09 22:15:25,123 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.62it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.61it/s]
+2026-08-09 22:15:29,641 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.76it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.76it/s]
+2026-08-09 22:15:35,541 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.89it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.89it/s]
+2026-08-09 22:15:38,778 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.90it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.89it/s]
+2026-08-09 22:15:43,011 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.47it/s]
+2026-08-09 22:15:45,840 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.31it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.29it/s]
+2026-08-09 22:15:50,521 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.99it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.99it/s]
+2026-08-09 22:15:55,790 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.74it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.74it/s]
+2026-08-09 22:15:59,732 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.57it/s]
+2026-08-09 22:16:02,646 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.84it/s]
+2026-08-09 22:16:05,530 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.66it/s]
+2026-08-09 22:16:09,063 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.43it/s]
+2026-08-09 22:16:13,817 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.41it/s]
+2026-08-09 22:16:17,528 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.87it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.87it/s]
+2026-08-09 22:16:21,013 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.83it/s]
+2026-08-09 22:16:24,542 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.27it/s]
+2026-08-09 22:16:28,782 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.27it/s]
+2026-08-09 22:16:32,207 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.22it/s]
+2026-08-09 22:16:36,929 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.03it/s]
+2026-08-09 22:16:40,349 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.07it/s]
+2026-08-09 22:16:44,620 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.69it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.69it/s]
+2026-08-09 22:16:48,396 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.90it/s]
+2026-08-09 22:16:52,620 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.35it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.35it/s]
+2026-08-09 22:16:57,420 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.39it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.38it/s]
+2026-08-09 22:17:00,615 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.82it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.81it/s]
+2026-08-09 22:17:03,297 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.29it/s]
+2026-08-09 22:17:03,392 - INFO -   🔧 h2l-hyde (with filter)
+2026-08-09 22:17:08,610 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.93it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.93it/s]
+2026-08-09 22:17:08,965 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:17:11,925 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.51it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.51it/s]
+2026-08-09 22:17:12,209 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:17:17,135 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.80it/s]
+2026-08-09 22:17:17,215 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:17:24,189 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:08<00:00,  8.72s/it]Batches: 100%|██████████| 1/1 [00:08<00:00,  8.72s/it]
+2026-08-09 22:17:32,934 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:17:38,388 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:01<00:00,  1.09s/it]Batches: 100%|██████████| 1/1 [00:01<00:00,  1.09s/it]
+2026-08-09 22:17:39,505 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:17:44,239 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.32it/s]
+2026-08-09 22:17:44,348 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:17:49,612 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.32it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.31it/s]
+2026-08-09 22:17:49,816 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:17:54,526 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.15it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.15it/s]
+2026-08-09 22:17:54,861 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:00,645 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.27it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.27it/s]
+2026-08-09 22:18:04,027 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.85it/s]
+2026-08-09 22:18:04,140 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:08,068 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.96it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.95it/s]
+2026-08-09 22:18:08,337 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:13,170 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.82it/s]
+2026-08-09 22:18:13,244 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:19,604 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.65it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.65it/s]
+2026-08-09 22:18:19,896 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:23,993 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.38it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.38it/s]
+2026-08-09 22:18:24,300 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:29,317 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.70it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.69it/s]
+2026-08-09 22:18:29,523 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:35,760 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.82it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.82it/s]
+2026-08-09 22:18:36,132 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:41,391 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.69it/s]
+2026-08-09 22:18:41,472 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:49,414 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:02<00:00,  2.56s/it]Batches: 100%|██████████| 1/1 [00:02<00:00,  2.56s/it]
+2026-08-09 22:18:51,998 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:56,146 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.34it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.34it/s]
+2026-08-09 22:18:56,462 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:18:59,477 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.86it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.85it/s]
+2026-08-09 22:18:59,615 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:02,681 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.32it/s]
+2026-08-09 22:19:02,765 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:06,861 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.83it/s]
+2026-08-09 22:19:11,486 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.26it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.26it/s]
+2026-08-09 22:19:11,730 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:18,986 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.05it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.05it/s]
+2026-08-09 22:19:19,492 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:25,810 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.81it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.80it/s]
+2026-08-09 22:19:26,179 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:31,577 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.12it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.11it/s]
+2026-08-09 22:19:31,700 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:34,798 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.84it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.84it/s]
+2026-08-09 22:19:35,166 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:40,466 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.60it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.60it/s]
+2026-08-09 22:19:40,861 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:44,756 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.51it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.50it/s]
+2026-08-09 22:19:44,921 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:48,273 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.74it/s]
+2026-08-09 22:19:48,376 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:53,191 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.58it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.58it/s]
+2026-08-09 22:19:53,487 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:19:58,254 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.18it/s]
+2026-08-09 22:19:58,307 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:03,328 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.52it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.52it/s]
+2026-08-09 22:20:03,558 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:08,655 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.29it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.28it/s]
+2026-08-09 22:20:08,862 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:12,160 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.96it/s]
+2026-08-09 22:20:12,235 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:16,687 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.85it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.83it/s]
+2026-08-09 22:20:16,798 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:20,475 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.48it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.48it/s]
+2026-08-09 22:20:20,672 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:24,567 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.13it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.13it/s]
+2026-08-09 22:20:24,893 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:29,711 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.06it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.06it/s]
+2026-08-09 22:20:29,917 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:33,872 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.77it/s]
+2026-08-09 22:20:33,935 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:40,033 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.95it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.95it/s]
+2026-08-09 22:20:40,306 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:44,015 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.28it/s]
+2026-08-09 22:20:44,096 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:46,838 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.78it/s]
+2026-08-09 22:20:46,896 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:52,278 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.54it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.53it/s]
+2026-08-09 22:20:52,508 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:20:55,857 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.48it/s]
+2026-08-09 22:20:55,926 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:01,489 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.09it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.08it/s]
+2026-08-09 22:21:01,610 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:05,765 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.15it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.15it/s]
+2026-08-09 22:21:05,975 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:11,231 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.95it/s]
+2026-08-09 22:21:11,286 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:15,434 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.12it/s]
+2026-08-09 22:21:15,509 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:19,637 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.37it/s]
+2026-08-09 22:21:19,683 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:25,037 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.37it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.37it/s]
+2026-08-09 22:21:25,234 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:28,597 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.12it/s]
+2026-08-09 22:21:36,247 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.27it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]
+2026-08-09 22:21:36,565 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:43,260 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.71it/s]
+2026-08-09 22:21:43,335 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:47,663 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.49it/s]
+2026-08-09 22:21:47,748 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:52,582 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.04it/s]
+2026-08-09 22:21:52,650 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:56,204 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.69it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.69it/s]
+2026-08-09 22:21:56,585 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:21:59,892 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.15it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.15it/s]
+2026-08-09 22:22:00,093 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:05,034 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.49it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.48it/s]
+2026-08-09 22:22:08,764 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.78it/s]
+2026-08-09 22:22:11,163 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.35it/s]
+2026-08-09 22:22:11,230 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:16,858 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.85it/s]
+2026-08-09 22:22:16,931 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:20,773 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.82it/s]
+2026-08-09 22:22:20,838 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:25,369 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.55it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.54it/s]
+2026-08-09 22:22:25,599 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:30,784 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.96it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.95it/s]
+2026-08-09 22:22:31,070 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:35,401 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.36it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.35it/s]
+2026-08-09 22:22:35,519 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:40,718 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.87it/s]
+2026-08-09 22:22:40,800 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:44,947 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.76it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.75it/s]
+2026-08-09 22:22:45,173 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:50,327 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.60it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.60it/s]
+2026-08-09 22:22:50,679 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:22:58,610 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.70it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.69it/s]
+2026-08-09 22:22:59,004 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:03,215 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.43it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.43it/s]
+2026-08-09 22:23:03,460 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:08,397 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.63it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.62it/s]
+2026-08-09 22:23:08,690 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:12,475 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.15it/s]
+2026-08-09 22:23:12,553 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:17,703 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 28.74it/s]
+2026-08-09 22:23:17,743 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:21,082 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.53it/s]
+2026-08-09 22:23:21,152 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:24,769 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.89it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.89it/s]
+2026-08-09 22:23:25,049 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:29,276 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.78it/s]
+2026-08-09 22:23:29,358 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:31,831 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.63it/s]
+2026-08-09 22:23:31,890 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:35,460 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.53it/s]
+2026-08-09 22:23:35,551 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:39,365 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.28it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.28it/s]
+2026-08-09 22:23:39,623 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:43,513 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]
+2026-08-09 22:23:43,838 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:47,157 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.97it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.96it/s]
+2026-08-09 22:23:47,267 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:50,684 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.39it/s]
+2026-08-09 22:23:50,736 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:54,705 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.09it/s]
+2026-08-09 22:23:54,761 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:23:59,465 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.64it/s]
+2026-08-09 22:23:59,532 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:03,449 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.31it/s]
+2026-08-09 22:24:03,502 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:08,455 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.88it/s]
+2026-08-09 22:24:08,534 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:13,014 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.68it/s]
+2026-08-09 22:24:13,068 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:16,056 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.61it/s]
+2026-08-09 22:24:16,140 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:20,776 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.35it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.35it/s]
+2026-08-09 22:24:21,018 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:25,481 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.86it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.86it/s]
+2026-08-09 22:24:25,754 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:30,203 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.17it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.16it/s]
+2026-08-09 22:24:30,322 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:35,681 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.08it/s]
+2026-08-09 22:24:35,753 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:41,231 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.02it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.02it/s]
+2026-08-09 22:24:41,500 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:45,984 - INFO - HTTP Request: POST http://localhost:11434/v1/chat/completions "HTTP/1.1 200 OK"
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.48it/s]
+2026-08-09 22:24:46,051 - INFO - [H2L-Scoring] Using KEYWORD fallback (α=1.00)
+2026-08-09 22:24:46,067 - INFO -     hyde        nDCG@5: 0.0732
+2026-08-09 22:24:46,068 - INFO -     h2l-hyde nDCG@5: 0.0815
+2026-08-09 22:24:46,068 - INFO - 
+  🔧 basic (no filter)
+
+🚀 [HybridRetriever] Initializing...
+[22:24:46]   - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:08<00:00,  8.86s/it]Batches: 100%|██████████| 1/1 [00:08<00:00,  8.86s/it]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:01<00:00,  1.33s/it]Batches: 100%|██████████| 1/1 [00:01<00:00,  1.34s/it]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.10it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.10it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.56it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.55it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.69it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.27it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.00it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.56it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.16it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.05it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.49it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.32it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.48it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.96it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.46it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.08it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.86it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.70it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.99it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.97it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 46.25it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.35it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.27it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.69it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.17it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.94it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.92it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 100.85it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.20it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.77it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.91it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.89it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.68it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.82it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.19it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.49it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 98.82it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 50.44it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 45.24it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.11it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.23it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.67it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.50it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.14it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 45.09it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.08it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.85it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.88it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.30it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.96it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.79it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.79it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.63it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.62it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.86it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.86it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.65it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.64it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.60it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.60it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.99it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.99it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.59it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.62it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 64.97it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.97it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 73.68it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 50.12it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.51it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.18it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 68.13it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.17it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 54.36it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 41.69it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 50.04it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.58it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 70.79it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.99it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 26.48it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.53it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.71it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.13it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.60it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.80it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 127.20it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 71.76it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 120.29it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.42it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.06it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.79it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 110.95it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 55.40it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.17it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.10it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.29it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 26.55it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 32.43it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.60it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 48.83it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.15it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.13it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.74it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.32it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.99it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.73it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.43it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.50it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.49it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.32it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.11it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.89it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.60it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.95it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 26.32it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 70.78it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.99it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.03it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.70it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 65.50it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 48.38it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 78.17it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 46.74it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.19it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.48it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.34it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.33it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 82.45it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.39it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.83it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 52.19it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.08it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.74it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 40.81it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.69it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 33.27it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.48it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.44it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.30it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 55.17it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.71it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 43.70it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 44.02it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.86it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.02it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 66.21it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.94it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 99.90it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.50it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 43.93it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 45.83it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 52.66it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.39it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.19it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.02it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.56it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.19it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 47.01it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.50it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 109.60it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.52it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 64.72it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.27it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 64.94it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.74it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 26.09it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.02it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.98it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.71it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 78.41it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.74it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 73.93it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 28.39it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.31it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.63it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.39it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.96it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 58.57it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.51it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 76.23it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.70it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 110.45it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 56.64it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.15it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 68.40it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 73.98it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.15it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 74.64it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.03it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.00it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.91it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 55.94it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.97it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 51.02it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.65it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 90.79it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 37.66it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.17it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.89it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 57.89it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 26.34it/s]
+2026-08-09 22:26:21,312 - INFO -   🔧 h2l-hybrid (with filter)
+
+🚀 [HybridRetriever] Initializing...
+[22:26:21]   - Using pre-loaded shared components.       retrieval_engine.py:215
+✅ [HybridRetriever] Pipeline ready!
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.46it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.96it/s]
+2026-08-09 22:26:22,741 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.42it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.97it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.96it/s]
+2026-08-09 22:26:25,538 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.59it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.25it/s]
+2026-08-09 22:26:27,575 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.62it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.08it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.08it/s]
+2026-08-09 22:26:30,194 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.84it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.57it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.57it/s]
+2026-08-09 22:26:32,172 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  8.21it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  8.20it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.02it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.02it/s]
+2026-08-09 22:26:33,886 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.88it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.86it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.54it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.54it/s]
+2026-08-09 22:26:35,775 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.51it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.36it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.36it/s]
+2026-08-09 22:26:37,126 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.92it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.98it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 33.41it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.69it/s]
+2026-08-09 22:26:39,298 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.22it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.72it/s]
+2026-08-09 22:26:40,487 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.24it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:04<00:00,  4.35s/it]Batches: 100%|██████████| 1/1 [00:04<00:00,  4.35s/it]
+2026-08-09 22:26:47,113 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.24it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.15it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.14it/s]
+2026-08-09 22:26:48,849 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.88it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.38it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.37it/s]
+2026-08-09 22:26:49,985 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 29.59it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.35it/s]
+2026-08-09 22:26:51,003 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 43.13it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.74it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.73it/s]
+2026-08-09 22:26:52,939 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 28.14it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.98it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.98it/s]
+2026-08-09 22:26:54,815 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.17it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.17it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.34it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.34it/s]
+2026-08-09 22:26:57,213 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.65it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.77it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.77it/s]
+2026-08-09 22:26:59,308 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.08it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.89it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.89it/s]
+2026-08-09 22:27:00,642 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.97it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.12it/s]
+2026-08-09 22:27:02,073 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.02it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.95it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.94it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.54it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:06<00:00,  6.43s/it]Batches: 100%|██████████| 1/1 [00:06<00:00,  6.43s/it]
+2026-08-09 22:27:11,548 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.08it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:03<00:00,  3.95s/it]Batches: 100%|██████████| 1/1 [00:03<00:00,  3.95s/it]
+2026-08-09 22:27:19,220 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.15it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.19it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.19it/s]
+2026-08-09 22:27:21,625 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.22it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  9.20it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.31it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.31it/s]
+2026-08-09 22:27:23,962 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.60it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.20it/s]
+2026-08-09 22:27:25,264 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 26.22it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.80it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.80it/s]
+2026-08-09 22:27:27,515 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.53it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.99it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  3.99it/s]
+2026-08-09 22:27:29,009 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.87it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.79it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.76it/s]
+2026-08-09 22:27:30,743 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.33it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.33it/s]
+2026-08-09 22:27:32,092 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.72it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.16it/s]
+2026-08-09 22:27:33,224 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 71.31it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.11it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.10it/s]
+2026-08-09 22:27:34,319 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.84it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.55it/s]
+2026-08-09 22:27:35,409 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 50.25it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.29it/s]
+2026-08-09 22:27:36,711 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.05it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.82it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.82it/s]
+2026-08-09 22:27:37,794 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.69it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.45it/s]
+2026-08-09 22:27:38,914 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.91it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.93it/s]
+2026-08-09 22:27:39,820 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.96it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.42it/s]
+2026-08-09 22:27:40,811 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 79.47it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 49.90it/s]
+2026-08-09 22:27:41,676 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.77it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.03it/s]
+2026-08-09 22:27:42,671 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 82.28it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.39it/s]
+2026-08-09 22:27:43,566 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.66it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.26it/s]
+2026-08-09 22:27:44,647 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 45.63it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.94it/s]
+2026-08-09 22:27:45,693 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.96it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.95it/s]
+2026-08-09 22:27:47,051 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 109.97it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 18.50it/s]
+2026-08-09 22:27:48,163 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.36it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.99it/s]
+2026-08-09 22:27:49,276 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 110.82it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.48it/s]
+2026-08-09 22:27:50,326 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.39it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:03<00:00,  3.43s/it]Batches: 100%|██████████| 1/1 [00:03<00:00,  3.43s/it]
+2026-08-09 22:27:55,543 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.06it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.75it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.74it/s]
+2026-08-09 22:27:57,325 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.27it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.27it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:01<00:00,  1.22s/it]Batches: 100%|██████████| 1/1 [00:01<00:00,  1.22s/it]
+2026-08-09 22:28:00,487 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.69it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.59it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.58it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.32it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.32it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.61it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.61it/s]
+2026-08-09 22:28:10,521 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.98it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.98it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.95it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  2.95it/s]
+2026-08-09 22:28:13,295 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.53it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.58it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.57it/s]
+2026-08-09 22:28:14,980 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.76it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.54it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.54it/s]
+2026-08-09 22:28:15,984 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.66it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.83it/s]
+2026-08-09 22:28:17,001 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.53it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.01it/s]
+2026-08-09 22:28:18,057 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.43it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.05it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.08it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.04it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.26it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  8.40it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  8.38it/s]
+2026-08-09 22:28:21,845 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.49it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.49it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.19it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.19it/s]
+2026-08-09 22:28:24,429 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.83it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.02it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.02it/s]
+2026-08-09 22:28:25,959 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.93it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.43it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.42it/s]
+2026-08-09 22:28:27,482 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 32.09it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.63it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.62it/s]
+2026-08-09 22:28:30,237 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.88it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  4.88it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:03<00:00,  3.44s/it]Batches: 100%|██████████| 1/1 [00:03<00:00,  3.44s/it]
+2026-08-09 22:28:35,304 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.40it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.40it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  1.83it/s]
+2026-08-09 22:28:37,963 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.39it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.55it/s]
+2026-08-09 22:28:39,108 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 43.00it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.41it/s]
+2026-08-09 22:28:40,261 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.09it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 42.79it/s]
+2026-08-09 22:28:41,620 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 23.50it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.90it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  5.89it/s]
+2026-08-09 22:28:42,937 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.89it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.62it/s]
+2026-08-09 22:28:44,063 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 20.19it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 14.36it/s]
+2026-08-09 22:28:45,081 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.12it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 15.09it/s]
+2026-08-09 22:28:46,271 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 73.29it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.25it/s]
+2026-08-09 22:28:47,180 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.15it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 19.17it/s]
+2026-08-09 22:28:48,027 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.27it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 11.57it/s]
+2026-08-09 22:28:49,261 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.58it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 16.32it/s]
+2026-08-09 22:28:50,183 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 12.56it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  8.24it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  8.23it/s]
+2026-08-09 22:28:51,227 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.07it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 10.30it/s]
+2026-08-09 22:28:59,357 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.32it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.22it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  6.22it/s]
+2026-08-09 22:29:00,435 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 33.35it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 26.66it/s]
+2026-08-09 22:29:01,350 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 27.90it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.52it/s]
+2026-08-09 22:29:02,380 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 31.67it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 26.92it/s]
+2026-08-09 22:29:03,347 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 39.55it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 21.51it/s]
+2026-08-09 22:29:04,310 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 24.05it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 36.58it/s]
+2026-08-09 22:29:05,453 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 29.98it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 17.91it/s]
+2026-08-09 22:29:06,565 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 87.65it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 55.58it/s]
+2026-08-09 22:29:07,444 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 115.67it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.94it/s]
+2026-08-09 22:29:08,454 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 35.56it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 28.49it/s]
+2026-08-09 22:29:09,418 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 30.18it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 52.35it/s]
+2026-08-09 22:29:10,252 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 145.10it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 25.30it/s]
+2026-08-09 22:29:11,223 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 34.45it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 22.64it/s]
+2026-08-09 22:29:12,287 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 48.38it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 38.78it/s]
+2026-08-09 22:29:13,295 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 84.89it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 44.12it/s]
+2026-08-09 22:29:14,334 - INFO - [H2L-Scoring] Using SEMANTIC matching (α=1.00)
+2026-08-09 22:29:14,352 - INFO -     basic        nDCG@5: 0.2351
+2026-08-09 22:29:14,353 - INFO -     h2l-hybrid nDCG@5: 0.2485
+2026-08-09 22:29:14,458 - INFO -   💾 Data saved: ablation_results/rq5_95cases_20260809/rq5_results.csv (760 rows, 1180.8s)
+2026-08-09 22:29:14,965 - INFO - ✅ RQ5 visualization saved
+2026-08-09 22:29:14,970 - WARNING -   ⚠️ Stats failed: Paired statistics require one row per case_id and h2l_filter
+2026-08-09 22:29:14,988 - INFO - ✅ Report saved: ablation_results/rq5_95cases_20260809/ABLATION_STUDY_REPORT.md
+2026-08-09 22:29:14,989 - INFO - 
+======================================================================
+2026-08-09 22:29:14,989 - INFO - ✅ Ablation study completed!
+2026-08-09 22:29:14,989 - INFO - ======================================================================
+2026-08-09 22:29:14,989 - INFO - 
+Results in: /Users/rischen/Documents/GitHub/thesis_one-/ablation_results/rq5_95cases_20260809
+2026-08-09 22:29:14,989 - INFO - Files:
+2026-08-09 22:29:14,990 - INFO -   • ABLATION_STUDY_REPORT.md
+2026-08-09 22:29:14,990 - INFO -   • rq5_filter_toggle.png
+2026-08-09 22:29:14,990 - INFO -   • rq5_results.csv
+2026-08-09 22:29:14,990 - INFO -   • run.log
+2026-08-09 22:29:14,991 - INFO -   • run_metadata.json
