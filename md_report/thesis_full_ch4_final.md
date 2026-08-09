@@ -138,22 +138,26 @@
 ## 4.5 ผลการวิเคราะห์องค์ประกอบย่อยและความไวของพารามิเตอร์ (Ablation & Sensitivity)
 
 ### 4.5.1 ผลการวิเคราะห์องค์ประกอบย่อย (Component Ablation Analysis)
-ผลการทดลองทำ Ablation บน H2L V6 Functions เพื่อดูขนาดอิทธิพล (Effect Size: Cohen's $d$) ต่อคะแนนระบบ แสดงดังตารางที่ 4.6
+ผลการทดลองทำ Ablation บน H2L V6 Components บนชุดทดสอบ 95 กรณีศึกษา โดยใช้ detected problems จาก cache (qwen2.5:7b, repeat 1) เพื่อแยกผลกระทบของ scoring layer ออกจาก detection layer แสดงดังตารางที่ 4.6
 
-**ตารางที่ 4.6 ผลการวิเคราะห์องค์ประกอบย่อย H2L V6 Components**
+**ตารางที่ 4.6 ผลการวิเคราะห์องค์ประกอบย่อย H2L V6 Components (n=95 เคส)**
 
-| การตั้งค่า (Configuration) | nDCG@5 | MAP | H2L Mean Score | Cohen's $d$ | $p$-value | ระดับอิทธิพล (Effect Size) |
+| การตั้งค่า (Configuration) | nDCG@5 | MAP | MRR | rank_changed@5 | Cohen's $d$ | ระดับอิทธิพล |
 |:---|---:|---:|---:|---:|---:|:---|
-| **Full H2L V6 (Baseline)** | **0.3410** | **0.3453** | **1.8947** | — | — | Baseline |
-| Product Mode (แทน Weighted-Sum) | 0.3418 | 0.3454 | 0.3283 | **0.932** | < 0.001 | **Large Effect** (Scale Shift) |
-| w/o Adaptive Alpha | 0.3410 | 0.3453 | 1.1377 | **0.409** | < 0.001 | **Small Effect** |
-| w/o IDF Specificity | 0.3410 | 0.3453 | 1.4929 | 0.184 | — | Negligible |
-| w/o Negation Gate | 0.3410 | 0.3453 | 1.5273 | 0.167 | — | Negligible |
-| w/o Bayesian Prior | 0.3410 | 0.3453 | 2.0146 | -0.048 | — | Negligible |
+| **Full V6 (Baseline)** | **0.2442** | **0.2454** | **0.2801** | **1.1%** | — | Baseline |
+| Product Feature Mode | 0.2485 | 0.2467 | 0.2801 | 1.1% | 0.103 | Negligible |
+| w/o Adaptive Alpha | 0.2485 | 0.2467 | 0.2801 | 1.1% | 0.103 | Negligible |
+| w/o Margin Activation | 0.2430 | 0.2436 | 0.2801 | **4.2%** | 0.103 | Negligible |
+| w/o Bayesian Prior | 0.2442 | 0.2454 | 0.2801 | 1.1% | 0.000 | No change |
+| w/o IDF Specificity | 0.2442 | 0.2454 | 0.2801 | 1.1% | 0.000 | No change |
+| w/o Negation Gate | 0.2442 | 0.2454 | 0.2801 | 1.1% | 0.000 | No change |
+| w/o KL Penalty | 0.2442 | 0.2454 | 0.2801 | 1.1% | 0.000 | No change |
 
-**รูปที่ 4.D** แสดง score-vs-rank decoupling: H2L internal score ขยับจาก 0.33 ถึง 2.01 ข้ามเงื่อนไข แต่ nDCG@5 แทบไม่ขยับ (±0.001) บ่งชี้ว่ากลไกคะแนนส่งผลต่อ internal weighting มากกว่าอันดับเอกสารสุดท้าย
+*ทุกคู่เทียบ: Holm-corrected Wilcoxon p ≥ 0.317 — ไม่มีนัยสำคัญทางสถิติ (n_nonzero_differences ≤ 1/95)*
 
-![รูปที่ 4.D Score vs Rank Decoupling](../output/figures_ch4/fig_4d_decoupling.png)
+**ข้อค้นพบหลัก (Score-vs-Rank Decoupling):** องค์ประกอบเกือบทั้งหมดของ H2L V6 ไม่ส่งผลต่ออันดับเอกสารสุดท้ายอย่างมีนัยสำคัญ — ทั้ง nDCG@5 และ MAP ขยับไม่ถึง ±0.005 เมื่อปิดส่วนประกอบต่างๆ มีเพียง Margin Activation ที่เปลี่ยนอันดับ 4.2% ของเคส (4/95) แต่ Cohen's d ยังอยู่ที่ระดับ negligible
+
+ผลนี้บ่งชี้ว่า **คุณค่าหลักของ H2L** อยู่ที่การกรอง candidate document ผ่าน problem-aware scoring (เทียบกับ baseline ที่ไม่มี H2L ซึ่งต่ำกว่าอย่างมีนัยสำคัญตามตารางที่ 4.4) ไม่ใช่ความแตกต่างระหว่าง V6 sub-components ในชุดทดสอบนี้
 
 ### 4.5.2 ผลการวิเคราะห์ความไวของพารามิเตอร์ (Parameter Sensitivity)
 ผลการวิเคราะห์ความไวแบบ One-at-a-Time (OAT Sensitivity) บนพารามิเตอร์หลัก 6 ตัวที่ถูก exercise จริงในฟังก์ชันคะแนน ได้แก่ $\lambda_{\text{neg}}, \mu, \kappa, T_{\text{range}}, \alpha_0, T_{\text{base}}$ พบว่า **4 จาก 6 พารามิเตอร์** ($\lambda_{\text{neg}}, \mu, \kappa, T_{\text{range}}$) มีค่าการเปลี่ยนแปลงไม่เกิน **2.25%** เมื่อปรับ $\pm 30$–$50\%$ ยืนยันว่าค่าพารามิเตอร์ที่กำหนดจากโดเมนทฤษฎีมีความเสถียรสูง มีเพียง $\alpha_0$ (Base Weight multiplier) และ $T_{\text{base}}$ (Calibration Temp) ที่อ่อนไหวต่อสเกล ซึ่งได้รับการปรับจูนตามหลักคณิตศาสตร์เรียบร้อยแล้ว

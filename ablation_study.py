@@ -339,11 +339,21 @@ class AblationRunner:
             # Build relevance keywords
             relevance_keywords = build_relevance_keywords(expected, runner.taxonomy)
 
-            # Detect problems
-            detected_problems = runner.detect_problems(query, use_l2=use_l2) if (
+            # Detect problems — use cache when available (fast), else call live detector
+            needs_problems = (
                 strategy_name in STRATEGY_CONFIGS and
                 STRATEGY_CONFIGS[strategy_name].get('needs_problems', False)
-            ) or custom_retriever else []
+            ) or custom_retriever
+            if needs_problems:
+                cache = self._load_detected_problems_cache()
+                if cache:
+                    detected_problems = self.detected_problems_for_case(
+                        case, runner, use_l2=use_l2
+                    )
+                else:
+                    detected_problems = runner.detect_problems(query, use_l2=use_l2)
+            else:
+                detected_problems = []
 
             # Retrieve
             start_time = time.time()
