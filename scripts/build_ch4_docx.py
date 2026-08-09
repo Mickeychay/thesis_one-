@@ -84,8 +84,12 @@ def convert_md_to_docx(md_path, out_path):
     while i < len(lines):
         line = lines[i].rstrip('\n')
         
-        # Markdown table handling
-        if '|' in line and not in_code_block:
+        # Markdown table handling.
+        # A table row must START with '|'. Testing only for '|' anywhere in the
+        # line silently swallowed prose containing inline math such as
+        # $P(d|p)$ or $|matched|/|all|$ — those paragraphs disappeared from the
+        # DOCX with no warning.
+        if line.strip().startswith('|') and not in_code_block:
             if not in_table:
                 in_table = True
                 table_lines = [line]

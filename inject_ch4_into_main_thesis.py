@@ -93,19 +93,40 @@ def replace_ch4_in_main_doc(main_path, out_path):
                         if r_idx == 0:
                             r.font.bold = True
 
-    # Copy paragraphs from Chapter 5 onwards
+    # Copy everything from Chapter 5 onwards — paragraphs AND tables.
+    # Iterating main_doc.paragraphs skips tables entirely, which silently
+    # dropped the Chapter 5 "SUMMARY OF CASE-BASED EMPIRICAL EVIDENCE" table
+    # (a 1x1 ASCII-art cell) on every previous injection.
     if p_ch5_idx != -1:
-        for i in range(p_ch5_idx, len(main_doc.paragraphs)):
-            p_old = main_doc.paragraphs[i]
-            p_new = new_doc.add_paragraph()
-            p_new.style = p_old.style
-            p_new.alignment = p_old.alignment
-            for run in p_old.runs:
-                r = p_new.add_run(run.text)
-                r.bold = run.bold
-                r.italic = run.italic
-                r.font.name = run.font.name
-                r.font.size = run.font.size
+        ch5_start_p = main_doc.paragraphs[p_ch5_idx]._p
+        body = list(main_doc.element.body)
+        start_pos = body.index(ch5_start_p)
+
+        for elem in body[start_pos:]:
+            if elem.tag.endswith('p'):
+                p_old = docx.text.paragraph.Paragraph(elem, main_doc)
+                p_new = new_doc.add_paragraph()
+                p_new.style = p_old.style
+                p_new.alignment = p_old.alignment
+                for run in p_old.runs:
+                    r = p_new.add_run(run.text)
+                    r.bold = run.bold
+                    r.italic = run.italic
+                    r.font.name = run.font.name
+                    r.font.size = run.font.size
+            elif elem.tag.endswith('tbl'):
+                tbl_obj = docx.table.Table(elem, main_doc)
+                new_table = new_doc.add_table(
+                    rows=len(tbl_obj.rows), cols=len(tbl_obj.columns)
+                )
+                for r_idx, row in enumerate(tbl_obj.rows):
+                    for c_idx, cell in enumerate(row.cells):
+                        target = new_table.rows[r_idx].cells[c_idx]
+                        target.text = cell.text
+                        for p in target.paragraphs:
+                            for r in p.runs:
+                                r.font.name = 'TH Sarabun PSK'
+                                r.font.size = Pt(13)
 
     new_doc.save(out_path)
     print(f"Successfully injected Chapter 4 into main docx: {out_path}")

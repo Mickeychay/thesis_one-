@@ -92,6 +92,19 @@ class H2LConfigV3:
     GATE_WEIGHT: float = 5.0     # w_g — controls gate steepness
     GATE_BIAS: float = -1.5      # b_g — gate threshold (negative = prefer semantic)
 
+    # RQ3: Matching granularity for φ_semantic — how P(d|p) is computed.
+    # This is the ONLY thing that differs between RQ3 arms; every other
+    # component (prior, IDF, negation, co-occurrence, α, Bayesian prior)
+    # stays active in all modes so the contrast is attributable to matching.
+    #   'soft'         — V4 gated fusion of semantic + soft keyword, then
+    #                    margin-aware Ω(d|p). Continuous signal. (default)
+    #   'keyword_soft' — graded keyword proportion only, embeddings ignored
+    #                    for P(d|p). Isolates the *semantic* contribution.
+    #   'hard'         — binary keyword indicator (1 if any keyword matches).
+    #                    Isolates the *granularity* contribution.
+    MATCHING_MODE: str = 'soft'
+    MATCHING_MODES = ('soft', 'keyword_soft', 'hard')
+
     # V4: Cross-problem co-occurrence (Enhancement 3)
     CO_OCCURRENCE_GAMMA: float = 0.3  # γ — co-occurrence bonus strength
 
@@ -163,6 +176,14 @@ class H2LConfigV3:
         if abs(total_w - 1.0) > 0.01:
             logger.warning(f"FEATURE_WEIGHTS sum={total_w:.4f}, normalizing to 1.0")
             self.FEATURE_WEIGHTS = {k: v / total_w for k, v in self.FEATURE_WEIGHTS.items()}
+        # RQ3: fail fast on a typo'd matching mode. A silently-ignored mode
+        # would make an ablation arm identical to the default arm and look
+        # like a null result.
+        if self.MATCHING_MODE not in self.MATCHING_MODES:
+            raise ValueError(
+                f"MATCHING_MODE={self.MATCHING_MODE!r} is not one of "
+                f"{self.MATCHING_MODES}"
+            )
         # Default negation markers (Thai) — override for other languages
         if self.NEGATION_MARKERS is None:
             self.NEGATION_MARKERS = list(_DEFAULT_NEGATION_MARKERS)
@@ -1243,32 +1264,54 @@ def calculate_final_score_probabilistic(
                 raw_detection, severity, max_severity, config
             )
         
-        # P_fused(d|p_i) = gated fusion of semantic + keyword (V4)
+        # ── φ_semantic = P(d|p_i) under the configured matching mode (RQ3) ──
         prob_emb = problem_embeddings.get(code) if problem_embeddings else None
-        if doc_text is not None:
-            p_doc_problem, match_method = calculate_doc_problem_probability_fused(
-                doc_text=doc_text,
-                problem=problem,
-                doc_embedding=doc_embedding,
-                problem_embedding=prob_emb,
-                config=config
-            )
-        elif doc_embedding is not None and prob_emb is not None:
-            p_doc_problem = calculate_doc_problem_probability_semantic(
-                doc_embedding, prob_emb, config.TEMPERATURE
-            )
-            match_method = "semantic"
+        mode = getattr(config, 'MATCHING_MODE', 'soft')
+
+        if mode in ('keyword_soft', 'hard'):
+            # Keyword arms: embeddings are deliberately not consulted for
+            # P(d|p), while every other V6 component stays active. Margin
+            # activation Ω is skipped because it is embedding-derived and
+            # max(p_kw, Ω) would leak the semantic signal back into an arm
+            # labelled "keyword".
+            if doc_text is None:
+                logger.warning(
+                    "MATCHING_MODE=%s needs doc_text but got None → P(d|p)=0 "
+                    "for every document, which destroys ranking.", mode
+                )
+                p_doc_final = 0.0
+                match_method = "none"
+            else:
+                p_doc_final = calculate_doc_problem_probability_keyword(
+                    doc_text, problem, soft=(mode == 'keyword_soft')
+                )
+                match_method = f"{mode}({p_doc_final:.3f})"
         else:
-            p_doc_problem = 0.0
-            match_method = "none"
-        
-        # Margin-aware activation Ω(d|p) (blended with P_fused)
-        if config.MARGIN_ENABLE and doc_embedding is not None and prob_emb is not None:
-            omega = margin_aware_activation(doc_embedding, prob_emb, config)
-            p_doc_final = max(p_doc_problem, omega)
-            match_method += f"+margin(Ω={omega:.3f})"
-        else:
-            p_doc_final = p_doc_problem
+            # P_fused(d|p_i) = gated fusion of semantic + keyword (V4)
+            if doc_text is not None:
+                p_doc_problem, match_method = calculate_doc_problem_probability_fused(
+                    doc_text=doc_text,
+                    problem=problem,
+                    doc_embedding=doc_embedding,
+                    problem_embedding=prob_emb,
+                    config=config
+                )
+            elif doc_embedding is not None and prob_emb is not None:
+                p_doc_problem = calculate_doc_problem_probability_semantic(
+                    doc_embedding, prob_emb, config.TEMPERATURE
+                )
+                match_method = "semantic"
+            else:
+                p_doc_problem = 0.0
+                match_method = "none"
+
+            # Margin-aware activation Ω(d|p) (blended with P_fused)
+            if config.MARGIN_ENABLE and doc_embedding is not None and prob_emb is not None:
+                omega = margin_aware_activation(doc_embedding, prob_emb, config)
+                p_doc_final = max(p_doc_problem, omega)
+                match_method += f"+margin(Ω={omega:.3f})"
+            else:
+                p_doc_final = p_doc_problem
         
         # P_smoothed(p_i) = Dirichlet-smoothed prior
         p_prior = priors.get(code, config.MIN_PRIOR)
@@ -1358,6 +1401,7 @@ def calculate_final_score_probabilistic(
         "P(rel|profile)": round(bayesian_prior, 4),
         "S_final": round(final_score, 4),
         "feature_mode": config.FEATURE_MODE,
+        "matching_mode": getattr(config, 'MATCHING_MODE', 'soft'),
         "temperature": config.TEMPERATURE,
         "μ_dirichlet": config.DIRICHLET_MU,
         "γ_co_occur": config.CO_OCCURRENCE_GAMMA,
@@ -2174,11 +2218,18 @@ New search query:"""
         problem_embeddings = self._compute_problem_embeddings(problems, embedder)
         doc_embeddings = self._compute_doc_embeddings(results, embedder)
 
-        use_semantic = bool(problem_embeddings and doc_embeddings)
-        if use_semantic:
-            logger.info(f"[H2L-Scoring] Using SEMANTIC matching (α={adaptive_alpha:.2f})")
-        else:
-            logger.info(f"[H2L-Scoring] Using KEYWORD fallback (α={adaptive_alpha:.2f})")
+        # Embeddings availability and the configured matching mode are separate
+        # things: MATCHING_MODE decides whether P(d|p) consults embeddings at
+        # all, so log both rather than implying the mode from availability.
+        embeddings_available = bool(problem_embeddings and doc_embeddings)
+        mode = getattr(config, 'MATCHING_MODE', 'soft')
+        use_semantic = embeddings_available and mode == 'soft'
+        logger.info(
+            f"[H2L-Scoring] MATCHING_MODE={mode} "
+            f"(embeddings {'available' if embeddings_available else 'unavailable'}, "
+            f"P(d|p) uses {'embeddings' if use_semantic else 'keywords only'}) "
+            f"α={adaptive_alpha:.2f}"
+        )
 
         # ── Pre-compute all per-problem invariants (once, not per result) ──
         priors = calculate_problem_prior(problems, config)
@@ -2192,8 +2243,11 @@ New search query:"""
         alpha_eff *= (1.0 - config.KL_KAPPA * kl_penalty)
         alpha_eff = max(0.01, alpha_eff)
         
+        # Co-occurrence depends on whether embeddings EXIST, not on the matching
+        # mode. Gating it on the mode would silently flatten w_i to 1.0 in the
+        # keyword arms, confounding an RQ3 contrast that must isolate P(d|p).
         co_weights = calculate_co_occurrence_weights(
-            problems, problem_embeddings if use_semantic else None, config
+            problems, problem_embeddings if embeddings_available else None, config
         )
         max_severity = max((p.get('severity', 1) for p in problems), default=5)
         
@@ -2227,7 +2281,10 @@ New search query:"""
 
         for result in results:
             doc_id = result.doc.id if hasattr(result.doc, 'id') else id(result.doc)
-            doc_emb = doc_embeddings.get(doc_id) if use_semantic else None
+            # Pass embeddings whenever they exist. The keyword branches inside
+            # calculate_final_score_probabilistic() ignore them by design, so
+            # MATCHING_MODE stays the single point of control.
+            doc_emb = doc_embeddings.get(doc_id) if embeddings_available else None
 
             # Safely get base score
             base_score = getattr(result, 'rerank_score', None)
@@ -2241,7 +2298,7 @@ New search query:"""
                 problems=problems,
                 doc_text=result.doc.text,
                 doc_embedding=doc_emb,
-                problem_embeddings=problem_embeddings if use_semantic else None,
+                problem_embeddings=problem_embeddings if embeddings_available else None,
                 config=config,
                 alpha_override=adaptive_alpha,
                 query_text=query_text,

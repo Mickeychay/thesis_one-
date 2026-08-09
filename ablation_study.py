@@ -128,6 +128,9 @@ class AblationRunner:
         self._gt_data = None
         self._detected_problems_cache = None
         self._detected_problems_cache_payload = None
+        # (case_id, error) for cases where retrieve() fell back to
+        # problem-free retrieval, i.e. H2L scoring did not run.
+        self._retrieve_fallbacks = []
 
     def _ensure_runner(self):
         """Lazy-initialize EvaluationRunner (loads models once)"""
@@ -321,6 +324,9 @@ class AblationRunner:
         if cases is None:
             cases = self._load_cases()
 
+        # Reset per-call so callers can assert an ablation arm ran H2L scoring.
+        self._retrieve_fallbacks = []
+
         from evaluate_h2l_proper import (
             STRATEGY_CONFIGS, build_relevance_keywords, judge_relevance,
             compute_all_metrics
@@ -367,7 +373,17 @@ class AblationRunner:
                     )
                 else:
                     results = retriever.retrieve(query, top_k_override=self.top_k)
-            except TypeError:
+            except TypeError as te:
+                # This fallback drops explicit_problems, which disables H2L
+                # scoring entirely and makes the arm equal to its base
+                # strategy. It previously hid a monkey-patch arity bug that
+                # produced false null results for RQ3/RQ4, so record it.
+                self._retrieve_fallbacks.append((case_id, str(te)))
+                logger.warning(
+                    f"    ⚠️  {case_id}: retrieve(explicit_problems=...) raised "
+                    f"TypeError ({te}) → retrying WITHOUT problems. H2L scoring "
+                    f"is inactive for this case."
+                )
                 try:
                     results = retriever.retrieve(query)
                 except Exception as e:
@@ -400,6 +416,12 @@ class AblationRunner:
                 'detected_codes': [
                     str(p.get('code', '')) for p in detected_problems
                 ],
+                # Ranked doc ids. Lets an ablation prove its arms actually
+                # reorder results instead of assuming a null result is real.
+                'doc_ids': [
+                    str(getattr(r.doc if hasattr(r, 'doc') else r, 'id', ''))
+                    for r in results
+                ],
             })
 
             for metric_name, value in metrics.items():
@@ -420,14 +442,24 @@ class AblationRunner:
                     'values': values,
                 }
 
+        if self._retrieve_fallbacks:
+            logger.error(
+                f"  ❌ {len(self._retrieve_fallbacks)}/{len(cases)} cases fell "
+                f"back to problem-free retrieval for '{strategy_name}'. H2L "
+                f"scoring was INACTIVE on those cases; metrics are not valid "
+                f"evidence about H2L components."
+            )
+
         return {
             'per_case': strategy_results,
             'aggregates': agg,
             'n_cases': len(strategy_results),
+            'retrieve_fallbacks': list(self._retrieve_fallbacks),
         }
 
     def create_h2l_retriever(self, alpha: float = None,
                              h2l_config=None,
+                             matching_mode: str = None,
                              force_keyword: bool = False,
                              uniform_prior: bool = False,
                              **kwargs):
@@ -435,8 +467,36 @@ class AblationRunner:
         Create a custom H2LUnifiedRetriever with specific parameter overrides.
 
         This is the core mechanism for ablation — toggle individual components.
+
+        matching_mode ('soft' | 'keyword_soft' | 'hard') sets
+        H2LConfigV3.MATCHING_MODE, which selects how φ_semantic = P(d|p) is
+        computed inside calculate_final_score_probabilistic(). Prefer this over
+        monkey-patching _apply_h2l_scoring: a patched method with the wrong
+        signature raises TypeError inside retrieve(), which evaluate_strategy()
+        used to swallow and silently retry without explicit_problems — turning
+        the arm into the plain base strategy.
         """
         from H2L_core import H2LUnifiedRetriever, H2LConfigV3
+
+        # Validate arguments before _ensure_runner() loads models, so a typo
+        # fails in milliseconds instead of after the embedder warms up.
+        if force_keyword:
+            if matching_mode not in (None, 'hard'):
+                raise ValueError(
+                    f"force_keyword=True conflicts with matching_mode="
+                    f"{matching_mode!r}; pass only matching_mode."
+                )
+            logger.warning(
+                "force_keyword=True is deprecated — use matching_mode='hard'."
+            )
+            matching_mode = 'hard'
+
+        # Assigning after construction skips __post_init__, so validate here.
+        if matching_mode is not None and matching_mode not in H2LConfigV3.MATCHING_MODES:
+            raise ValueError(
+                f"matching_mode={matching_mode!r} is not one of "
+                f"{H2LConfigV3.MATCHING_MODES}"
+            )
 
         runner = self._ensure_runner()
         config = runner._ensure_config()
@@ -445,6 +505,8 @@ class AblationRunner:
         h2l_cfg = h2l_config or H2LConfigV3()
         if alpha is not None:
             h2l_cfg.ALPHA = alpha
+        if matching_mode is not None:
+            h2l_cfg.MATCHING_MODE = matching_mode
 
         retriever = H2LUnifiedRetriever(
             config=config,
@@ -455,29 +517,9 @@ class AblationRunner:
             h2l_config=h2l_cfg,
         )
 
-        # Force keyword-only matching by replacing the embedder
-        if force_keyword:
-            retriever._force_keyword_matching = True
-            # Monkey-patch _apply_h2l_scoring to skip semantic
-            original_scoring = retriever._apply_h2l_scoring
-
-            def keyword_only_scoring(results, problems):
-                from H2L_core import calculate_problem_prior, calculate_final_score_probabilistic
-                priors = calculate_problem_prior(problems, retriever.h2l_config)
-                for result in results:
-                    final_score, breakdown = calculate_final_score_probabilistic(
-                        rerank_score=result.rerank_score,
-                        problems=problems,
-                        doc_text=result.doc.text,
-                        doc_embedding=None,  # Force keyword-only
-                        problem_embeddings=None,
-                        config=retriever.h2l_config,
-                        alpha_override=retriever.alpha,
-                    )
-                    result.rerank_score = final_score
-                return results
-
-            retriever._apply_h2l_scoring = keyword_only_scoring
+        # NOTE: keyword-only matching is no longer monkey-patched. It is driven
+        # by h2l_cfg.MATCHING_MODE above, so the real _apply_h2l_scoring runs
+        # and every non-matching component stays active.
 
         # Uniform prior override
         if uniform_prior:
@@ -494,10 +536,14 @@ class AblationRunner:
             # Monkey-patch for this retriever's scoring
             original_scoring_2 = retriever._apply_h2l_scoring
 
-            def uniform_prior_scoring(results, problems):
+            # Signature must mirror H2LUnifiedRetriever._apply_h2l_scoring,
+            # which retrieve() calls as (results, explicit_problems, query).
+            # Accepting only (results, problems) raised TypeError inside
+            # retrieve() and silently degraded the arm to the base strategy.
+            def uniform_prior_scoring(results, problems, query_text=None):
                 h2l_mod.calculate_problem_prior = uniform_prior_fn
                 try:
-                    return original_scoring_2(results, problems)
+                    return original_scoring_2(results, problems, query_text)
                 finally:
                     h2l_mod.calculate_problem_prior = _original_prior
 
@@ -789,19 +835,47 @@ class RQ2_AlphaSensitivity(AblationExperiment):
 
 class RQ3_MatchingMethod(AblationExperiment):
     """
-    RQ3: What is the advantage of semantic vs keyword matching?
+    RQ3: What is the advantage of soft vs hard matching for φ_semantic?
 
-    Compare:
-    - Semantic: P(d|p) via cosine similarity of embeddings
-    - Keyword:  P(d|p) via keyword proportion matching
+    All three arms run the real H2L pipeline (same detection, prior, IDF,
+    negation gate, co-occurrence, adaptive α, Bayesian prior). The ONLY
+    difference is how P(d|p) is computed, via H2LConfigV3.MATCHING_MODE:
 
-    Hypothesis: Semantic matching is more robust to paraphrasing.
+    - 'Semantic (Soft)'  MATCHING_MODE='soft'         — V4 gated fusion of
+                         semantic + soft keyword, then margin-aware Ω(d|p).
+    - 'Keyword (Graded)' MATCHING_MODE='keyword_soft' — keyword proportion
+                         only; embeddings not consulted for P(d|p).
+    - 'Keyword (Hard)'   MATCHING_MODE='hard'         — binary keyword
+                         indicator.
+
+    The middle arm matters for construct validity: soft→hard changes two
+    things at once (drops the embedding signal AND binarises). Splitting it
+    separates the *semantic* contribution (soft vs keyword_soft) from the
+    *granularity* contribution (keyword_soft vs hard).
+
+    IMPORTANT — why this is no longer implemented with force_keyword:
+        The previous version monkey-patched retriever._apply_h2l_scoring with
+        a function taking (results, problems). H2LUnifiedRetriever.retrieve()
+        calls it as (results, explicit_problems, query), so the patch raised
+        TypeError on every case. evaluate_strategy() caught that TypeError and
+        retried retrieve(query) without explicit_problems, which skips H2L
+        scoring entirely — so the "Keyword (Hard)" arm was really the plain
+        hybrid baseline, matching `basic` on 95/95 cases. That was an
+        instrumentation artifact, not a finding about matching. Drive the
+        ablation through config, and let the manipulation check below verify
+        the arms actually differ.
     """
+
+    ARMS = {
+        'Semantic (Soft)': 'soft',
+        'Keyword (Graded)': 'keyword_soft',
+        'Keyword (Hard)': 'hard',
+    }
 
     def __init__(self):
         super().__init__(
             name="RQ3: Soft vs Hard Matching",
-            description="Compare semantic similarity vs keyword matching for P(d|p)"
+            description="Compare soft/graded/hard P(d|p) inside the full H2L pipeline"
         )
 
     def run(self, ablation_runner: AblationRunner) -> pd.DataFrame:
@@ -810,51 +884,88 @@ class RQ3_MatchingMethod(AblationExperiment):
         logger.info(f"{'='*70}\n")
 
         all_rows = []
+        results_by_variant = {}
 
-        # Variant 1: Semantic (default)
-        logger.info("  🔧 Semantic matching (default)")
-        retriever_semantic = ablation_runner.create_h2l_retriever(force_keyword=False)
-        result_semantic = ablation_runner.evaluate_strategy('h2l-hybrid',
-                                                            custom_retriever=retriever_semantic)
+        for variant_name, mode in self.ARMS.items():
+            logger.info(f"\n  🔧 {variant_name} (MATCHING_MODE={mode!r})")
+            retriever = ablation_runner.create_h2l_retriever(matching_mode=mode)
+            result = ablation_runner.evaluate_strategy(
+                'h2l-hybrid', custom_retriever=retriever
+            )
+            results_by_variant[variant_name] = result
 
-        for case_result in result_semantic['per_case']:
-            m = case_result['metrics']
-            all_rows.append({
-                'variant': 'Semantic (Soft)',
-                'case_id': case_result['case_id'],
-                'complexity': case_result['complexity'],
-                'P@5': m.get('P@5', 0), 'R@5': m.get('R@5', 0),
-                'F1@5': m.get('F1@5', 0), 'nDCG@5': m.get('nDCG@5', 0),
-                'MAP': m.get('MAP', 0), 'MRR': m.get('MRR', 0),
-            })
+            if result.get('retrieve_fallbacks'):
+                raise RuntimeError(
+                    f"RQ3 arm {variant_name!r} fell back to problem-free "
+                    f"retrieval on {len(result['retrieve_fallbacks'])} cases, "
+                    f"so H2L scoring did not run. Fix the retriever before "
+                    f"reporting RQ3. First error: "
+                    f"{result['retrieve_fallbacks'][0]}"
+                )
 
-        # Variant 2: Keyword-only
-        logger.info("  🔧 Keyword matching (forced)")
-        retriever_keyword = ablation_runner.create_h2l_retriever(force_keyword=True)
-        result_keyword = ablation_runner.evaluate_strategy('h2l-hybrid',
-                                                           custom_retriever=retriever_keyword)
+            for case_result in result['per_case']:
+                m = case_result['metrics']
+                all_rows.append({
+                    'variant': variant_name,
+                    'matching_mode': mode,
+                    'case_id': case_result['case_id'],
+                    'complexity': case_result['complexity'],
+                    'n_problems': case_result.get('n_problems', 0),
+                    'doc_ids': '|'.join(case_result.get('doc_ids', [])),
+                    'P@5': m.get('P@5', 0), 'R@5': m.get('R@5', 0),
+                    'F1@5': m.get('F1@5', 0), 'nDCG@5': m.get('nDCG@5', 0),
+                    'nDCG@10': m.get('nDCG@10', 0),
+                    'MAP': m.get('MAP', 0), 'MRR': m.get('MRR', 0),
+                })
 
-        for case_result in result_keyword['per_case']:
-            m = case_result['metrics']
-            all_rows.append({
-                'variant': 'Keyword (Hard)',
-                'case_id': case_result['case_id'],
-                'complexity': case_result['complexity'],
-                'P@5': m.get('P@5', 0), 'R@5': m.get('R@5', 0),
-                'F1@5': m.get('F1@5', 0), 'nDCG@5': m.get('nDCG@5', 0),
-                'MAP': m.get('MAP', 0), 'MRR': m.get('MRR', 0),
-            })
+            agg = result['aggregates']
+            logger.info(f"    nDCG@5: {agg.get('nDCG@5', {}).get('mean', 0):.4f} "
+                        f"± {agg.get('nDCG@5', {}).get('std', 0):.4f}")
+            logger.info(f"    F1@5:   {agg.get('F1@5', {}).get('mean', 0):.4f}")
 
-        agg_s = result_semantic['aggregates']
-        agg_k = result_keyword['aggregates']
-        logger.info(f"  Semantic F1@5: {agg_s.get('F1@5', {}).get('mean', 0):.4f}")
-        logger.info(f"  Keyword  F1@5: {agg_k.get('F1@5', {}).get('mean', 0):.4f}")
+        df = pd.DataFrame(all_rows)
+        self._manipulation_check(df)
+        self._raw_results = results_by_variant
+        return df
 
-        self._raw_results = {
-            'Semantic (Soft)': result_semantic,
-            'Keyword (Hard)': result_keyword,
-        }
-        return pd.DataFrame(all_rows)
+    @staticmethod
+    def _manipulation_check(df: pd.DataFrame) -> None:
+        """Verify the matching mode actually changed the ranking.
+
+        Detection is identical across arms by design, so n_problems must NOT
+        differ; the ranked doc list is what should move.
+        """
+        if df.empty or 'doc_ids' not in df.columns:
+            return
+        pivot = df.pivot_table(index='case_id', columns='variant',
+                               values='doc_ids', aggfunc='first')
+        if pivot.shape[1] < 2:
+            return
+        total = int(pivot.shape[0])
+        differing = int((pivot.nunique(axis=1) > 1).sum())
+        logger.info(f"\n  🔎 Manipulation check: ranked doc list differs in "
+                    f"{differing}/{total} cases")
+
+        if differing == 0:
+            logger.error(
+                "  ❌ RQ3 manipulation check FAILED: all matching modes "
+                "returned identical rankings on every case. MATCHING_MODE did "
+                "not reach calculate_final_score_probabilistic() — do not "
+                "report these numbers as evidence about soft vs hard matching."
+            )
+
+        # Detection must be constant across arms; if not, the contrast is
+        # confounded by a different problem list.
+        if 'n_problems' in df.columns:
+            np_pivot = df.pivot_table(index='case_id', columns='variant',
+                                      values='n_problems', aggfunc='first')
+            confounded = int((np_pivot.nunique(axis=1) > 1).sum())
+            if confounded:
+                logger.error(
+                    f"  ❌ RQ3 confound: detected-problem counts differ in "
+                    f"{confounded}/{total} cases. Arms must share one problem "
+                    f"list; only P(d|p) may vary."
+                )
 
     def visualize(self, results: pd.DataFrame, output_dir: Path):
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -863,18 +974,20 @@ class RQ3_MatchingMethod(AblationExperiment):
         metrics = ['P@5', 'R@5', 'F1@5', 'nDCG@5', 'MAP', 'MRR']
         avg = results.groupby('variant')[metrics].mean()
 
-        # Plot 1: Side-by-side bar chart
+        # Plot 1: Grouped bars, one group per arm (arm count is not fixed).
+        order = [v for v in self.ARMS if v in avg.index]
+        palette = {'Semantic (Soft)': '#2ECC71',
+                   'Keyword (Graded)': '#F39C12',
+                   'Keyword (Hard)': '#E74C3C'}
         x = np.arange(len(metrics))
-        width = 0.35
-        semantic_vals = avg.loc['Semantic (Soft)'].values
-        keyword_vals = avg.loc['Keyword (Hard)'].values
+        width = 0.8 / max(len(order), 1)
+        offset0 = -0.4 + width / 2
 
-        axes[0].bar(x - width/2, semantic_vals, width, label='Semantic (Soft)',
-                    color='#2ECC71', edgecolor='white')
-        axes[0].bar(x + width/2, keyword_vals, width, label='Keyword (Hard)',
-                    color='#E74C3C', edgecolor='white')
+        for i, variant in enumerate(order):
+            axes[0].bar(x + offset0 + i * width, avg.loc[variant].values, width,
+                        label=variant, color=palette.get(variant), edgecolor='white')
 
-        axes[0].set_title('RQ3: Semantic vs Keyword Matching', fontsize=13, fontweight='bold')
+        axes[0].set_title('RQ3: Soft vs Graded vs Hard Matching', fontsize=13, fontweight='bold')
         axes[0].set_ylabel('Score')
         axes[0].set_xticks(x)
         axes[0].set_xticklabels(metrics)
@@ -2285,12 +2398,12 @@ def generate_report(all_results: Dict[str, pd.DataFrame],
     logger.info(f"✅ Report saved: {report_path}")
 
 
-def write_rq6_structured_artifacts(
-    frame: pd.DataFrame,
-    stats: Dict,
-    output_dir: Path,
-) -> None:
-    """Persist machine-readable RQ6 statistics and held-out slice summaries."""
+def significance_rows(stats: Dict) -> List[Dict]:
+    """Flatten run_pairwise_stats() output into CSV-ready rows.
+
+    Shared by RQ3 and RQ6 so both report raw and Holm-adjusted p-values in
+    exactly the same columns.
+    """
     stat_rows = []
     for result in stats.values():
         ci_low, ci_high = result.get('ci_95', (None, None))
@@ -2313,7 +2426,54 @@ def write_rq6_structured_artifacts(
             'ci_95_high': ci_high,
             'multiplicity_correction': result.get('p_adjustment'),
         })
-    pd.DataFrame(stat_rows).to_csv(
+    return stat_rows
+
+
+def write_rq3_structured_artifacts(
+    frame: pd.DataFrame,
+    stats: Dict,
+    output_dir: Path,
+) -> None:
+    """Persist machine-readable RQ3 statistics and per-arm aggregates."""
+    pd.DataFrame(significance_rows(stats)).to_csv(
+        output_dir / 'rq3_significance.csv', index=False, encoding='utf-8',
+    )
+
+    metric_columns = [
+        m for m in ('P@5', 'R@5', 'F1@5', 'nDCG@5', 'nDCG@10', 'MAP', 'MRR')
+        if m in frame.columns
+    ]
+    summary = (
+        frame.groupby(['variant', 'matching_mode'], sort=False)[metric_columns]
+        .agg(['mean', 'std'])
+    )
+    summary.columns = [f'{metric}_{stat}' for metric, stat in summary.columns]
+    summary.reset_index().to_csv(
+        output_dir / 'rq3_arm_summary.csv', index=False, encoding='utf-8',
+    )
+
+    # Ranking-change evidence: the manipulation check as a persisted artifact,
+    # so a null result can be distinguished from an inert switch later.
+    if 'doc_ids' in frame.columns:
+        pivot = frame.pivot_table(index='case_id', columns='variant',
+                                  values='doc_ids', aggfunc='first')
+        rows = [{
+            'case_id': case_id,
+            'n_distinct_rankings': int(pivot.loc[case_id].nunique()),
+            'ranking_changed': bool(pivot.loc[case_id].nunique() > 1),
+        } for case_id in pivot.index]
+        pd.DataFrame(rows).to_csv(
+            output_dir / 'rq3_ranking_changes.csv', index=False, encoding='utf-8',
+        )
+
+
+def write_rq6_structured_artifacts(
+    frame: pd.DataFrame,
+    stats: Dict,
+    output_dir: Path,
+) -> None:
+    """Persist machine-readable RQ6 statistics and held-out slice summaries."""
+    pd.DataFrame(significance_rows(stats)).to_csv(
         output_dir / 'rq6_significance.csv',
         index=False,
         encoding='utf-8',
@@ -2482,14 +2642,22 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
         # Statistical tests
         group_col = 'alpha' if rq_num == 2 else 'h2l_filter' if rq_num == 5 else 'variant'
         try:
-            if rq_num == 6:
+            if rq_num in (3, 6):
+                # RQ3 has 3 arms → 3 pairs; RQ6 has 8 variants vs one
+                # reference. Both need multiplicity control. Holm is applied
+                # per metric family (once per metric_col), matching the
+                # convention used for the main strategy comparison table.
                 stats = {}
+                # RQ3 compares all pairs so the granularity contrast
+                # (keyword_soft vs hard) is testable, not just each arm
+                # against the semantic reference.
+                reference = 'Full V6' if rq_num == 6 else None
                 for metric_col in ('nDCG@5', 'nDCG@10'):
                     metric_stats = run_pairwise_stats(
                         df,
                         group_col,
                         metric_col,
-                        reference_group='Full V6',
+                        reference_group=reference,
                         adjust_method='holm',
                         test_method='wilcoxon',
                     )
@@ -2504,6 +2672,13 @@ def run_full_ablation_study(output_dir: str = "ablation_results",
                 failed_experiments[f'{rq_key}_statistics'] = str(e)
 
         all_results[rq_key] = df
+        if rq_num == 3 and all_stats.get(rq_key):
+            write_rq3_structured_artifacts(
+                df,
+                all_stats[rq_key],
+                output_path,
+            )
+
         if rq_num == 6 and all_stats.get(rq_key):
             write_rq6_structured_artifacts(
                 df,
