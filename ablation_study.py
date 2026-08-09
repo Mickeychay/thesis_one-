@@ -1050,10 +1050,19 @@ class RQ5_FilterToggle(AblationExperiment):
         logger.info(f"Running {self.name}")
         logger.info(f"{'='*70}\n")
 
-        base_strategies = ['basic', 'dynamic', 'adaptive', 'multihop']
+        # Map each baseline to its H2L-augmented counterpart using the actual
+        # STRATEGY_CONFIGS keys.  The old list used non-existent names
+        # ('dynamic', 'adaptive', 'multihop', '<base>+h2l') which caused a
+        # KeyError on every run.
+        strategy_pairs = [
+            ('bm25_only',  'h2l-bm25'),
+            ('naive_rag',  'h2l-naive_rag'),
+            ('hyde',       'h2l-hyde'),
+            ('basic',      'h2l-hybrid'),
+        ]
         all_rows = []
 
-        for base in base_strategies:
+        for base, h2l_key in strategy_pairs:
             # Without H2L filter
             logger.info(f"\n  🔧 {base} (no filter)")
             result_off = ablation_runner.evaluate_strategy(base)
@@ -1064,11 +1073,13 @@ class RQ5_FilterToggle(AblationExperiment):
                     'case_id': cr['case_id'], 'complexity': cr['complexity'],
                     'P@5': m.get('P@5', 0), 'R@5': m.get('R@5', 0),
                     'F1@5': m.get('F1@5', 0), 'nDCG@5': m.get('nDCG@5', 0),
+                    'nDCG@10': m.get('nDCG@10', 0),
+                    'P@10': m.get('P@10', 0), 'R@10': m.get('R@10', 0),
+                    'F1@10': m.get('F1@10', 0),
                     'MAP': m.get('MAP', 0), 'MRR': m.get('MRR', 0),
                 })
 
             # With H2L filter
-            h2l_key = f"{base}+h2l"
             logger.info(f"  🔧 {h2l_key} (with filter)")
             try:
                 result_on = ablation_runner.evaluate_strategy(h2l_key)
@@ -1079,6 +1090,9 @@ class RQ5_FilterToggle(AblationExperiment):
                         'case_id': cr['case_id'], 'complexity': cr['complexity'],
                         'P@5': m.get('P@5', 0), 'R@5': m.get('R@5', 0),
                         'F1@5': m.get('F1@5', 0), 'nDCG@5': m.get('nDCG@5', 0),
+                        'nDCG@10': m.get('nDCG@10', 0),
+                        'P@10': m.get('P@10', 0), 'R@10': m.get('R@10', 0),
+                        'F1@10': m.get('F1@10', 0),
                         'MAP': m.get('MAP', 0), 'MRR': m.get('MRR', 0),
                     })
             except Exception as e:
