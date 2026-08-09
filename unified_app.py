@@ -25,6 +25,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 import json
+import os
 import re
 import logging
 from datetime import datetime
@@ -3640,7 +3641,7 @@ def create_unified_app():
                     <h3 style='margin: 0; color: #1a1a2e; font-size: 1.1em;'>3D Vector Space Visualization</h3>
                     <p style='margin: 4px 0 0; font-size: 0.85em; color: #555;'>
                         ⭐ Query &nbsp; 🔷 Problems &nbsp; 🟢 Relevant Docs &nbsp; ⚪ Other Docs
-                        &nbsp;|&nbsp; ลาก=หมุน, สกรอล=ซูม &nbsp;|&nbsp; 768D → 3D
+                        &nbsp;|&nbsp; ลาก=หมุน, สกรอล=ซูม &nbsp;|&nbsp; ระยะ=คะแนนความเกี่ยวข้อง, ทิศ=ปัญหาที่จับได้
                     </p>
                 </div>
                 """)
@@ -3721,7 +3722,7 @@ def create_unified_app():
                         choices=["None", "PCA", "t-SNE", "UMAP"],
                         value="None",
                         label="DR Method",
-                        info="เลือกวิธีลดมิติข้อมูล (768D → 3D)"
+                        info="ใช้ได้เฉพาะ demo mode (ALLOW_DEMO_DATA=true) และรันบน synthetic embeddings เท่านั้น — ค่าปกติคือ None"
                     )
                     dr_info = gr.Markdown(
                         "**None** — golden spiral distribution, เร็วที่สุด, เหมาะสำหรับการสาธิต",
@@ -4667,9 +4668,23 @@ if __name__ == "__main__":
     # Pre-load models before starting the app
     embedding_model, rerank_model = preload_models()
 
+    # Bind to loopback only and do NOT open a public Gradio tunnel.
+    # This app serves social-work case records and has no authentication of
+    # its own, so it must not be reachable from outside this machine.
+    # Set GRADIO_AUTH_USER / GRADIO_AUTH_PASS to require a login.
+    _auth_user = os.getenv("GRADIO_AUTH_USER")
+    _auth_pass = os.getenv("GRADIO_AUTH_PASS")
+    _auth = (_auth_user, _auth_pass) if (_auth_user and _auth_pass) else None
+
     print("\n👉 Starting Gradio Interface...")
-    print("👉 Open http://localhost:7860")
+    print("👉 Open http://127.0.0.1:7860")
+    print(f"👉 Auth: {'enabled' if _auth else 'DISABLED (localhost only)'}")
     print("=" * 70 + "\n")
 
     app = create_unified_app()
-    app.launch(server_name="0.0.0.0", server_port=None, share=True)
+    app.launch(
+        server_name="127.0.0.1",
+        server_port=7860,
+        share=False,
+        auth=_auth,
+    )
