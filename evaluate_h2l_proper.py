@@ -563,8 +563,17 @@ class EvaluationRunner:
         return retriever
 
 
-    def detect_problems(self, case_text: str) -> List[Dict]:
-        """Detect problems using H2L detector"""
+    def detect_problems(self, case_text: str, use_l2: bool = True) -> List[Dict]:
+        """
+        Detect problems using H2L detector.
+
+        Args:
+            case_text: Case description to analyse.
+            use_l2: When False, return raw L1 detections without L2 semantic
+                validation/filtering. This is the real L2 ablation switch —
+                it changes the detected problem list itself, not the scoring
+                weights. See H2LDetector.detect_problems(use_l2=...).
+        """
         detector = self._ensure_detector()
         if detector is None:
             return []
@@ -572,7 +581,7 @@ class EvaluationRunner:
         try:
             # H2LDetectorV3 exposes detect_problems() which returns List[Dict]
             if hasattr(detector, 'detect_problems'):
-                problems = detector.detect_problems(case_text)
+                problems = detector.detect_problems(case_text, use_l2=use_l2)
                 return problems if isinstance(problems, list) else []
             else:
                 # Fallback for older L1ContextAwareDetector

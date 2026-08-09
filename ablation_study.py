@@ -285,19 +285,35 @@ class AblationRunner:
             ),
         }
 
-    def detected_problems_for_case(self, case: Dict, runner) -> List[Dict]:
+    def detected_problems_for_case(self, case: Dict, runner,
+                                   use_l2: bool = True) -> List[Dict]:
         cache = self._load_detected_problems_cache()
         case_id = case.get('case_id')
         if cache:
+            if not use_l2:
+                # The cache stores L2-validated problem lists from a completed
+                # matrix run. Serving it under an L1-only condition would make
+                # the two ablation arms identical and silently produce a
+                # null result. Refuse instead of reporting a false negative.
+                raise ValueError(
+                    "Cannot run an L1-only (use_l2=False) condition while the "
+                    "detected-problems cache is enabled: the cache contains "
+                    "L2-validated problems, so both arms would be identical. "
+                    "Re-run without --detected-problems-cache."
+                )
             if case_id not in cache:
                 raise KeyError(f"Case {case_id!r} is missing from the detected-problems cache")
             return copy.deepcopy(cache[case_id])
-        return runner.detect_problems(case.get('case_description', ''))
+        return runner.detect_problems(case.get('case_description', ''), use_l2=use_l2)
 
     def evaluate_strategy(self, strategy_name: str, cases: List[Dict] = None,
-                          custom_retriever=None) -> Dict:
+                          custom_retriever=None, use_l2: bool = True) -> Dict:
         """
         Evaluate a single strategy on ground truth cases.
+
+        Args:
+            use_l2: Passed through to detection. False yields raw L1 detections
+                without L2 semantic validation — the real L2 ablation switch.
 
         Returns dict with per-case results and aggregate metrics.
         """
@@ -324,7 +340,7 @@ class AblationRunner:
             relevance_keywords = build_relevance_keywords(expected, runner.taxonomy)
 
             # Detect problems
-            detected_problems = runner.detect_problems(query) if (
+            detected_problems = runner.detect_problems(query, use_l2=use_l2) if (
                 strategy_name in STRATEGY_CONFIGS and
                 STRATEGY_CONFIGS[strategy_name].get('needs_problems', False)
             ) or custom_retriever else []
@@ -367,6 +383,13 @@ class AblationRunner:
                 'category': case.get('category', 'unknown'),
                 'metrics': metrics,
                 'relevance_grades': relevance_grades,
+                # Number of problems fed into scoring. Recorded so an L2
+                # ablation can be shown to actually change the detected
+                # problem list, rather than assumed to.
+                'n_problems': len(detected_problems),
+                'detected_codes': [
+                    str(p.get('code', '')) for p in detected_problems
+                ],
             })
 
             for metric_name, value in metrics.items():
@@ -495,11 +518,27 @@ class RQ1_L2Filtering(AblationExperiment):
     """
     RQ1: What is the impact of L2 LLM filtering on precision?
 
-    Compare:
-    - H2L Full (L1 + L2): L1_WEIGHT_BETA=0.3 (default, L2 contributes 70%)
-    - H2L L1-only:         L1_WEIGHT_BETA=1.0 (L2 disabled, L1 = 100%)
+    Compare two DETECTION conditions (identical H2L scoring in both arms):
+    - 'L1+L2 detection':      detect_problems(use_l2=True)  — L1 candidates
+                              validated/filtered by the L2 LLM.
+    - 'L1-only detection':    detect_problems(use_l2=False) — raw L1 candidates,
+                              no L2 validation.
 
     Hypothesis: L2 filtering improves precision by removing false positives.
+
+    IMPORTANT — why this is not implemented with L1_WEIGHT_BETA:
+        H2LConfigV3.L1_WEIGHT_BETA documents 'S_detect = β×S_L1 + (1-β)×S_L2',
+        but that formula has no implementation anywhere in H2L_core.py: β is
+        never read by any scoring function, and S_L1/S_L2 are never computed as
+        separate quantities. A previous version of this experiment varied β
+        (0.3 vs 1.0) and therefore ran the SAME pipeline twice, producing
+        byte-identical metrics across all 95 cases — a false null result, not
+        evidence about L2. sensitivity_analysis.py and
+        scripts/build_chapter4_evidence.py already record β as
+        'not exercised'; do not reintroduce it here as an L2 switch.
+
+        The real switch is use_l2 in H2LDetector.detect_problems(), which
+        changes the detected problem list itself.
     """
 
     def __init__(self):
@@ -513,28 +552,39 @@ class RQ1_L2Filtering(AblationExperiment):
         logger.info(f"Running {self.name}")
         logger.info(f"{'='*70}\n")
 
-        from H2L_core import H2LConfigV3
+        if ablation_runner.detected_problems_cache_path:
+            raise ValueError(
+                "RQ1 ablates L2 at detection time and cannot run against a "
+                "detected-problems cache (the cache holds one fixed "
+                "L2-validated problem list, so both arms would be identical). "
+                "Re-run RQ1 without --detected-problems-cache."
+            )
 
-        configs = {
-            'Full (L1+L2)': H2LConfigV3(L1_WEIGHT_BETA=0.3),  # Default
-            'L1 Only (no L2)': H2LConfigV3(L1_WEIGHT_BETA=1.0),  # Disable L2
+        # Identical scoring config in both arms — only detection differs.
+        conditions = {
+            'L1+L2 detection': True,
+            'L1-only detection': False,
         }
 
         all_rows = []
         results_by_variant = {}
 
-        for variant_name, h2l_cfg in configs.items():
-            logger.info(f"\n  🔧 Configuration: {variant_name} (β = {h2l_cfg.L1_WEIGHT_BETA})")
-            retriever = ablation_runner.create_h2l_retriever(h2l_config=h2l_cfg)
-            result = ablation_runner.evaluate_strategy('h2l-hybrid', custom_retriever=retriever)
+        for variant_name, use_l2 in conditions.items():
+            logger.info(f"\n  🔧 Condition: {variant_name} (use_l2={use_l2})")
+            retriever = ablation_runner.create_h2l_retriever()
+            result = ablation_runner.evaluate_strategy(
+                'h2l-hybrid', custom_retriever=retriever, use_l2=use_l2
+            )
             results_by_variant[variant_name] = result
 
             for case_result in result['per_case']:
                 m = case_result['metrics']
                 all_rows.append({
                     'variant': variant_name,
+                    'use_l2': use_l2,
                     'case_id': case_result['case_id'],
                     'complexity': case_result['complexity'],
+                    'n_problems': case_result.get('n_problems', 0),
                     'P@5': m.get('P@5', 0),
                     'R@5': m.get('R@5', 0),
                     'F1@5': m.get('F1@5', 0),
@@ -550,8 +600,34 @@ class RQ1_L2Filtering(AblationExperiment):
                         f"± {agg.get('nDCG@5', {}).get('std', 0):.4f}")
 
         df = pd.DataFrame(all_rows)
+
+        # Manipulation check: if the two arms detected identical problem counts
+        # on every case, the L2 switch did not take effect. Report loudly
+        # instead of letting a null result look like a finding.
+        self._manipulation_check(df)
+
         self._raw_results = results_by_variant
         return df
+
+    @staticmethod
+    def _manipulation_check(df: pd.DataFrame) -> None:
+        if df.empty or 'n_problems' not in df.columns:
+            return
+        pivot = df.pivot_table(index='case_id', columns='variant',
+                               values='n_problems', aggfunc='first')
+        if pivot.shape[1] < 2:
+            return
+        differing = int((pivot.nunique(axis=1) > 1).sum())
+        total = int(pivot.shape[0])
+        logger.info(f"\n  🔎 Manipulation check: detected-problem counts differ "
+                    f"in {differing}/{total} cases")
+        if differing == 0:
+            logger.error(
+                "  ❌ RQ1 manipulation check FAILED: the L1-only and L1+L2 arms "
+                "produced the same number of detected problems on every case. "
+                "The L2 switch did not take effect — do not report these "
+                "numbers as evidence about L2."
+            )
 
     def visualize(self, results: pd.DataFrame, output_dir: Path):
         output_dir.mkdir(parents=True, exist_ok=True)
