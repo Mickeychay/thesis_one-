@@ -1,135 +1,128 @@
+"""Replace Chapter 4 of the main thesis DOCX with the freshly built ch4_thesis.docx.
+
+Implementation note — why this edits the document in place:
+
+The previous version built a blank `docx.Document()` and re-created every
+paragraph by copying `run.text` plus a few font attributes. That silently
+discarded everything not expressed as run text:
+
+  * embedded images (a run's picture lives in the run XML, not in `run.text`),
+    so all four Chapter 4 figures vanished on every injection;
+  * tables outside Chapter 4, because `main_doc.paragraphs` skips tables —
+    this dropped the Chapter 5 evidence-summary table;
+  * section properties, headers/footers, numbering, and the original styles.
+
+Editing the existing body avoids all of that: only the Chapter 4 element range
+is removed, and the new Chapter 4 elements are spliced into the same position.
+Everything outside that range keeps its original XML byte-for-byte.
+"""
+
+import copy
+
 import docx
-from docx.shared import Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml import parse_xml
-from docx.oxml.ns import nsdecls
-import re
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.oxml.ns import qn
 
-def set_cell_background(cell, fill_hex):
-    tcPr = cell._tc.get_or_add_tcPr()
-    shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{fill_hex}"/>')
-    tcPr.append(shd)
 
-def set_cell_margins(cell, top=100, bottom=100, left=150, right=150):
-    tcPr = cell._tc.get_or_add_tcPr()
-    tcMar = parse_xml(f'<w:tcMar {nsdecls("w")}><w:top w:w="{top}" w:type="dxa"/><w:bottom w:w="{bottom}" w:type="dxa"/><w:left w:w="{left}" w:type="dxa"/><w:right w:w="{right}" w:type="dxa"/></w:tcMar>')
-    tcPr.append(tcMar)
+CH4_HEADING = 'บทที่ 4'
+CH5_HEADING = 'บทที่ 5'
 
-def replace_ch4_in_main_doc(main_path, out_path):
-    main_doc = docx.Document(main_path)
-    
-    # Locate Chapter 4 start paragraph and Chapter 5 start paragraph
-    p_ch4_idx = -1
-    p_ch5_idx = -1
-    
-    for i, p in enumerate(main_doc.paragraphs):
-        if 'บทที่ 4' in p.text:
-            p_ch4_idx = i
-        elif 'บทที่ 5' in p.text:
-            p_ch5_idx = i
+
+def _body_position(body_children, paragraph):
+    """Index of a Paragraph's XML element within the body's children."""
+    return body_children.index(paragraph._p)
+
+
+def _find_chapter_bounds(doc):
+    """Return (ch4_element, ch5_element) for the chapter heading paragraphs."""
+    ch4 = ch5 = None
+    for paragraph in doc.paragraphs:
+        text = paragraph.text
+        if CH4_HEADING in text and ch4 is None:
+            ch4 = paragraph
+        elif CH5_HEADING in text and ch5 is None:
+            ch5 = paragraph
             break
-            
-    print(f"Main doc paragraph indices: Chapter 4 starts at {p_ch4_idx}, Chapter 5 starts at {p_ch5_idx}")
-    
-    # We will build a clean document from main_doc up to p_ch4_idx - 1,
-    # then insert the entire Chapter 4 content from ch4_thesis.docx,
-    # and then append everything from p_ch5_idx onwards!
-    
-    new_doc = docx.Document()
-    
-    # Copy paragraphs before Chapter 4
-    for i in range(p_ch4_idx):
-        p_old = main_doc.paragraphs[i]
-        p_new = new_doc.add_paragraph()
-        p_new.style = p_old.style
-        p_new.alignment = p_old.alignment
-        for run in p_old.runs:
-            r = p_new.add_run(run.text)
-            r.bold = run.bold
-            r.italic = run.italic
-            r.font.name = run.font.name
-            r.font.size = run.font.size
-            
-    # Read ch4_thesis.docx
-    ch4_doc = docx.Document('ch4_thesis.docx')
-    
-    # Copy all elements (paragraphs and tables) from ch4_doc
-    for elem in ch4_doc.element.body:
-        if elem.tag.endswith('p'):
-            p_obj = docx.text.paragraph.Paragraph(elem, ch4_doc)
-            p_new = new_doc.add_paragraph()
-            p_new.alignment = p_obj.alignment
-            p_new.paragraph_format.space_before = p_obj.paragraph_format.space_before
-            p_new.paragraph_format.space_after = p_obj.paragraph_format.space_after
-            for run in p_obj.runs:
-                r = p_new.add_run(run.text)
-                r.bold = run.bold
-                r.italic = run.italic
-                r.font.name = 'TH Sarabun PSK'
-                r.font.size = run.font.size if run.font.size else Pt(14)
-                if run.font.color and run.font.color.rgb:
-                    r.font.color.rgb = run.font.color.rgb
-        elif elem.tag.endswith('tbl'):
-            tbl_obj = docx.table.Table(elem, ch4_doc)
-            # Copy table structure
-            new_table = new_doc.add_table(rows=len(tbl_obj.rows), cols=len(tbl_obj.columns))
-            new_table.alignment = WD_TABLE_ALIGNMENT.CENTER
-            for r_idx, row in enumerate(tbl_obj.rows):
-                for c_idx, cell in enumerate(row.cells):
-                    target_cell = new_table.rows[r_idx].cells[c_idx]
-                    target_cell.text = cell.text
-                    set_cell_margins(target_cell, top=100, bottom=100, left=150, right=150)
-                    if r_idx == 0:
-                        set_cell_background(target_cell, "F0F4F8")
-                    else:
-                        bg = "FAFAFA" if r_idx % 2 == 1 else "FFFFFF"
-                        set_cell_background(target_cell, bg)
-                    p = target_cell.paragraphs[0]
-                    p.alignment = WD_ALIGN_PARAGRAPH.LEFT if c_idx == 0 else WD_ALIGN_PARAGRAPH.CENTER
-                    for r in p.runs:
-                        r.font.name = 'TH Sarabun PSK'
-                        r.font.size = Pt(13)
-                        if r_idx == 0:
-                            r.font.bold = True
+    if ch4 is None:
+        raise ValueError(f"could not locate {CH4_HEADING!r} in the main document")
+    if ch5 is None:
+        raise ValueError(f"could not locate {CH5_HEADING!r} in the main document")
+    return ch4, ch5
 
-    # Copy everything from Chapter 5 onwards — paragraphs AND tables.
-    # Iterating main_doc.paragraphs skips tables entirely, which silently
-    # dropped the Chapter 5 "SUMMARY OF CASE-BASED EMPIRICAL EVIDENCE" table
-    # (a 1x1 ASCII-art cell) on every previous injection.
-    if p_ch5_idx != -1:
-        ch5_start_p = main_doc.paragraphs[p_ch5_idx]._p
-        body = list(main_doc.element.body)
-        start_pos = body.index(ch5_start_p)
 
-        for elem in body[start_pos:]:
-            if elem.tag.endswith('p'):
-                p_old = docx.text.paragraph.Paragraph(elem, main_doc)
-                p_new = new_doc.add_paragraph()
-                p_new.style = p_old.style
-                p_new.alignment = p_old.alignment
-                for run in p_old.runs:
-                    r = p_new.add_run(run.text)
-                    r.bold = run.bold
-                    r.italic = run.italic
-                    r.font.name = run.font.name
-                    r.font.size = run.font.size
-            elif elem.tag.endswith('tbl'):
-                tbl_obj = docx.table.Table(elem, main_doc)
-                new_table = new_doc.add_table(
-                    rows=len(tbl_obj.rows), cols=len(tbl_obj.columns)
+def _remap_images(element, source_part, target_part):
+    """Re-point r:embed / r:link ids from source_part's rels to target_part's.
+
+    A deep-copied run keeps the source document's relationship id. Left
+    unremapped, Word reports the file as corrupt or shows an empty frame, so
+    every image part is added to the target package and the id rewritten.
+    """
+    embed_attr = qn('r:embed')
+    link_attr = qn('r:link')
+
+    for blip in element.iter(qn('a:blip')):
+        for attr in (embed_attr, link_attr):
+            rid = blip.get(attr)
+            if not rid:
+                continue
+            source_rel = source_part.rels[rid]
+            if source_rel.is_external:
+                new_rid = target_part.relate_to(
+                    source_rel.target_ref, source_rel.reltype, is_external=True
                 )
-                for r_idx, row in enumerate(tbl_obj.rows):
-                    for c_idx, cell in enumerate(row.cells):
-                        target = new_table.rows[r_idx].cells[c_idx]
-                        target.text = cell.text
-                        for p in target.paragraphs:
-                            for r in p.runs:
-                                r.font.name = 'TH Sarabun PSK'
-                                r.font.size = Pt(13)
+            else:
+                image_part = source_rel.target_part
+                new_rid = target_part.relate_to(image_part, RT.IMAGE)
+            blip.set(attr, new_rid)
 
-    new_doc.save(out_path)
+
+def replace_ch4_in_main_doc(main_path, out_path, ch4_path='ch4_thesis.docx'):
+    main_doc = docx.Document(main_path)
+    ch4_doc = docx.Document(ch4_path)
+
+    ch4_heading, ch5_heading = _find_chapter_bounds(main_doc)
+
+    body = main_doc.element.body
+    children = list(body)
+    start = _body_position(children, ch4_heading)
+    end = _body_position(children, ch5_heading)
+    if start >= end:
+        raise ValueError(
+            f"{CH4_HEADING!r} (pos {start}) must precede {CH5_HEADING!r} (pos {end})"
+        )
+
+    old_elements = children[start:end]
+    print(f"Replacing {len(old_elements)} body elements "
+          f"(positions {start}–{end - 1}) with new Chapter 4")
+
+    # Splice new Chapter 4 content in before the Chapter 5 heading, preserving
+    # document order, then drop the old range.
+    anchor = ch5_heading._p
+    copied_images = 0
+    inserted = 0
+    for element in ch4_doc.element.body:
+        # Skip the trailing <w:sectPr>: section setup belongs to the main
+        # document and must not be overwritten by the fragment's defaults.
+        if element.tag == qn('w:sectPr'):
+            continue
+        new_element = copy.deepcopy(element)
+        before = len(main_doc.part.rels)
+        _remap_images(new_element, ch4_doc.part, main_doc.part)
+        copied_images += len(main_doc.part.rels) - before
+        anchor.addprevious(new_element)
+        inserted += 1
+
+    for element in old_elements:
+        body.remove(element)
+
+    print(f"Inserted {inserted} elements, remapped {copied_images} image relationships")
+
+    main_doc.save(out_path)
     print(f"Successfully injected Chapter 4 into main docx: {out_path}")
 
+
 if __name__ == '__main__':
-    replace_ch4_in_main_doc('65130641_Riskie_Thesis_Glen_fixed.docx', '65130641_Riskie_Thesis_Glen_fixed.docx')
+    replace_ch4_in_main_doc(
+        '65130641_Riskie_Thesis_Glen_fixed.docx',
+        '65130641_Riskie_Thesis_Glen_fixed.docx',
+    )

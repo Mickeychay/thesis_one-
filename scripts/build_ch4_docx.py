@@ -11,6 +11,36 @@ ROOT = Path(__file__).resolve().parent.parent
 MD_PATH = ROOT / "md_report" / "thesis_full_ch4_final.md"
 OUTPUT_DOCX = ROOT / "ch4_thesis.docx"
 
+def add_figure(doc, alt_text, rel_path, width_inches=6.0):
+    """Insert a markdown image as a real picture plus a centred caption.
+
+    Raises on a missing file. A silently-skipped figure is worse than a failed
+    build: the reference text in the chapter would point at nothing.
+    """
+    img_path = (MD_PATH.parent / rel_path).resolve()
+    if not img_path.is_file():
+        raise FileNotFoundError(
+            f"figure not found: {img_path} (referenced as {rel_path!r})"
+        )
+
+    para = doc.add_paragraph()
+    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    para.paragraph_format.space_before = Pt(8)
+    para.paragraph_format.space_after = Pt(2)
+    para.add_run().add_picture(str(img_path), width=Inches(width_inches))
+
+    if alt_text:
+        caption = doc.add_paragraph()
+        caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        caption.paragraph_format.space_before = Pt(0)
+        caption.paragraph_format.space_after = Pt(10)
+        run = caption.add_run(alt_text)
+        run.font.name = 'TH Sarabun PSK'
+        run.font.size = Pt(14)
+        run.font.bold = True
+        run.font.color.rgb = RGBColor(51, 51, 51)
+
+
 def set_cell_background(cell, fill_hex):
     tcPr = cell._element.get_or_add_tcPr()
     shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{fill_hex}"/>')
@@ -182,6 +212,15 @@ def convert_md_to_docx(md_path, out_path):
             i += 1
             continue
             
+        # Markdown images: ![alt](path). Without this branch the raw markdown
+        # was emitted as literal body text and the figures never appeared in
+        # the DOCX at all.
+        img_match = re.match(r'^!\[(?P<alt>[^\]]*)\]\((?P<path>[^)]+)\)\s*$', line)
+        if img_match:
+            add_figure(doc, img_match.group('alt'), img_match.group('path'))
+            i += 1
+            continue
+
         if line.startswith('# '):
             add_styled_paragraph(doc, line[2:], space_before=12, space_after=6, align=WD_ALIGN_PARAGRAPH.CENTER, bold=True, color_rgb=(0, 51, 102), font_size=22)
         elif line.startswith('## '):
