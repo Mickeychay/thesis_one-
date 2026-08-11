@@ -398,10 +398,12 @@ class DocumentTagger:
         try:
             with open(input_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                metadata = data.get("cases", [])
-            if not metadata:
-                with open(input_file, 'r', encoding='utf-8') as f:
-                    metadata = json.load(f)
+            if isinstance(data, dict):
+                metadata = data.get("cases") or data.get("chunks") or [data]
+            elif isinstance(data, list):
+                metadata = data
+            else:
+                metadata = []
         except Exception as e:
             print(f"Error loading {input_file}: {e}")
             return

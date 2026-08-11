@@ -1,0 +1,46 @@
+[
+  {
+    "chunk_id": "chunk_cf70b89d5e15",
+    "source_document": "คู่มือการปฏิบัติงานศูนย์พึ่งได้_OSCC_กระทรวงสาธารณสุข_compressed_typhoon.txt",
+    "title": "## บทนำและหลักการของ OSCC",
+    "content": "## บทนำและหลักการของ OSCC ศูนย์พึ่งได้ (OSCC) โรงพยาบาลระดับศูนย์/ทบทวน/ทั่วไป จัดตั้งขึ้นเพื่อให้บริการช่วยเหลือเด็ก สตรี และบุคคลในครอบครัวที่ประสบภาวะวิกฤตจากการถูกกระทำทารุณกรรม ถูกล่วงละเมิดทางเพศ หรือความรุนแรงในครอบครัว แบบครบวงจร ณ จุดเดียว (One Stop Service)",
+    "chunk_type": "recursive_section",
+    "chunk_index": 1,
+    "char_count": 267,
+    "word_count": 52,
+    "thai_ratio": 0.8277153558052435
+  },
+  {
+    "chunk_id": "chunk_0bc22b5b826c",
+    "source_document": "คู่มือการปฏิบัติงานศูนย์พึ่งได้_OSCC_กระทรวงสาธารณสุข_compressed_typhoon.txt",
+    "title": "### ขั้นตอนที่ 1: การคัดกรองและการรับแจ้งเหตุ (Screening & Intake)",
+    "content": "### ขั้นตอนที่ 1: การคัดกรองและการรับแจ้งเหตุ (Screening & Intake) - รับตัวจากห้องฉุกเฉิน (ER), ผู้ป่วยนอก (OPD), พนักงานสอบสวน หรือสายด่วน 1300 - คัดกรองภาวะฉุกเฉินทางการแพทย์ ประเมินความเสี่ยงต่อชีวิตทันที (Immediate Life Safety Risk)",
+    "chunk_type": "recursive_section",
+    "chunk_index": 3,
+    "char_count": 236,
+    "word_count": 46,
+    "thai_ratio": 0.635593220338983
+  },
+  {
+    "chunk_id": "chunk_30024597776b",
+    "source_document": "คู่มือการปฏิบัติงานศูนย์พึ่งได้_OSCC_กระทรวงสาธารณสุข_compressed_typhoon.txt",
+    "title": "### ขั้นตอนที่ 2: การตรวจรักษาและการจัดเก็บหลักฐานทางนิติวิทยาศาสตร์ (Medical & Legal Evidence Colle",
+    "content": "### ขั้นตอนที่ 2: การตรวจรักษาและการจัดเก็บหลักฐานทางนิติวิทยาศาสตร์ (Medical & Legal Evidence Collection) - ตรวจร่างกาย บันทึกบาดแผล ชันสูตร บันทึกรูปถ่ายทางนิติเวช - เก็บสิ่งส่งตรวจกรณีถูกล่วงละเมิดทางเพศ (Sexual Assault Swab Kit) ตามมาตรฐานนิติเวช - ให้ยาป้องกันการติดเชื้อ HIV (PEP), ยาป้องกันโรคติดต่อทางเพศสัมพันธ์ และยาคุมกำเนิดฉุกเฉิน",
+    "chunk_type": "recursive_section",
+    "chunk_index": 4,
+    "char_count": 342,
+    "word_count": 62,
+    "thai_ratio": 0.7134502923976608
+  },
+  {
+    "chunk_id": "chunk_480061555285",
+    "source_document": "คู่มือการปฏิบัติงานศูนย์พึ่งได้_OSCC_กระทรวงสาธารณสุข_compressed_typhoon.txt",
+    "title": "### ขั้นตอนที่ 4: การประชุมทีมสหวิชาชีพ (Multidisciplinary Team Conference: MDT)",
+    "content": "### ขั้นตอนที่ 4: การประชุมทีมสหวิชาชีพ (Multidisciplinary Team Conference: MDT) - ร่วมประชุมระหว่าง แพทย์, พยาบาล OSCC, นักสังคมสงเคราะห์, จิตแพทย์, พนักงานสอบสวน (ตำรวจ), และอัยการ/เจ้าหน้าที่ พม. - กำหนดแนวทางการคุ้มครองสวัสดิภาพ การดำเนินคดี และการฟื้นฟูสภาพจิตใจ",
+    "chunk_type": "recursive_section",
+    "chunk_index": 6,
+    "char_count": 267,
+    "word_count": 51,
+    "thai_ratio": 0.704119850187266
+  }
+]

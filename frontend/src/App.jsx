@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import ClinicalShell from './components/ClinicalShell.jsx';
+import PerformanceLandscape3D from './components/PerformanceLandscape3D.jsx';
 
 const configuredApiBase = import.meta.env.VITE_API_BASE_URL?.trim();
 const API_BASE_URL = (configuredApiBase || (import.meta.env.DEV ? '/api' : '')).replace(/\/$/, '');
@@ -5537,6 +5538,10 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
 
         <div className="mt-5">
           <QualityTradeoffScatter rows={comparisonTableRows} selectedNdcgKey={comparisonNdcgKey} />
+        </div>
+
+        <div className="mt-5">
+          <PerformanceLandscape3D rows={comparisonTableRows} />
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-4">

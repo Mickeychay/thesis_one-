@@ -643,6 +643,9 @@ class RQ1_L2Filtering(AblationExperiment):
                     'R@5': m.get('R@5', 0),
                     'F1@5': m.get('F1@5', 0),
                     'nDCG@5': m.get('nDCG@5', 0),
+                    'nDCG@10': m.get('nDCG@10', 0),
+                    'P@10': m.get('P@10', 0), 'R@10': m.get('R@10', 0),
+                    'F1@10': m.get('F1@10', 0),
                     'MAP': m.get('MAP', 0),
                     'MRR': m.get('MRR', 0),
                 })
@@ -785,6 +788,8 @@ class RQ2_AlphaSensitivity(AblationExperiment):
                     'F1@5': m.get('F1@5', 0),
                     'nDCG@5': m.get('nDCG@5', 0),
                     'nDCG@10': m.get('nDCG@10', 0),
+                    'P@10': m.get('P@10', 0), 'R@10': m.get('R@10', 0),
+                    'F1@10': m.get('F1@10', 0),
                     'MAP': m.get('MAP', 0),
                     'MRR': m.get('MRR', 0),
                 })
@@ -810,6 +815,8 @@ class RQ2_AlphaSensitivity(AblationExperiment):
                 'F1@5': m.get('F1@5', 0),
                 'nDCG@5': m.get('nDCG@5', 0),
                 'nDCG@10': m.get('nDCG@10', 0),
+                'P@10': m.get('P@10', 0), 'R@10': m.get('R@10', 0),
+                'F1@10': m.get('F1@10', 0),
                 'MAP': m.get('MAP', 0),
                 'MRR': m.get('MRR', 0),
             })
@@ -1021,6 +1028,8 @@ class RQ3_MatchingMethod(AblationExperiment):
                     'P@5': m.get('P@5', 0), 'R@5': m.get('R@5', 0),
                     'F1@5': m.get('F1@5', 0), 'nDCG@5': m.get('nDCG@5', 0),
                     'nDCG@10': m.get('nDCG@10', 0),
+                    'P@10': m.get('P@10', 0), 'R@10': m.get('R@10', 0),
+                    'F1@10': m.get('F1@10', 0),
                     'MAP': m.get('MAP', 0), 'MRR': m.get('MRR', 0),
                 })
 
@@ -1177,6 +1186,9 @@ class RQ4_PriorCalculation(AblationExperiment):
                 'max_severity': severity_map.get(cid, 1),
                 'P@5': m.get('P@5', 0), 'R@5': m.get('R@5', 0),
                 'F1@5': m.get('F1@5', 0), 'nDCG@5': m.get('nDCG@5', 0),
+                'nDCG@10': m.get('nDCG@10', 0),
+                'P@10': m.get('P@10', 0), 'R@10': m.get('R@10', 0),
+                'F1@10': m.get('F1@10', 0),
                 'MAP': m.get('MAP', 0), 'MRR': m.get('MRR', 0),
             })
 
@@ -1197,6 +1209,9 @@ class RQ4_PriorCalculation(AblationExperiment):
                 'max_severity': severity_map.get(cid, 1),
                 'P@5': m.get('P@5', 0), 'R@5': m.get('R@5', 0),
                 'F1@5': m.get('F1@5', 0), 'nDCG@5': m.get('nDCG@5', 0),
+                'nDCG@10': m.get('nDCG@10', 0),
+                'P@10': m.get('P@10', 0), 'R@10': m.get('R@10', 0),
+                'F1@10': m.get('F1@10', 0),
                 'MAP': m.get('MAP', 0), 'MRR': m.get('MRR', 0),
             })
 
