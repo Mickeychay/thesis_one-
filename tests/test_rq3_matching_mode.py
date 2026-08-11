@@ -177,18 +177,23 @@ def test_rq3_no_longer_monkey_patches_apply_h2l_scoring():
     assert "force_keyword" not in run_body
 
 
-def test_remaining_monkey_patch_matches_the_real_signature():
-    """uniform_prior (RQ4) had the same arity bug; it must accept query_text."""
-    from H2L_core import H2LUnifiedRetriever
+def test_no_monkey_patches_remain_in_create_h2l_retriever():
+    """Regression guard: both matching and prior are now config-driven.
 
-    real = inspect.signature(H2LUnifiedRetriever._apply_h2l_scoring)
-    real_params = [p for p in real.parameters if p != "self"]
-
+    Previously uniform_prior_scoring was a monkey-patch on
+    _apply_h2l_scoring. It had the wrong arity (2 params vs the real 3),
+    which caused a TypeError inside retrieve() that evaluate_strategy()
+    swallowed — silently making the arm a plain baseline. Moving both
+    MATCHING_MODE and PRIOR_MODE to config removes the failure mode
+    entirely and this test makes sure neither patch comes back.
+    """
     source = inspect.getsource(AblationRunner.create_h2l_retriever)
-    patch_line = next(line for line in source.splitlines()
-                      if "def uniform_prior_scoring" in line)
-    for param in real_params:
-        assert param in patch_line, f"{param} missing from {patch_line.strip()}"
+    assert "uniform_prior_scoring" not in source, \
+        "uniform_prior monkey-patch must not return"
+    assert "keyword_only_scoring" not in source, \
+        "keyword_only monkey-patch must not return"
+    assert "MATCHING_MODE" in source
+    assert "PRIOR_MODE" in source
 
 
 # ── manipulation check ─────────────────────────────────────────────────────

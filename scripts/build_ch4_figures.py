@@ -318,6 +318,108 @@ def fig_4d() -> str:
     )
 
 
+# --------------------------------------------------------------------------
+# fig 4.E  RQ3 soft/graded/hard matching: rankings move, metrics do not
+# --------------------------------------------------------------------------
+def fig_4e() -> str:
+    run = ROOT / "ablation_results/rq3_real_95cases_final"
+    rows = read_csv(run / "rq3_results.csv")
+    changes = read_csv(run / "rq3_ranking_changes.csv")
+
+    order = ["Semantic (Soft)", "Keyword (Graded)", "Keyword (Hard)"]
+    labels = ["Semantic\n(Soft)", "Keyword\n(Graded)", "Keyword\n(Hard)"]
+    metrics = ["nDCG@5", "nDCG@10", "MAP", "MRR"]
+
+    by_variant = defaultdict(lambda: defaultdict(list))
+    per_case = defaultdict(dict)
+    for r in rows:
+        for m in metrics:
+            by_variant[r["variant"]][m].append(float(r[m]))
+        per_case[r["case_id"]][r["variant"]] = float(r["nDCG@5"])
+
+    missing = [v for v in order if v not in by_variant]
+    if missing:
+        sys.exit(f"fig 4.E: missing RQ3 arms in results: {missing}")
+
+    # Left panel: metric means per arm — visually flat, which is the point.
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
+    x = np.arange(len(metrics))
+    w = 0.26
+    colors = ["#2ECC71", "#F39C12", "#E74C3C"]
+    for i, (variant, label, color) in enumerate(zip(order, labels, colors)):
+        vals = [st.mean(by_variant[variant][m]) for m in metrics]
+        ax1.bar(x + (i - 1) * w, vals, w, label=label.replace("\n", " "),
+                color=color, alpha=0.88, edgecolor="white")
+
+    all_means = [st.mean(by_variant[v][m]) for v in order for m in metrics]
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(metrics, fontsize=10)
+    ax1.set_ylabel("ค่าเฉลี่ย", fontsize=11)
+    ax1.set_ylim(0, max(all_means) * 1.45)
+    ax1.legend(fontsize=9, loc="upper right")
+    ax1.grid(axis="y", alpha=0.3)
+    ax1.set_title(
+        "ตัวชี้วัดแทบไม่เปลี่ยนตามโหมดการจับคู่\n"
+        f"ช่วง nDCG@5 = {min(st.mean(by_variant[v]['nDCG@5']) for v in order):.4f}"
+        f"–{max(st.mean(by_variant[v]['nDCG@5']) for v in order):.4f}",
+        fontsize=11,
+    )
+
+    # Right panel: how many cases changed ranking, and of those how many
+    # could not move the metric because no relevant doc was in the pool.
+    changed = [c["case_id"] for c in changes if c["ranking_changed"] == "True"]
+    unchanged_n = len(changes) - len(changed)
+    zero_ceiling = sum(
+        1 for cid in changed
+        if max(per_case[cid].values()) == 0.0
+    )
+    metric_moved = sum(
+        1 for cid in changed
+        if len({round(v, 12) for v in per_case[cid].values()}) > 1
+    )
+    other = len(changed) - zero_ceiling - metric_moved
+
+    segments = [
+        (f"อันดับเปลี่ยน\nและ nDCG@5 เปลี่ยน\n({metric_moved} เคส)", metric_moved, "#27AE60"),
+        (f"อันดับเปลี่ยน แต่\nnDCG@5 = 0 ทุกแขน\n({zero_ceiling} เคส)", zero_ceiling, "#C0392B"),
+        # "unchanged" here means unchanged AND non-zero: the zero-ceiling cases
+        # above are also unchanged, so labelling this one "เท่าเดิม" alone
+        # would make the two categories read as overlapping.
+        (f"อันดับเปลี่ยน แต่\nnDCG@5 เท่าเดิม (ไม่เป็นศูนย์)\n({other} เคส)", other, "#E67E22"),
+        (f"อันดับไม่เปลี่ยน\n({unchanged_n} เคส)", unchanged_n, "#95A5A6"),
+    ]
+    ypos = np.arange(len(segments))
+    ax2.barh(ypos, [s[1] for s in segments], color=[s[2] for s in segments],
+             alpha=0.88, height=0.62, edgecolor="white")
+    for y, (_, count, _) in zip(ypos, segments):
+        ax2.text(count + 0.7, y, str(count), va="center", fontsize=10, fontweight="bold")
+    ax2.set_yticks(ypos)
+    ax2.set_yticklabels([s[0] for s in segments], fontsize=9)
+    ax2.invert_yaxis()
+    ax2.set_xlabel("จำนวนกรณีศึกษา", fontsize=11)
+    ax2.set_xlim(0, len(changes) * 0.72)
+    ax2.grid(axis="x", alpha=0.3)
+    ax2.set_title(
+        f"อันดับเปลี่ยน {len(changed)}/{len(changes)} เคส "
+        f"แต่ยกตัวชี้วัดได้เพียง {metric_moved} เคส\n"
+        f"เพราะ {zero_ceiling} เคสไม่มีเอกสารที่เกี่ยวข้องใน 5 อันดับแรกตั้งแต่ต้น",
+        fontsize=11,
+    )
+
+    fig.suptitle(
+        f"รูปที่ 4.E RQ3 การจับคู่แบบ Soft/Graded/Hard: อันดับขยับแต่ตัวชี้วัดนิ่ง "
+        f"(n={len(changes)} เคส)",
+        fontsize=12,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.savefig(OUT / "fig_4e_rq3_matching.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    return (
+        f"4.E arms={len(order)} changed={len(changed)}/{len(changes)} "
+        f"metric_moved={metric_moved} zero_ceiling={zero_ceiling} other={other}"
+    )
+
+
 def main() -> None:
     font = pick_thai_font()
     plt.rcParams["font.family"] = font
@@ -325,7 +427,7 @@ def main() -> None:
     print(f"Thai font: {font}")
 
     OUT.mkdir(parents=True, exist_ok=True)
-    for fn in (fig_4a, fig_4b, fig_4c, fig_4d):
+    for fn in (fig_4a, fig_4b, fig_4c, fig_4d, fig_4e):
         print("  " + fn())
 
     print(f"\nWrote to {OUT}")

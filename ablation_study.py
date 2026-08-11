@@ -460,6 +460,7 @@ class AblationRunner:
     def create_h2l_retriever(self, alpha: float = None,
                              h2l_config=None,
                              matching_mode: str = None,
+                             prior_mode: str = None,
                              force_keyword: bool = False,
                              uniform_prior: bool = False,
                              **kwargs):
@@ -470,15 +471,23 @@ class AblationRunner:
 
         matching_mode ('soft' | 'keyword_soft' | 'hard') sets
         H2LConfigV3.MATCHING_MODE, which selects how φ_semantic = P(d|p) is
-        computed inside calculate_final_score_probabilistic(). Prefer this over
-        monkey-patching _apply_h2l_scoring: a patched method with the wrong
-        signature raises TypeError inside retrieve(), which evaluate_strategy()
-        used to swallow and silently retry without explicit_problems — turning
-        the arm into the plain base strategy.
+        computed inside calculate_final_score_probabilistic().
+
+        prior_mode ('severity' | 'uniform') sets H2LConfigV3.PRIOR_MODE, which
+        selects how P(p) is computed inside calculate_problem_prior(). Both modes
+        are fully implemented in the config; no monkey-patching is needed or used.
+
+        The uniform_prior=True kwarg is kept for backward compatibility and maps
+        to prior_mode='uniform' with a deprecation warning.
+
+        Prefer config flags over monkey-patching _apply_h2l_scoring: a patched
+        method with the wrong signature raises TypeError inside retrieve(), which
+        evaluate_strategy() used to swallow and silently retry without
+        explicit_problems — turning the arm into the plain base strategy.
         """
         from H2L_core import H2LUnifiedRetriever, H2LConfigV3
 
-        # Validate arguments before _ensure_runner() loads models, so a typo
+        # Validate arguments before _ensure_runner() loads models so a typo
         # fails in milliseconds instead of after the embedder warms up.
         if force_keyword:
             if matching_mode not in (None, 'hard'):
@@ -491,11 +500,26 @@ class AblationRunner:
             )
             matching_mode = 'hard'
 
-        # Assigning after construction skips __post_init__, so validate here.
+        if uniform_prior:
+            if prior_mode not in (None, 'uniform'):
+                raise ValueError(
+                    f"uniform_prior=True conflicts with prior_mode="
+                    f"{prior_mode!r}; pass only prior_mode."
+                )
+            logger.warning(
+                "uniform_prior=True is deprecated — use prior_mode='uniform'."
+            )
+            prior_mode = 'uniform'
+
         if matching_mode is not None and matching_mode not in H2LConfigV3.MATCHING_MODES:
             raise ValueError(
                 f"matching_mode={matching_mode!r} is not one of "
                 f"{H2LConfigV3.MATCHING_MODES}"
+            )
+        if prior_mode is not None and prior_mode not in H2LConfigV3.PRIOR_MODES:
+            raise ValueError(
+                f"prior_mode={prior_mode!r} is not one of "
+                f"{H2LConfigV3.PRIOR_MODES}"
             )
 
         runner = self._ensure_runner()
@@ -507,6 +531,8 @@ class AblationRunner:
             h2l_cfg.ALPHA = alpha
         if matching_mode is not None:
             h2l_cfg.MATCHING_MODE = matching_mode
+        if prior_mode is not None:
+            h2l_cfg.PRIOR_MODE = prior_mode
 
         retriever = H2LUnifiedRetriever(
             config=config,
@@ -517,37 +543,9 @@ class AblationRunner:
             h2l_config=h2l_cfg,
         )
 
-        # NOTE: keyword-only matching is no longer monkey-patched. It is driven
-        # by h2l_cfg.MATCHING_MODE above, so the real _apply_h2l_scoring runs
-        # and every non-matching component stays active.
-
-        # Uniform prior override
-        if uniform_prior:
-            import H2L_core as h2l_mod
-            _original_prior = h2l_mod.calculate_problem_prior
-
-            def uniform_prior_fn(problems, config=None):
-                """Uniform prior: P(p) = 1/k for all problems"""
-                if not problems:
-                    return {}
-                k = len(problems)
-                return {p.get('code', 'unknown'): 1.0 / k for p in problems}
-
-            # Monkey-patch for this retriever's scoring
-            original_scoring_2 = retriever._apply_h2l_scoring
-
-            # Signature must mirror H2LUnifiedRetriever._apply_h2l_scoring,
-            # which retrieve() calls as (results, explicit_problems, query).
-            # Accepting only (results, problems) raised TypeError inside
-            # retrieve() and silently degraded the arm to the base strategy.
-            def uniform_prior_scoring(results, problems, query_text=None):
-                h2l_mod.calculate_problem_prior = uniform_prior_fn
-                try:
-                    return original_scoring_2(results, problems, query_text)
-                finally:
-                    h2l_mod.calculate_problem_prior = _original_prior
-
-            retriever._apply_h2l_scoring = uniform_prior_scoring
+        # Both MATCHING_MODE and PRIOR_MODE are now config flags read inside
+        # calculate_final_score_probabilistic() and calculate_problem_prior().
+        # No monkey-patching of _apply_h2l_scoring is needed or used.
 
         return retriever
 
@@ -723,11 +721,27 @@ class RQ2_AlphaSensitivity(AblationExperiment):
     """
     RQ2: How sensitive is performance to the α parameter?
 
-    Test α ∈ {0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0}
+    Sweeps α over the SAME H2L pipeline so the curve describes one system.
 
-    Hypothesis: Optimal α exists where problem-awareness helps without over-fitting.
-    α=0 means no problem influence (baseline reranker score only).
+    IMPORTANT — why α=0 is no longer swapped for the `basic` strategy:
+        The previous version special-cased α=0.0 to run evaluate_strategy(
+        'basic'), i.e. plain hybrid retrieval with no H2L layer, no
+        problem-aware query expansion, and no scoring. That is a different
+        system, not the α→0 limit of this one, so the leftmost point of the
+        sensitivity curve was not comparable to the rest of it.
+
+        α=0 does not disable H2L either: calculate_final_score_probabilistic()
+        clamps α_eff to a floor of 0.01, so S_final = S_rerank · exp(0.01 · Σ)
+        still perturbs the ranking. α=0 and α=0.01 therefore collapse onto the
+        same point by construction, which _clamp_check() below asserts rather
+        than leaves for a reader to discover.
+
+        `basic` is still evaluated, but as an explicitly labelled reference row
+        (alpha = NaN, arm='basic reference') that is excluded from the sweep.
     """
+
+    ALPHA_VALUES = [0.0, 0.01, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
+    REFERENCE_ARM = 'basic reference (no H2L layer)'
 
     def __init__(self):
         super().__init__(
@@ -740,51 +754,133 @@ class RQ2_AlphaSensitivity(AblationExperiment):
         logger.info(f"Running {self.name}")
         logger.info(f"{'='*70}\n")
 
-        alpha_values = [0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
         all_rows = []
 
-        for alpha in alpha_values:
-            logger.info(f"\n  🔧 Testing α = {alpha}")
+        for alpha in self.ALPHA_VALUES:
+            logger.info(f"\n  🔧 Testing α = {alpha} (H2L pipeline)")
+            retriever = ablation_runner.create_h2l_retriever(alpha=alpha)
+            result = ablation_runner.evaluate_strategy(
+                'h2l-hybrid', custom_retriever=retriever
+            )
 
-            if alpha == 0.0:
-                # α=0 reduces to baseline (no problem boost)
-                result = ablation_runner.evaluate_strategy('basic')
-            else:
-                retriever = ablation_runner.create_h2l_retriever(alpha=alpha)
-                result = ablation_runner.evaluate_strategy('h2l-hybrid',
-                                                           custom_retriever=retriever)
+            if result.get('retrieve_fallbacks'):
+                raise RuntimeError(
+                    f"RQ2 α={alpha} fell back to problem-free retrieval on "
+                    f"{len(result['retrieve_fallbacks'])} cases, so H2L "
+                    f"scoring did not run. First error: "
+                    f"{result['retrieve_fallbacks'][0]}"
+                )
 
             for case_result in result['per_case']:
                 m = case_result['metrics']
                 all_rows.append({
                     'alpha': alpha,
+                    'arm': 'h2l-hybrid',
                     'case_id': case_result['case_id'],
                     'complexity': case_result['complexity'],
+                    'n_problems': case_result.get('n_problems', 0),
+                    'doc_ids': '|'.join(case_result.get('doc_ids', [])),
                     'P@5': m.get('P@5', 0),
                     'R@5': m.get('R@5', 0),
                     'F1@5': m.get('F1@5', 0),
                     'nDCG@5': m.get('nDCG@5', 0),
+                    'nDCG@10': m.get('nDCG@10', 0),
                     'MAP': m.get('MAP', 0),
                     'MRR': m.get('MRR', 0),
                 })
 
             agg = result['aggregates']
-            logger.info(f"    F1@5: {agg.get('F1@5', {}).get('mean', 0):.4f}, "
-                        f"nDCG@5: {agg.get('nDCG@5', {}).get('mean', 0):.4f}")
+            logger.info(f"    nDCG@5: {agg.get('nDCG@5', {}).get('mean', 0):.4f}, "
+                        f"F1@5: {agg.get('F1@5', {}).get('mean', 0):.4f}")
+
+        # Reference arm: plain hybrid, no H2L. Labelled, not folded into α=0.
+        logger.info(f"\n  🔧 {self.REFERENCE_ARM}")
+        reference = ablation_runner.evaluate_strategy('basic')
+        for case_result in reference['per_case']:
+            m = case_result['metrics']
+            all_rows.append({
+                'alpha': float('nan'),
+                'arm': self.REFERENCE_ARM,
+                'case_id': case_result['case_id'],
+                'complexity': case_result['complexity'],
+                'n_problems': case_result.get('n_problems', 0),
+                'doc_ids': '|'.join(case_result.get('doc_ids', [])),
+                'P@5': m.get('P@5', 0),
+                'R@5': m.get('R@5', 0),
+                'F1@5': m.get('F1@5', 0),
+                'nDCG@5': m.get('nDCG@5', 0),
+                'nDCG@10': m.get('nDCG@10', 0),
+                'MAP': m.get('MAP', 0),
+                'MRR': m.get('MRR', 0),
+            })
+        ref_agg = reference['aggregates']
+        logger.info(f"    nDCG@5: {ref_agg.get('nDCG@5', {}).get('mean', 0):.4f}")
 
         df = pd.DataFrame(all_rows)
+        self._clamp_check(df)
+        self._sweep_check(df)
         return df
+
+    @classmethod
+    def _clamp_check(cls, df: pd.DataFrame) -> None:
+        """α=0 and α=0.01 must coincide, because α_eff is floored at 0.01.
+
+        If they ever diverge the clamp has moved and the documented reading of
+        the α=0 point is stale.
+        """
+        sweep = df[df['arm'] == 'h2l-hybrid']
+        if sweep.empty or not {0.0, 0.01} <= set(sweep['alpha']):
+            return
+        pivot = sweep.pivot_table(index='case_id', columns='alpha',
+                                  values='nDCG@5', aggfunc='first')
+        gap = (pivot[0.0] - pivot[0.01]).abs().max()
+        if gap > 1e-12:
+            logger.error(
+                f"  ❌ RQ2 clamp check FAILED: α=0 and α=0.01 differ by up to "
+                f"{gap:.6f}. α_eff is no longer floored at 0.01, so the "
+                f"documented interpretation of the α=0 point is wrong."
+            )
+        else:
+            logger.info("  🔎 Clamp check: α=0 ≡ α=0.01 as expected "
+                        "(α_eff floored at 0.01)")
+
+    @classmethod
+    def _sweep_check(cls, df: pd.DataFrame) -> None:
+        """α must actually move the ranking somewhere in the sweep."""
+        sweep = df[df['arm'] == 'h2l-hybrid']
+        if sweep.empty or 'doc_ids' not in sweep.columns:
+            return
+        pivot = sweep.pivot_table(index='case_id', columns='alpha',
+                                  values='doc_ids', aggfunc='first')
+        if pivot.shape[1] < 2:
+            return
+        total = int(pivot.shape[0])
+        differing = int((pivot.nunique(axis=1) > 1).sum())
+        logger.info(f"  🔎 Manipulation check: ranking differs across α in "
+                    f"{differing}/{total} cases")
+        if differing == 0:
+            logger.error(
+                "  ❌ RQ2 manipulation check FAILED: every α produced an "
+                "identical ranking on every case. ALPHA did not reach the "
+                "scoring function — do not report these numbers as a "
+                "sensitivity result."
+            )
 
     def visualize(self, results: pd.DataFrame, output_dir: Path):
         output_dir.mkdir(parents=True, exist_ok=True)
         fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-        # Plot 1: Performance curves over α
+        # Split the sweep from the reference arm explicitly. Grouping by
+        # 'alpha' alone would drop the reference rows (alpha is NaN there)
+        # silently, hiding the comparison the reference exists to provide.
+        sweep = results[results['arm'] == 'h2l-hybrid'] if 'arm' in results.columns else results
+        reference = results[results['arm'] == self.REFERENCE_ARM] if 'arm' in results.columns else results.iloc[0:0]
+
         metrics_to_plot = ['P@5', 'R@5', 'F1@5', 'nDCG@5']
         colors = ['#3498DB', '#E74C3C', '#2ECC71', '#F39C12']
         labels = ['Precision@5', 'Recall@5', 'F1@5', 'nDCG@5']
 
-        avg_by_alpha = results.groupby('alpha')[metrics_to_plot].agg(['mean', 'std'])
+        avg_by_alpha = sweep.groupby('alpha')[metrics_to_plot].agg(['mean', 'std'])
 
         for metric, color, label in zip(metrics_to_plot, colors, labels):
             means = avg_by_alpha[(metric, 'mean')]
@@ -796,23 +892,33 @@ class RQ2_AlphaSensitivity(AblationExperiment):
                                  means.values + stds.values,
                                  alpha=0.15, color=color)
 
-        # Mark optimal α
-        f1_means = avg_by_alpha[('F1@5', 'mean')]
-        optimal_alpha = f1_means.idxmax()
-        axes[0].axvline(optimal_alpha, color='red', linestyle='--', alpha=0.5)
-        axes[0].annotate(f'Optimal α={optimal_alpha}',
-                         xy=(optimal_alpha, f1_means.max()),
-                         xytext=(optimal_alpha + 0.2, f1_means.max() - 0.05),
-                         fontsize=10, color='red', fontweight='bold',
-                         arrowprops=dict(arrowstyle='->', color='red'))
+        if not reference.empty:
+            axes[0].axhline(reference['nDCG@5'].mean(), color='#7F8C8D',
+                            linestyle=':', linewidth=2,
+                            label='nDCG@5, basic (no H2L)')
 
-        axes[0].set_title('RQ2: Performance vs α (Problem Influence Weight)',
-                          fontsize=13, fontweight='bold')
+        # Only claim an optimum when the curve is not flat; on this corpus the
+        # spread across α can be smaller than the reporting precision.
+        f1_means = avg_by_alpha[('F1@5', 'mean')]
+        spread = float(f1_means.max() - f1_means.min())
+        if spread > 1e-4:
+            optimal_alpha = f1_means.idxmax()
+            axes[0].axvline(optimal_alpha, color='red', linestyle='--', alpha=0.5)
+            axes[0].annotate(f'Optimal α={optimal_alpha}',
+                             xy=(optimal_alpha, f1_means.max()),
+                             xytext=(optimal_alpha + 0.2, f1_means.max() * 0.92),
+                             fontsize=10, color='red', fontweight='bold',
+                             arrowprops=dict(arrowstyle='->', color='red'))
+        else:
+            axes[0].set_title(f'F1@5 spread across α = {spread:.6f} (flat)',
+                              fontsize=10, color='#C0392B')
+
         axes[0].set_xlabel('α', fontsize=12)
         axes[0].set_ylabel('Score', fontsize=12)
         axes[0].legend(loc='best', fontsize=9)
         axes[0].grid(True, alpha=0.3)
-        axes[0].set_ylim([0, 1])
+        # Autoscale: a hard [0, 1] limit flattens a 0.24-0.25 curve into a line.
+        axes[0].margins(y=0.25)
 
         # Plot 2: α effect by complexity
         complexity_f1 = results.groupby(['alpha', 'complexity'])['F1@5'].mean().unstack()

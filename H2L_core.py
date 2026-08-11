@@ -153,6 +153,14 @@ class H2LConfigV3:
     BAYESIAN_PRIOR_ENABLE: bool = True
     BAYESIAN_PRIOR_BASE: float = 0.5    # Base prior when no profile data
 
+    # RQ4: Prior calculation mode — controls how P(p) is computed in
+    # calculate_problem_prior(). Config-driven; no monkey-patching needed.
+    #   'severity'  — Dirichlet-smoothed severity-weighted prior (default)
+    #   'uniform'   — flat 1/k prior for all problems
+    # A typo raises in __post_init__ rather than silently using the default.
+    PRIOR_MODE: str = 'severity'
+    PRIOR_MODES = ('severity', 'uniform')
+
     # V6.3: Tone Analysis Exception Lexicon (Emotional/Contextual bypass for G_neg)
     TONE_EXCEPTIONS: list = None        # Initialized in __post_init__
 
@@ -176,6 +184,13 @@ class H2LConfigV3:
         if abs(total_w - 1.0) > 0.01:
             logger.warning(f"FEATURE_WEIGHTS sum={total_w:.4f}, normalizing to 1.0")
             self.FEATURE_WEIGHTS = {k: v / total_w for k, v in self.FEATURE_WEIGHTS.items()}
+        # RQ4: fail fast on a typo'd prior mode — a silently-ignored mode would
+        # make both arms identical (same as the old monkey-patch that forgot to
+        # check the arity).
+        if self.PRIOR_MODE not in self.PRIOR_MODES:
+            raise ValueError(
+                f"PRIOR_MODE={self.PRIOR_MODE!r} is not one of {self.PRIOR_MODES}"
+            )
         # RQ3: fail fast on a typo'd matching mode. A silently-ignored mode
         # would make an ablation arm identical to the default arm and look
         # like a null result.
@@ -284,9 +299,14 @@ def calculate_problem_prior(
     
     if not problems:
         return {}
-    
+
     n = len(problems)
-    mu = config.DIRICHLET_MU
+    mode = getattr(config, 'PRIOR_MODE', 'severity') if config else 'severity'
+
+    if mode == 'uniform':
+        return {p.get('code', 'unknown'): 1.0 / n for p in problems}
+
+    mu = config.DIRICHLET_MU if config else DEFAULT_CONFIG_V3.DIRICHLET_MU
     p_bg = 1.0 / n  # Uniform background prior
     
     total_severity = sum(p.get('severity', 1) for p in problems)

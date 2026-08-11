@@ -24,3 +24,9 @@ tmp/
 
 evaluation_results/proper_eval_progress.json
 evaluation_results/sentence_polarity_progress.json
+
+# Thesis DOCX safety backups (never version-controlled)
+*.BACKUP_*.docx
+
+# Ablation run console logs (raw stderr/stdout, not results)
+ablation_results/*_console.log
