@@ -242,13 +242,28 @@ function StatusBadge({ label, tone = 'neutral' }) {
   return <span className={`inline-flex min-h-6 items-center rounded-full px-2.5 py-1 text-xs font-semibold leading-none ${toneClass}`}>{label}</span>;
 }
 
-function MetricTile({ label, value, hint, tone = 'bg-surface-container-lowest' }) {
+function MetricTile({ label, value, hint, tone = 'bg-surface-container-lowest', onClick }) {
+  const isClickable = Boolean(onClick);
   return (
-    <div className={`min-h-[116px] rounded-lg p-4 transition-colors duration-200 ${tone}`} title={hint || label}>
-      <div className="text-xs font-semibold text-on-surface-variant">{label}</div>
+    <button
+      className={`group min-h-[116px] w-full rounded-lg p-4 text-left transition-all duration-200 ${tone} ${
+        isClickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600' : ''
+      }`}
+      onClick={onClick}
+      type={isClickable ? "button" : undefined}
+      title={hint ? `${hint} (คลิกเพื่อไปยังส่วนนี้)` : label}
+    >
+      <div className="flex items-center justify-between gap-1">
+        <div className="text-xs font-semibold text-on-surface-variant group-hover:text-teal-700 dark:group-hover:text-teal-300">{label}</div>
+        {isClickable && (
+          <span aria-hidden="true" className="material-symbols-outlined text-[18px] text-slate-400 transition-transform group-hover:translate-y-0.5 group-hover:text-teal-600 dark:group-hover:text-teal-400">
+            south
+          </span>
+        )}
+      </div>
       <div className="mt-2 font-headline text-2xl font-bold tabular-nums text-on-surface">{value}</div>
       {hint && <div className="mt-1 text-xs leading-relaxed text-on-surface-variant">{hint}</div>}
-    </div>
+    </button>
   );
 }
 
@@ -1423,7 +1438,7 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
   };
 
   return (
-    <section className="rounded-xl bg-surface-container-low p-6">
+    <section className="rounded-xl bg-surface-container-low p-6" id="evidence-section">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-headline text-lg font-bold">หลักฐานและแนวทางที่เกี่ยวข้อง</h2>
@@ -1520,6 +1535,13 @@ function AnalysisTab({ displayResult, findingReviewStates, onFindingReviewChange
     );
   };
 
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="page-enter space-y-5">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
@@ -1533,14 +1555,14 @@ function AnalysisTab({ displayResult, findingReviewStates, onFindingReviewChange
           </div>
           <p className="mt-4 max-w-4xl text-sm leading-relaxed text-on-surface">{resultInterpretation(displayResult)}</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricTile label="ประเด็นที่พบ" value={metrics.accepted_count ?? problems.length} hint="รายการที่ผ่านเกณฑ์ระบบ" tone="bg-white dark:bg-slate-900" />
-            <MetricTile label="ต้องทบทวน" value={reviewCount} hint="รายการที่ควรอ่านร่วมกับหลักฐาน" tone={reviewCount ? 'bg-amber-50 dark:bg-amber-950/40' : 'bg-white dark:bg-slate-900'} />
-            <MetricTile label="หลักฐาน" value={metrics.retrieved_docs_count ?? displayResult.retrieved_docs_count ?? 0} hint="เอกสารและแนวทางที่ค้นคืน" tone="bg-white dark:bg-slate-900" />
-            <MetricTile label="ระดับสูงสุด" value={maxSeverity || 'N/A'} hint={`${highSeverityCount} รายการระดับสูง`} tone={severityStyle(maxSeverity || 1).soft} />
+            <MetricTile label="ประเด็นที่พบ" value={metrics.accepted_count ?? problems.length} hint="รายการที่ผ่านเกณฑ์ระบบ" tone="bg-white dark:bg-slate-900" onClick={() => scrollToSection('problems-section')} />
+            <MetricTile label="ต้องทบทวน" value={reviewCount} hint="รายการที่ควรอ่านร่วมกับหลักฐาน" tone={reviewCount ? 'bg-amber-50 dark:bg-amber-950/40' : 'bg-white dark:bg-slate-900'} onClick={() => scrollToSection((displayResult.filtered_out || []).length ? 'filtered-section' : 'problems-section')} />
+            <MetricTile label="หลักฐาน" value={metrics.retrieved_docs_count ?? displayResult.retrieved_docs_count ?? 0} hint="เอกสารและแนวทางที่ค้นคืน" tone="bg-white dark:bg-slate-900" onClick={() => scrollToSection('evidence-section')} />
+            <MetricTile label="ระดับสูงสุด" value={maxSeverity || 'N/A'} hint={`${highSeverityCount} รายการระดับสูง`} tone={severityStyle(maxSeverity || 1).soft} onClick={() => scrollToSection('safety-section')} />
           </div>
         </section>
 
-        <aside className="rounded-lg bg-[#0d2734] p-5 text-white sm:p-6">
+        <aside className="rounded-lg bg-[#0d2734] p-5 text-white sm:p-6" id="safety-section">
           <div className="flex items-center justify-between gap-3">
             <div className="text-sm font-semibold text-slate-300">ความปลอดภัยและความเร่งด่วน</div>
             <span aria-hidden="true" className="material-symbols-outlined text-teal-300">health_and_safety</span>
@@ -1555,7 +1577,7 @@ function AnalysisTab({ displayResult, findingReviewStates, onFindingReviewChange
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
-        <section className="rounded-lg bg-surface-container-low p-5 sm:p-6">
+        <section className="rounded-lg bg-surface-container-low p-5 sm:p-6" id="problems-section">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="font-headline text-lg font-bold">ประเด็นปัญหาและความต้องการ</h2>
@@ -1583,7 +1605,7 @@ function AnalysisTab({ displayResult, findingReviewStates, onFindingReviewChange
           </div>
 
           {(displayResult.filtered_out || []).length > 0 && (
-            <div className="mt-6 border-t border-slate-200 pt-5 dark:border-slate-800">
+            <div className="mt-6 border-t border-slate-200 pt-5 dark:border-slate-800" id="filtered-section">
               <details className="clinical-details group" open>
                 <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 text-sm font-bold text-on-surface focus-visible:outline-none">
                   <span className="flex items-center gap-2">
