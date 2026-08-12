@@ -1336,39 +1336,65 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
   const linkedDocumentCount = activeFindingCode
     ? docs.filter((doc) => getEvidenceCodes(doc).includes(activeFindingCode)).length
     : 0;
+  const cleanMarkdownString = (str) => {
+    if (!str) return '';
+    return str
+      .replace(/\|/g, ' ')
+      .replace(/-{3,}/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
   const formatSnippet = (text) => {
     if (!text) return null;
-    const lines = text.split('\n').filter(Boolean);
-    // If it's a single line and has markdown table pipe syntax
-    if (text.includes('|') && text.split('|').length > 2) {
-        const parts = text.split('|').map(p => p.trim()).filter(Boolean);
-        // Exclude lines that are just '---'
-        const validParts = parts.filter(p => p !== '---' && p.replace(/-/g, '').length > 0);
-        if (validParts.length > 0) {
-            return (
-                <ul className="mt-2 list-inside list-disc space-y-1 text-sm leading-relaxed text-on-surface">
-                    {validParts.map((part, i) => (
-                        <li key={i}>{part}</li>
-                    ))}
-                </ul>
-            );
+    if (text.includes('|')) {
+      const parts = text.split('|').map(p => p.trim()).filter(p => p && p !== '---' && !/^[\-\s]+$/.test(p));
+      const grouped = [];
+      let temp = [];
+      for (let p of parts) {
+        if (/^\d{3,4}$/.test(p) || /^[๐-๙]{3,4}$/.test(p)) {
+          if (temp.length > 0) grouped.push(temp.join(' '));
+          temp = [p];
+        } else if (/^\d+$/.test(p) || /^[๐-๙]+$/.test(p)) {
+          if (temp.length > 0) temp.push(`(หน้า ${p})`);
+        } else {
+          temp.push(p);
         }
+      }
+      if (temp.length > 0) grouped.push(temp.join(' '));
+
+      if (grouped.length > 0) {
+        return (
+          <div className="mt-2 space-y-1.5 text-sm leading-relaxed text-on-surface">
+            <div className="text-xs font-semibold text-teal-700 dark:text-teal-300">ข้อความและเนื้อหาหลักฐาน:</div>
+            <ul className="list-inside list-disc space-y-1">
+              {grouped.map((item, idx) => (
+                <li key={idx} className="rounded-md bg-slate-50 p-2 font-medium text-on-surface dark:bg-slate-800/60">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
     }
-    return <p className="mt-2 text-sm leading-relaxed text-on-surface">{text}</p>;
+    return <p className="mt-2 text-sm leading-relaxed text-on-surface">{cleanMarkdownString(text)}</p>;
   };
 
   const renderDocCard = (doc) => {
     const evidenceCodes = getEvidenceCodes(doc);
     const linkedToActiveFinding = activeFindingCode && evidenceCodes.includes(activeFindingCode);
+    const cleanTitle = cleanMarkdownString(doc.title);
+    const cleanSnippetSummary = cleanMarkdownString(doc.snippet);
     return (
     <details key={`${doc.rank}-${doc.id}`} className={`clinical-details group rounded-lg bg-surface-container-lowest transition-shadow ${linkedToActiveFinding ? 'ring-2 ring-teal-500 ring-offset-2 ring-offset-surface-container-low' : ''}`}>
       <summary className="flex min-h-[112px] items-start justify-between gap-3 p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-600">
         <span className="flex min-w-0 gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-sm font-bold text-teal-700 dark:bg-teal-950/50 dark:text-teal-200">{doc.rank}</span>
           <span className="min-w-0">
-            <span className="block line-clamp-2 font-semibold text-on-surface">{doc.title}</span>
+            <span className="block line-clamp-2 font-semibold text-on-surface">{cleanTitle}</span>
             <span className="mt-1 block truncate text-xs text-on-surface-variant">{doc.source}</span>
-            <span className="mt-2 block line-clamp-2 text-sm leading-relaxed text-on-surface-variant">{doc.snippet}</span>
+            <span className="mt-2 block line-clamp-2 text-sm leading-relaxed text-on-surface-variant">{cleanSnippetSummary}</span>
           </span>
         </span>
         <span className="flex shrink-0 items-center gap-2">
