@@ -4056,7 +4056,7 @@ def create_unified_app():
                                         ir_html += "<h3 style='color: var(--text-primary, #1a1a2e); border-bottom: 2px solid #eaeaea; padding-bottom: 8px;'>📌 ทัพหน้า - ประสิทธิภาพหลัก (IR Metrics: nDCG, MAP, MRR)</h3>"
                                         ir_html += "<p style='font-size: 0.9em; color: #555;'>ดึงข้อมูลล่าสุดจากการทดสอบแบบ Paired Factorial Design (ประเมินจาก 55 test cases)</p>"
                                         
-                                        eval_dir = _Path(__file__).parent / "evaluation_results"
+                                        eval_dir = _Path(__file__).parent.parent / "evaluation_results"
                                         summary_files = sorted(eval_dir.glob("proper_eval_summary_*.json"))
                                         
                                         if not summary_files:
@@ -4188,7 +4188,7 @@ def create_unified_app():
                                         sent = classify_sentence(text)
 
                                         # Load taxonomy for testing
-                                        taxonomy_path = _Path(__file__).parent / "data/problem_codes.json"
+                                        taxonomy_path = _Path(__file__).parent.parent / "data/problem_codes.json"
                                         with open(taxonomy_path, 'r', encoding='utf-8') as f:
                                             taxonomy = _json.load(f)
 

@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 def main():
-    root_dir = Path(__file__).parent.absolute()
+    root_dir = Path(__file__).parent.parent.absolute()
 
     print("\n🚀 H2L Thesis Launcher (delegating to start.py --dev)")
     print("=====================================================")
@@ -14,9 +14,8 @@ def main():
     os.environ.setdefault("H2L_SAFE_START", "false")
     os.environ.setdefault("ENABLE_DENSE_RUNTIME", "true")
     os.environ.setdefault("USE_RERANK", "true")
-    os.environ["PYTHONPATH"] = str(root_dir)
-
-    raise SystemExit(subprocess.call([sys.executable, "start.py", "--dev"], cwd=root_dir))
+    start_script = str(root_dir / "api" / "start.py")
+    raise SystemExit(subprocess.call([sys.executable, start_script, "--dev"], cwd=root_dir))
 
 if __name__ == "__main__":
     main()

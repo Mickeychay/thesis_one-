@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_STRATEGY = "h2l-hybrid"
 TAXONOMY_PATH = "data/problem_codes.json"
-FRONTEND_DIST = Path(__file__).parent / "frontend" / "dist"
+FRONTEND_DIST = Path(__file__).parent.parent / "frontend" / "dist"
 DOC_SCALING_OPTIONS = [5, 10, 15, 20]
 DEFAULT_DOC_TOP_K = 15
 EVALUATION_PROGRESS_FILES = {

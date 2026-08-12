@@ -71,7 +71,7 @@ def get_network_ip():
 
 def main():
     # Configuration
-    root_dir = Path(__file__).parent.absolute()
+    root_dir = Path(__file__).parent.parent.absolute()
     frontend_dir = root_dir / "frontend"
     is_dev = "--dev" in sys.argv or os.environ.get("H2L_MODE") == "dev"
     port = int(os.environ.get("PORT", 8000))
@@ -123,7 +123,7 @@ def main():
         if is_dev:
             # Run uvicorn in a sub-process
             backend_proc = subprocess.Popen(
-                [sys.executable, "-m", "uvicorn", "api:app", "--host", "0.0.0.0", "--port", str(port)],
+                [sys.executable, "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", str(port)],
                 cwd=root_dir
             )
             processes.append(backend_proc)
@@ -134,7 +134,7 @@ def main():
                     break
         else:
             # Production mode
-            uvicorn.run("api:app", host="0.0.0.0", port=port, reload=False, log_level="info")
+            uvicorn.run("api.main:app", host="0.0.0.0", port=port, reload=False, log_level="info")
 
     except KeyboardInterrupt:
         print("\n\n👋 Stopping all services...")
