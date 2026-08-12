@@ -71,7 +71,7 @@ def get_network_ip():
 
 def main():
     # Configuration
-    root_dir = Path(__file__).parent.parent.absolute()
+    root_dir = Path(__file__).resolve().parent.parent
     frontend_dir = root_dir / "frontend"
     is_dev = "--dev" in sys.argv or os.environ.get("H2L_MODE") == "dev"
     port = int(os.environ.get("PORT", 8000))
