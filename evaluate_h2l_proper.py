@@ -349,7 +349,7 @@ def compute_all_metrics(
 ) -> Dict:
     """Compute all rank-aware metrics for a single query"""
     if k_values is None:
-        k_values = [3, 5, 10]
+        k_values = [3, 5, 10, 15]
 
     total_relevant = sum(1 for g in relevance_grades if g > 0)
 
@@ -367,6 +367,8 @@ def compute_all_metrics(
         metrics[f'DCG@{k}'] = dcg_at_k(relevance_grades, k)
         metrics[f'IDCG@{k}'] = ideal_dcg_at_k(relevance_grades, k)
         metrics[f'nDCG@{k}'] = ndcg_at_k(relevance_grades, k)
+        metrics[f'MAP@{k}'] = average_precision(relevance_grades[:k])
+        metrics[f'MRR@{k}'] = reciprocal_rank(relevance_grades[:k])
 
     return metrics
 

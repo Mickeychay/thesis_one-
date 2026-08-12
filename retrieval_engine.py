@@ -187,7 +187,9 @@ class Reranker:
         try:
             from sentence_transformers import CrossEncoder
 
-            self.model = CrossEncoder(model_name, device=device, trust_remote_code=True)
+            # Force CPU for CrossEncoder on Mac to avoid MPS Metal driver deadlocks in loops
+            rerank_device = "cpu" if device == "mps" else device
+            self.model = CrossEncoder(model_name, device=rerank_device, trust_remote_code=True)
         except Exception as e:
             raise RuntimeError(f"Failed to load reranker model: {e}")
 
@@ -195,7 +197,7 @@ class Reranker:
         if not candidates: return []
         pairs = [(query, doc.text) for doc in candidates]
         try:
-            scores = self.model.predict(pairs, convert_to_numpy=True)
+            scores = self.model.predict(pairs, batch_size=32, convert_to_numpy=True)
             return sorted(zip(candidates, scores), key=lambda x: x[1], reverse=True)[:top_k]
         except Exception as e:
             console.log(f"❌ Reranking failed: {e}")

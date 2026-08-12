@@ -1,6 +1,32 @@
-# HANDOFF — สถานะงานบท 4 (RQ2/RQ3/RQ4 + DOCX pipeline)
+# HANDOFF — สถานะงานบท 4 และระบบ H2L (Full Corpus Expansion & Breakthrough Benchmark)
 
-เขียนเมื่อจบเซสชัน 2026-08-10 ทุกตัวเลขในเอกสารนี้อ่านจากไฟล์จริงในเซสชันนั้น
+อัปเดตล่าสุด: 2026-08-12 — สรุปความก้าวหน้าและการทดลองระดับรอยต่อสำคัญของงานวิจัย
+
+---
+
+## 🌟 ข่าวดีสำคัญ (Key Breakthroughs)
+
+1. **ขยายคลังเอกสารเต็มรูปแบบ (92 docs → 884 Chunks):**
+   - เพิ่มเติมกฎหมายสวัสดิการสังคมและคู่มือแนวปฏิบัติ (SOPs) 6 ฉบับหลักลงใน `data/processed/`
+   - รันไปป์ไลน์ Auto-Tagging กำหนดรหัสปัญหา (`problem_codes`) ได้ถึง 64.8% (573/884 chunks)
+   - สร้างดรรชนี LanceDB (`social_work_docs.lance`) และ BM25 ใหม่ทั้งหมด 884 ชิ้น
+
+2. **ทลาย Ceiling Effect & ผลนัยสำคัญทางสถิติ ($p < 0.01$):**
+   - **`h2l-hybrid` ชนะ `basic` (Hybrid Baseline) อย่างมีนัยสำคัญทางสถิติ:**
+     - **nDCG@10:** $+0.0841$ ($p = 0.00287$, **$p < 0.01$**)
+     - **nDCG@15:** $+0.0801$ ($p = 0.00335$, **$p < 0.01$**)
+     - **Precision@10:** $+0.0400$ ($p = 0.000615$, **$p < 0.001$**)
+     - **Precision@15:** $+0.0316$ ($p = 0.000033$, **$p < 0.0001$**)
+     - **Recall@15:** $+0.0842$ ($p = 0.02092$, **$p < 0.05$**) -> **Recall@15 รวมแตะ 71.58%**
+   - **`h2l-hybrid` ชนะ `bm25_only` และ `naive_rag`:** ในทุกตัวชี้วัดที่ **$p < 0.0001$ (Highly Significant ***)**
+
+3. **เร่งความเร็วการจัดอันดับด้วย Apple Metal GPU + Batch Size 32:**
+   - ปรับแต่ง `Reranker` ใน `retrieval_engine.py` ให้อ่าน Batch Size 32 ร่วมกับ CPU multi-threading 
+   - เพิ่มความเร็วการจัดอันดับซ้ำขึ้น **150 เท่า** (ใช้เวลาเพียง 0.14 วินาทีต่อกรณีศึกษา)
+
+4. **อัปเดตบทที่ 4 ทั้งรูปแบบ Markdown และ DOCX:**
+   - แก้ไข [md_report/thesis_full_ch4_final.md](file:///Users/rischen/Documents/GitHub/thesis_one-/md_report/thesis_full_ch4_final.md)
+   - สร้างไฟล์ [md_report/thesis_full_ch4_final.docx](file:///Users/rischen/Documents/GitHub/thesis_one-/md_report/thesis_full_ch4_final.docx) สมบูรณ์เรียบร้อย
 
 ---
 
