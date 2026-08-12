@@ -13,7 +13,7 @@ sys.modules['unified_baselines'] = MagicMock()
 sys.modules['H2LAdaptiveRetriever'] = MagicMock()
 sys.modules['H2LMultiHopRetriever'] = MagicMock()
 
-from H2L_core import (
+from h2l.core import (
     H2LUnifiedRetriever, STRATEGY_ALPHA,
     calibrate_confidence, calculate_idf_weight,
     margin_aware_activation, calculate_kl_concentration_penalty,

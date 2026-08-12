@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import evaluate_sentence_polarity as evaluator
+import eval.evaluate_sentence_polarity as evaluator
 
 
 class TestSentencePolarityEvaluator(unittest.TestCase):

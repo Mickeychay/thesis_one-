@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from ablation_study import AblationRunner
+from eval.ablation_study import AblationRunner
 
 
 MODEL = "qwen2.5:7b"

@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from api import (
+from api.main import (
     CASE_CACHE,
     FINALIZED_CASES,
     FinalizeRequest,

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-import H2L_core
-from sensitivity_analysis import (
+from h2l import core
+from eval.sensitivity_analysis import (
     PARAMETER_SWEEPS,
     SensitivityAnalyzer,
     build_run_metadata,
@@ -160,7 +160,7 @@ def test_csv_and_metadata_match_chapter4_evidence_contract(tmp_path, monkeypatch
     assert metadata["skipped_empty_problem_lists"] == 10
     assert metadata["ground_truth_sha256"] == file_sha256(ground_truth)
     assert metadata["h2l_core_sha256"] == file_sha256(
-        Path(__file__).resolve().parents[1] / "H2L_core.py"
+        Path(__file__).resolve().parents[1] / "h2l" / "core.py"
     )
     assert metadata["case_set_invariant_verified"] is True
     assert metadata["scoring_assumptions"]["retrieval_executed"] is False

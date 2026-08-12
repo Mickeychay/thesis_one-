@@ -103,7 +103,7 @@ def test_strategy_differences():
     problem_sets = [tuple(r.get('problems', [])) for r in results.values() if 'problems' in r]
     if len(set(problem_sets)) == 1:
         print("⚠️  WARNING: All strategies detected the SAME problems!")
-        print("   This is expected because detection uses the same H2LDetector.")
+        print("   This is expected because detection uses the same detector.")
     else:
         print("✅ Different strategies detected different problems.")
 

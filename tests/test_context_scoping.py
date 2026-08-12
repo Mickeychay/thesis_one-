@@ -8,8 +8,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from H2LDetector import DetectedProblem, H2LDetectorV3, L2SemanticDetector
-from api import (
+from h2l.detector import DetectedProblem, H2LDetectorV3, L2SemanticDetector
+from api.main import (
     _apply_polarity_gate,
     _apply_user_adjusted_spans_to_candidates,
     _candidate_evidence_spans,

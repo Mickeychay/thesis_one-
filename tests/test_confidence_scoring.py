@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from H2LDetector import L1ContextAwareDetector
+from h2l.detector import L1ContextAwareDetector
 
 
 class TestConfidenceScoring(unittest.TestCase):

@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from H2LDetector import H2LDetectorV3
+from h2l.detector import H2LDetectorV3
 
 
 class TestContextRulesExpansion(unittest.TestCase):

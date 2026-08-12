@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT))
 # Load the implementation in isolation so full-suite collection order is irrelevant.
 _SPEC = importlib.util.spec_from_file_location(
     "_unified_baselines_hyde_config_test",
-    ROOT / "unified_baselines.py",
+    ROOT / "eval/baselines.py",
 )
 _MODULE = importlib.util.module_from_spec(_SPEC)
 assert _SPEC.loader is not None

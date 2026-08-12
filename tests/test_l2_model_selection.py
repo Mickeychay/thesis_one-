@@ -13,8 +13,8 @@ from fastapi import HTTPException
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from H2LDetector import L2SemanticDetector
-from api import RuntimeManager
+from h2l.detector import L2SemanticDetector
+from api.main import RuntimeManager
 
 
 class _FakeCompletions:

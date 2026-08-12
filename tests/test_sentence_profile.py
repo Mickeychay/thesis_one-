@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from api import _sanitize_pii, _sentence_profile
+from api.main import _sanitize_pii, _sentence_profile
 
 
 class TestSentenceProfile(unittest.TestCase):

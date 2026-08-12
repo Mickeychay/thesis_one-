@@ -18,8 +18,8 @@ null is structural (P(p) document-independent → no rank flip).
 import numpy as np
 import pytest
 
-from H2L_core import H2LConfigV3, calculate_final_score_probabilistic, calculate_problem_prior
-from ablation_study import AblationRunner
+from h2l.core import H2LConfigV3, calculate_final_score_probabilistic, calculate_problem_prior
+from eval.ablation_study import AblationRunner
 
 
 PROBLEMS = [

@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from api import (
+from api.main import (
     _apply_polarity_gate,
     _attach_grounded_explanations,
     _sentence_profile,

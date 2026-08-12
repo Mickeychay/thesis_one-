@@ -3,7 +3,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from api import _evaluation_progress_summary, _evaluation_summary
+from api.main import _evaluation_progress_summary, _evaluation_summary
 
 
 def test_evaluation_summary_uses_latest_aliases():

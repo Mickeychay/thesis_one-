@@ -724,8 +724,8 @@ def build_run_metadata(analyzer: SensitivityAnalyzer, baseline: Dict[str, Any],
                        started_at: str, status: str = 'complete',
                        error: str = None) -> Dict[str, Any]:
     """Build an auditable manifest for this exact OAT run."""
-    root = Path(__file__).resolve().parent
-    h2l_core_path = root / 'core.py'
+    root = Path(__file__).resolve().parent.parent
+    h2l_core_path = root / 'h2l' / 'core.py'
     scored_ids = list(baseline.get('scored_case_ids', []))
     expected_ids = [case['case_id'] for case in analyzer.scorable_cases]
     case_set_verified = scored_ids == expected_ids
@@ -824,7 +824,7 @@ def main():
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     ground_truth_path = Path(args.gt_path).resolve()
-    h2l_core_path = Path(__file__).resolve().parent / 'core.py'
+    h2l_core_path = Path(__file__).resolve().parent.parent / 'h2l' / 'core.py'
     started_at = _now_iso()
     initial_metadata = {
         'status': 'running',

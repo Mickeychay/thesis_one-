@@ -20,8 +20,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from ablation_study import AblationRunner, RQ3_MatchingMethod
-from H2L_core import H2LConfigV3, calculate_final_score_probabilistic
+from eval.ablation_study import AblationRunner, RQ3_MatchingMethod
+from h2l.core import H2LConfigV3, calculate_final_score_probabilistic
 
 
 PROBLEMS = [

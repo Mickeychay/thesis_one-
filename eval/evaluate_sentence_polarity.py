@@ -28,7 +28,7 @@ from collections import defaultdict
 from datetime import datetime
 
 # Add parent dir to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from h2l.core import calculate_sentence_polarity, H2LConfigV3
 
@@ -373,7 +373,7 @@ def evaluate_sentence_polarity(gt_path="data/expanded_ground_truth.json",
             "taxonomy_file": taxonomy_path,
             "taxonomy_sha256": _sha256(Path(taxonomy_path)),
             "evaluator_sha256": _sha256(Path(__file__).resolve()),
-            "h2l_core_sha256": _sha256(Path(__file__).resolve().parent / "core.py"),
+            "h2l_core_sha256": _sha256(Path(__file__).resolve().parent.parent / "h2l" / "core.py"),
             "evaluation_scope": "all_split_test_cases",
             "total_test_cases": len(polarity_cases),
             "total_polarity_cases": len(polarity_cases),

@@ -14,7 +14,7 @@ import logging
 import pandas as pd
 import pytest
 
-from ablation_study import AblationRunner, RQ1_L2Filtering
+from eval.ablation_study import AblationRunner, RQ1_L2Filtering
 
 
 MODEL = "qwen2.5:7b"

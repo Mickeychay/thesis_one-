@@ -25,7 +25,7 @@ from docx.oxml.ns import qn
 from docx.shared import Inches
 from lxml import etree
 
-from inject_ch4_into_main_thesis import (
+from scripts.utils.inject_ch4_into_main_thesis import (
     _find_chapter_bounds,
     _remap_images,
     replace_ch4_in_main_doc,
