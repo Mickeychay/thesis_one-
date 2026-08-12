@@ -27,10 +27,10 @@ from retrieval_engine import HybridRetriever
 
 # --- Import H2L Components ---
 try:
-    from H2LDetector import H2LDetector
-    from H2L_core import H2LUnifiedRetriever
+    from h2l.detector import H2LDetector
+    from h2l.core import H2LUnifiedRetriever
     _HAS_H2L = True
-except ImportError as e:
+except Exception as e:
     logger.error(f"Failed to import H2L components: {e}")
     _HAS_H2L = False
 

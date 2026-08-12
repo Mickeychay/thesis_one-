@@ -116,7 +116,7 @@ def test_l1_only_condition_refuses_to_serve_cached_l2_problems(tmp_path):
 
 def test_use_l2_reaches_the_detector(tmp_path):
     """Without this wiring the two RQ1 arms are the same pipeline run twice."""
-    from evaluate_h2l_proper import EvaluationRunner
+    from eval.run_benchmark import EvaluationRunner
 
     detector = FakeDetector()
     runner = EvaluationRunner.__new__(EvaluationRunner)
@@ -131,7 +131,7 @@ def test_use_l2_reaches_the_detector(tmp_path):
 
 
 def test_detect_problems_defaults_to_using_l2():
-    from evaluate_h2l_proper import EvaluationRunner
+    from eval.run_benchmark import EvaluationRunner
 
     detector = FakeDetector()
     runner = EvaluationRunner.__new__(EvaluationRunner)

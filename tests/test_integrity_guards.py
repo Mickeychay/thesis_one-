@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 class TestIntegrityConfig(unittest.TestCase):
     def test_integrity_flags_disabled_by_default(self):
-        from config import Config
+        from h2l.config import Config
 
         self.assertFalse(Config.ALLOW_DEMO_DATA)
         self.assertFalse(Config.ALLOW_SYNTHETIC_STATS)
@@ -22,7 +22,7 @@ class TestIntegrityConfig(unittest.TestCase):
 
 class TestSyntheticStatisticsGuard(unittest.TestCase):
     def test_summary_synthetic_data_requires_explicit_flag(self):
-        from statistical_analysis import load_summary_as_synthetic_data
+        from eval.statistical_analysis import load_summary_as_synthetic_data
 
         with tempfile.TemporaryDirectory() as tmp:
             summary_path = Path(tmp) / "benchmark_summary_test.json"

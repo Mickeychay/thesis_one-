@@ -335,7 +335,7 @@ def derive(
     significance_output: Path | None = None,
     json_output: Path | None = None,
 ) -> dict:
-    from evaluate_h2l_proper import (
+    from eval.run_benchmark import (
         build_relevance_keywords,
         compute_all_metrics,
         judge_relevance,
@@ -354,7 +354,7 @@ def derive(
     ground_truth_hash = sha256(ground_truth)
     taxonomy_hash = sha256(taxonomy_path)
     document_metadata_hash = sha256(document_metadata)
-    evaluation_code_hash = sha256(ROOT / "evaluate_h2l_proper.py")
+    evaluation_code_hash = sha256(ROOT / "eval" / "run_benchmark.py")
     source_run_signature = artifact.get("metadata", {}).get("run_signature")
     if source_run_signature is not None:
         if not isinstance(source_run_signature, dict):

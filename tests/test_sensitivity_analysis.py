@@ -75,7 +75,7 @@ def test_full_train_selection_distinguishes_selected_scored_and_skipped(
 ):
     ground_truth = _write_ground_truth(tmp_path / "ground_truth.json")
     monkeypatch.setattr(
-        H2L_core,
+        core,
         "calculate_final_score_probabilistic",
         _successful_score,
     )
@@ -100,7 +100,7 @@ def test_scoring_exception_aborts_instead_of_changing_case_set(tmp_path, monkeyp
         return _successful_score(**kwargs)
 
     monkeypatch.setattr(
-        H2L_core,
+        core,
         "calculate_final_score_probabilistic",
         failing_score,
     )
@@ -113,7 +113,7 @@ def test_scoring_exception_aborts_instead_of_changing_case_set(tmp_path, monkeyp
 def test_csv_and_metadata_match_chapter4_evidence_contract(tmp_path, monkeypatch):
     ground_truth = _write_ground_truth(tmp_path / "ground_truth.json")
     monkeypatch.setattr(
-        H2L_core,
+        core,
         "calculate_final_score_probabilistic",
         _successful_score,
     )

@@ -23,7 +23,7 @@ def test_strategy_differences():
     """Smoke-test strategy execution without returning diagnostic payloads."""
 
     # Import after path setup
-    from config import Config
+    from h2l.config import Config
     from orchestrator import RAGFirstOrchestrator
 
     config = Config()

@@ -7,7 +7,7 @@ import os
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Mock heavy dependencies before importing H2L_core
+# Mock heavy dependencies before importing core
 sys.modules['retrieval_engine'] = MagicMock()
 sys.modules['unified_baselines'] = MagicMock()
 sys.modules['H2LAdaptiveRetriever'] = MagicMock()

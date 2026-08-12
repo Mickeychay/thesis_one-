@@ -26,8 +26,8 @@ DEFAULT_GROUND_TRUTH = ROOT / "data/expanded_ground_truth.json"
 DEFAULT_TAXONOMY = ROOT / "data/problem_codes.json"
 DEFAULT_JSON = ROOT / "evaluation_results" / "adversarial_stress_test_20260807.json"
 DEFAULT_MARKDOWN = ROOT / "evaluation_results" / "adversarial_stress_test_20260807.md"
-H2L_CORE = ROOT / "core.py"
-EVALUATION_CODE = ROOT / "evaluate_h2l_proper.py"
+H2L_CORE = ROOT / "h2l" / "core.py"
+EVALUATION_CODE = ROOT / "eval" / "run_benchmark.py"
 RETRIEVAL_METRICS = ("nDCG@5", "nDCG@10", "MAP", "MRR")
 
 

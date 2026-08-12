@@ -262,7 +262,7 @@ def test_co_occurrence_is_gated_on_embeddings_not_on_matching_mode():
     w_i to 1.0 in the keyword arms. RQ3 must vary P(d|p) only.
     """
     source = inspect.getsource(
-        __import__("H2L_core").H2LUnifiedRetriever._apply_h2l_scoring
+        __import__("h2l.core", fromlist=["core"]).H2LUnifiedRetriever._apply_h2l_scoring
     )
     co_call = source.split("calculate_co_occurrence_weights(")[1].split(")")[0]
     assert "embeddings_available" in co_call
