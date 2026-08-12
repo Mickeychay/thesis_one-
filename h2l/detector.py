@@ -613,48 +613,11 @@ class L1ContextAwareDetector:
         code_category = code_info.get("category", "")
         kw_evidence = ", ".join(f"'{k}'" for k in matched_keywords[:3])
         
-        # 0. Global Check: G_polarity (Sentence Polarity Analysis: G_neg x G_sub x G_len) + Dynamic Temporal Markers
-        try:
-            from h2l.core import calculate_sentence_polarity
-            problem_obj = {
-                "code": code, 
-                "name": code_name, 
-                "keywords": matched_keywords, 
-                "severity": code_info.get("severity", 1)
-            }
-            polarity_res = calculate_sentence_polarity(problem_obj, text)
-            g_neg = polarity_res.get("gate_neg", 1.0)
-            g_sub = polarity_res.get("gate_sub", 1.0)
-            
-            # If G_neg detected negation (< 0.8) or G_sub detected external actor (< 1.0)
-            if g_neg < 0.8 or g_sub < 1.0:
-                conf_mult = min(0.4, round(g_neg * g_sub, 2))
-                return True, conf_mult, f"พบคำสำคัญ {kw_evidence} แต่ G_polarity ตรวจพบประโยคปฏิเสธหรือเป็นของบุคคลอื่น (G_neg={g_neg}, G_sub={g_sub}) โปรดตรวจสอบ (Needs Validation)"
-        except Exception as err:
-            logger.debug(f"G_polarity check fallback: {err}")
-
-        if matched_spans:
-            import re
-            # Dynamic Thai temporal regex: matches any number/word + (วัน|เดือน|ปี) + (ก่อน|ที่แล้ว)
-            # Example: "20 ปีก่อน", "5 เดือนที่แล้ว", "สองปีก่อน", "อดีต", "เมื่อก่อน", "เคย"
-            temporal_pattern = re.compile(
-                r'(\d+|หนึ่ง|สอง|สาม|สี่|ห้า|หก|เจ็ด|แปด|เก้า|สิบ|ร้อย)\s*(วัน|เดือน|ปี|ทศวรรษ)\s*(ก่อน|ที่แล้ว)|'
-                r'(อดีต|เมื่อก่อน|ประวัติ|เคย|หายดี|ในอดีต)'
-            )
-            
-            for span in matched_spans:
-                start = max(0, int(span["start"]) - 60)
-                end = min(len(text_lower), int(span["end"]) + 60)
-                window = text_lower[start:end]
-                
-                # Check for dynamic temporal matches
-                found_temp_matches = temporal_pattern.findall(window)
-                found_temp = [m[0] or m[3] for m in found_temp_matches if m[0] or m[3]]
-                
-                if found_temp:
-                    markers = ", ".join(set(found_temp))
-                    # Returning 0.4 forces this into L1-NeedsValidation, ensuring L2 will evaluate it
-                    return True, 0.4, f"พบคำสำคัญ {kw_evidence} แต่มีบริบทที่อาจเป็นอดีต ({markers}) โปรดตรวจสอบ (Needs Validation)"
+        # Step 1: Evaluate SPECIFIC_CODE_RULES and CATEGORY_CONTEXT_RULES first
+        base_valid = True
+        base_conf = 1.0
+        base_reason = f"ตรวจพบหลักฐานเชิงประจักษ์จากคำสำคัญ {kw_evidence} ตรงกับเกณฑ์ของ {code_name}"
+        rule_evaluated = False
 
         # 1. Check specific code rules first
         if code in SPECIFIC_CODE_RULES:
@@ -663,28 +626,27 @@ class L1ContextAwareDetector:
             
             # Check self-reference requirement
             if rule.get("requires_self_reference", False):
+                rule_evaluated = True
                 self_indicators = rule.get("self_indicators", [])
                 has_self = any(any(ind in context for ind in self_indicators) for context in local_contexts)
-                
-                # Check if there's NO mention of another person near the matched evidence
                 other_person_mentioned = self._has_other_person_mention(local_contexts)
                 
                 if has_self and not other_person_mentioned:
-                    return True, 1.0, f"ตรวจพบการระบุถึงตนเอง (Self-reference) ซึ่งสอดคล้องกับนิยามของ {code_name}"
+                    base_valid, base_conf, base_reason = True, 1.0, f"ตรวจพบการระบุถึงตนเอง (Self-reference) ซึ่งสอดคล้องกับนิยามของ {code_name}"
                 elif not has_self:
                     return False, 0.3, f"ไม่พบหลักฐานการอ้างถึงตนเองตามเกณฑ์ของ {code_name} (พบเพียงบริบทบุคคลอื่นหรือบริบททั่วไป)"
             
             # Check passive requirement
             if rule.get("requires_passive", False):
+                rule_evaluated = True
                 passive_indicators = rule.get("passive_indicators", [])
                 has_passive = any(ind in text_lower for ind in passive_indicators)
                 
                 if has_passive:
-                    return True, 1.0, f"ตรวจพบรูปแบบการถูกกระทำ (Passive voice) สอดคล้องกับเกณฑ์วินิจฉัยของ {code_name}"
+                    base_valid, base_conf, base_reason = True, 1.0, f"ตรวจพบรูปแบบการถูกกระทำ (Passive voice) สอดคล้องกับเกณฑ์วินิจฉัยของ {code_name}"
                 else:
                     return False, 0.4, f"ไม่พบรูปแบบการถูกกระทำ (Passive voice) ซึ่งเป็นเงื่อนไขสำคัญสำหรับรหัส {code_name}"
 
-            # Check distress-context requirement for broad mental-health terms
             if rule.get("requires_distress_context", False):
                 return self._check_distress_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
 
@@ -748,16 +710,15 @@ class L1ContextAwareDetector:
             if rule.get("requires_migration_context", False):
                 return self._check_migration_context(code_name, text_lower, matched_keywords, rule, matched_spans=matched_spans)
         
-        # 2. Check category-level rules
+        # 2. Check category-level rules if specific rules didn't return early
         prefix = self._get_category_prefix(code)
-        
         if prefix in CATEGORY_CONTEXT_RULES:
             rule = CATEGORY_CONTEXT_RULES[prefix]
             required_actors = rule.get("required_actors", [])
             local_contexts = self._evidence_segments(text_lower, matched_keywords, matched_spans=matched_spans)
             local_contexts.extend(self._keyword_windows(text_lower, matched_keywords, radius=48, matched_spans=matched_spans))
             
-            # 1. Check exclusions first
+            # Check exclusions first
             if rule.get("exclude_if_self", False):
                 if any(self._is_self_action(context) for context in local_contexts):
                     return False, 0.1, f"บริบทระบุว่าเป็นการกระทำต่อตนเอง จึงไม่เข้าเกณฑ์ของกลุ่ม {rule['category_name']}"
@@ -765,7 +726,6 @@ class L1ContextAwareDetector:
             if rule.get("exclude_if_other_actor", False) and matched_spans:
                 for span in matched_spans:
                     end = int(span["end"])
-                    # Look ahead 60 characters for explicit possession by another actor
                     window_after = text_lower[end:end+60]
                     other_possessions = [
                         "ของพี่", "ของน้อง", "ของลูก", "ของสามี", "ของภรรยา", "ของแฟน", 
@@ -775,24 +735,57 @@ class L1ContextAwareDetector:
                     if any(marker in window_after for marker in other_possessions):
                         return False, 0.4, f"พบคำสำคัญ {kw_evidence} แต่มีบริบทระบุว่าเป็นของบุคคลอื่น ({window_after.strip()[:20]}) ไม่ใช่ของผู้รับบริการ"
 
-            # 2. If no required actors, context is valid based on lexical match (and passed exclusions)
-            if not required_actors:
-                return True, 1.0, f"ตรวจพบคำสำคัญ {kw_evidence} ซึ่งสอดคล้องกับนิยามในกลุ่ม {code_category}"
+            if required_actors:
+                found_actors = [actor for actor in required_actors if any(actor in context for context in local_contexts)]
+                if found_actors:
+                    actors_str = ", ".join(f"'{a}'" for a in found_actors[:2])
+                    base_valid, base_conf, base_reason = True, 1.0, f"พบบริบทบุคคลที่เกี่ยวข้องใกล้กับหลักฐานคำสำคัญ ({actors_str}) สนับสนุนการวิเคราะห์รหัส {code_name}"
+                else:
+                    return False, 0.4, f"พบคำสำคัญ {kw_evidence} แต่ขาดบริบทบุคคลที่เกี่ยวข้องในช่วงข้อความเดียวกันตามมาตรฐานของ {rule['category_name']}"
+
+        # If base check declared it invalid, exit immediately
+        if not base_valid:
+            return False, base_conf, base_reason
+
+        # Step 2: Apply G_polarity & Dynamic Temporal Checks ONLY to otherwise-valid candidates
+        try:
+            from h2l.core import calculate_sentence_polarity
+            problem_obj = {
+                "code": code, 
+                "name": code_name, 
+                "keywords": matched_keywords, 
+                "severity": code_info.get("severity", 1)
+            }
+            polarity_res = calculate_sentence_polarity(problem_obj, text)
+            g_neg = polarity_res.get("gate_neg", 1.0)
+            g_sub = polarity_res.get("gate_sub", 1.0)
             
-            # 3. Check if any required actor is mentioned
-            found_actors = [
-                actor for actor in required_actors
-                if any(actor in context for context in local_contexts)
-            ]
+            if g_neg < 0.8 or g_sub < 1.0:
+                conf_mult = min(0.4, round(g_neg * g_sub, 2))
+                return True, conf_mult, f"พบคำสำคัญ {kw_evidence} แต่ G_polarity ตรวจพบประโยคปฏิเสธหรือเป็นของบุคคลอื่น (G_neg={g_neg}, G_sub={g_sub}) โปรดตรวจสอบ (Needs Validation)"
+        except Exception as err:
+            logger.debug(f"G_polarity check fallback: {err}")
+
+        if matched_spans:
+            import re
+            temporal_pattern = re.compile(
+                r'(\d+|หนึ่ง|สอง|สาม|สี่|ห้า|หก|เจ็ด|แปด|เก้า|สิบ|ร้อย)\s*(วัน|เดือน|ปี|ทศวรรษ)\s*(ก่อน|ที่แล้ว)|'
+                r'(อดีต|เมื่อก่อน|ประวัติ|เคย|หายดี|ในอดีต)'
+            )
             
-            if found_actors:
-                actors_str = ", ".join(f"'{a}'" for a in found_actors[:2])
-                return True, 1.0, f"พบบริบทบุคคลที่เกี่ยวข้องใกล้กับหลักฐานคำสำคัญ ({actors_str}) สนับสนุนการวิเคราะห์รหัส {code_name}"
-            else:
-                return False, 0.4, f"พบคำสำคัญ {kw_evidence} แต่ขาดบริบทบุคคลที่เกี่ยวข้องในช่วงข้อความเดียวกันตามมาตรฐานของ {rule['category_name']}"
-        
-        # 3. Default: Lexical match with evidence
-        return True, 1.0, f"ตรวจพบหลักฐานเชิงประจักษ์จากคำสำคัญ {kw_evidence} ตรงกับเกณฑ์ของ {code_name}"
+            for span in matched_spans:
+                start = max(0, int(span["start"]) - 120)
+                end = min(len(text_lower), int(span["end"]) + 120)
+                window = text_lower[start:end]
+                
+                found_temp_matches = temporal_pattern.findall(window)
+                found_temp = [m[0] or m[3] for m in found_temp_matches if m[0] or m[3]]
+                
+                if found_temp:
+                    markers = ", ".join(set(found_temp))
+                    return True, 0.4, f"พบคำสำคัญ {kw_evidence} แต่มีบริบทที่อาจเป็นอดีต ({markers}) โปรดตรวจสอบ (Needs Validation)"
+
+        return True, base_conf, base_reason
 
     def _keyword_windows(
         self,
@@ -1548,11 +1541,9 @@ Analysis principles:
 - Infer demographic group from terms like "อนุบาล/เด็ก/ลูก" (child), "วัยรุ่น/มัธยม" (teen), "ทำงาน" (adult), "คนแก่/ชรา/เกษียณ/ปู่ยา" (elderly). If unknown, output "general".
 
 ⚠️ CRITICAL SAFETY RULES (must follow strictly):
-- 🛑 NEGATION RULE: If the text explicitly DENIES or NEGATES a problem (e.g., "ปฏิเสธการทำร้ายตัวเอง", "ไม่ได้คิดฆ่าตัวตาย", "ไม่เคยถูกทำร้าย"), you MUST set `is_valid: false` for that code and explain that the patient denied it. Do not validate a problem if the patient explicitly denies it.
-- 🛑 TEMPORAL RULE: If a problem is purely in the past and explicitly resolved/absent at present (e.g., "เคยคิดเมื่อ 20 ปีก่อน แต่ปัจจุบันไม่มีแล้ว", "อดีตเคยเป็นแต่หายดีแล้ว"), set `is_valid: false` as it is not a active current problem.
-- NEVER invalidate crisis-level codes (X60-X84 self-harm/suicide, T74 abuse, F32-F33 depression)
-  when there is ANY CURRENT POSITIVE textual evidence in the case, even if indirect
-- For crisis codes: ALWAYS set is_valid=true if keywords matched AND not negated or purely past resolved. Prefer false positive over false negative
+- 🛑 NEGATION RULE: If the text explicitly DENIES or NEGATES a problem (e.g., "ปฏิเสธการทำร้ายตัวเอง", "ไม่ได้คิดฆ่าตัวตาย", "ไม่เคยถูกทำร้าย"), you MUST set `is_valid: false` for that code and explain that the patient denied it.
+- 🛑 TEMPORAL RULE: If a problem is PURELY IN THE PAST and CURRENTLY RESOLVED/ABSENT (e.g., "เคยคิดเมื่อ 10 ปีก่อน แต่ปัจจุบันหายดีและไม่มีความคิดดังกล่าว", "อดีตเคยเป็นแต่ปัจจุบันไม่มีแล้ว"), you MUST set `is_valid: false` as it is not an active current problem.
+- CRISIS CODES (X60-X84 self-harm/suicide, T74 abuse, F32-F33 depression): Set `is_valid: true` ONLY IF it is an ACTIVE or CURRENT problem/risk. If the case text explicitly confirms that it occurred in the PAST and is CURRENTLY RESOLVED/ABSENT, you MUST set `is_valid: false`.
 - Self-harm disambiguation: "ทำร้ายตัวเอง/ทำร้ายร่างกายตัวเอง" = X60-X84, NOT T74
 - "ไม่อยากมีชีวิต/ไม่อยากอยู่" = suicidal ideation → X60-X84 is_valid=true
 - When X60-X84 and T74 conflict: if text mentions "ตัวเอง" → X60-X84 is valid, T74 may be invalid
