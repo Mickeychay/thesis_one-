@@ -149,6 +149,20 @@ CATEGORY_CONTEXT_RULES = {
         "exclude_if_self": False,
     },
     
+    # หมวด F: โรคทางจิตเวช (ICD-10)
+    "F": {
+        "category_name": "โรคทางจิตเวช (ICD-10)",
+        "required_actors": [],
+        "exclude_if_other_actor": True,
+    },
+
+    # หมวด Z: ปัญหาอื่นๆ (ICD-10)
+    "Z": {
+        "category_name": "ปัญหาอื่นๆ (ICD-10)",
+        "required_actors": [],
+        "exclude_if_other_actor": True,
+    },
+    
     # หมวด 07: ภาระดูแลผู้ป่วย/ผู้สูงอายุ
     "07": {
         "category_name": "ปัญหาภาระในการดูแลผู้เจ็บป่วย/ผู้พิการ/ผู้สูงอายุ",
@@ -571,7 +585,10 @@ class L1ContextAwareDetector:
         """ดึง prefix ของ category (2 ตัวแรก)"""
         # Handle special codes like X60-X84, T74, F32
         if code.startswith(("X", "T", "F", "Z", "C", "I", "G")):
-            return code  # Return full code for special ICD codes
+            # If we just want broad categories for F and Z:
+            if code.startswith("F"): return "F"
+            if code.startswith("Z"): return "Z"
+            return code  # Return full code for other special ICD codes
         
         # Normal codes: 0101, 0201, etc.
         return code[:2] if len(code) >= 2 else code
@@ -697,11 +714,29 @@ class L1ContextAwareDetector:
             local_contexts = self._evidence_segments(text_lower, matched_keywords, matched_spans=matched_spans)
             local_contexts.extend(self._keyword_windows(text_lower, matched_keywords, radius=48, matched_spans=matched_spans))
             
-            # If no required actors, context is valid based on lexical match
+            # 1. Check exclusions first
+            if rule.get("exclude_if_self", False):
+                if any(self._is_self_action(context) for context in local_contexts):
+                    return False, 0.1, f"บริบทระบุว่าเป็นการกระทำต่อตนเอง จึงไม่เข้าเกณฑ์ของกลุ่ม {rule['category_name']}"
+            
+            if rule.get("exclude_if_other_actor", False) and matched_spans:
+                for span in matched_spans:
+                    end = int(span["end"])
+                    # Look ahead 60 characters for explicit possession by another actor
+                    window_after = text_lower[end:end+60]
+                    other_possessions = [
+                        "ของพี่", "ของน้อง", "ของลูก", "ของสามี", "ของภรรยา", "ของแฟน", 
+                        "ของเพื่อน", "ของแม่", "ของพ่อ", "ของปู่", "ของย่า", "ของตา", 
+                        "ของยาย", "ของญาติ", "ของหลาน", "ของคนอื่น", "ของเขา", "ของเธอ"
+                    ]
+                    if any(marker in window_after for marker in other_possessions):
+                        return False, 0.4, f"พบคำสำคัญ {kw_evidence} แต่มีบริบทระบุว่าเป็นของบุคคลอื่น ({window_after.strip()[:20]}) ไม่ใช่ของผู้รับบริการ"
+
+            # 2. If no required actors, context is valid based on lexical match (and passed exclusions)
             if not required_actors:
                 return True, 1.0, f"ตรวจพบคำสำคัญ {kw_evidence} ซึ่งสอดคล้องกับนิยามในกลุ่ม {code_category}"
             
-            # Check if any required actor is mentioned
+            # 3. Check if any required actor is mentioned
             found_actors = [
                 actor for actor in required_actors
                 if any(actor in context for context in local_contexts)
@@ -711,11 +746,6 @@ class L1ContextAwareDetector:
                 actors_str = ", ".join(f"'{a}'" for a in found_actors[:2])
                 return True, 1.0, f"พบบริบทบุคคลที่เกี่ยวข้องใกล้กับหลักฐานคำสำคัญ ({actors_str}) สนับสนุนการวิเคราะห์รหัส {code_name}"
             else:
-                # Check exclude_if_self
-                if rule.get("exclude_if_self", False):
-                    if any(self._is_self_action(context) for context in local_contexts):
-                        return False, 0.1, f"บริบทระบุว่าเป็นการกระทำต่อตนเอง จึงไม่เข้าเกณฑ์ของกลุ่ม {rule['category_name']}"
-                
                 return False, 0.4, f"พบคำสำคัญ {kw_evidence} แต่ขาดบริบทบุคคลที่เกี่ยวข้องในช่วงข้อความเดียวกันตามมาตรฐานของ {rule['category_name']}"
         
         # 3. Default: Lexical match with evidence
@@ -827,9 +857,11 @@ class L1ContextAwareDetector:
             actors.update(rule.get("external_terms", []))
             actors.update(rule.get("partner_terms", []))
         actors.update([
-            "ผู้ป่วย", "ผู้รับบริการ", "เด็ก", "บุตร", "ลูก", "บิดา", "มารดา",
-            "พ่อ", "แม่", "สามี", "ภรรยา", "แฟน", "คู่รัก", "ญาติ", "เพื่อน",
-            "เพื่อนบ้าน", "เพื่อนร่วมงาน", "นายจ้าง", "เจ้าหนี้", "ผู้ปกครอง",
+            "ผู้ป่วย", "ผู้รับบริการ", "เด็ก", "บุตร", "ลูก", "ลูกชาย", "ลูกสาว",
+            "บิดา", "มารดา", "พ่อ", "แม่", "สามี", "ภรรยา", "แฟน", "คู่รัก",
+            "พี่ชาย", "พี่สาว", "น้องชาย", "น้องสาว", "พี่", "น้อง",
+            "ปู่", "ย่า", "ตา", "ยาย", "ลุง", "ป้า", "น้า", "อา", "หลาน",
+            "ญาติ", "เพื่อน", "เพื่อนบ้าน", "เพื่อนร่วมงาน", "นายจ้าง", "เจ้าหนี้", "ผู้ปกครอง",
         ])
         return sorted((actor for actor in actors if actor), key=len, reverse=True)
 
