@@ -46,7 +46,7 @@ def update_document(path: Path) -> None:
     dataset_paragraph = first_after(
         document,
         heading_index,
-        lambda text: "expanded_ground_truth.json" in text and "เคสต้นฉบับ" in text,
+        lambda text: "data/expanded_ground_truth.json" in text and "เคสต้นฉบับ" in text,
     )
     split_paragraph = first_after(
         document,

@@ -386,11 +386,11 @@ def validate_matrix(
     expected_hashes = {
         "ground_truth_sha256": sha256(paths.ground_truth),
         "taxonomy_sha256": sha256(paths.taxonomy),
-        "detector_code_sha256": sha256(ROOT / "H2LDetector.py"),
-        "h2l_core_sha256": sha256(ROOT / "H2L_core.py"),
+        "detector_code_sha256": sha256(ROOT / "detector.py"),
+        "h2l_core_sha256": sha256(ROOT / "core.py"),
         "evaluation_code_sha256": sha256(ROOT / "evaluate_h2l_proper.py"),
         "config_code_sha256": sha256(ROOT / "config.py"),
-        "retrieval_engine_sha256": sha256(ROOT / "retrieval_engine.py"),
+        "retrieval_engine_sha256": sha256(ROOT / "retriever.py"),
         "unified_baselines_sha256": sha256(ROOT / "unified_baselines.py"),
         "metadata_store_sha256": sha256(paths.document_metadata),
     }
@@ -518,7 +518,7 @@ def validate_adversarial_stress(
     require(metadata.get("matrix_sha256") == matrix_hash, "Adversarial summary matrix hash mismatch")
     require(metadata.get("ground_truth_sha256") == sha256(paths.ground_truth), "Adversarial summary ground-truth hash mismatch")
     require(metadata.get("taxonomy_sha256") == sha256(paths.taxonomy), "Adversarial summary taxonomy hash mismatch")
-    require(metadata.get("h2l_core_sha256") == sha256(ROOT / "H2L_core.py"), "Adversarial summary H2L core hash mismatch")
+    require(metadata.get("h2l_core_sha256") == sha256(ROOT / "core.py"), "Adversarial summary H2L core hash mismatch")
     require(metadata.get("evaluation_code_sha256") == sha256(ROOT / "evaluate_h2l_proper.py"), "Adversarial summary evaluator hash mismatch")
     require(int(metadata.get("n_test_cases", 0)) == 95, "Adversarial summary must originate from 95 test cases")
     require(int(metadata.get("n_adversarial_cases", 0)) == 20, "Adversarial summary must contain 20 cases")
@@ -680,7 +680,7 @@ def validate_sensitivity(
     require(int(metadata.get("scored_cases", 0)) == 115, "Sensitivity must score 115 non-empty train cases")
     require(int(metadata.get("skipped_empty_problem_lists", 0)) == 10, "Sensitivity must disclose 10 empty problem lists")
     require(metadata.get("ground_truth_sha256") == sha256(paths.ground_truth), "Sensitivity ground-truth hash mismatch")
-    require(metadata.get("h2l_core_sha256") == sha256(ROOT / "H2L_core.py"), "Sensitivity H2L core hash mismatch")
+    require(metadata.get("h2l_core_sha256") == sha256(ROOT / "core.py"), "Sensitivity H2L core hash mismatch")
     require(set(metadata.get("skipped_case_ids", [])) == set(ground_truth["train_empty_problem_lists"]), "Sensitivity skipped IDs differ from ground truth")
     scoring_assumptions = metadata.get("scoring_assumptions")
     require(isinstance(scoring_assumptions, dict), "Sensitivity scoring_assumptions must be an object")
@@ -1235,9 +1235,9 @@ def build(paths: EvidencePaths) -> dict[str, Any]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--ground-truth", type=Path, default=ROOT / "expanded_ground_truth.json")
+    parser.add_argument("--ground-truth", type=Path, default=ROOT / "data/expanded_ground_truth.json")
     parser.add_argument("--ground-truth-audit", type=Path, default=DEFAULT_GROUND_TRUTH_AUDIT)
-    parser.add_argument("--taxonomy", type=Path, default=ROOT / "problem_codes.json")
+    parser.add_argument("--taxonomy", type=Path, default=ROOT / "data/problem_codes.json")
     parser.add_argument("--document-metadata", type=Path, default=ROOT / "data/vector_db_lancedb/metadata.json")
     parser.add_argument("--matrix", type=Path, default=DEFAULT_MATRIX)
     parser.add_argument("--retrieval-json", type=Path, default=DEFAULT_RETRIEVAL_JSON)

@@ -223,7 +223,7 @@ def write_markdown(report: Dict, output_path: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Audit ground truth split integrity")
-    parser.add_argument("--ground-truth", default="expanded_ground_truth.json")
+    parser.add_argument("--ground-truth", default="data/expanded_ground_truth.json")
     parser.add_argument("--output-json", default="evaluation_results/ground_truth_audit.json")
     parser.add_argument("--output-md", default="evaluation_results/ground_truth_audit.md")
     parser.add_argument("--duplicate-threshold", type=float, default=0.9)

@@ -18,7 +18,7 @@ import threading
 from pathlib import Path
 import pdfplumber
 from tqdm import tqdm
-from config import Config
+from h2l.config import Config
 
 # ---------- CONFIGURATION CONSTANTS ----------
 # 

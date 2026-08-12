@@ -22,11 +22,11 @@ DEFAULT_MATRIX = (
     / "model_comparison"
     / "l2_full_matrix_95cases_3models_3repeats_8strategies.json"
 )
-DEFAULT_GROUND_TRUTH = ROOT / "expanded_ground_truth.json"
-DEFAULT_TAXONOMY = ROOT / "problem_codes.json"
+DEFAULT_GROUND_TRUTH = ROOT / "data/expanded_ground_truth.json"
+DEFAULT_TAXONOMY = ROOT / "data/problem_codes.json"
 DEFAULT_JSON = ROOT / "evaluation_results" / "adversarial_stress_test_20260807.json"
 DEFAULT_MARKDOWN = ROOT / "evaluation_results" / "adversarial_stress_test_20260807.md"
-H2L_CORE = ROOT / "H2L_core.py"
+H2L_CORE = ROOT / "core.py"
 EVALUATION_CODE = ROOT / "evaluate_h2l_proper.py"
 RETRIEVAL_METRICS = ("nDCG@5", "nDCG@10", "MAP", "MRR")
 

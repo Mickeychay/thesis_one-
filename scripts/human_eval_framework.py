@@ -76,7 +76,7 @@ RATING_RUBRIC = {
 
 
 def sample_evaluation_cases(
-    ground_truth_path: str = "expanded_ground_truth.json",
+    ground_truth_path: str = "data/expanded_ground_truth.json",
     n_per_complexity: int = 10,
     filter_case_ids: List[str] = None,
 ) -> List[Dict]:
@@ -454,7 +454,7 @@ def main():
     subparsers = parser.add_subparsers(dest='command')
 
     gen_parser = subparsers.add_parser('generate', help='Generate evaluation packets')
-    gen_parser.add_argument('--ground-truth', default='expanded_ground_truth.json')
+    gen_parser.add_argument('--ground-truth', default='data/expanded_ground_truth.json')
     gen_parser.add_argument('--n-per-complexity', type=int, default=10)
     gen_parser.add_argument('--output-dir', default='human_evaluation')
     gen_parser.add_argument('--systems', nargs='+', default=['basic', 'h2l-hybrid'],

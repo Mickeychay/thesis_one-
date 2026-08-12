@@ -220,8 +220,8 @@ def generate_case_id(original_id: str, aug_type: str, index: int) -> str:
 # ============================================================================
 
 def expand_ground_truth(
-    input_path: str = "expanded_ground_truth.json",
-    taxonomy_path: str = "problem_codes.json",
+    input_path: str = "data/expanded_ground_truth.json",
+    taxonomy_path: str = "data/problem_codes.json",
     target_count: int = 200
 ) -> Dict:
     """
@@ -417,9 +417,9 @@ def main():
     parser = argparse.ArgumentParser(description='Expand H2L Ground Truth')
     parser.add_argument('--validate-only', action='store_true',
                        help='Only validate existing ground truth')
-    parser.add_argument('--output', default='expanded_ground_truth.json',
+    parser.add_argument('--output', default='data/expanded_ground_truth.json',
                        help='Output file path (default: expanded_ground_truth.json)')
-    parser.add_argument('--input', default='expanded_ground_truth.json',
+    parser.add_argument('--input', default='data/expanded_ground_truth.json',
                        help='Input ground truth file')
     parser.add_argument('--target', type=int, default=200,
                        help='Target number of cases')

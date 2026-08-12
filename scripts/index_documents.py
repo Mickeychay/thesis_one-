@@ -16,7 +16,7 @@ from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from config import Config, get_config
+from h2l.config import Config, get_config
 
 
 LABEL_KEYS = {
@@ -89,7 +89,7 @@ def load_production_documents(input_dir: str = "data/chunked") -> List[Dict]:
 
 
 def load_ground_truth_documents(
-    ground_truth_file: str = "expanded_ground_truth.json",
+    ground_truth_file: str = "data/expanded_ground_truth.json",
     include_labels: bool = False
 ) -> List[Dict]:
     """Load ground-truth cases for explicit evaluation indexing only."""
@@ -158,7 +158,7 @@ def load_ground_truth_documents(
 def load_parsed_documents(
     source: str = "production_docs",
     input_dir: str = "data/chunked",
-    ground_truth_file: str = "expanded_ground_truth.json",
+    ground_truth_file: str = "data/expanded_ground_truth.json",
     include_labels: bool = False
 ) -> List[Dict]:
     """Backward-compatible loader with explicit data source selection."""
@@ -333,7 +333,7 @@ def main(argv=None):
     )
     parser.add_argument(
         "--ground-truth-file",
-        default="expanded_ground_truth.json",
+        default="data/expanded_ground_truth.json",
         help="Ground-truth JSON file for explicit evaluation indexing"
     )
     parser.add_argument(

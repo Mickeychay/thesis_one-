@@ -1,0 +1,455 @@
+{
+  "S.D.M.A.": {
+    "name": "Social Diagnosis and Management Assessment",
+    "description": "เครื่องมือประเมิน วินิจฉัย และจัดการทางสังคมเบื้องต้น",
+    "use_for": [
+      "ทุกเคส",
+      "เบื้องต้น",
+      "มิติทางสังคม"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "F.R.A.": {
+    "name": "Family Readiness Assessment",
+    "description": "เครื่องมือประเมินความพร้อมของครอบครัว",
+    "use_for": [
+      "ปัญหาครอบครัว",
+      "ผู้ดูแล",
+      "เด็ก",
+      "ซับซ้อน",
+      "รุนแรง",
+      "0101",
+      "0102",
+      "0201",
+      "0202",
+      "0206",
+      "0301",
+      "0303",
+      "0401",
+      "0701",
+      "0702",
+      "Z63.0",
+      "Z63.4",
+      "Z63.5",
+      "Z60.2",
+      "T74.0",
+      "T74.1",
+      "T74.2"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "S.S.A.": {
+    "name": "Social Skill Assessment",
+    "description": "เครื่องมือประเมินทักษะพื้นฐานในการทำงานและทักษะการปรับตัวทางสังคม",
+    "use_for": [
+      "คนพิการ",
+      "จิตเวช",
+      "ทักษะสังคม",
+      "Z73.6",
+      "F20-F29",
+      "1201",
+      "1202",
+      "Z65.1",
+      "F70",
+      "F70-F79",
+      "F84.0"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "M.S.C.A.": {
+    "name": "Mental Self Care Assessment (Zarit Burden Interview)",
+    "description": "เครื่องมือประเมินภาระและความเครียดของผู้ดูแล",
+    "use_for": [
+      "ผู้ดูแล",
+      "ภาระผู้ดูแล",
+      "0701",
+      "0702",
+      "1405",
+      "R54",
+      "เครียด",
+      "I69",
+      "I64",
+      "G12.2"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "PHQ-9": {
+    "name": "Patient Health Questionnaire-9",
+    "description": "แบบคัดกรองภาวะซึมเศร้า 9 คำถาม",
+    "use_for": [
+      "F32-F33",
+      "ซึมเศร้า",
+      "สุขภาพจิต",
+      "เศร้า",
+      "ท้อแท้",
+      "เครียด",
+      "F32",
+      "F32.3"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "9Q": {
+    "name": "แบบประเมินภาวะซึมเศร้า 9 คำถาม (กรมสุขภาพจิต)",
+    "description": "แบบคัดกรองภาวะซึมเศร้า (ฉบับภาษาไทย)",
+    "use_for": [
+      "F32-F33",
+      "ซึมเศร้า",
+      "สุขภาพจิต",
+      "เศร้า",
+      "ท้อแท้",
+      "9Q",
+      "F32",
+      "F32.3"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "8Q": {
+    "name": "8 Question Suicide Risk",
+    "description": "แบบประเมินความเสี่ยงต่อการฆ่าตัวตาย 8 คำถาม",
+    "use_for": [
+      "X60-X84",
+      "ฆ่าตัวตาย",
+      "อยากตาย",
+      "ทำร้ายตัวเอง",
+      "ซึมเศร้า",
+      "F32-F33",
+      "8Q"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "ST-5": {
+    "name": "Stress Test 5 (แบบประเมินความเครียด 5 ข้อ)",
+    "description": "แบบประเมินความเครียด กรมสุขภาพจิต",
+    "use_for": [
+      "เครียด",
+      "วิตกกังวล",
+      "สุขภาพจิต",
+      "F43.2",
+      "0701"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "GHQ-12": {
+    "name": "General Health Questionnaire-12",
+    "description": "แบบคัดกรองปัญหาสุขภาพจิตทั่วไปเบื้องต้น",
+    "use_for": [
+      "สุขภาพจิต",
+      "คัดกรองทั่วไป",
+      "จิตเวช"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "AUDIT": {
+    "name": "Alcohol Use Disorders Identification Test",
+    "description": "แบบคัดกรองปัญหาการดื่มเครื่องดื่มแอลกอฮอล์",
+    "use_for": [
+      "F10",
+      "F10.1",
+      "F10.2",
+      "alcohol",
+      "แอลกอฮอล์",
+      "เหล้า",
+      "ดื่มเหล้า",
+      "ติดเหล้า",
+      "เมา",
+      "1601"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "DAST-10": {
+    "name": "Drug Abuse Screening Test-10",
+    "description": "แบบคัดกรองปัญหาการใช้สารเสพติด",
+    "use_for": [
+      "F11-F19",
+      "สารเสพติด",
+      "drug",
+      "ยาเสพติด",
+      "ติดยา",
+      "ใช้ยา",
+      "เสพยา",
+      "1602",
+      "F15.2",
+      "F15.1",
+      "F11.2",
+      "F14.2",
+      "F12.5"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "WAST": {
+    "name": "Woman Abuse Screening Tool",
+    "description": "แบบคัดกรองความรุนแรงในครอบครัว (สำหรับสตรี)",
+    "use_for": [
+      "ความรุนแรง",
+      "ทารุณ",
+      "ทำร้าย",
+      "สตรี",
+      "ถูกกระทำ",
+      "0102",
+      "0206",
+      "0501",
+      "T74.1",
+      "T74.2"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "CMST": {
+    "name": "Child Maltreatment Surveillance Tool",
+    "description": "แบบคัดกรองเพื่อสนับสนุนการเลี้ยงดูเด็กตามมาตรฐานขั้นต่ำ",
+    "use_for": [
+      "เด็ก",
+      "ทารุณกรรม",
+      "ทอดทิ้ง",
+      "ปล่อยปละละเลย",
+      "OSCC",
+      "0206",
+      "0202",
+      "T74.0",
+      "Z61.0"
+    ],
+    "target_demographics": [
+      "child"
+    ]
+  },
+  "APGAR": {
+    "name": "Family APGAR Score",
+    "description": "แบบประเมินสัมพันธภาพและการทำหน้าที่ของครอบครัว",
+    "use_for": [
+      "ปัญหาครอบครัว",
+      "สัมพันธภาพ",
+      "0101",
+      "0201",
+      "0301"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "Barthel ADL Index": {
+    "name": "Barthel Activities of Daily Living Index",
+    "description": "แบบประเมินความสามารถในการทำกิจวัตรประจำวัน",
+    "use_for": [
+      "ผู้สูงอายุ",
+      "ติดเตียง",
+      "พิการ",
+      "R54",
+      "Z73.6",
+      "โรคหลอดเลือดสมอง",
+      "ฟื้นฟู",
+      "1407",
+      "I69",
+      "I64",
+      "E11.5",
+      "G30",
+      "G20",
+      "Z89.2",
+      "H91.9",
+      "F72",
+      "T91.3",
+      "H54.0",
+      "G80.0",
+      "G71.0",
+      "G12.2",
+      "G82.5",
+      "G81",
+      "L89",
+      "L89.3",
+      "L89.4"
+    ],
+    "target_demographics": [
+      "adult",
+      "elderly"
+    ]
+  },
+  "IADL": {
+    "name": "Instrumental Activities of Daily Living",
+    "description": "แบบประเมินความสามารถในการทำกิจวัตรประจำวันขั้นซับซ้อน (เช่น ใช้โทรศัพท์, จัดการเงิน)",
+    "use_for": [
+      "ผู้สูงอายุ",
+      "สมองเสื่อม",
+      "ประเมินความสามารถ",
+      "R54",
+      "G30",
+      "F03"
+    ],
+    "target_demographics": [
+      "adult",
+      "elderly"
+    ]
+  },
+  "GDS": {
+    "name": "Geriatric Depression Scale",
+    "description": "แบบคัดกรองภาวะซึมเศร้าในผู้สูงอายุ",
+    "use_for": [
+      "ผู้สูงอายุ",
+      "ซึมเศร้า",
+      "F32-F33",
+      "R54",
+      "ภาวะซึมเศร้าในผู้สูงอายุ",
+      "F32"
+    ],
+    "target_demographics": [
+      "elderly"
+    ]
+  },
+  "MoCA": {
+    "name": "Montreal Cognitive Assessment (MoCA)",
+    "description": "แบบประเมินภาวะสมองเสื่อม/ความบกพร่องทางปัญญา (MOCA)",
+    "use_for": [
+      "ผู้สูงอายุ",
+      "สมองเสื่อม",
+      "Cognitive",
+      "R54",
+      "1407",
+      "MOCA",
+      "G30",
+      "F03"
+    ],
+    "target_demographics": [
+      "adult",
+      "elderly"
+    ]
+  },
+  "DSPM": {
+    "name": "Developmental Surveillance and Promotion Manual",
+    "description": "แบบประเมินและส่งเสริมพัฒนาการเด็ก (ตามคู่มือ DSPM)",
+    "use_for": [
+      "เด็ก",
+      "พัฒนาการ",
+      "พัฒนาการล่าช้า",
+      "0207",
+      "0202",
+      "1102"
+    ],
+    "target_demographics": [
+      "child"
+    ]
+  },
+  "ASQ": {
+    "name": "Ages and Stages Questionnaires",
+    "description": "แบบคัดกรองพัฒนาการเด็ก (ASQ)",
+    "use_for": [
+      "เด็ก",
+      "พัฒนาการ",
+      "คัดกรองพัฒนาการ",
+      "0207",
+      "0202",
+      "1102"
+    ],
+    "target_demographics": [
+      "child"
+    ]
+  },
+  "TDSI": {
+    "name": "Thai Developmental Skills Inventory",
+    "description": "แบบประเมินทักษะพัฒนาการเด็ก (TDSI)",
+    "use_for": [
+      "เด็ก",
+      "พัฒนาการ",
+      "ประเมินพัฒนาการ",
+      "0207",
+      "0202",
+      "1102"
+    ],
+    "target_demographics": [
+      "child"
+    ]
+  },
+  "PPS": {
+    "name": "Palliative Performance Score",
+    "description": "แบบประเมินระดับผู้ป่วยที่ได้รับการดูแลแบบประคับประคอง",
+    "use_for": [
+      "ระยะท้าย",
+      "ประคับประคอง",
+      "Palliative",
+      "1705",
+      "มะเร็ง",
+      "C18-C20",
+      "C34",
+      "C50",
+      "C22",
+      "G71.0",
+      "G12.2"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "Advance Care Plan": {
+    "name": "Advance Care Plan",
+    "description": "แบบบันทึกการวางแผนดูแลล่วงหน้า",
+    "use_for": [
+      "ระยะท้าย",
+      "ประคับประคอง",
+      "Palliative",
+      "วางแผนล่วงหน้า",
+      "1401",
+      "C18-C20",
+      "C34",
+      "C50",
+      "C22",
+      "G71.0",
+      "G12.2"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  },
+  "Teen_Assessment": {
+    "name": "แบบประเมิน/คัดกรองปัญหาวัยรุ่น",
+    "description": "แบบประเมินคัดกรองปัญหาที่พบบ่อยในวัยรุ่น (เช่น การเรียน, เพื่อน, เพศ, สารเสพติด)",
+    "use_for": [
+      "วัยรุ่น",
+      "1702",
+      "1101",
+      "1105",
+      "0602",
+      "Z32.2"
+    ],
+    "target_demographics": [
+      "teen"
+    ]
+  },
+  "Unwanted_Pregnancy_Assessment": {
+    "name": "แบบประเมินการตั้งครรภ์ไม่พร้อม",
+    "description": "แบบประเมินสถานการณ์และปัจจัยแวดล้อมสำหรับผู้ตั้งครรภ์ไม่พร้อม",
+    "use_for": [
+      "ตั้งครรภ์",
+      "ท้องไม่พร้อม",
+      "แม่วัยรุ่น",
+      "แม่วัยใส",
+      "1701",
+      "1702",
+      "O00-O99",
+      "Z32.2",
+      "Z32.1"
+    ],
+    "target_demographics": [
+      "general"
+    ]
+  }
+}

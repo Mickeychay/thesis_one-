@@ -18,8 +18,8 @@ from urllib.parse import urlsplit, urlunsplit
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from H2LDetector import H2LDetectorV3
-from config import get_config
+from h2l.detector import H2LDetectorV3
+from h2l.config import get_config
 from evaluate_h2l_proper import (
     EvaluationRunner,
     STRATEGY_CONFIGS,
@@ -153,13 +153,13 @@ def _run_signature(
     return {
         "ground_truth_path": str(ground_truth_path),
         "ground_truth_sha256": _sha256(ground_truth_path),
-        "taxonomy_sha256": _sha256(ROOT / "problem_codes.json"),
-        "detector_code_sha256": _sha256(ROOT / "H2LDetector.py"),
-        "h2l_core_sha256": _sha256(ROOT / "H2L_core.py"),
+        "taxonomy_sha256": _sha256(ROOT / "data/problem_codes.json"),
+        "detector_code_sha256": _sha256(ROOT / "detector.py"),
+        "h2l_core_sha256": _sha256(ROOT / "core.py"),
         "evaluation_code_sha256": _sha256(ROOT / "evaluate_h2l_proper.py"),
         "matrix_runner_sha256": _sha256(Path(__file__).resolve()),
         "config_code_sha256": _sha256(ROOT / "config.py"),
-        "retrieval_engine_sha256": _sha256(ROOT / "retrieval_engine.py"),
+        "retrieval_engine_sha256": _sha256(ROOT / "retriever.py"),
         "unified_baselines_sha256": _sha256(ROOT / "unified_baselines.py"),
         "metadata_store_path": str(metadata_store),
         "metadata_store_sha256": _sha256_tree(metadata_store),
@@ -836,7 +836,7 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
                 "hyde_generation_seed": 42,
                 "h2l_formula": "bayesian_v6_unchanged",
                 "h2l_core_sha256": run_signature["h2l_core_sha256"],
-                "h2l_detector_sha256": _sha256(ROOT / "H2LDetector.py"),
+                "h2l_detector_sha256": _sha256(ROOT / "detector.py"),
                 "temperature": 0.2,
                 "seed": 42,
                 "l2_schema_validation": "validated_codes/implicit_problems arrays of objects; context_analysis object",
@@ -870,7 +870,7 @@ def compare(args: argparse.Namespace) -> Dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--models", nargs="+", default=DEFAULT_MODELS)
-    parser.add_argument("--ground-truth", default="expanded_ground_truth.json")
+    parser.add_argument("--ground-truth", default="data/expanded_ground_truth.json")
     parser.add_argument("--max-cases", type=int)
     parser.add_argument(
         "--expected-test-cases",

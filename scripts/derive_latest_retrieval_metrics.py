@@ -27,9 +27,9 @@ DEFAULT_SOURCE = (
     / "l2_full_matrix_95cases_3models_3repeats_8strategies.json"
 )
 DEFAULT_OUTPUT_DIR = ROOT / "evaluation_results" / "derived"
-DEFAULT_GROUND_TRUTH = ROOT / "expanded_ground_truth.json"
+DEFAULT_GROUND_TRUTH = ROOT / "data/expanded_ground_truth.json"
 DEFAULT_DOCUMENT_METADATA = ROOT / "data" / "vector_db_lancedb" / "metadata.json"
-DEFAULT_TAXONOMY = ROOT / "problem_codes.json"
+DEFAULT_TAXONOMY = ROOT / "data/problem_codes.json"
 DEFAULT_OUTPUT_TAG = "20260807"
 DEFAULT_EXPECTED_CASE_COUNT = 95
 PRIMARY_MODEL = "qwen2.5:7b"

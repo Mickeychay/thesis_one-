@@ -11,8 +11,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-GROUND_TRUTH = ROOT / "expanded_ground_truth.json"
-TAXONOMY = ROOT / "problem_codes.json"
+GROUND_TRUTH = ROOT / "data/expanded_ground_truth.json"
+TAXONOMY = ROOT / "data/problem_codes.json"
 
 
 NEW_CASES = [
