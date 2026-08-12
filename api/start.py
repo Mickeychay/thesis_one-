@@ -123,7 +123,7 @@ def main():
         if is_dev:
             # Run uvicorn in a sub-process
             backend_proc = subprocess.Popen(
-                [sys.executable, "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", str(port)],
+                [sys.executable, "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", str(port), "--reload"],
                 cwd=root_dir
             )
             processes.append(backend_proc)

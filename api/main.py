@@ -160,8 +160,9 @@ POLARITY_SCOPE_BREAKERS = [
 ]
 POLARITY_NEGATION_GATE = 0.4
 
-SOCIAL_ACTOR_ROLES_PATH = Path("data/social_actor_roles.json")
-SOCIAL_ACTIONS_PATH = Path("data/social_actions.json")
+_BASE_DIR = Path(__file__).resolve().parent.parent
+SOCIAL_ACTOR_ROLES_PATH = _BASE_DIR / "data" / "social_actor_roles.json"
+SOCIAL_ACTIONS_PATH = _BASE_DIR / "data" / "social_actions.json"
 
 
 @lru_cache(maxsize=1)
@@ -2944,7 +2945,7 @@ def _parse_iso_datetime(value: Any) -> Optional[datetime]:
 
 
 def _ground_truth_split_summary() -> Dict[str, Any]:
-    gt_path = Path("data/expanded_ground_truth.json")
+    gt_path = _BASE_DIR / "data/expanded_ground_truth.json"
     if not gt_path.exists():
         return {
             "status": "missing",

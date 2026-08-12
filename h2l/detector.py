@@ -613,6 +613,49 @@ class L1ContextAwareDetector:
         code_category = code_info.get("category", "")
         kw_evidence = ", ".join(f"'{k}'" for k in matched_keywords[:3])
         
+        # 0. Global Check: G_polarity (Sentence Polarity Analysis: G_neg x G_sub x G_len) + Dynamic Temporal Markers
+        try:
+            from h2l.core import calculate_sentence_polarity
+            problem_obj = {
+                "code": code, 
+                "name": code_name, 
+                "keywords": matched_keywords, 
+                "severity": code_info.get("severity", 1)
+            }
+            polarity_res = calculate_sentence_polarity(problem_obj, text)
+            g_neg = polarity_res.get("gate_neg", 1.0)
+            g_sub = polarity_res.get("gate_sub", 1.0)
+            
+            # If G_neg detected negation (< 0.8) or G_sub detected external actor (< 1.0)
+            if g_neg < 0.8 or g_sub < 1.0:
+                conf_mult = min(0.4, round(g_neg * g_sub, 2))
+                return True, conf_mult, f"พบคำสำคัญ {kw_evidence} แต่ G_polarity ตรวจพบประโยคปฏิเสธหรือเป็นของบุคคลอื่น (G_neg={g_neg}, G_sub={g_sub}) โปรดตรวจสอบ (Needs Validation)"
+        except Exception as err:
+            logger.debug(f"G_polarity check fallback: {err}")
+
+        if matched_spans:
+            import re
+            # Dynamic Thai temporal regex: matches any number/word + (วัน|เดือน|ปี) + (ก่อน|ที่แล้ว)
+            # Example: "20 ปีก่อน", "5 เดือนที่แล้ว", "สองปีก่อน", "อดีต", "เมื่อก่อน", "เคย"
+            temporal_pattern = re.compile(
+                r'(\d+|หนึ่ง|สอง|สาม|สี่|ห้า|หก|เจ็ด|แปด|เก้า|สิบ|ร้อย)\s*(วัน|เดือน|ปี|ทศวรรษ)\s*(ก่อน|ที่แล้ว)|'
+                r'(อดีต|เมื่อก่อน|ประวัติ|เคย|หายดี|ในอดีต)'
+            )
+            
+            for span in matched_spans:
+                start = max(0, int(span["start"]) - 60)
+                end = min(len(text_lower), int(span["end"]) + 60)
+                window = text_lower[start:end]
+                
+                # Check for dynamic temporal matches
+                found_temp_matches = temporal_pattern.findall(window)
+                found_temp = [m[0] or m[3] for m in found_temp_matches if m[0] or m[3]]
+                
+                if found_temp:
+                    markers = ", ".join(set(found_temp))
+                    # Returning 0.4 forces this into L1-NeedsValidation, ensuring L2 will evaluate it
+                    return True, 0.4, f"พบคำสำคัญ {kw_evidence} แต่มีบริบทที่อาจเป็นอดีต ({markers}) โปรดตรวจสอบ (Needs Validation)"
+
         # 1. Check specific code rules first
         if code in SPECIFIC_CODE_RULES:
             rule = SPECIFIC_CODE_RULES[code]
@@ -1506,9 +1549,10 @@ Analysis principles:
 
 ⚠️ CRITICAL SAFETY RULES (must follow strictly):
 - 🛑 NEGATION RULE: If the text explicitly DENIES or NEGATES a problem (e.g., "ปฏิเสธการทำร้ายตัวเอง", "ไม่ได้คิดฆ่าตัวตาย", "ไม่เคยถูกทำร้าย"), you MUST set `is_valid: false` for that code and explain that the patient denied it. Do not validate a problem if the patient explicitly denies it.
+- 🛑 TEMPORAL RULE: If a problem is purely in the past and explicitly resolved/absent at present (e.g., "เคยคิดเมื่อ 20 ปีก่อน แต่ปัจจุบันไม่มีแล้ว", "อดีตเคยเป็นแต่หายดีแล้ว"), set `is_valid: false` as it is not a active current problem.
 - NEVER invalidate crisis-level codes (X60-X84 self-harm/suicide, T74 abuse, F32-F33 depression)
-  when there is ANY POSITIVE textual evidence in the case, even if indirect
-- For crisis codes: ALWAYS set is_valid=true if keywords matched AND not negated. Prefer false positive over false negative
+  when there is ANY CURRENT POSITIVE textual evidence in the case, even if indirect
+- For crisis codes: ALWAYS set is_valid=true if keywords matched AND not negated or purely past resolved. Prefer false positive over false negative
 - Self-harm disambiguation: "ทำร้ายตัวเอง/ทำร้ายร่างกายตัวเอง" = X60-X84, NOT T74
 - "ไม่อยากมีชีวิต/ไม่อยากอยู่" = suicidal ideation → X60-X84 is_valid=true
 - When X60-X84 and T74 conflict: if text mentions "ตัวเอง" → X60-X84 is valid, T74 may be invalid
@@ -1793,10 +1837,11 @@ Output Format (JSON only):
                         p.reasoning = v.get("reason", p.reasoning)
                         validated.append(p)
                 else:
-                    # Safety net: only keep if BOTH high-severity AND L1 context was valid
+                    # Safety net: only keep if BOTH high-severity AND L1 context was valid AND L1 was highly confident
                     # This prevents keeping irrelevant codes (e.g., 0102 spousal violence
                     # when text is about self-harm) while protecting genuine crisis codes
-                    if p.severity >= self.CRISIS_SEVERITY_THRESHOLD and p.context_valid:
+                    # Also drops negated crisis codes if L1 downgraded confidence
+                    if p.severity >= self.CRISIS_SEVERITY_THRESHOLD and p.context_valid and p.confidence >= 0.5:
                         p.detection_level = "L1-Validated"
                         p.confidence = max(0.4, p.confidence * 0.6)
                         p.reasoning = v.get("reason", p.reasoning)

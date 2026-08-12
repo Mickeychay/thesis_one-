@@ -1267,6 +1267,26 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
   const linkedDocumentCount = activeFindingCode
     ? docs.filter((doc) => getEvidenceCodes(doc).includes(activeFindingCode)).length
     : 0;
+  const formatSnippet = (text) => {
+    if (!text) return null;
+    const lines = text.split('\n').filter(Boolean);
+    // If it's a single line and has markdown table pipe syntax
+    if (text.includes('|') && text.split('|').length > 2) {
+        const parts = text.split('|').map(p => p.trim()).filter(Boolean);
+        // Exclude lines that are just '---'
+        const validParts = parts.filter(p => p !== '---' && p.replace(/-/g, '').length > 0);
+        if (validParts.length > 0) {
+            return (
+                <ul className="mt-2 list-inside list-disc space-y-1 text-sm leading-relaxed text-on-surface">
+                    {validParts.map((part, i) => (
+                        <li key={i}>{part}</li>
+                    ))}
+                </ul>
+            );
+        }
+    }
+    return <p className="mt-2 text-sm leading-relaxed text-on-surface">{text}</p>;
+  };
 
   const renderDocCard = (doc) => {
     const evidenceCodes = getEvidenceCodes(doc);
@@ -1288,7 +1308,7 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
         </span>
       </summary>
       <div className="border-t border-slate-200 p-4 dark:border-slate-800">
-        <p className="text-sm leading-relaxed text-on-surface">{doc.snippet}</p>
+        {formatSnippet(doc.snippet)}
         <div className="mt-4 grid grid-cols-3 gap-2 text-xs tabular-nums text-on-surface-variant">
           <span className="rounded-md bg-slate-50 p-2 dark:bg-slate-800">Base <strong className="block text-on-surface">{formatNumber(doc.base_score, 3)}</strong></span>
           <span className="rounded-md bg-slate-50 p-2 dark:bg-slate-800">Rerank <strong className="block text-on-surface">{formatNumber(doc.rerank_score, 3)}</strong></span>
