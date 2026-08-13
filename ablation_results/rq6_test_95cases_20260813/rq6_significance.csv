@@ -1,0 +1,15 @@
+metric,reference,comparison,test,n_pairs,n_nonzero_differences,reference_minus_comparison_mean,median_difference,statistic,raw_p,holm_p,significant_0_05,cohens_d_paired,effect,ci_95_low,ci_95_high,multiplicity_correction
+nDCG@5,Full V6,w/o Adaptive Alpha,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,w/o Bayesian Prior,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,w/o IDF Specificity,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,w/o Margin Activation,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,w/o KL Penalty,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,w/o Negation Gate,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,Product Feature Mode,Wilcoxon,95,1,-0.0002828464189820494,0.0,0.0,0.31731050786291415,1.0,False,-0.10314212086472249,negligible,-0.000834299897015652,0.0002686070590515532,Holm-Bonferroni
+nDCG@10,Full V6,w/o Adaptive Alpha,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,w/o Bayesian Prior,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,w/o IDF Specificity,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,w/o Margin Activation,Wilcoxon,95,2,0.0009934860047812937,0.0,1.0,0.6547208460185769,1.0,False,0.09203139301953951,negligible,-0.0011773150432037398,0.003164287052766327,Holm-Bonferroni
+nDCG@10,Full V6,w/o KL Penalty,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,w/o Negation Gate,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,Product Feature Mode,Wilcoxon,95,1,-0.0002828464189820494,0.0,0.0,0.31731050786291415,1.0,False,-0.10314212086472249,negligible,-0.000834299897015652,0.0002686070590515532,Holm-Bonferroni

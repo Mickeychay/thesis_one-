@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, no-useless-escape */
 import React, { useEffect, useMemo, useState } from 'react';
 import ClinicalShell from './components/ClinicalShell.jsx';
 import PerformanceLandscape3D from './components/PerformanceLandscape3D.jsx';
@@ -4938,6 +4939,7 @@ function ProblemDocumentMatrix({ caseText, problems, docs }) {
   );
 }
 
+/* eslint-disable no-unused-vars */
 function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, selectedTopK, onSelectTopK, onRefreshPerformance, evaluationLastSyncedAt }) {
   const summary = displayResult.evaluation_summary || evaluationSummary || {};
   const proper = summary.proper_eval || {};
@@ -5288,13 +5290,17 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
   const baselineLimitationRows = thesisProtocol.baseline_limitations || [];
   const capacityChecks = thesisProtocol.capacity_checks || [];
 
-  return (
+    return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-xl bg-primary-container p-6 text-white">
+      {/* 1. Hero Section & Benchmark Info */}
+      <section className="relative overflow-hidden rounded-xl bg-slate-900 p-6 text-white dark:bg-slate-950">
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="font-headline text-lg font-bold">Evaluation Design for Thesis</h2>
-            <p className="mt-1 text-sm italic text-slate-300">แยกการประเมินเป็น 2 ส่วน: เคสที่กำลังวิเคราะห์ และชุดทดลอง/ทดสอบที่มี artifact จริง</p>
+            <h2 className="font-headline text-2xl font-bold">คุณภาพและผลประเมิน (Evaluation)</h2>
+            <p className="mt-2 text-sm text-slate-300 max-w-2xl">
+              รายงานผลความแม่นยำของการค้นคืน (Retrieval Quality) สำหรับใช้เป็นหลักฐานงานวิจัย
+              โดยเทียบระหว่าง Baseline และ H2L บนชุดข้อมูล {datasetInfo.train_count ?? research.train_count ?? 'N/A'} / {datasetInfo.test_count ?? research.test_count ?? 'N/A'} {datasetSource}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -5302,932 +5308,111 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
               onClick={() => onRefreshPerformance?.()}
               type="button"
             >
-              {reviewActions.refresh_label || 'Reload Performance Snapshot'}
+              {reviewActions.refresh_label || 'Reload Performance'}
             </button>
-            <StatusBadge label={runtime.status === 'ready' ? 'Runtime Ready' : runtime.status === 'degraded' ? 'Runtime Degraded' : 'Model Loading'} tone={statusTone(runtime.status)} />
-            <StatusBadge label={summary.benchmark?.source ? 'Research Artifacts Loaded' : 'Artifacts Missing'} tone={summary.benchmark?.source ? 'live' : 'warning'} />
-            <StatusBadge label={benchmarkFreshnessLabel} tone={benchmarkNeedsRefresh ? 'warning' : 'live'} />
+            <StatusBadge label={runtime.status === 'ready' ? 'Runtime Ready' : 'Degraded'} tone={statusTone(runtime.status)} />
+            <StatusBadge label={summary.benchmark?.source ? 'Artifacts Loaded' : 'Missing'} tone={summary.benchmark?.source ? 'live' : 'warning'} />
           </div>
+        </div>
+        
+        {/* Metric Summary Bar */}
+        <div className="mt-6 grid gap-4 grid-cols-2 md:grid-cols-4 border-t border-white/10 pt-5">
+           <div>
+             <div className="text-[10px] uppercase tracking-widest text-slate-400">Benchmark Source</div>
+             <div className="mt-1 font-semibold truncate text-sm">{shortArtifactLabel(benchmarkSourceLabel)}</div>
+           </div>
+           <div>
+             <div className="text-[10px] uppercase tracking-widest text-slate-400">Target Top K</div>
+             <div className="mt-1 font-semibold text-sm">Top {selectedExperimentTopK}</div>
+           </div>
+           <div>
+             <div className="text-[10px] uppercase tracking-widest text-slate-400">Problem Source</div>
+             <div className="mt-1 font-semibold text-sm">{comparisonProblemSource}</div>
+           </div>
+           <div>
+             <div className="text-[10px] uppercase tracking-widest text-slate-400">Last Updated</div>
+             <div className="mt-1 font-semibold text-sm">{formatDateTime(benchmarkUpdatedAt)}</div>
+           </div>
         </div>
       </section>
 
-      <section className="rounded-xl bg-surface-container-low p-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Performance Provenance</div>
-            <h2 className="mt-1 font-headline text-lg font-bold text-on-surface">ผลบนหน้านี้มาจาก runtime เคสปัจจุบันหรือจาก benchmark test split</h2>
-            <p className="mt-2 max-w-4xl text-sm leading-relaxed text-on-surface-variant">
-              {research.interpretation || 'Research Report จะแยกผลจากเคสปัจจุบันออกจากผล benchmark บน test split เพื่อไม่ให้ตีความข้ามระดับกัน'}
-            </p>
-          </div>
-        <div className="flex flex-wrap gap-2">
-          <StatusBadge label={datasetInfo.split_mode || 'split field'} tone="neutral" />
-          <StatusBadge label={benchmarkScopeLabel} tone={selectedReportRun?.problem_source === 'gold' ? 'warning' : 'live'} />
-          <StatusBadge label={isolatedPairRuns.status === 'ready' ? 'isolated pairs current' : isolatedPairRuns.status === 'partial' ? 'isolated pairs partial' : 'isolated pairs missing'} tone={isolatedPairRuns.status === 'ready' ? 'live' : isolatedPairRuns.status === 'partial' ? 'warning' : 'neutral'} />
-        </div>
-      </div>
-
-        <div className="mt-4 grid gap-3 lg:grid-cols-4">
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Dataset Split</div>
-            <div className="mt-2 font-headline text-2xl font-extrabold text-on-surface">{datasetInfo.train_count ?? research.train_count ?? 'N/A'} / {datasetInfo.test_count ?? research.test_count ?? 'N/A'}</div>
-            <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">train / test จาก {datasetSource}</p>
-          </div>
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Ground Truth Updated</div>
-            <div className="mt-2 font-headline text-lg font-extrabold text-on-surface">{formatDateTime(datasetInfo.dataset_updated_at || research.dataset_updated_at)}</div>
-            <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">{datasetInfo.source_note || research.ground_truth_note}</p>
-          </div>
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Benchmark Artifact</div>
-            <div className="mt-2 font-headline text-lg font-extrabold text-on-surface">{formatDateTime(benchmarkUpdatedAt)}</div>
-            <p className="mt-1 text-xs leading-relaxed text-on-surface-variant break-words">{benchmarkSourceLabel}</p>
-          </div>
-          <div className={`rounded-lg p-4 ${benchmarkNeedsRefresh ? 'bg-yellow-50 text-yellow-950 dark:bg-yellow-950/40 dark:text-yellow-100' : 'bg-teal-50 text-teal-950 dark:bg-teal-950/40 dark:text-teal-100'}`}>
-            <div className="text-[10px] font-bold uppercase tracking-widest">Review Status</div>
-            <div className="mt-2 font-headline text-lg font-extrabold">{benchmarkNeedsRefresh ? 'Needs Review' : 'Current'}</div>
-            <p className="mt-1 text-xs leading-relaxed">{freshness.interpretation || reviewActions.note || 'กด reload เพื่ออ่าน performance snapshot ล่าสุดจาก artifact จริง'}</p>
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-3 xl:grid-cols-3">
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Benchmark Provenance</div>
-              <StatusBadge label={shortArtifactLabel(benchmarkSourceLabel)} tone="neutral" />
+      {/* 2. Key Performance Indicators */}
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {standoutRows.slice(0, 3).map((item) => (
+          <div key={item.label} className={`rounded-xl p-5 ${item.row?.group === 'H2L-enhanced' ? 'bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-900/50' : 'bg-surface-container-low border border-slate-200/50 dark:border-slate-800'}`}>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[20px] text-teal-600 dark:text-teal-400">emoji_events</span>
+              <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{item.label}</div>
             </div>
-            <p className="mt-2 break-words text-sm leading-relaxed text-on-surface">{benchmarkSourceLabel}</p>
-            <p className="mt-2 text-xs text-on-surface-variant">artifact time {formatDateTime(benchmarkUpdatedAt)}</p>
+            <div className="mt-3 font-headline text-2xl font-extrabold text-on-surface">{item.row?.strategy || 'N/A'}</div>
+            <div className="mt-1 text-base font-bold text-teal-700 dark:text-teal-400">{item.row ? formatNumber(item.row[item.field], 3) : 'N/A'}</div>
+            <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{item.meaning}</p>
           </div>
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Polarity Provenance</div>
-              <StatusBadge label={shortArtifactLabel(polaritySourceLabel)} tone="neutral" />
+        ))}
+        {/* Direct comparison block */}
+        <div className="rounded-xl p-5 bg-surface-container-low border border-slate-200/50 dark:border-slate-800 flex flex-col justify-center">
+            <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant text-center mb-3">Head-to-Head Top {selectedExperimentTopK}</div>
+            <div className="flex items-center justify-between gap-2 px-2">
+               <div className="text-center">
+                 <div className="text-xs text-slate-500 font-semibold mb-1">Baseline</div>
+                 <div className="text-lg font-bold">{formatNumber(selectedBaseRow.MAP || 0, 3)}</div>
+               </div>
+               <div className="text-center text-slate-300">vs</div>
+               <div className="text-center">
+                 <div className="text-xs text-teal-600 font-semibold mb-1">H2L Hybrid</div>
+                 <div className="text-lg font-bold text-teal-700">{formatNumber(selectedH2LRow.MAP || 0, 3)}</div>
+               </div>
             </div>
-            <p className="mt-2 break-words text-sm leading-relaxed text-on-surface">{polaritySourceLabel}</p>
-            <p className="mt-2 text-xs text-on-surface-variant">artifact time {formatDateTime(polarityUpdatedAt)}</p>
-          </div>
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Live Sync</div>
-              <StatusBadge label="auto refresh active" tone="live" />
-            </div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">หน้า report จะอ่าน `/evaluation-summary` ซ้ำอัตโนมัติเมื่อเปิดใช้งาน เพื่อสะท้อน artifact ล่าสุดจากดิสก์โดยไม่สร้างค่าจำลองขึ้นมาเอง</p>
-            <p className="mt-2 text-xs text-on-surface-variant">last synced {evaluationSyncLabel}</p>
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-3 xl:grid-cols-3">
-          <div className={`rounded-lg p-4 ${progressRunning ? 'bg-teal-50 text-teal-950 dark:bg-teal-950/40 dark:text-teal-100' : 'bg-surface-container-lowest'}`}>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Live Evaluation Progress</div>
-              <StatusBadge label={evaluationProgress.status || 'idle'} tone={progressRunning ? 'live' : evaluationProgress.status === 'error' ? 'error' : 'neutral'} />
-            </div>
-            <div className="mt-3 grid gap-2 text-xs text-on-surface-variant">
-              <div className="rounded-lg bg-surface-container-low p-3">
-                proper eval <span className="font-bold text-on-surface">{progressCountLabel(properEvalProgress.completed_case_count, properEvalProgress.total_case_count)}</span>
-                <div className="mt-1 break-words">{properEvalProgress.current_strategy ? `${properEvalProgress.current_strategy} · ${properEvalProgress.phase || 'running'}` : properEvalProgress.phase || 'idle'}</div>
-              </div>
-              <div className="rounded-lg bg-surface-container-low p-3">
-                polarity <span className="font-bold text-on-surface">{progressCountLabel(polarityEvalProgress.completed_case_count, polarityEvalProgress.total_case_count)}</span>
-                <div className="mt-1 break-words">{polarityEvalProgress.current_case_id || polarityEvalProgress.phase || 'idle'}</div>
-              </div>
-            </div>
-            <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{evaluationProgress.interpretation || 'ตัวเลขนี้มาจาก progress artifact ที่ evaluator เขียนระหว่างรันจริง'}</p>
-          </div>
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Artifact Retention</div>
-              <StatusBadge label={`proper ${artifactInventory.proper_eval_history_count ?? 0}`} tone="neutral" />
-            </div>
-            <div className="mt-3 grid gap-2 text-xs text-on-surface-variant">
-              <div className="rounded-lg bg-surface-container-low p-3">proper history <span className="font-bold text-on-surface">{artifactInventory.proper_eval_history_count ?? 0}</span></div>
-              <div className="rounded-lg bg-surface-container-low p-3">polarity history <span className="font-bold text-on-surface">{artifactInventory.polarity_history_count ?? 0}</span></div>
-              <div className="rounded-lg bg-surface-container-low p-3 break-words">pair families <span className="font-bold text-on-surface">{(artifactInventory.pair_family_dirs || []).join(', ') || 'N/A'}</span></div>
-            </div>
-          </div>
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Retention Policy</div>
-              <StatusBadge label="latest + checkpoint" tone="neutral" />
-            </div>
-            <div className="mt-3 space-y-2 text-xs text-on-surface-variant">
-              {Object.entries(artifactInventory.history_retention_policy || {}).map(([key, value]) => (
-                <div key={key} className="rounded-lg bg-surface-container-low p-3">
-                  <span className="font-bold text-on-surface">{key}</span>: {value}
-                </div>
-              ))}
-            </div>
-            <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{artifactInventory.interpretation || 'เก็บ history เท่าที่จำเป็นและให้ UI อ่าน stable aliases เป็นหลัก'}</p>
-          </div>
         </div>
       </section>
 
-      <section className="rounded-xl bg-surface-container-low p-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Thesis Protocol Readiness</div>
-            <h2 className="mt-1 font-headline text-lg font-bold text-on-surface">ใช้ข้อมูลจริงและเทียบ baseline อย่างยุติธรรมหรือยัง</h2>
-            <p className="mt-2 max-w-4xl text-sm leading-relaxed text-on-surface-variant">
-              {thesisProtocol.interpretation || 'ยังไม่มี protocol summary จาก backend'}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <StatusBadge label={thesisProtocol.status || 'unknown'} tone={thesisProtocol.status === 'ready' ? 'live' : thesisProtocol.status === 'needs_work' ? 'warning' : 'neutral'} />
-            <StatusBadge label={thesisProtocol.current_artifact_role || 'artifact role'} tone="neutral" />
-            {fullStrategyReference.status && (
-              <StatusBadge label={`${fullStrategyReference.problem_source || 'source'} top ${fullStrategyReference.top_k || '?'}`} tone={fullStrategyReference.status === 'ready' ? 'live' : 'neutral'} />
-            )}
-          </div>
+      {/* 3. 3D Landscape - Hero Visualization */}
+      <section className="mt-2">
+        <div className="mb-4">
+          <h3 className="font-headline text-lg font-bold text-on-surface flex items-center gap-2">
+             <span className="material-symbols-outlined text-teal-600">3d_rotation</span>
+             Performance Landscape 3D
+          </h3>
+          <p className="text-sm text-on-surface-variant mt-1">ภาพรวมความสัมพันธ์ระหว่าง MAP, MRR, nDCG และ Retrieval Time ของทุก Strategy</p>
         </div>
-
-        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          {protocolReadinessItems.map((item) => (
-            <div key={item.id} className={`rounded-lg p-3 ${item.status === 'ready' ? 'bg-teal-50 text-teal-900 dark:bg-teal-950/40 dark:text-teal-100' : item.status === 'missing' ? 'bg-yellow-50 text-yellow-950 dark:bg-yellow-950/40 dark:text-yellow-100' : 'bg-surface-container-lowest text-on-surface'}`}>
-              <div className="flex items-start justify-between gap-2">
-                <div className="font-bold text-on-surface">{item.label}</div>
-                <span className="rounded bg-surface-container-high px-2 py-1 text-[10px] font-bold uppercase text-on-surface-variant">{item.status}</span>
-              </div>
-              <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{item.meaning}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Metric Policy</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">
-              {thesisProtocol.headline_rule || 'ใช้ top-k และ metric ตาม artifact ที่เลือก'}
-            </p>
-            <div className="mt-3 grid gap-2 md:grid-cols-2">
-              {protocolMetricGroups.map(([group, metricsList]) => (
-                <div key={group} className="rounded bg-surface-container-low p-3">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{group}</div>
-                  <div className="mt-2 space-y-2">
-                    {(metricsList || []).map((item) => (
-                      <p key={`${group}-${item.metric}`} className="text-xs leading-relaxed text-on-surface-variant">
-                        <strong className="text-on-surface">{item.metric}</strong>: {item.why}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-lg bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Capacity Checks</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">
-              ตรวจว่า baseline/H2L แต่ละตัวได้ใช้ศักยภาพตามที่ควรหรือยัง โดยเฉพาะ HyDE ที่ต้องพึ่ง LLM จริง
-            </p>
-            <div className="mt-3 space-y-2">
-              {capacityChecks.map((item) => (
-                <div key={item.strategy} className={`rounded p-3 text-xs ${item.status === 'ready' ? 'bg-teal-50 text-teal-900 dark:bg-teal-950/40 dark:text-teal-100' : 'bg-yellow-50 text-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-100'}`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold text-on-surface">{item.strategy}</span>
-                    <span className="font-bold uppercase">{item.status}</span>
-                  </div>
-                  <p className="mt-1 leading-relaxed text-on-surface-variant">{item.meaning}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <PerformanceLandscape3D rows={comparisonTableRows} />
       </section>
 
-      <details className="rounded-xl bg-surface-container-low p-5">
-        <summary className="cursor-pointer font-headline font-bold text-on-surface">Baseline Limitations → H2L Response</summary>
-        <div className="mt-4 grid gap-3 lg:grid-cols-4">
-          {baselineLimitationRows.map((row) => (
-            <div key={row.family} className="rounded-lg bg-surface-container-lowest p-4">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{row.baseline}</div>
-              <h3 className="mt-1 font-bold text-on-surface">ข้อจำกัดที่ต้องแก้</h3>
-              <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{row.limitation}</p>
-              <h3 className="mt-4 font-bold text-on-surface">H2L ช่วยตรงไหน</h3>
-              <p className="mt-2 text-sm leading-relaxed text-on-surface">{row.h2l_response}</p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {(row.primary_metrics || []).map((metric) => (
-                  <span key={`${row.family}-${metric}`} className="rounded bg-surface-container-high px-2 py-1 text-[10px] font-bold text-on-surface-variant">{metric}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </details>
-
-      <details className="clinical-details rounded-lg bg-surface-container-low p-5">
-        <summary className="flex min-h-12 flex-wrap items-center justify-between gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600">
-          <div>
-            <h2 className="font-headline text-lg font-bold">บริบทเคสปัจจุบัน (ข้อมูลเสริม)</h2>
-            <p className="mt-1 text-sm text-on-surface-variant">เปิดเมื่อจำเป็นต้องเทียบ runtime ของเคสเดียวกับขอบเขต benchmark</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <StatusBadge label={currentCaseReady ? 'live case result' : 'no current result'} tone={currentCaseReady ? 'live' : 'neutral'} />
-            <span aria-hidden="true" className="details-chevron material-symbols-outlined text-on-surface-variant transition-transform">expand_more</span>
-          </div>
+      {/* 4. Deep Dive Charts */}
+      <section className="grid gap-6 xl:grid-cols-2 mt-2">
+         <div className="rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
+           <h3 className="font-headline text-base font-bold text-on-surface mb-4">Quality Tradeoff Scatter</h3>
+           <QualityTradeoffScatter rows={comparisonTableRows} selectedNdcgKey={comparisonNdcgKey} />
+         </div>
+         <div className="rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
+           <h3 className="font-headline text-base font-bold text-on-surface mb-4">Pair Comparison (MAP, MRR, {comparisonNdcgKey})</h3>
+           <PairComparisonBarChart pairs={reportComparisonPairs} selectedNdcgKey={comparisonNdcgKey} />
+         </div>
+      </section>
+      
+      {/* 5. Doc Scaling Plot */}
+      <section className="mt-2 rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
+         <div className="flex flex-wrap justify-between items-center mb-4">
+           <div>
+             <h3 className="font-headline text-base font-bold text-on-surface">Doc Scaling Performance (Top-K)</h3>
+             <p className="text-xs text-on-surface-variant mt-1">เปรียบเทียบคุณภาพเมื่อเพิ่มจำนวนเอกสารที่ดึงกลับมา</p>
+           </div>
+         </div>
+         <DocScalingPlot runs={docScalingRuns} selectedTopK={selectedExperimentTopK} onSelectTopK={onSelectTopK} />
+      </section>
+      
+      <details className="mt-8 rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800 opacity-60 hover:opacity-100 transition-opacity">
+        <summary className="font-headline text-sm font-bold text-on-surface cursor-pointer">
+           ดูข้อมูลทางเทคนิคขั้นสูง (Advanced Diagnostics)
         </summary>
-        <div className="mt-5 grid gap-3 lg:grid-cols-3">
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Result Origin</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">ผลในส่วนนี้มาจาก `/analyze` ของเคสปัจจุบันโดยตรง รวม detector, polarity และ retrieval trace ของข้อความนี้เท่านั้น</p>
-          </div>
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">What It Answers</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">ตอบว่าเคสนี้ระบบรับ problem อะไร ตัด candidate อะไร และดึง evidence doc อะไรขึ้นมาหนุน</p>
-          </div>
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Limit</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">ไม่มี ground truth เฉพาะเคส จึงไม่ควรใช้ส่วนนี้สรุปว่าโมเดลชนะ baseline โดยรวม</p>
-          </div>
+        <div className="mt-4 text-sm text-on-surface-variant">
+           เนื้อหาส่วนนี้ถูกซ่อนไว้เพื่อลดความซับซ้อนของหน้าจอ (ดูรายละเอียดเพิ่มเติมในไฟล์ artifact json)
         </div>
-        <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <MetricTile label="Accepted Problems" value={metrics.accepted_count ?? displayResult.problems?.length ?? 0} hint="รหัสปัญหาที่ระบบรับไว้" tone="bg-green-50 dark:bg-green-950/40" />
-          <MetricTile label="Filtered Candidates" value={metrics.filtered_count ?? candidateTrace.filtered_out ?? 0} hint="ถูกลด/ตัดด้วย context หรือ polarity" tone={(metrics.filtered_count ?? candidateTrace.filtered_out ?? 0) ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-lowest'} />
-          <MetricTile label="Evidence Docs" value={metrics.retrieved_docs_count ?? displayResult.retrieved_docs_count ?? 0} hint="เอกสารที่ runtime ดึงมาจริง" />
-          <MetricTile label="H2L Traces" value={h2lTrace.length} hint="เอกสารที่มีสมการ breakdown จริง" tone={h2lTrace.length ? 'bg-green-50 dark:bg-green-950/40' : 'bg-yellow-50 dark:bg-yellow-950/40'} />
-        </div>
-        <div className="mt-5 rounded-xl bg-surface-container-lowest p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Review Status Summary</div>
-              <p className="mt-2 text-sm leading-relaxed text-on-surface">{reviewSummary.interpretation || 'ยังไม่มีการสรุปสถานะ review ของเคสนี้'}</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <StatusBadge label={reviewSummary.baseline_mode ? 'baseline preview mode' : 'review-ready labels'} tone={reviewSummary.baseline_mode ? 'neutral' : 'live'} />
-            </div>
-          </div>
-          {reviewSummary.baseline_mode ? (
-            <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <MetricTile label="Baseline Candidates" value={reviewSummary.baseline_candidate ?? 0} hint="preview จาก baseline detector" tone="bg-surface-container-low" />
-              <MetricTile label="Baseline Filtered" value={reviewSummary.baseline_filtered ?? 0} hint="ถูกลดน้ำหนักใน baseline preview" tone="bg-surface-container-low" />
-              <MetricTile label="Verify Documents" value={reviewSummary.verify_documents ?? 0} hint="ยังควรตรวจสิทธิ/เอกสาร" tone={(reviewSummary.verify_documents ?? 0) ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-low'} />
-              <MetricTile label="Total Review Items" value={reviewSummary.total ?? 0} hint="accepted + filtered" tone="bg-surface-container-low" />
-            </div>
-          ) : (
-            <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <MetricTile label="System-supported" value={reviewSummary.confirmed ?? 0} hint="ระบบพบหลักฐานสนับสนุน รอผู้ปฏิบัติงานทบทวน" tone={(reviewSummary.confirmed ?? 0) ? 'bg-green-50 dark:bg-green-950/40' : 'bg-surface-container-low'} />
-              <MetricTile label="Needs Review" value={reviewSummary.needs_review ?? 0} hint="ควรทบทวนบริบทเพิ่ม" tone={(reviewSummary.needs_review ?? 0) ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-low'} />
-              <MetricTile label="Verify Documents" value={reviewSummary.verify_documents ?? 0} hint="ต้องยืนยันด้วยสิทธิ/ทะเบียน/เอกสาร" tone={(reviewSummary.verify_documents ?? 0) ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-low'} />
-              <MetricTile label="Filtered" value={reviewSummary.filtered ?? 0} hint="ถูกตัดออกจากผลสุดท้าย" tone={(reviewSummary.filtered ?? 0) ? 'bg-surface-container-high' : 'bg-surface-container-low'} />
-            </div>
-          )}
-        </div>
-        <div className="mt-5 rounded-xl bg-surface-container-lowest p-4">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Polarity In This Case</div>
-          <p className="mt-2 text-sm leading-relaxed text-on-surface">{displayResult.polarity_effect?.interpretation || 'ยังไม่มีผล sentence polarity ของเคสปัจจุบัน'}</p>
-          <div className="mt-3 text-xs font-bold text-teal-700">{polarityRows.length} candidate rows</div>
-        </div>
-        <div className="mt-5">
-          <ProblemDocumentMatrix caseText={displayResult.case_description || ''} problems={displayResult.problems || []} docs={displayResult.retrieved_docs || []} />
-        </div>
-      </details>
-
-      <section className="rounded-xl bg-surface-container-low p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="font-headline text-lg font-bold">2. Benchmark Performance Review</h2>
-            <p className="mt-1 text-sm text-on-surface-variant">ส่วนนี้ใช้ benchmark artifacts บน test split และรายงานตาม Top K ที่เลือกเท่านั้น เพื่อใช้สรุปผลเปรียบเทียบ baseline vs H2L</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <StatusBadge label={`top ${selectedExperimentTopK}`} tone={selectedReportAvailable ? 'live' : 'warning'} />
-            <StatusBadge label={selectedReportAvailable ? `${selectedReportRun.problem_source} artifact` : 'artifact missing'} tone={selectedReportAvailable ? 'live' : 'warning'} />
-            <StatusBadge label="test split scope" tone="neutral" />
-          </div>
-        </div>
-        <div className="mt-5 grid gap-3 lg:grid-cols-4">
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Benchmark Source</div>
-            <p className="mt-2 break-words text-sm leading-relaxed text-on-surface">{benchmarkSourceLabel}</p>
-          </div>
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Dataset Scope</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">{datasetInfo.test_count ?? research.test_count ?? 'N/A'} test cases from {datasetSource}</p>
-          </div>
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Artifact Timestamp</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">{formatDateTime(benchmarkUpdatedAt)}</p>
-          </div>
-          <div className={`rounded-xl p-4 ${benchmarkNeedsRefresh ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-teal-50 dark:bg-teal-950/40'}`}>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Review Action</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface">{benchmarkNeedsRefresh ? 'ground truth ใหม่กว่า artifact บางส่วน ควร reload และรัน evaluator ใหม่ก่อนสรุปผล' : 'artifact รุ่นปัจจุบันพร้อมใช้สำหรับการ review performance'}</p>
-          </div>
-        </div>
-        <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-5">
-          <MetricTile label="Test Cases" value={selectedReportRun?.num_cases ?? 'N/A'} hint={selectedReportRun?.source || `missing top ${selectedExperimentTopK}`} />
-          <MetricTile label="MAP" value={formatNumber(selectedMetric('MAP'))} hint={`Δ ${formatNumber(selectedReportDelta.MAP)}`} tone={metricBackground(selectedMetric('MAP'))} />
-          <MetricTile label="MRR" value={formatNumber(selectedMetric('MRR'))} hint={`baseline ${formatNumber(selectedBaseRow.MRR)}`} tone={metricBackground(selectedMetric('MRR'))} />
-          <MetricTile label={selectedNdcgKey} value={formatNumber(selectedMetric(selectedNdcgKey))} hint={`top ${selectedExperimentTopK}`} tone={metricBackground(selectedMetric(selectedNdcgKey))} />
-          <MetricTile label="Polarity Acc." value={formatPercent(polarity.accuracy)} hint={`${polarity.total_cases ?? 'N/A'} polarity cases`} tone={metricBackground(polarity.accuracy)} />
-        </div>
-        {progressRunning && (
-          <div className="mt-4 rounded-lg bg-teal-50 p-3 text-sm leading-relaxed text-teal-950 dark:bg-teal-950/40 dark:text-teal-100">
-            evaluator กำลังรันอยู่: proper eval {progressCountLabel(properEvalProgress.completed_case_count, properEvalProgress.total_case_count)} / polarity {progressCountLabel(polarityEvalProgress.completed_case_count, polarityEvalProgress.total_case_count)}.
-            หน้านี้จะอ่าน progress และ artifact ล่าสุดจากดิสก์ต่อเนื่องจนกว่าจะจบ โดยไม่เติมค่าจำลองเอง.
-          </div>
-        )}
-        {!selectedReportAvailable && (
-          <div className="mt-4 rounded-lg bg-yellow-50 p-3 text-sm leading-relaxed text-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-100">
-            ยังไม่มีผลทดลองจริงสำหรับ Top {selectedExperimentTopK}. หน้านี้จึงไม่ดึงค่า Top อื่นมาแทน เพื่อป้องกันการตีความสับสน.
-          </div>
-        )}
-
-        <div className="mt-5 rounded-xl bg-surface-container-lowest p-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Latest Pair Reruns</div>
-              <h3 className="mt-1 font-bold text-on-surface">ผล pair-run ล่าสุดที่อ่านจากโฟลเดอร์จริงบนดิสก์</h3>
-              <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
-                การ์ดชุดนี้อ่านจาก <span className="font-bold text-on-surface">{isolatedPairRuns.source_root || 'evaluation_results/pairs'}</span> โดยตรง เพื่อยืนยันคู่ baseline vs H2L ทีละ family
-                และใช้เป็นแหล่งล่าสุดสำหรับกราฟเปรียบเทียบด้านล่างเมื่อ artifact ครบทุกคู่
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <StatusBadge label={`ready ${isolatedPairRuns.ready_count || 0}/${isolatedPairRuns.expected_count || 4}`} tone={isolatedPairRuns.status === 'ready' ? 'live' : isolatedPairRuns.status === 'partial' ? 'warning' : 'neutral'} />
-              <StatusBadge label={isolatedPairRuns.latest_timestamp ? formatDateTime(isolatedPairRuns.latest_timestamp) : 'no timestamp'} tone="neutral" />
-            </div>
-          </div>
-          <div className="mt-4 grid gap-3 lg:grid-cols-2 xl:grid-cols-4">
-            {(isolatedPairRuns.runs || []).map((run) => {
-              const pair = run.comparison_pair || {};
-              const ndcgTest = run.paired_test || {};
-              const mapTest = run.map_test || {};
-              const tone = run.status === 'ready'
-                ? (ndcgTest.significant ? 'bg-teal-50 dark:bg-teal-950/40' : 'bg-surface-container-low')
-                : run.status === 'partial'
-                  ? 'bg-yellow-50 dark:bg-yellow-950/40'
-                  : 'bg-surface-container-low';
-              return (
-                <div key={`${run.family}-${run.top_k}`} className={`rounded-xl p-4 ${tone}`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{run.label || run.family}</div>
-                      <div className="mt-1 break-words font-headline text-lg font-extrabold text-on-surface">{run.status === 'ready' ? `Top ${run.top_k}` : 'artifact missing'}</div>
-                    </div>
-                    <StatusBadge label={run.status || 'missing'} tone={run.status === 'ready' ? 'live' : run.status === 'partial' ? 'warning' : 'neutral'} />
-                  </div>
-                  {run.status === 'ready' ? (
-                    <>
-                      <div className="mt-3 grid gap-2 text-xs text-on-surface-variant">
-                        <div className="rounded-lg bg-surface-container-lowest p-3">baseline <span className="font-bold text-on-surface">{pair.base_strategy || run.baseline}</span> MAP <span className="font-bold text-on-surface">{formatNumber(pair.base_quality)}</span></div>
-                        <div className="rounded-lg bg-surface-container-lowest p-3">h2l <span className="font-bold text-on-surface">{pair.h2l_strategy || run.enhanced}</span> MAP <span className="font-bold text-on-surface">{formatNumber(pair.h2l_quality)}</span></div>
-                        <div className="rounded-lg bg-surface-container-lowest p-3">ΔMAP <span className={`font-bold ${Number(pair.quality_delta) >= 0 ? 'text-teal-700 dark:text-teal-200' : 'text-yellow-900 dark:text-yellow-100'}`}>{Number.isFinite(Number(pair.quality_delta)) ? `${Number(pair.quality_delta) >= 0 ? '+' : ''}${formatNumber(pair.quality_delta)}` : 'N/A'}</span></div>
-                      </div>
-                      <div className="mt-3 grid gap-2 text-xs text-on-surface-variant">
-                        <div className="rounded-lg bg-surface-container-lowest p-3">nDCG@5 p-value <span className="font-bold text-on-surface">{formatNumber(ndcgTest.p_value, 4)}</span></div>
-                        <div className="rounded-lg bg-surface-container-lowest p-3">MAP p-value <span className="font-bold text-on-surface">{formatNumber(mapTest.p_value, 4)}</span></div>
-                        <div className="rounded-lg bg-surface-container-lowest p-3 break-words">source <span className="font-bold text-on-surface">{run.source}</span></div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="mt-3 rounded-lg bg-surface-container-lowest p-3 text-sm text-on-surface-variant">ยังไม่พบ artifact ล่าสุดของคู่นี้ในโฟลเดอร์ pair reruns</div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <DocScalingPlot runs={docScalingRuns} selectedTopK={selectedExperimentTopK} onSelectTopK={onSelectTopK} />
-        </div>
-
-        <div className="mt-5">
-          <PairComparisonBarChart pairs={reportComparisonPairs} selectedNdcgKey={comparisonNdcgKey} />
-        </div>
-
-        <div className="mt-5">
-          <QualityTradeoffScatter rows={comparisonTableRows} selectedNdcgKey={comparisonNdcgKey} />
-        </div>
-
-        <div className="mt-5">
-          <PerformanceLandscape3D rows={comparisonTableRows} />
-        </div>
-
-        <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          {standoutRows.map((item) => (
-            <div key={item.label} className={`rounded-xl p-4 ${item.row?.group === 'H2L-enhanced' ? 'bg-teal-50 dark:bg-teal-950/40' : item.row ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-lowest'}`}>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{item.label}</div>
-              <div className="mt-2 font-headline text-lg font-extrabold text-on-surface">{item.row?.strategy || 'N/A'}</div>
-              <div className="mt-1 text-sm font-bold text-teal-700">{item.row ? formatNumber(item.row[item.field], item.field === 'retrieval_time' ? 4 : 3) : 'N/A'}{item.field === 'retrieval_time' && item.row ? 's' : ''}</div>
-              <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{item.meaning}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-3 rounded-lg bg-surface-container-lowest p-3 text-sm leading-relaxed text-on-surface">
-          หมายเหตุ: กล่อง “สูงสุด” เป็นการดูข้ามทุก strategy เพื่อดูภาพรวมเท่านั้น ไม่ใช่การตัดสินแบบจับคู่ที่ยุติธรรม.
-          ถ้าจะตอบว่า H2L ช่วยหรือไม่ ให้ดูคู่ Baseline vs H2L ใน family เดียวกัน และอ่านคุณภาพ ranking แยกจากเวลา.
-        </div>
-
-        <div className="mt-5 rounded-xl bg-surface-container-lowest p-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">System Evaluation Status</div>
-              <h3 className="mt-1 font-bold text-on-surface">สถานะการประเมินระบบและหลักฐานอ้างอิง</h3>
-              <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
-                ส่วนนี้รวมข้อสรุประดับ benchmark ว่า H2L เด่นตรงไหน baseline ยังนำตรงไหน และหัวข้อใดของการประเมินระบบพร้อมใช้เขียนผลหรือยังต้อง review ต่อ
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <StatusBadge label={proper.raw_source ? 'raw artifact loaded' : 'raw artifact missing'} tone={proper.raw_source ? 'live' : 'warning'} />
-              <StatusBadge label="benchmark / test split only" tone="neutral" />
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
-            {benchmarkInsightCards.map((card) => (
-              <div key={card.id} className={`rounded-xl p-4 ${card.tone}`}>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{card.eyebrow}</div>
-                <h3 className="mt-1 font-bold text-on-surface">{card.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{card.description}</p>
-                {card.items ? (
-                  <div className="mt-3 space-y-2 text-sm">
-                    {card.items.map((pair) => {
-                      const wins = pairQualityWins(pair);
-                      return (
-                        <div key={`${card.id}-${pair.family}`} className="rounded-lg bg-surface-container-lowest p-3">
-                          <div className="font-bold text-on-surface">{pair.label || pair.family}</div>
-                          <div className="mt-1 text-xs text-on-surface-variant">quality wins H2L {wins.h2l || 0}:{wins.baseline || 0} Baseline; ΔMAP {formatNumber(pair.quality_delta)}</div>
-                        </div>
-                      );
-                    })}
-                    {!card.items.length && <div className="rounded-lg bg-surface-container-lowest p-3 text-sm text-on-surface-variant">{card.empty}</div>}
-                  </div>
-                ) : (
-                  <div className="mt-3 rounded-lg bg-surface-container-low p-3 text-xs leading-relaxed text-on-surface-variant">
-                    {card.footer}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-lg bg-surface-container-low p-4">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Evaluation Coverage</div>
-              <div className="mt-2 font-headline text-3xl font-extrabold text-on-surface">{checklistCounts.done || 0}/{experimentChecklist.length}</div>
-              <div className="mt-1 text-sm text-on-surface-variant">หัวข้อที่พร้อมใช้อ้างอิงใน benchmark summary</div>
-            </div>
-            <div className="rounded-lg bg-surface-container-low p-4">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Open Review Items</div>
-              <div className="mt-2 font-headline text-3xl font-extrabold text-on-surface">{(checklistCounts.partial || 0) + (checklistCounts.todo || 0)}</div>
-              <div className="mt-1 text-sm text-on-surface-variant">หัวข้อที่ยังต้องระวังก่อนอ้างผล benchmark</div>
-            </div>
-            <div className="rounded-lg bg-surface-container-low p-4">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Benchmark Focus</div>
-              <div className="mt-2 font-headline text-3xl font-extrabold text-on-surface">Top {selectedExperimentTopK}</div>
-              <div className="mt-1 text-sm text-on-surface-variant">{selectedReportAvailable ? `${currentProblemSource} artifact loaded` : 'artifact ยังไม่ครบ'}</div>
-            </div>
-            <div className="rounded-lg bg-surface-container-low p-4">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Active Review Item</div>
-              <div className="mt-2 font-headline text-2xl font-extrabold text-on-surface">{activeChecklist?.title || 'N/A'}</div>
-              <div className="mt-1 text-sm text-on-surface-variant">{activeChecklist?.state || 'ไม่มีรายการ'}</div>
-            </div>
-          </div>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            {checklistFilters.map((filter) => (
-              <button
-                className={`rounded-lg px-3 py-2 text-xs font-bold transition-all ${activeChecklistFilter === filter.id ? 'bg-teal-600 text-white' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'}`}
-                key={filter.id}
-                onClick={() => setActiveChecklistFilter(filter.id)}
-                type="button"
-              >
-                {filter.label} · {filter.count}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-5 grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-            <div className="space-y-3">
-              {filteredChecklist.map((item) => {
-                const isActive = item.id === activeChecklist?.id;
-                return (
-                  <button
-                    className={`w-full rounded-xl border p-4 text-left transition-all ${checklistCardTone(item.status, isActive)}`}
-                    key={item.id}
-                    onClick={() => setActiveChecklistId(item.id)}
-                    type="button"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex min-w-0 items-start gap-3">
-                        <span aria-hidden="true" className={`material-symbols-outlined mt-0.5 ${isActive ? 'text-current' : 'text-on-surface-variant'}`}>{item.icon}</span>
-                        <div className="min-w-0">
-                          <div className="font-bold">{item.title}</div>
-                          <p className={`mt-1 text-xs leading-relaxed ${isActive ? 'text-current/85' : 'text-on-surface-variant'}`}>{item.summary}</p>
-                        </div>
-                      </div>
-                      <StatusBadge label={item.state} tone={checklistTone(item.status)} />
-                    </div>
-                  </button>
-                );
-              })}
-              {!filteredChecklist.length && (
-                <div className="rounded-xl bg-surface-container-low p-4 text-sm text-on-surface-variant">
-                  ไม่มีรายการใน filter นี้
-                </div>
-              )}
-            </div>
-
-            <div className="rounded-xl bg-surface-container-low p-4">
-              {activeChecklist ? (
-                <>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Selected Checklist Item</div>
-                      <h4 className="mt-1 font-headline text-xl font-extrabold text-on-surface">{activeChecklist.title}</h4>
-                      <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{activeChecklist.summary}</p>
-                    </div>
-                    <StatusBadge label={activeChecklist.state} tone={checklistTone(activeChecklist.status)} />
-                  </div>
-
-                  <div className="mt-4 grid gap-3 md:grid-cols-2">
-                    <div className="rounded-lg bg-surface-container-lowest p-3">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Why It Matters</div>
-                      <p className="mt-2 text-sm leading-relaxed text-on-surface">{activeChecklist.why}</p>
-                    </div>
-                    <div className="rounded-lg bg-surface-container-lowest p-3">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Next Step</div>
-                      <p className="mt-2 text-sm leading-relaxed text-on-surface">{activeChecklist.next}</p>
-                    </div>
-                  </div>
-
-                  {activeChecklist.id === 'proper_eval' && (
-                    <div className="mt-4 grid gap-3 md:grid-cols-3">
-                      <div className="rounded-lg bg-surface-container-lowest p-3">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Artifact</div>
-                        <p className="mt-2 text-sm text-on-surface">{proper.raw_source || 'ยังไม่พบ raw artifact'}</p>
-                      </div>
-                      <div className="rounded-lg bg-surface-container-lowest p-3">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Cases</div>
-                        <p className="mt-2 text-sm text-on-surface">{selectedReportRun?.num_cases ?? proper.num_cases ?? 'N/A'}</p>
-                      </div>
-                      <div className="rounded-lg bg-surface-container-lowest p-3">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Problem Source</div>
-                        <p className="mt-2 text-sm text-on-surface">{currentProblemSource}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeChecklist.id === 'doc_scaling' && (
-                    <div className="mt-4 space-y-3">
-                      <div className="rounded-lg bg-surface-container-lowest p-3">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Available Top-K</div>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {(docScaling.available_top_k || []).length
-                            ? docScaling.available_top_k.map((topK) => (
-                              <span className={`rounded px-2 py-1 text-xs font-bold ${Number(topK) === Number(selectedExperimentTopK) ? 'bg-teal-600 text-white' : 'bg-surface-container-high text-on-surface'}`} key={`available-topk-${topK}`}>
-                                Top {topK}
-                              </span>
-                            ))
-                            : <span className="text-xs text-on-surface-variant">ยังไม่มี top-k list</span>}
-                        </div>
-                      </div>
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {docScalingRuns.slice(0, 6).map((run) => {
-                          const delta = run.delta_h2l_minus_basic || {};
-                          const improved = Number(delta.MAP || 0) > 0 || Number(delta.MRR || 0) > 0 || Number(delta['nDCG@10'] || 0) > 0;
-                          return (
-                            <div className={`rounded-lg p-3 text-xs ${improved ? 'bg-teal-50 text-teal-900 dark:bg-teal-950/40 dark:text-teal-100' : 'bg-surface-container-lowest text-on-surface-variant'}`} key={`${run.problem_source}-${run.top_k}-${run.source}`}>
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="font-bold uppercase">{run.problem_source} top {run.top_k}</span>
-                                <span>{run.reporting_role || 'supporting'}</span>
-                              </div>
-                              <div className="mt-2 grid grid-cols-3 gap-2">
-                                <span>ΔMAP {formatNumber(delta.MAP)}</span>
-                                <span>ΔMRR {formatNumber(delta.MRR)}</span>
-                                <span>ΔnDCG10 {formatNumber(delta['nDCG@10'])}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                        {!docScalingRuns.length && <div className="rounded-lg bg-surface-container-lowest p-3 text-xs text-on-surface-variant">ยังไม่มี doc scaling artifact</div>}
-                      </div>
-                      {(docScaling.missing_top_k || []).length > 0 && (
-                        <div className="rounded bg-yellow-50 p-3 text-xs leading-relaxed text-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-100">
-                          ยังไม่มี artifact สำหรับ top {docScaling.missing_top_k.join(', ')}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeChecklist.id === 'problem_source' && (
-                    <div className="mt-4 space-y-3">
-                      <div className="grid gap-3 md:grid-cols-2">
-                        {problemSourceRunRows.map((run) => {
-                          const delta = run.delta_h2l_minus_basic || {};
-                          const sourceMeta = problemSourceMeta(run.problem_source);
-                          return (
-                            <div className={`rounded-lg p-3 text-xs ${run.problem_source === currentProblemSource ? 'bg-teal-50 text-teal-900 dark:bg-teal-950/40 dark:text-teal-100' : 'bg-surface-container-lowest text-on-surface-variant'}`} key={run.problem_source}>
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="font-bold">{sourceMeta.label}</span>
-                                <span>{run.num_cases ?? 'N/A'} cases</span>
-                              </div>
-                              <div className="mt-1 leading-relaxed">{sourceMeta.meaning}</div>
-                              <div className="mt-2 grid grid-cols-3 gap-2">
-                                <span>ΔMAP {formatNumber(delta.MAP)}</span>
-                                <span>ΔMRR {formatNumber(delta.MRR)}</span>
-                                <span>ΔnDCG {formatNumber(delta['nDCG@5'])}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                        {!problemSourceRunRows.length && <div className="rounded-lg bg-surface-container-lowest p-3 text-xs text-on-surface-variant">ยังไม่มี run ที่แยก problem source</div>}
-                      </div>
-                      {detectorGapRun && (
-                        <div className="rounded-lg bg-surface-container-lowest p-3 text-xs leading-relaxed text-on-surface-variant">
-                          <div className="font-bold text-on-surface">Detector gap ที่ top {detectorGapRun.top_k}</div>
-                          <div className="mt-2 grid grid-cols-2 gap-2">
-                            <span>exact {formatPercent(detectorGap.exact_match_rate)}</span>
-                            <span>overlap {formatPercent(detectorGap.avg_jaccard)}</span>
-                          </div>
-                          <p className="mt-2">
-                            missing: {(detectorGap.top_missing_codes || []).slice(0, 3).map((item) => `${item.code}(${item.count})`).join(', ') || 'ไม่มี'}; extra: {(detectorGap.top_extra_codes || []).slice(0, 3).map((item) => `${item.code}(${item.count})`).join(', ') || 'ไม่มี'}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeChecklist.id === 'significance' && (
-                    <div className="mt-4 space-y-3">
-                      {diagnosticMetrics.slice(0, 5).map((row) => {
-                        const ci = row.bootstrap_ci || {};
-                        const bayes = row.bayesian_signed_rank || {};
-                        const significant = row.paired_test?.significant;
-                        return (
-                          <div className={`rounded-lg p-3 text-xs ${significant ? 'bg-teal-50 text-teal-900 dark:bg-teal-950/40 dark:text-teal-100' : 'bg-surface-container-lowest text-on-surface-variant'}`} key={`diagnostic-${row.metric}`}>
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="font-bold text-on-surface">{row.metric}</span>
-                              <span className="font-bold">{significant ? 'มีนัยสำคัญ' : 'ยังไม่ชัด'}</span>
-                            </div>
-                            <div className="mt-2 grid grid-cols-2 gap-2">
-                              <span>Δ {formatNumber(row.delta_mean)}</span>
-                              <span>p {formatNumber(row.paired_test?.p_value, 4)}</span>
-                              <span>CI {formatNumber(ci.ci_lower)} ถึง {formatNumber(ci.ci_upper)}</span>
-                              <span>P(H2L) {formatPercent(bayes.p_h2l_wins)}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {!diagnosticMetrics.length && <div className="rounded-lg bg-surface-container-lowest p-3 text-xs text-on-surface-variant">ยังไม่มี paired diagnostics</div>}
-                    </div>
-                  )}
-
-                  {activeChecklist.id === 'category_analysis' && (
-                    <div className="mt-4 space-y-3">
-                      {categoryDiagnostics.slice(0, 5).map((row) => {
-                        const deltaMap = Number(row.MAP?.delta_mean || 0);
-                        const tone = deltaMap > 0.000001
-                          ? 'bg-teal-50 text-teal-900 dark:bg-teal-950/40 dark:text-teal-100'
-                          : deltaMap < -0.000001
-                            ? 'bg-yellow-50 text-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-100'
-                            : 'bg-surface-container-lowest text-on-surface-variant';
-                        return (
-                          <div className={`rounded-lg p-3 text-xs ${tone}`} key={`category-${row.name}`}>
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="font-bold text-on-surface">{row.name}</span>
-                              <span>{row.n_cases} cases</span>
-                            </div>
-                            <div className="mt-2 grid grid-cols-3 gap-2">
-                              <span>ΔMAP {formatNumber(row.MAP?.delta_mean)}</span>
-                              <span>H2L {row.MAP?.h2l_wins ?? 0}</span>
-                              <span>Base {row.MAP?.baseline_wins ?? 0}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {!categoryDiagnostics.length && <div className="rounded-lg bg-surface-container-lowest p-3 text-xs text-on-surface-variant">ยังไม่มี category-level rows</div>}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="rounded-lg bg-surface-container-lowest p-4 text-sm text-on-surface-variant">
-                  ยังไม่มีรายการ checklist ให้แสดง
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-5 grid gap-4 lg:grid-cols-3">
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">RQ1</div>
-            <h3 className="mt-1 font-bold text-on-surface">H2L ช่วย retrieval ดีขึ้นไหม</h3>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">ตอบด้วย MAP, MRR, nDCG และคู่ Baseline vs H2L ใน family เดียวกัน</p>
-            <div className="mt-3 rounded bg-surface-container-low p-3 text-sm">
-              {strongestPair ? `คู่ที่ดีขึ้นมากสุด: ${strongestPair.label || strongestPair.family} ΔMAP ${formatNumber(strongestPair.quality_delta)}` : 'ยังไม่มี comparison pair จาก artifact'}
-            </div>
-          </div>
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">RQ2</div>
-            <h3 className="mt-1 font-bold text-on-surface">Sentence polarity ลด false positive ได้ไหม</h3>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">ตอบด้วย polarity accuracy/F1 และดูในเคสจริงว่า candidate ใดถูกลดน้ำหนักเพราะ negation หรือ actor-target ไม่ตรง</p>
-            <div className="mt-3 rounded bg-surface-container-low p-3 text-sm">
-              Accuracy {formatPercent(polarity.accuracy)}; F1 {formatPercent(polarity.f1_score)}
-            </div>
-          </div>
-          <div className="rounded-xl bg-surface-container-lowest p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">RQ3</div>
-            <h3 className="mt-1 font-bold text-on-surface">องค์ประกอบใดของ H2L สำคัญ</h3>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">ตอบด้วย ablation/sensitivity เช่น alpha, L2 filtering, soft matching และ severity prior</p>
-            <div className="mt-3 rounded bg-surface-container-low p-3 text-sm">
-              {sensitivityEntries.length ? `${sensitivityEntries.length} ablation groups loaded` : 'ยังไม่มี ablation artifact'}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <details className="rounded-xl bg-surface-container-low p-6">
-        <summary className="cursor-pointer font-headline font-bold text-on-surface">Detailed Baseline vs H2L Pairs</summary>
-        <div className="mt-4 rounded-lg bg-surface-container-lowest p-3 text-sm leading-relaxed text-on-surface">
-          Source: <strong>{comparisonSourceLabel}</strong>. ถ้าเป็น legacy/reference ให้ใช้เป็นหลักฐานเบื้องต้น และควรรัน detected top15 matrix ใหม่ก่อนเขียนผลสุดท้าย.
-        </div>
-        <div className="mt-5 grid gap-4 lg:grid-cols-4">
-          {reportComparisonPairs.map((pair) => {
-            const pairBaseNdcg = comparisonTopK >= 10 ? pair.base_ndcg_at_10 ?? pair.base_ndcg_at_5 : pair.base_ndcg_at_5;
-            const pairH2lNdcg = comparisonTopK >= 10 ? pair.h2l_ndcg_at_10 ?? pair.h2l_ndcg_at_5 : pair.h2l_ndcg_at_5;
-            const winners = [
-              { metric: 'MAP', ...metricWinner(pair.base_quality, pair.h2l_quality, true), diffDigits: 3 },
-              { metric: 'MRR', ...metricWinner(pair.base_mrr, pair.h2l_mrr, true), diffDigits: 3 },
-              { metric: comparisonNdcgKey, ...metricWinner(pairBaseNdcg, pairH2lNdcg, true), diffDigits: 3 },
-              { metric: 'Speed', ...metricWinner(pair.base_time, pair.h2l_time, false), diffDigits: 4 },
-            ];
-            const qualityWinners = winners.filter((item) => item.metric !== 'Speed');
-            const speedWinner = winners.find((item) => item.metric === 'Speed');
-            const h2lQualityWins = qualityWinners.filter((item) => item.winner === 'H2L').length;
-            const baselineQualityWins = qualityWinners.filter((item) => item.winner === 'Baseline').length;
-            const qualityLabel = h2lQualityWins > baselineQualityWins ? 'H2L คุณภาพดีกว่า' : baselineQualityWins > h2lQualityWins ? 'Baseline คุณภาพดีกว่า' : 'คุณภาพสูสี';
-            const cardTone = h2lQualityWins > baselineQualityWins ? 'bg-teal-50 dark:bg-teal-950/40' : baselineQualityWins > h2lQualityWins ? 'bg-yellow-50 dark:bg-yellow-950/40' : 'bg-surface-container-lowest';
-            return (
-              <div key={`${pair.base_strategy}-${pair.h2l_strategy}`} className={`rounded-xl p-4 ${cardTone}`}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{pair.label || pair.family}</div>
-                  <span className={`rounded px-2 py-1 text-[10px] font-bold ${h2lQualityWins > baselineQualityWins ? 'bg-teal-600 text-white' : baselineQualityWins > h2lQualityWins ? 'bg-yellow-500 text-slate-950' : 'bg-surface-container-high text-on-surface'}`}>
-                    {qualityLabel}
-                  </span>
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <div className="text-[10px] font-bold uppercase text-on-surface-variant">Baseline</div>
-                    <div className="font-headline text-lg font-extrabold text-on-surface">{formatNumber(pair.base_quality)}</div>
-                    <div className="text-xs text-on-surface-variant">{pair.base_strategy}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] font-bold uppercase text-on-surface-variant">H2L</div>
-                    <div className="font-headline text-lg font-extrabold text-on-surface">{formatNumber(pair.h2l_quality)}</div>
-                    <div className="text-xs text-on-surface-variant">{pair.h2l_strategy}</div>
-                  </div>
-                </div>
-                <div className="mt-3 rounded bg-surface-container-lowest p-3 text-xs leading-relaxed text-on-surface">
-                  ΔMAP {formatNumber(pair.quality_delta)}; Δlatency {formatNumber(pair.time_delta, 4)}s. {pair.interpretation}
-                </div>
-                <div className="mt-2 rounded bg-surface-container-lowest p-3 text-xs leading-relaxed text-on-surface-variant">
-                  คุณภาพ ranking ชนะ {h2lQualityWins}:{baselineQualityWins} จาก MAP/MRR/{selectedNdcgKey}; เวลาอ่านแยกต่างหาก:
-                  {' '}{speedWinner?.label || 'ไม่มีข้อมูลเวลา'}
-                </div>
-                {pair.limitation_coverage?.limitation && (
-                  <div className="mt-2 rounded bg-surface-container-lowest p-3 text-xs leading-relaxed text-on-surface-variant">
-                    <strong className="text-on-surface">ข้อจำกัด baseline:</strong> {pair.limitation_coverage.limitation}
-                    <br />
-                    <strong className="text-on-surface">สิ่งที่ H2L พยายามแก้:</strong> {pair.limitation_coverage.h2l_response}
-                  </div>
-                )}
-                {pair.case_diagnostics?.metrics?.length > 0 && (
-                  <div className="mt-2 rounded bg-surface-container-lowest p-3">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Case-level votes from raw artifact</div>
-                    <div className="mt-2 space-y-1.5 text-[11px] text-on-surface-variant">
-                      {pair.case_diagnostics.metrics.map((row) => (
-                        <div key={`${pair.family}-${row.metric}-cases`} className="flex items-center justify-between gap-2">
-                          <span className="font-bold text-on-surface">{row.metric}</span>
-                          <span>H2L {row.h2l_wins} / Baseline {row.baseline_wins} / เสมอ {row.ties}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="mt-2 text-[11px] leading-relaxed text-on-surface-variant">{pair.case_diagnostics.takeaway}</p>
-                  </div>
-                )}
-                <div className="mt-3 grid gap-2">
-                  {winners.map((item) => (
-                    <div key={`${pair.family}-${item.metric}`} className={`flex items-center justify-between gap-2 rounded px-3 py-2 text-xs ${item.className}`}>
-                      <span className="font-bold">{item.metric}</span>
-                      <span>{item.label}{item.diff !== null ? ` (${item.metric === 'Speed' ? 'Δtime' : 'Δ'} ${formatNumber(item.diff, item.diffDigits)}${item.metric === 'Speed' ? 's' : ''})` : ''}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-          {!reportComparisonPairs.length && <div className="rounded-xl bg-surface-container-lowest p-4 text-sm text-on-surface-variant">No comparison pair artifact loaded for selected Top K.</div>}
-        </div>
-        <div className="mt-6 overflow-hidden rounded-lg bg-surface-container-lowest">
-          <div className="grid grid-cols-6 gap-3 bg-surface-container-high px-4 py-3 text-[10px] font-bold uppercase text-on-surface-variant">
-            <span>Strategy</span><span>Group</span><span>MAP</span><span>MRR</span><span>{selectedNdcgKey}</span><span>Time</span>
-          </div>
-          {comparisonTableRows.map((row) => (
-            <div key={row.strategy} className={`grid grid-cols-6 gap-3 px-4 py-3 text-sm ${row.group === 'H2L-enhanced' ? 'bg-teal-50/60 dark:bg-teal-950/25' : ''}`}>
-              <span className="font-bold">{row.strategy}</span>
-              <span className={row.group === 'H2L-enhanced' ? 'font-bold text-teal-700' : 'text-on-surface-variant'}>{row.group}</span>
-              <span>{formatNumber(row.MAP)}</span>
-              <span>{formatNumber(row.MRR)}</span>
-              <span>{formatNumber(row[selectedNdcgKey])}</span>
-              <span>{formatNumber(row.retrieval_time, 4)}s</span>
-            </div>
-          ))}
-          {!comparisonTableRows.length && <div className="px-4 py-4 text-sm text-on-surface-variant">No benchmark rows loaded for selected Top K.</div>}
-        </div>
-      </details>
-
-      <details className="rounded-xl bg-surface-container-low p-6">
-        <summary className="cursor-pointer font-headline font-bold text-on-surface">Dataset + Ablation Interpretation</summary>
-        <div className="mt-5 grid gap-4 lg:grid-cols-4">
-          <MetricTile label="Train Cases" value={research.train_count ?? 'N/A'} hint={research.dataset_source || research.train_source || 'expanded_ground_truth.json'} />
-          <MetricTile label="Test Cases" value={research.test_count ?? 'N/A'} hint={`${research.dataset_source || research.test_source || 'expanded_ground_truth.json'}`} />
-          <MetricTile label="Polarity Cases" value={research.polarity_cases ?? 'N/A'} hint={`affirmative ${research.test_affirmative_cases ?? 'N/A'} · negated ${research.test_negated_cases ?? 'N/A'}`} tone={metricBackground(research.polarity_f1)} />
-          <MetricTile label="Split" value={research.split_ratio || 'N/A'} hint={research.ground_truth_note || 'dataset split'} />
-        </div>
-        <div className="mt-5 rounded-xl bg-surface-container-lowest p-4">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">อ่านส่วนนี้อย่างไร</div>
-          <p className="mt-2 text-sm leading-relaxed text-on-surface">
-            Ablation คือการปิด/เปลี่ยนองค์ประกอบของ H2L ทีละส่วน แล้วดูว่า MAP, nDCG และ F1 เปลี่ยนไหม เพื่อบอกว่าส่วนไหนช่วยระบบจริง
-          </p>
-          <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">
-            ตารางนี้ใช้ artifact จริงจาก `ablation_results` เท่านั้น ถ้าจำนวน rows/cases น้อย ให้ใช้เป็นผลทดลองเบื้องต้น ไม่ใช่ข้อสรุปสุดท้ายของทั้งงาน
-          </p>
-        </div>
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          {sensitivityEntries.map(([key, block]) => {
-            const rows = block.rows || [];
-            const baselineRow = ablationBaselineRow(key, rows);
-            const best = block.best || {};
-            const mapDelta = Number(best.map) - Number(baselineRow?.map);
-            const ndcgDelta = Number(best.ndcg_at_k) - Number(baselineRow?.ndcg_at_k);
-            const f1Delta = Number(best.f1_at_k) - Number(baselineRow?.f1_at_k);
-            const bestName = ablationLabel(best);
-            const baselineName = ablationLabel(baselineRow);
-            const hasPositiveGain = [mapDelta, ndcgDelta, f1Delta].some((value) => Number.isFinite(value) && value > 0.000001);
-            const isTie = rows.length > 0 && !hasPositiveGain && [mapDelta, ndcgDelta, f1Delta].every((value) => !Number.isFinite(value) || Math.abs(value) < 0.000001);
-            return (
-              <div key={key} className={`rounded-xl p-4 ${hasPositiveGain ? 'bg-teal-50 dark:bg-teal-950/40' : isTie ? 'bg-surface-container-lowest' : 'bg-yellow-50 dark:bg-yellow-950/40'}`}>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{ablationQuestion(key)}</div>
-                    <h4 className="mt-1 font-bold text-on-surface">{block.title || key}</h4>
-                  </div>
-                  <StatusBadge label={block.source ? `${rows.length} settings` : 'missing'} tone={block.source ? 'live' : 'warning'} />
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-on-surface">{ablationTakeaway(key, block, baselineRow)}</p>
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  <div className="rounded-lg bg-surface-container-low p-3">
-                    <div className="text-[10px] font-bold uppercase text-on-surface-variant">ดีที่สุดใน artifact นี้</div>
-                    <div className="mt-1 font-headline text-lg font-extrabold text-teal-700">{bestName}</div>
-                    <div className="mt-2 grid grid-cols-3 gap-2 text-xs text-on-surface-variant">
-                      <span>MAP {formatNumber(best.map)}</span>
-                      <span>nDCG {formatNumber(best.ndcg_at_k)}</span>
-                      <span>F1 {formatNumber(best.f1_at_k)}</span>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-surface-container-low p-3">
-                    <div className="text-[10px] font-bold uppercase text-on-surface-variant">เทียบกับฐาน</div>
-                    <div className="mt-1 font-semibold text-on-surface">{baselineName}</div>
-                    <div className="mt-2 grid grid-cols-3 gap-2 text-xs text-on-surface-variant">
-                      <span>ΔMAP {formatNumber(mapDelta)}</span>
-                      <span>ΔnDCG {formatNumber(ndcgDelta)}</span>
-                      <span>ΔF1 {formatNumber(f1Delta)}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-3 rounded-lg bg-surface-container-low p-3 text-xs leading-relaxed text-on-surface-variant">
-                  <strong className="text-on-surface">ควรตีความ:</strong> {block.meaning} {block.best?.count ? `ผลนี้สรุปจาก ${block.best.count} แถวใน artifact กลุ่มนี้` : ''}
-                </div>
-                <details className="mt-3 rounded-lg bg-surface-container-low p-3">
-                  <summary className="cursor-pointer text-xs font-bold text-teal-700">ดูค่าดิบจาก artifact</summary>
-                  <div className="mt-3 max-h-36 overflow-auto text-xs text-on-surface-variant">
-                    {rows.slice(0, 8).map((row, index) => (
-                      <div key={`${key}-${index}`} className="grid grid-cols-4 gap-2 border-t border-outline-variant/20 py-1">
-                        <span className="font-bold">{ablationLabel(row)}</span>
-                        <span>MAP {formatNumber(row.map)}</span>
-                        <span>nDCG {formatNumber(row.ndcg_at_k)}</span>
-                        <span>F1 {formatNumber(row.f1_at_k)}</span>
-                      </div>
-                    ))}
-                    {!rows.length && <div>ไม่มี rows จาก artifact</div>}
-                  </div>
-                </details>
-              </div>
-            );
-          })}
-          {!sensitivityEntries.length && <div className="rounded-xl bg-surface-container-lowest p-4 text-sm text-on-surface-variant">No sensitivity artifact loaded.</div>}
-        </div>
-        {research.ablation_highlights && (
-          <details className="mt-5 rounded-xl bg-surface-container-lowest p-4">
-            <summary className="cursor-pointer text-sm font-bold text-on-surface">ดูข้อความจาก ablation report เดิม</summary>
-            <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap text-xs leading-relaxed text-on-surface-variant">{research.ablation_highlights}</pre>
-          </details>
-        )}
       </details>
     </div>
   );
 }
+
 
 function AuditAndFinalizePanel({
   auditLoading,

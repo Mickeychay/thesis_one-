@@ -129,14 +129,15 @@ class DenseIndex:
             return list(zip(valid_ids.tolist(), similarities))
 
         elif self.backend == "lancedb":
-            search_results = self.index.search(query_vector).limit(top_k).to_df()
+            search_results = self.index.search(query_vector).metric("l2").limit(top_k).to_df()
             results = []
             for _, row in search_results.iterrows():
                 doc_id = int(row['id'])
                 distance = row['_distance']
-                # ✅ FIXED: LanceDB default = Cosine Distance
-                # Cosine Distance ∈ [0, 2], Similarity = 1 - Distance
-                similarity = 1.0 - distance
+                # LanceDB default metric = L2, and `_distance` is the SQUARED L2 norm.
+                # Vectors are L2-normalised at index time (‖v‖ = 1), so
+                # ‖q − d‖² = 2 − 2·cos(q, d)  ⇒  cos(q, d) = 1 − distance / 2
+                similarity = 1.0 - distance / 2.0
                 # Clamp to valid range [0, 1]
                 similarity = max(0.0, min(1.0, similarity))
                 results.append((doc_id, similarity))

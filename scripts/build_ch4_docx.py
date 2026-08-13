@@ -8,7 +8,7 @@ from docx.oxml import parse_xml, OxmlElement
 from docx.oxml.ns import nsdecls, qn
 
 ROOT = Path(__file__).resolve().parent.parent
-MD_PATH = ROOT / "md_report" / "thesis_full_ch4_final.md"
+MD_PATH = ROOT / "md_report" / "thesis_ch4_verified_20260807.md"
 OUTPUT_DOCX = ROOT / "ch4_thesis.docx"
 
 def add_figure(doc, alt_text, rel_path, width_inches=6.0):

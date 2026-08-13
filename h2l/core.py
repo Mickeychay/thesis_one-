@@ -69,6 +69,26 @@ _DEFAULT_NEGATION_MARKERS = [
     'ไร้', 'ปราศจาก', 'ไม่น่า', 'ไม่ค่อย'
 ]
 
+# Third-party subject markers for G_sub — problem belongs to someone else,
+# so the code should not be attributed to the client.
+_DEFAULT_OTHER_SUBJECTS = [
+    "พ่อ", "แม่", "เพื่อน", "เพื่อนบ้าน", "พี่", "น้อง", "เขา",
+    "แฟน", "สามี", "ภรรยา", "ลูก", "ญาติ", "หลาน", "นายจ้าง",
+]
+
+# Reported / non-experiential framings: the problem term appears because the
+# client is recounting media or a third-party account, not their own situation
+# (adversarial cases ADV_002 / ADV_007 / ADV_014).
+_DEFAULT_REPORTED_MARKERS = [
+    "ข่าว", "หนังสือพิมพ์", "โทรทัศน์", "ทีวี", "สื่อ",
+    "พยาน", "ให้ปากคำ", "อ่านเจอ", "ได้ยินมา", "โพสต์",
+]
+
+_DEFAULT_SELF_SUBJECTS = [
+    "ฉัน", "ผม", "หนู", "ตัวเอง", "ตนเอง",
+    "ผู้ป่วย", "เด็ก", "ผู้มารับบริการ", "ผู้รับบริการ",
+]
+
 
 @dataclass
 class H2LConfigV3:
@@ -139,6 +159,15 @@ class H2LConfigV3:
     NEG_LAMBDA: float = 0.6            # λ_neg — negation dampening strength
     NEG_ENABLE: bool = True            # Enable/disable negation gating
     NEGATION_MARKERS: list = None      # Language-specific negation markers (default: Thai)
+    NEG_WINDOW_CHARS: int = 30         # Look-back window (characters) before candidate term
+
+    # Subject / actor gate (G_sub)
+    SUB_LAMBDA: float = 0.85           # Penalty when problem belongs to a third party
+    SUB_REPORTED_LAMBDA: float = 0.70  # Stronger penalty for reported/media framings
+    SUB_MIN_SEVERITY: int = 3          # G_sub only applies at or above this severity
+    OTHER_SUBJECTS: list = None        # Third-party subject markers (default: Thai)
+    REPORTED_MARKERS: list = None      # Reported-speech / media markers (default: Thai)
+    SELF_SUBJECTS: list = None         # First-person / client markers (default: Thai)
 
     # ── V6 Enhancements (Generalizable Framework) ──
 
@@ -214,6 +243,13 @@ class H2LConfigV3:
                 "ไม่พอ", "ไม่เข้าใจ", "เข้ากับเพื่อนบ้านไม่ได้",
                 "ไม่มีที่", "ไม่รังเกียจสังคม", "ทรุดโทรม"
             ]
+        # Default subject/actor lexicons for G_sub (Thai)
+        if self.OTHER_SUBJECTS is None:
+            self.OTHER_SUBJECTS = list(_DEFAULT_OTHER_SUBJECTS)
+        if self.REPORTED_MARKERS is None:
+            self.REPORTED_MARKERS = list(_DEFAULT_REPORTED_MARKERS)
+        if self.SELF_SUBJECTS is None:
+            self.SELF_SUBJECTS = list(_DEFAULT_SELF_SUBJECTS)
 
     # Query Expansion (retained)
     QUERY_EXPANSION_MAX_PROBLEMS: int = 3
@@ -892,7 +928,9 @@ def calculate_sentence_polarity(
                 continue
             matched_terms += 1
             idx = query_lower.find(term)
-            window_start = max(0, idx - 30)
+            # Look-back window only: Thai negation markers precede the term they
+            # negate, so text after the term is intentionally excluded.
+            window_start = max(0, idx - config.NEG_WINDOW_CHARS)
             window = query_lower[window_start:idx]
             for neg in config.NEGATION_MARKERS:
                 if neg in window:
@@ -925,15 +963,18 @@ def calculate_sentence_polarity(
     # ==========================
     gate_sub = 1.0
     severity = problem.get('severity', 1)
-    if severity >= 3:
-        other_subjects = ["พ่อ", "แม่", "เพื่อน", "พี่", "น้อง", "เขา", "แฟน", "สามี", "ภรรยา", "ลูก"]
-        self_subjects = ["ฉัน", "ผม", "หนู", "ตัวเอง", "ผู้ป่วย", "เด็ก", "ผู้มารับบริการ"]
-        
-        has_other = any(subj in query_lower for subj in other_subjects)
-        has_self = any(subj in query_lower for subj in self_subjects)
-        
-        if has_other and not has_self:
-            gate_sub = 0.85
+    if severity >= config.SUB_MIN_SEVERITY:
+        has_other = any(subj in query_lower for subj in config.OTHER_SUBJECTS)
+        has_reported = any(m in query_lower for m in config.REPORTED_MARKERS)
+        has_self = any(subj in query_lower for subj in config.SELF_SUBJECTS)
+
+        if not has_self:
+            # Reported/media framing is a stronger signal of non-attribution
+            # than a bare third-party subject, so it dominates when both fire.
+            if has_reported:
+                gate_sub = config.SUB_REPORTED_LAMBDA
+            elif has_other:
+                gate_sub = config.SUB_LAMBDA
 
     # ==========================
     # Final Polarity Score
@@ -1891,13 +1932,13 @@ class H2LUnifiedRetriever:
         from h2l.retriever import HybridRetriever
 
         if self.base_strategy == "bm25_only":
-            from unified_baselines import BM25OnlyBaseline
+            from baselines import BM25OnlyBaseline
             return BM25OnlyBaseline(config, shared_components)
         elif self.base_strategy == "naive_rag":
-            from unified_baselines import NaiveRAGBaseline
+            from baselines import NaiveRAGBaseline
             return NaiveRAGBaseline(config, shared_components)
         elif self.base_strategy == "hyde":
-            from unified_baselines import HyDEBaseline
+            from baselines import HyDEBaseline
             return HyDEBaseline(config, shared_components)
         else:  # default to hybrid
             return HybridRetriever(config, shared_components)

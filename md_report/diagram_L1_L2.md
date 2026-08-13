@@ -4,14 +4,14 @@
 
 ```mermaid
 flowchart TD
-    A["ข้อความกรณีศึกษา<br/>(Case Text)"] --> B["Text Clean &amp; Normalize"]
+    A["ข้อความกรณีศึกษา<br/>(Case Text)"] --> B["แปลงเป็นตัวพิมพ์เล็ก<br/>(.lower)"]
     B --> C["Keyword Matching<br/>เทียบกับ problem_codes.json"]
     C --> D["คำนวณ Raw Confidence<br/>0.50 + S_match + S_cov + S_spec + S_phase + S_rep<br/>(เพดานทฤษฎี = 1.06)"]
     D --> E["คูณตัวคูณบริบท conf_mult<br/>(1.0 / 0.4 / 0.3 / 0.1)"]
     E --> F["Final Confidence<br/>clamp(raw × conf_mult, 0.05, 0.95)"]
     F --> G{"context_valid = True<br/>และ conf_mult ≥ 0.8 ?"}
     G -->|ใช่| H["พบปัญหาชัดเจน (Clear Path)<br/>level = L1"]
-    G -->|ไม่ใช่| I{"context_valid = False<br/>และ confidence &lt; 0.30 ?"}
+    G -->|ไม่ใช่| I{"context_valid = False<br/>และ confidence < 0.30 ?"}
     I -->|ใช่| J["กรองทิ้ง (Discard)"]
     I -->|ไม่ใช่| K["level = L1-NeedsValidation<br/>ส่งต่อชั้น L2"]
 
@@ -39,7 +39,7 @@ flowchart TD
     E -->|ใช่| F["เพิ่มความเชื่อมั่น × 1.2<br/>(cap 0.95) → confirmed"]
     E -->|ไม่ใช่| G["เก็บรหัสไว้<br/>จำกัด confidence ≤ 0.40"]
 
-    D -->|Invalid| H{"severity ≥ 4<br/>และ context_valid ?"}
+    D -->|Invalid| H{"severity ≥ 4<br/>และ context_valid<br/>และ conf ≥ 0.5 ?"}
     H -->|ใช่| I["Safety Net<br/>confidence = max(0.40, เดิม × 0.6)"]
     H -->|ไม่ใช่| J["กรองทิ้ง (filtered)"]
 

@@ -1,0 +1,15 @@
+metric,reference,comparison,test,n_pairs,n_nonzero_differences,reference_minus_comparison_mean,median_difference,statistic,raw_p,holm_p,significant_0_05,cohens_d_paired,effect,ci_95_low,ci_95_high,multiplicity_correction
+nDCG@5,Full V6,w/o Adaptive Alpha,Wilcoxon,95,1,-0.0042929110393952865,0.0,0.0,0.31731050786291415,1.0,False,-0.10314212437806847,negligible,-0.012662614753811488,0.004076792675020916,Holm-Bonferroni
+nDCG@5,Full V6,w/o Bayesian Prior,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,w/o IDF Specificity,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,w/o Margin Activation,Wilcoxon,95,1,0.0011884394643827973,0.0,0.0,0.31731050786291415,1.0,False,0.10314212373073084,negligible,-0.0011286097612178917,0.0035054886899834863,Holm-Bonferroni
+nDCG@5,Full V6,w/o KL Penalty,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,w/o Negation Gate,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@5,Full V6,Product Feature Mode,Wilcoxon,95,1,-0.0042929110393952865,0.0,0.0,0.31731050786291415,1.0,False,-0.10314212437806847,negligible,-0.012662614753811488,0.004076792675020916,Holm-Bonferroni
+nDCG@10,Full V6,w/o Adaptive Alpha,Wilcoxon,95,1,-0.005085278085704372,0.0,0.0,0.31731050786291415,1.0,False,-0.10314212441668136,negligible,-0.014999825695047483,0.004829269523638738,Holm-Bonferroni
+nDCG@10,Full V6,w/o Bayesian Prior,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,w/o IDF Specificity,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,w/o Margin Activation,Wilcoxon,95,1,0.0011884394643827973,0.0,0.0,0.31731050786291415,1.0,False,0.10314212373073084,negligible,-0.0011286097612178917,0.0035054886899834863,Holm-Bonferroni
+nDCG@10,Full V6,w/o KL Penalty,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,w/o Negation Gate,No difference,95,0,0.0,0.0,0.0,1.0,1.0,False,0.0,negligible,0.0,0.0,Holm-Bonferroni
+nDCG@10,Full V6,Product Feature Mode,Wilcoxon,95,1,-0.005085278085704372,0.0,0.0,0.31731050786291415,1.0,False,-0.10314212441668136,negligible,-0.014999825695047483,0.004829269523638738,Holm-Bonferroni

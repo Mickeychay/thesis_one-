@@ -18,17 +18,17 @@
 
 ```mermaid
 flowchart LR
-    A["ข้อความกรณีศึกษา<br/>Unstructured Case Text"] --> B["Text Preparation<br/>Normalize + Clean"]
-    B --> C["L1 Detection<br/>Keyword + Context Rules<br/>raw_conf = 0.50 + match + cov + spec + phrase + rep<br/>final = clamp(raw x conf_mult, 0.05, 0.95)"]
-    C --> D1["L1 ชัดเจน<br/>context_valid=True<br/>conf_mult >= 0.8<br/>level=L1"]
-    C --> D2["L1 กำกวม<br/>context_valid=False หรือ conflict<br/>level=L1-NeedsValidation"]
-    C --> D3["L1 Filtered<br/>context_valid=False<br/>confidence &lt; 0.30"]
-    D2 --> E["L2 Validation<br/>run if use_l2=True<br/>model ready<br/>needs_validation or conflicts"]
-    E --> F["Validated Problems<br/>valid: conf x 1.2 cap 0.95<br/>bad context: conf &lt;= 0.40<br/>implicit default conf=0.75"]
-    D1 --> G["Problem Set<br/>final keep confidence >= 0.25"]
+    A["1) ข้อความกรณีศึกษา<br/>Unstructured Case Text"] --> C["L1 Detection<br/>(.lower() เท่านั้น)<br/>Keyword + Context Rules"]
+    C --> D1["L1 ชัดเจน<br/>context_valid=True<br/>conf_mult >= 0.8"]
+    C --> D2["L1 กำกวม<br/>context_valid=False หรือ conflict"]
+    C --> D3["L1 Filtered<br/>confidence < 0.30"]
+    D2 --> E["L2 Validation<br/>(LLM Semantic Check)"]
+    E --> F["Validated Problems<br/>+ Safety Net"]
+    D1 --> G["2) Final Problem Set<br/>keep confidence >= 0.25"]
     F --> G
-    B --> H["Retrieval Pipeline<br/>BM25_K=25<br/>Fusion_K=30<br/>RRF_K=60<br/>reporting top-k = 15"]
-    H --> I["H2L Scoring<br/>detect=.35 semantic=.30<br/>prior=.15 specificity=.10 negation=.10<br/>รวม polarity gates ในสมการ"]
+    G --> QE["3) Query Expansion<br/>(q = q + ชื่อปัญหา)"]
+    QE --> H["4) Sequential Dual-Path<br/>Hybrid Retrieval<br/>BM25 & Dense (K=25)<br/>Fusion (30) → Rerank (Top 15)"]
+    H --> I["5) H2L Scoring<br/>detect=.35 semantic=.30<br/>smoothed_prior=.15 specificity=.10 negation=.10<br/>+ P(rel|profile)"]
     G --> I
     I --> K["ผลลัพธ์สุดท้าย<br/>Detected Problems + Ranked Documents"]
 ```
@@ -164,7 +164,7 @@ flowchart TD
 - `Semantic Evidence Map` แสดงความสัมพันธ์เชิงความหมายระหว่าง query, problem codes และ supporting documents โดยเน้นรายละเอียดระดับ node, semantic distance และหลักฐานเชิงลึก ซึ่งละเอียดกว่ามุมมองแบบ matrix
 - `Research Report` แยก `Case-Level Runtime Review` ออกจาก `Benchmark Performance Review` อย่างชัดเจน พร้อมมี `Performance Provenance` สำหรับบอกแหล่งที่มาของผล, `System Evaluation Status` สำหรับสรุปว่าหลักฐาน benchmark ส่วนใดพร้อมใช้อ้างอิงแล้ว, `Latest Pair Reruns` สำหรับอ่านผลเปรียบเทียบ baseline vs H2L ราย family จาก `evaluation_results/pairs/` โดยตรง, `Live Evaluation Progress` สำหรับอ่านสถานะการรัน evaluator จาก progress artifact จริง และ `Artifact Retention` สำหรับอธิบายว่า dashboard ใช้ latest/checkpoint alias เป็นหลักและเก็บ timestamped history ไว้เพียงเท่าที่จำเป็น ทั้งหมดนี้ refresh ผ่าน `/evaluation-summary` และ `/evaluation-progress` เป็นช่วง ๆ โดยไม่สร้างข้อมูลจำลอง
 
-ใน implementation ที่ใช้รายงานผล ส่วนแสดงผลช่วยให้ตรวจสอบตำแหน่งหลักฐานที่ระบบใช้ได้ชัดขึ้น โดยแยก occurrence ของคำสำคัญและบริบทที่สนับสนุนการตัดสินใจออกจากกัน อย่างไรก็ตาม การคำนวณ `G_neg` ใน H2L scoring ยังคงใช้กลไก lightweight จากหน้าต่างคำปฏิเสธย้อนหลัง `30` ตัวอักษรรอบ candidate term เป็นหลัก
+ใน implementation ที่ใช้รายงานผล ส่วนแสดงผลช่วยให้ตรวจสอบตำแหน่งหลักฐานที่ระบบใช้ได้ชัดขึ้น โดยแยก occurrence ของคำสำคัญและบริบทที่สนับสนุนการตัดสินใจออกจากกัน อย่างไรก็ตาม การคำนวณ `G_neg` ใน H2L scoring ยังคงใช้กลไก lightweight จากหน้าต่างคำปฏิเสธย้อนหลัง `30` ตัวอักษรก่อนหน้า candidate term เป็นหลัก
 
 ดังนั้น ส่วนแสดงผลจึงไม่ได้เป็นองค์ประกอบตกแต่งส่วนติดต่อผู้ใช้เท่านั้น แต่เป็นเครื่องมือสนับสนุนการตรวจสอบวิธีวิจัยและการอภิปรายผลในบทที่ 4 ด้วย
 
@@ -478,7 +478,7 @@ SPECIFIC_CODE_RULES = {
 
 ระดับ L2 ทำหน้าที่ตรวจสอบรหัสที่ L1 ยังตัดสินไม่ได้ชัดเจน เช่น รหัสที่บริบทไม่ครบ รหัสที่เกิด conflict หรือกรณีที่ L1 พบ keyword แต่มีโอกาสเกิดผลบวกลวง การเรียกใช้ L2 จะเกิดขึ้นเฉพาะเมื่อ `use_l2=True`, โมเดล L2 พร้อมใช้งาน และมีรายการ `needs_validation` หรือ `conflicts` อย่างน้อยหนึ่งรายการ แนวทางนี้ช่วยลดภาระการใช้ LLM โดยไม่จำเป็น และทำให้ระบบยังคงอธิบายได้ว่ารหัสใดผ่านจากกฎ L1 และรหัสใดต้องอาศัยการตรวจสอบเพิ่มเติม
 
-กรณีที่ L2 ยืนยันว่ารหัสถูกต้องและบริบท L1 ถูกต้อง ระบบจะเพิ่มความเชื่อมั่นด้วยการคูณ `1.2` แต่ไม่เกิน `0.95` หาก L2 ยืนยันแต่ L1 เห็นว่าบริบทไม่ถูกต้อง ระบบจะเก็บรหัสไว้แต่จำกัด confidence ไม่เกิน `0.40` เพื่อสะท้อนความไม่แน่นอน หาก L2 ไม่ยืนยัน ระบบจะกรองทิ้ง ยกเว้นกรณีที่เป็นรหัสความรุนแรงสูง `severity >= 4` และบริบท L1 ถูกต้อง ระบบจะเก็บไว้เป็น safety net โดยให้ confidence อย่างน้อย `0.40`
+กรณีที่ L2 ยืนยันว่ารหัสถูกต้องและบริบท L1 ถูกต้อง ระบบจะเพิ่มความเชื่อมั่นด้วยการคูณ `1.2` แต่ไม่เกิน `0.95` หาก L2 ยืนยันแต่ L1 เห็นว่าบริบทไม่ถูกต้อง ระบบจะเก็บรหัสไว้แต่จำกัด confidence ไม่เกิน `0.40` เพื่อสะท้อนความไม่แน่นอน หาก L2 ไม่ยืนยัน ระบบจะกรองทิ้ง ยกเว้นกรณีที่เป็นรหัสความรุนแรงสูง `severity >= 4`, บริบท L1 ถูกต้อง (`context_valid=True`) และมีความเชื่อมั่นตั้งต้นสูงพอ (`confidence >= 0.50`) ระบบจะเก็บไว้เป็น safety net เพื่อกันพลาด โดยจะปรับลด confidence ลงเป็น `max(0.40, confidence × 0.60)`
 
 ใน implementation ที่ใช้รายงานผล ผู้วิจัยได้เพิ่ม refinement สำคัญอีก 4 ประการให้ชั้นนี้ ได้แก่ (1) L2 มีสิทธิ์คัดออกเฉพาะรหัสที่ถูกส่งเข้า `needs_validation` จริง เพื่อลดการลบรหัส L1 ที่บริบทชัดเจนอยู่แล้ว (2) implicit problems ที่ L2 เสนอเพิ่มต้องมี `taxonomy anchor` ใน evidence หรือข้อความจริงก่อนจึงจะถูกรับไว้ (3) ผลลัพธ์ทุกตัวจะถูกจัดสถานะ review เป็น `confirmed`, `needs_review`, `verify_documents` หรือ `filtered` เพื่อแยกระดับความมั่นใจเชิงปฏิบัติการ และ (4) baseline preview ถูกแยกสถานะเป็น `baseline_candidate` และ `baseline_filtered` เพื่อไม่ให้ปะปนกับผลที่ผ่านการตรวจ semantic แล้ว
 
@@ -537,27 +537,30 @@ if code and code not in l1_codes:
 
 ## 3.7 Retrieval pipeline และการจัดอันดับเอกสาร
 
-หลังจากได้ชุดปัญหาที่ตรวจพบ ระบบจะค้นคืนเอกสารอ้างอิงจากฐานข้อมูล retrieval โดยใช้ทั้ง dense retrieval และ BM25 จากนั้นผสานผลลัพธ์ด้วย reciprocal rank fusion และส่งต่อให้ reranker หากเปิดใช้งาน ค่าเริ่มต้นใน config ปัจจุบันกำหนดให้ BM25 และ dense retrieval ดึงผลลัพธ์เบื้องต้น `25` รายการ ผสานเหลือ `30` รายการด้วย `RRF_K=60` ส่วนค่า `TOP_K=10` ใน config ทำหน้าที่เป็น default ภายในระบบ ขณะที่การประเมินหลักของวิทยานิพนธ์ override เป็น `top_k=15` เพื่อใช้เป็น reporting protocol เดียวกันทั้งบท
+หลังจากได้ชุดปัญหาที่ตรวจพบ ระบบจะเข้าสู่ขั้นตอน **Query Expansion** โดยนำชื่อของปัญหาที่ตรวจพบมาต่อท้ายข้อความคำค้นเดิม (query = query + problem names) เพื่อเพิ่มโอกาสค้นเจอเอกสารที่ระบุชื่อปัญหาตรงๆ จากนั้นจึงส่งต่อให้กระบวนการค้นคืนแบบ **Sequential Dual-Path Hybrid Retrieval** ซึ่งหมายถึงการรัน Dense Retrieval และ BM25 Retrieval ตามลำดับใน process เดียวกัน (ไม่ใช่ thread-parallel)
+
+ค่าเริ่มต้นในระบบกำหนดให้ BM25 และ Dense Retrieval ค้นหาผลลัพธ์เบื้องต้นเส้นทางละ `25` รายการ จากนั้นจะนำผลลัพธ์มาผสานรวมกันด้วย Reciprocal Rank Fusion (RRF) โดยใช้ `RRF_K=60` และคัดเหลือ candidate pool จำนวน `30` รายการ เพื่อส่งต่อให้ Reranker จัดอันดับความเกี่ยวข้องขั้นสุดท้าย โดย Reranker จะคัดกรองจาก 30 รายการลงมาเหลือ **Top 15** (หรือตามค่าที่ผู้ใช้กำหนด) เพื่อนำไปเข้าสู่กระบวนการ H2L Scoring ต่อไป
 
 เพื่อหลีกเลี่ยงความสับสน ผู้วิจัยแยกคำว่า **candidate pool** ออกจาก **reporting top-k** อย่างชัดเจน กล่าวคือ
 
-- `BM25_K=25` คือจำนวนเอกสารเบื้องต้นที่แต่ละ retriever ดึงเข้ามาพิจารณา
-- `FUSION_K=30` คือจำนวนเอกสารหลังการผสานด้วย RRF ก่อน rerank
-- `reporting top_k=15` คือจำนวนเอกสารสุดท้ายที่ใช้เป็นค่าหลักของการรายงานผล retrieval ในวิทยานิพนธ์ ขณะที่ `TOP_K=10` ยังเป็นค่า default ภายใน config ของระบบ
+- `BM25_K=25` และ `DENSE_K=25` คือจำนวนเอกสารเบื้องต้นที่แต่ละ retriever ดึงเข้ามาพิจารณา
+- `FUSION_K=30` คือจำนวนเอกสารที่ถูกคัดเลือกหลังจากการผสานด้วย RRF เพื่อส่งให้ Reranker
+- `reporting top_k=15` คือจำนวนเอกสารสุดท้ายที่ Reranker คัดกรองและส่งออกไปใช้เป็นค่าหลักของการรายงานผล retrieval ในวิทยานิพนธ์
 
 แม้ว่าส่วนติดต่อผู้ใช้จะเปิดให้สำรวจ `top-k = 5, 10, 15, 20` ได้ในเชิง sensitivity analysis แต่ผลหลักของวิทยานิพนธ์ยังยึด `problem_source=detected` และ `top_k=15` เพื่อให้ทุกส่วนของรายงานใช้ค่าหลักเดียวกัน
 
-**ภาพที่ 3.7 retrieval pipeline พร้อมค่าเริ่มต้น**
+**ภาพที่ 3.7 Retrieval Pipeline พร้อมค่าเริ่มต้น**
 
 ```mermaid
 flowchart LR
-    A["ข้อความกรณีศึกษา"] --> B["Dense Retrieval<br/>candidate pool = 25"]
-    A --> C["BM25 Retrieval<br/>candidate pool = 25"]
-    B --> D["RRF Fusion<br/>FUSION_K=30<br/>RRF_K=60"]
+    A["คำค้นเริ่มต้น<br/>(Initial Query)"] --> QE["Query Expansion<br/>(q = q + ชื่อปัญหาที่พบ)"]
+    QE --> B["Dense Retrieval<br/>candidate pool = 25"]
+    QE --> C["BM25 Retrieval<br/>candidate pool = 25"]
+    B --> D["RRF Fusion<br/>RRF_K=60<br/>คัดเหลือ 30 candidates"]
     C --> D
     D --> E{"USE_RERANK=True?"}
-    E -->|ใช่| F["Reranker<br/>reporting top-k = user selected<br/>final report = 15"]
-    E -->|ไม่ใช่| G["Return fused results"]
+    E -->|ใช่| F["Cross-Encoder Reranker<br/>30 candidates → Top 15"]
+    E -->|ไม่ใช่| G["Return fused results<br/>(Top 15)"]
     F --> H["Candidate Documents<br/>ส่งต่อ H2L scoring"]
     G --> H
 ```
@@ -600,19 +603,19 @@ def rrf_fusion(dense_hits, bm25_hits, rrf_k=60):
 
 ## 3.8 กรอบการให้คะแนน H2L
 
-H2L scoring framework ทำหน้าที่ปรับคะแนนเอกสารที่ได้จาก retrieval pipeline โดยคำนึงถึง problem profile ของกรณีศึกษา ระบบไม่ได้พิจารณาเฉพาะคะแนน similarity หรือคะแนน rerank แต่รวมปัจจัยจากการตรวจจับปัญหาเข้ามาด้วย ได้แก่ detection confidence, ความสัมพันธ์เชิงความหมายระหว่างเอกสารกับปัญหา, prior ของปัญหา, ความจำเพาะของปัญหา และ negation gate
+H2L scoring framework ทำหน้าที่ปรับคะแนนเอกสารที่ได้จาก retrieval pipeline โดยคำนึงถึง problem profile ของกรณีศึกษา ระบบไม่ได้พิจารณาเฉพาะคะแนน similarity หรือคะแนน rerank แต่รวมปัจจัยจากการตรวจจับปัญหาเข้ามาด้วย ได้แก่ detection confidence, ความสัมพันธ์เชิงความหมายระหว่างเอกสารกับปัญหา, Dirichlet-smoothed severity prior ของปัญหา, ความจำเพาะของปัญหา และ negation gate
 
-ค่าน้ำหนักของ feature ใน implementation ปัจจุบันกำหนดเป็น `detect=0.35`, `semantic=0.30`, `prior=0.15`, `specificity=0.10` และ `negation=0.10` รวมเป็น 1.0 ระบบจึงให้น้ำหนักสูงสุดกับความเชื่อมั่นของการตรวจจับปัญหาและความสอดคล้องเชิงความหมายระหว่างปัญหากับเอกสาร
+ค่าน้ำหนักของ feature ใน implementation ปัจจุบันกำหนดเป็น `detect=0.35`, `semantic=0.30`, `smoothed_prior=0.15`, `specificity=0.10` และ `negation=0.10` รวมเป็น 1.0 ระบบจึงให้น้ำหนักสูงสุดกับความเชื่อมั่นของการตรวจจับปัญหาและความสอดคล้องเชิงความหมายระหว่างปัญหากับเอกสาร
 
 **ภาพที่ 3.8 องค์ประกอบของ H2L scoring framework**
 
 ```mermaid
 flowchart TD
     A["Candidate Document<br/>จาก retrieval/reranker"] --> B["Base Score<br/>S_rerank"]
-    C["Detected Problems<br/>confidence, severity, prior"] --> D["Feature Aggregation"]
+    C["Detected Problems<br/>confidence, severity, smoothed prior"] --> D["Feature Aggregation"]
     D --> E["Detection Confidence<br/>weight=0.35"]
     D --> F["Semantic Relevance<br/>weight=0.30"]
-    D --> G["Problem Prior<br/>weight=0.15"]
+    D --> G["Smoothed Severity Prior<br/>weight=0.15"]
     D --> H["Specificity / IDF<br/>weight=0.10"]
     D --> I["Negation Gate<br/>weight=0.10"]
     E --> J["H2L Boost"]
@@ -670,7 +673,7 @@ def h2l_score(rerank_score, problems, document, query):
 S_final = S_rerank × exp(α_eff × mean(w_i × Φ_i)) × P(rel | profile)
 ```
 
-โดย `S_rerank` คือคะแนนตั้งต้นจาก retrieval/reranker, `Φ_i` คือ feature รวมของปัญหาแต่ละรหัส, `w_i` คือค่าน้ำหนักจาก co-occurrence ระหว่างปัญหา, `α_eff` คือค่าน้ำหนัก H2L ที่ปรับตามบริบทของเคส และ `P(rel | profile)` คือ Bayesian prior ที่คำนวณจาก problem profile ของเคสนั้น
+โดย `S_rerank` คือคะแนนตั้งต้นจาก retrieval/reranker, `Φ_i` คือ feature รวมของปัญหาแต่ละรหัส (รวมถึง `smoothed_prior` 15%), `w_i` คือค่าน้ำหนักจาก co-occurrence ระหว่างปัญหา, `α_eff` คือค่าน้ำหนัก H2L ที่ปรับตามบริบทของเคส และ `P(rel | profile)` คือ Bayesian prior ที่เป็นตัวคูณแยกต่างหาก ซึ่งคำนวณจาก problem profile ของเคสนั้น
 
 ### 3.8.1 การวิเคราะห์บริบทแฝงและมิติความหมายเชิงเวลาด้วย LLM
 
@@ -711,7 +714,7 @@ S_final = S_rerank × exp(α_eff × mean(w_i × Φ_i)) × P(rel | profile)
   → แม้มีคำว่า "**ไม่**" แต่เป็น **hardship statement** ไม่ใช่การปฏิเสธปัญหา  
   → ระบบตรวจจับ: `0801` (ปัญหาเศรษฐกิจ) + `Z59.0` (ปัญหาที่อยู่อาศัย) confidence ปกติ
 
-กลไกนี้เชื่อมโยงโดยตรงกับ **Contextual Polarity Gates** ที่อธิบายในหัวข้อ §3.9 โดยเฉพาะ `G_neg` ซึ่งใช้หน้าต่างย้อนหลัง 30 ตัวอักษรตรวจจับคำปฏิเสธรอบ candidate term
+กลไกนี้เชื่อมโยงโดยตรงกับ **Contextual Polarity Gates** ที่อธิบายในหัวข้อ §3.9 โดยเฉพาะ `G_neg` ซึ่งใช้หน้าต่างย้อนหลัง 30 ตัวอักษรก่อนหน้า candidate term ตรวจจับคำปฏิเสธ
 
 #### iii. ความรุนแรงแฝง (Implicit Severity)
 
@@ -793,7 +796,7 @@ if code and code not in l1_codes:
 
 Contextual Polarity Gates ถูกออกแบบเพื่อควบคุมผลบวกลวงที่เกิดจากบริบทของประโยค โดยเฉพาะกรณีที่มีคำปฏิเสธ ข้อความสั้นเกินไป หรือข้อความกล่าวถึงปัญหาของบุคคลอื่นแทนผู้รับบริการเอง ใน implementation ปัจจุบัน polarity gate ที่ใช้ใน H2L scoring เป็นกลไกแบบ lightweight ประกอบด้วย 3 ส่วน ได้แก่ `G_neg`, `G_len` และ `G_sub` โดยยังไม่ได้ใช้ full event-frame parser หรือการแยก `actor → action → target` เป็นตัวคำนวณหลักของคะแนนนี้
 
-`G_neg` ตรวจคำปฏิเสธด้วยหน้าต่างย้อนหลัง `30` ตัวอักษรรอบ candidate term และใช้ค่า `NEG_LAMBDA=0.6` เพื่อลดคะแนนเมื่อพบ negation marker ที่ครอบคำสำคัญของปัญหา `G_len` ใช้สูตรลอการิทึมเพื่อปรับคะแนนของข้อความที่สั้นเกินไป ส่วน `G_sub` ลดคะแนนเป็น `0.85` เมื่อปัญหามี `severity >= 3` และพบการกล่าวถึงบุคคลอื่นโดยไม่พบ self-subject กลไก actor/context ที่ละเอียดกว่านี้ถูกใช้ในชั้น L1 context validation และส่วนแสดงผลเพื่อการตรวจสอบย้อนกลับ ขณะที่ polarity score ในสมการ H2L ยังคงใช้ negation window, length gate และ subject heuristic เป็นหลัก นอกจากนี้ระบบยังมี tone/hardship exceptions สำหรับวลีอย่าง `ไม่มีเงิน`, `ไม่มีที่ไป`, `ไม่สบายใจ` ที่ไม่ควรถูกตีความว่าเป็นการปฏิเสธปัญหาโดยอัตโนมัติ
+`G_neg` ตรวจคำปฏิเสธด้วยหน้าต่างย้อนหลัง `30` ตัวอักษรก่อนหน้า candidate term และใช้ค่า `NEG_LAMBDA=0.6` เพื่อลดคะแนนเมื่อพบ negation marker ที่ครอบคำสำคัญของปัญหา `G_len` ใช้สูตรลอการิทึมเพื่อปรับคะแนนของข้อความที่สั้นเกินไป ส่วน `G_sub` ลดคะแนนเป็น `0.85` เมื่อปัญหามี `severity >= 3` และพบการกล่าวถึงบุคคลอื่นโดยไม่พบ self-subject กลไก actor/context ที่ละเอียดกว่านี้ถูกใช้ในชั้น L1 context validation และส่วนแสดงผลเพื่อการตรวจสอบย้อนกลับ ขณะที่ polarity score ในสมการ H2L ยังคงใช้ negation window, length gate และ subject heuristic เป็นหลัก นอกจากนี้ระบบยังมี tone/hardship exceptions สำหรับวลีอย่าง `ไม่มีเงิน`, `ไม่มีที่ไป`, `ไม่สบายใจ` ที่ไม่ควรถูกตีความว่าเป็นการปฏิเสธปัญหาโดยอัตโนมัติ
 
 **ภาพที่ 3.9 Contextual Polarity Gates พร้อมค่าตัวอย่าง**
 
@@ -902,19 +905,19 @@ for case in test_cases:
 
 ### 3.11.1 การสร้างชุดข้อมูลอ้างอิง
 
-เนื่องจากยังไม่มีชุดข้อมูลสาธารณะที่ครอบคลุมบริบทงานสังคมสงเคราะห์ทางการแพทย์ภาษาไทยโดยเฉพาะ ผู้วิจัยจึงจัดทำชุดข้อมูลอ้างอิงในไฟล์ `expanded_ground_truth.json` ฉบับปัจจุบันมีทั้งหมด 220 เคส แบ่งเป็นเคสอ้างอิงที่ไม่ผ่านการขยายข้อมูล 100 เคส และเคสที่สร้างหรือดัดแปลงเพิ่มเติม 120 เคส เคสอ้างอิง 100 เคสประกอบด้วยเคสหลัก 92 เคส ข้อความสั้นที่ยังมีหลักฐานบ่งชี้ปัญหา (Short Evidenced Cases) 5 เคส และข้อความสั้นมาก (Tiny Cases) 3 เคส ส่วนเคสที่สร้างหรือดัดแปลง 120 เคสประกอบด้วยการถอดความ (Paraphrase) 44 เคส การเพิ่มระดับความซับซ้อน (Complexity Escalation) 10 เคส การลดระดับความซับซ้อน (Complexity Reduction) 10 เคส เคสท้าทายระบบ (Adversarial Cases) 20 เคส และชุดเปรียบเทียบเชิงขั้วความหมาย (Polarity Pairs) 18 คู่หรือ 36 เคส การกระจายความซับซ้อนทั้งชุดประกอบด้วย simple 72 เคส moderate 90 เคส และ complex 58 เคส
+เนื่องจากยังไม่มีชุดข้อมูลสาธารณะที่ครอบคลุมบริบทงานสังคมสงเคราะห์ทางการแพทย์ภาษาไทยโดยเฉพาะ ผู้วิจัยจึงจัดทำชุดข้อมูลอ้างอิงในไฟล์ `expanded_ground_truth.json` ฉบับปัจจุบันมีทั้งหมด 225 เคส แบ่งเป็นเคสอ้างอิงที่ไม่ผ่านการขยายข้อมูล 105 เคส และเคสที่สร้างหรือดัดแปลงเพิ่มเติม 120 เคส เคสอ้างอิงประกอบด้วยเคสหลัก ข้อความสั้น และข้อความสั้นมาก ส่วนเคสที่สร้างหรือดัดแปลง 120 เคสประกอบด้วยการถอดความ (Paraphrase) 44 เคส การเพิ่มระดับความซับซ้อน (Complexity Escalation) 10 เคส การลดระดับความซับซ้อน (Complexity Reduction) 10 เคส เคสท้าทายระบบ (Adversarial Cases) 20 เคส และชุดเปรียบเทียบเชิงขั้วความหมาย (Polarity Pairs) 18 คู่หรือ 36 เคส
 
 Adversarial Cases คือกรณีที่จงใจใส่คำซึ่งอาจกระตุ้นรหัสผิด แต่บริบทระบุว่าคำนั้นไม่ใช่ปัญหาปัจจุบันของผู้รับบริการ เช่น เป็นคำถามในแบบคัดกรอง เหตุการณ์ในอดีต ข่าวหรือเอกสาร ตัวอย่างในสื่อ ปัญหาของบุคคลอื่น หรือข้อความปฏิเสธ แต่ละเคสกำหนด `false_trigger_code` สำหรับรหัสที่ระบบไม่ควรสรุป และกำหนด expected problem codes จากปัญหาที่มีหลักฐานและเป็นเหตุให้ขอความช่วยเหลือจริง ตัวอย่างเช่น แบบคัดกรองที่ถามเรื่องการฆ่าตัวตายแต่ผู้รับบริการปฏิเสธและมาขอความช่วยเหลือเพราะตกงาน ต้องคาดหวังรหัส `1201` แทน `X60-X84`; มารดาพาบุตรที่ใช้ยาเสพติดมารักษาแต่ตนเองมีภาระดูแล ต้องคาดหวัง `0702` แทน `1602`; และผู้รับบริการอ่านข่าวคดีข่มขืนในฐานะพยานแต่ขอคำปรึกษาเรื่องข้อพิพาทสัญญาเช่าบ้าน ต้องคาดหวัง `1301` แทน `0601` รายการครบ 20 เคสจัดเก็บใน `evaluation_results/adversarial_cases_catalog.md`
 
 ### 3.11.2 การแบ่งข้อมูลแบบป้องกัน split leakage
 
-เพื่อยกระดับความน่าเชื่อถือของผลการประเมิน ผู้วิจัยปรับการแบ่งข้อมูลจากการสุ่มรายเคสทั่วไปเป็น **family-level split** กล่าวคือ เคสต้นฉบับและเคสที่ดัดแปลงจากต้นฉบับเดียวกัน เช่น paraphrase และ complexity escalation/reduction จะถูกจัดอยู่ใน split เดียวกัน เพื่อป้องกันไม่ให้ข้อความที่มีเนื้อหาเกือบเหมือนกันหลุดไปอยู่ทั้ง train และ test ซึ่งจะทำให้ผลประเมินสูงเกินจริง การแบ่งส่วนหลักใช้สัดส่วนเป้าหมาย 70:30 และ seed เท่ากับ 42 จากนั้นกำหนด polarity pairs 36 เคสและ Adversarial Cases 20 เคสให้อยู่ในชุดทดสอบเพื่อใช้เป็น stress-test slice แยกต่างหาก จึงได้ชุดข้อมูลปัจจุบันเป็น train 125 เคสและ test 95 เคส สัดส่วนสุดท้ายจึงต่างจาก 70:30 เพราะมีการตรึง stress-test ไว้ใน test โดยเจตนา
+เพื่อยกระดับความน่าเชื่อถือของผลการประเมิน ผู้วิจัยปรับการแบ่งข้อมูลจากการสุ่มรายเคสทั่วไปเป็น **family-level split** กล่าวคือ เคสต้นฉบับและเคสที่ดัดแปลงจากต้นฉบับเดียวกัน เช่น paraphrase และ complexity escalation/reduction จะถูกจัดอยู่ใน split เดียวกัน เพื่อป้องกันไม่ให้ข้อความที่มีเนื้อหาเกือบเหมือนกันหลุดไปอยู่ทั้ง train และ test ซึ่งจะทำให้ผลประเมินสูงเกินจริง การแบ่งส่วนหลักใช้สัดส่วนเป้าหมาย 70:30 และ seed เท่ากับ 42 จากนั้นกำหนด polarity pairs 36 เคสและ Adversarial Cases 20 เคสให้อยู่ในชุดทดสอบเพื่อใช้เป็น stress-test slice แยกต่างหาก จึงได้ชุดข้อมูลปัจจุบันเป็น train 125 เคสและ test 100 เคส สัดส่วนสุดท้ายจึงต่างจาก 70:30 เพราะมีการตรึง stress-test ไว้ใน test โดยเจตนา
 
-หลังการแบ่งข้อมูล ระบบรัน `scripts/ground_truth_audit.py` เพื่อตรวจเคสที่ไม่มี split, case family ที่ปรากฏข้าม train/test, ข้อความซ้ำแบบตรงตัว และ near-duplicate ระหว่าง train/test ที่ threshold 0.90 ผล audit ของชุด 220 เคสไม่พบ family leakage ข้อความซ้ำแบบตรงตัว หรือ near-duplicate ข้ามชุด ผลการทดลองฉบับสุดท้ายในบทที่ 4 ใช้ชุดนี้เพียงชุดเดียว โดยรายงานผลบน test split 95 เคส และแยกผลของ Adversarial Cases 20 เคสเป็น stress-test slice เพิ่มเติม
+หลังการแบ่งข้อมูล ระบบรัน `scripts/ground_truth_audit.py` เพื่อตรวจเคสที่ไม่มี split, case family ที่ปรากฏข้าม train/test, ข้อความซ้ำแบบตรงตัว และ near-duplicate ระหว่าง train/test ที่ threshold 0.90 ผล audit ของชุด 225 เคสไม่พบ family leakage ข้อความซ้ำแบบตรงตัว หรือ near-duplicate ข้ามชุด ผลการทดลองฉบับสุดท้ายในบทที่ 4 ใช้ชุดนี้เพียงชุดเดียว โดยรายงานผลบน test split 100 เคส และแยกผลของ Adversarial Cases 20 เคสเป็น stress-test slice เพิ่มเติม
 
 ### 3.11.3 Protocol การเปรียบเทียบ baseline กับ H2L
 
-การประเมิน retrieval ใช้ protocol เดียวกันทุกกลยุทธ์ ได้แก่ `problem_source=detected`, `top_k=15` และชุด test split เดียวกันจำนวน 95 เคส กลยุทธ์ที่นำมาเปรียบเทียบแบ่งเป็น 4 baseline และ 4 H2L-enhanced counterpart ดังนี้
+การประเมิน retrieval ใช้ protocol เดียวกันทุกกลยุทธ์ ได้แก่ `problem_source=detected`, `top_k=15` และชุด test split เดียวกันจำนวน 100 เคส กลยุทธ์ที่นำมาเปรียบเทียบแบ่งเป็น 4 baseline และ 4 H2L-enhanced counterpart ดังนี้
 
 | Baseline | H2L counterpart | ความหมายของคู่เปรียบเทียบ |
 |---|---|---|

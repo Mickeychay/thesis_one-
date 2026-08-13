@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "generated_at": "2026-08-13T12:19:40+07:00",
+  "builder": {
+    "path": "scripts/build_chapter4_evidence.py",
+    "sha256": "13beed0d82353796e407b9ec85c122b3da209ff6bd2c2020286f113346a67a17"
+  },
+  "protocol": {
+    "total_cases": 220,
+    "train_cases": 125,
+    "test_cases": 95,
+    "standard_test_cases": 75,
+    "adversarial_test_cases": 20,
+    "models": [
+      "qwen2.5:7b",
+      "scb10x/llama3.1-typhoon2-8b-instruct:latest",
+      "h2l/typhoon-gemma3-4b-templatefix-v2:latest"
+    ],
+    "repeats": 3,
+    "strategies": [
+      "bm25_only",
+      "naive_rag",
+      "hyde",
+      "basic",
+      "h2l-bm25",
+      "h2l-naive_rag",
+      "h2l-hyde",
+      "h2l-hybrid"
+    ],
+    "top_k": 15,
+    "problem_source": "detected",
+    "statistical_test": "paired two-sided Wilcoxon signed-rank",
+    "multiplicity_correction": "Holm separately for nDCG@5 and nDCG@10"
+  },
+  "artifact_provenance_window": {
+    "timezone": "Asia/Bangkok",
+    "started_at": "2026-08-07T23:51:25+07:00",
+    "completed_at": "2026-08-13T12:19:40+07:00",
+    "started_date_th": "7 สิงหาคม 2569",
+    "completed_date_th": "13 สิงหาคม 2569",
+    "events": [
+      {
+        "artifact": "L2/retrieval matrix",
+        "field": "created_at",
+        "reported_at": "2026-08-08T07:37:14.740317+00:00",
+        "bangkok_at": "2026-08-08T14:37:14+07:00"
+      },
+      {
+        "artifact": "Derived retrieval metrics",
+        "field": "generated_at",
+        "reported_at": "2026-08-13T11:41:04+07:00",
+        "bangkok_at": "2026-08-13T11:41:04+07:00"
+      },
+      {
+        "artifact": "Contextual polarity",
+        "field": "timestamp",
+        "reported_at": "2026-08-07T23:51:25.118887",
+        "bangkok_at": "2026-08-07T23:51:25+07:00"
+      },
+      {
+        "artifact": "Adversarial stress-test summary",
+        "field": "generated_at",
+        "reported_at": "2026-08-08T16:27:15+07:00",
+        "bangkok_at": "2026-08-08T16:27:15+07:00"
+      },
+      {
+        "artifact": "RQ6 ablation",
+        "field": "completed_at",
+        "reported_at": null,
+        "bangkok_at": "2026-08-13T12:19:40+07:00"
+      },
+      {
+        "artifact": "Parameter sensitivity",
+        "field": "completed_at",
+        "reported_at": "2026-08-08T00:04:16+07:00",
+        "bangkok_at": "2026-08-08T00:04:16+07:00"
+      }
+    ]
+  },
+  "sources": {
+    "Ground truth": {
+      "path": "data/expanded_ground_truth.json",
+      "sha256": "c774e39238cdd7b500c91cedea693e48f838129833d1eb23d25dc21cc0970058",
+      "bytes": 955859
+    },
+    "Ground-truth audit": {
+      "path": "evaluation_results/ground_truth_audit.json",
+      "sha256": "24055d93e27135a025f50ed00d44f05e145f9b6f61ed48b912eb31ff4c3a2fe8",
+      "bytes": 1057
+    },
+    "Taxonomy": {
+      "path": "data/problem_codes.json",
+      "sha256": "4082c225399de877df767ec71f649e613ba2c2639847a5b2736b2c0697ff430e",
+      "bytes": 73055
+    },
+    "Document metadata": {
+      "path": "data/vector_db_lancedb/metadata.json",
+      "sha256": "c03f8ed4fe1f2271f26784444667bbed2dd1cde631b137621a6a6ad30575e21b",
+      "bytes": 3013646
+    },
+    "Typhoon-Gemma template patch": {
+      "path": "evaluation_results/model_comparison/typhoon_gemma3_templatefix_manifest.json",
+      "sha256": "f7c1719ec8adfe9de93bd770f9460a8a99946b57a26ad680a6f28b803b9e50f2",
+      "bytes": 695
+    },
+    "L2/retrieval matrix": {
+      "path": "evaluation_results/model_comparison/l2_full_matrix_95cases_3models_3repeats_8strategies.json",
+      "sha256": "2d116b0fe998d6588d48f466076755751d0c72322ef60b0a4525f6dbc737da73",
+      "bytes": 14038998
+    },
+    "Derived retrieval metrics": {
+      "path": "evaluation_results/derived/retrieval_metrics_20260807_latest.json",
+      "sha256": "e070d33084a67c247361365bc14a7696321c915f95993cdfb74efa7600b4df46",
+      "bytes": 67523
+    },
+    "Retrieval per-case CSV": {
+      "path": "evaluation_results/derived/retrieval_metrics_20260807_per_case.csv",
+      "sha256": "a580e25f668e40530f5ed8a2d6b3791e9fa9690f32d525bee5fe18813f615117",
+      "bytes": 728340
+    },
+    "Retrieval Wilcoxon-Holm CSV": {
+      "path": "evaluation_results/derived/retrieval_significance_20260807.csv",
+      "sha256": "ab67030f4f5c480af8d9de316364500e7f667046b9bf40511f80f2be6b7b222f",
+      "bytes": 10203
+    },
+    "Polarity": {
+      "path": "evaluation_results/sentence_polarity_eval_20260807_full95.json",
+      "sha256": "f8a1e1d2b75d8298f2296b036f9acad67fb2fcafd6137ed2e720fdfc97d6a773",
+      "bytes": 571119
+    },
+    "Adversarial stress-test summary": {
+      "path": "evaluation_results/adversarial_stress_test_20260807.json",
+      "sha256": "c5e41840423c89976581a527a487db3b61af1764c8a04b1cdab9d64e4cbda187",
+      "bytes": 183582
+    },
+    "RQ6 results": {
+      "path": "ablation_results/rq6_test_95cases_20260807/rq6_results.csv",
+      "sha256": "39f4b724cbe5d187163f609ce6dfbf7aea8c10eb79c4ac3224d9889d9de6838d",
+      "bytes": 191545
+    },
+    "RQ6 Wilcoxon-Holm": {
+      "path": "ablation_results/rq6_test_95cases_20260807/rq6_significance.csv",
+      "sha256": "a95bbe2d59e43fa3addedd0dfea692f5dab036a62c147c068607389ab252fd4a",
+      "bytes": 2372
+    },
+    "RQ6 slice summary": {
+      "path": "ablation_results/rq6_test_95cases_20260807/rq6_slice_summary.csv",
+      "sha256": "573bf02f88dc92a28f2d4cd82942de0a33cfe900c4d7272f40a5a694f69d085e",
+      "bytes": 13094
+    },
+    "RQ6 run metadata": {
+      "path": "ablation_results/rq6_test_95cases_20260807/run_metadata.json",
+      "sha256": "585e43f3ab087ee540264cd3fcb0f254286720879f5db684da7a7b54691c3255",
+      "bytes": 1330
+    },
+    "Sensitivity results": {
+      "path": "sensitivity_results/run_20260807/sensitivity_raw.csv",
+      "sha256": "15c303dcbcd701ceb025ca8edead303f9ac0d791fb7944bb7ae83da73502f119",
+      "bytes": 4369
+    },
+    "Sensitivity run metadata": {
+      "path": "sensitivity_results/run_20260807/run_metadata.json",
+      "sha256": "4f3a608a5d72432a427b4332370442a50967ba4cffd25a388a7b599d43fc63fc",
+      "bytes": 7272
+    }
+  },
+  "validation": {
+    "matrix_rows_per_model": 285,
+    "retrieval_rows": 6840,
+    "retrieval_significance_rows": 14,
+    "ablation_rows": 760,
+    "ablation_significance_rows": 14,
+    "ablation_standard_rows": 600,
+    "ablation_adversarial_rows": 160,
+    "sensitivity_selected_cases": 125,
+    "sensitivity_scored_cases": 115,
+    "polarity_cases": 95,
+    "adversarial_cases": 20,
+    "original_non_augmented_cases": 100,
+    "generated_modified_cases": 120,
+    "family_leakage_count": 0,
+    "exact_duplicate_count": 0,
+    "cross_split_near_duplicate_count": 0,
+    "near_duplicate_threshold": 0.9,
+    "adversarial_case_first_retrieval_max_abs_difference": 0.5,
+    "adversarial_aggregate_retrieval_max_abs_difference": 0.027481679536264646
+  },
+  "outputs": {
+    "markdown": {
+      "path": "md_report/thesis_ch4_verified_20260807.md",
+      "sha256": "ec6829d14472f75413b3bd8fc11924a164b6e7e09cb96a09d97a8ace198d1250",
+      "bytes": 24463
+    }
+  }
+}
