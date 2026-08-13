@@ -291,14 +291,25 @@ def ndcg_at_k(relevance_grades: List[int], k: int) -> float:
         return result
 
     actual_dcg = dcg(relevance_grades, k)
-
-    # Ideal: sort grades descending
     ideal_grades = sorted(relevance_grades, reverse=True)
     ideal_dcg = dcg(ideal_grades, k)
 
     if ideal_dcg == 0:
         return 0.0
     return actual_dcg / ideal_dcg
+
+
+def dcg_components_at_k(relevance_grades: List[int], k: int):
+    """Return (DCG@k, IDCG@k) for provenance columns in the ablation CSV."""
+    def dcg(grades, cutoff):
+        result = 0.0
+        for i, g in enumerate(grades[:cutoff]):
+            result += (2**g - 1) / math.log2(i + 2)
+        return result
+
+    actual_dcg = dcg(relevance_grades, k)
+    ideal_dcg = dcg(sorted(relevance_grades, reverse=True), k)
+    return actual_dcg, ideal_dcg
 
 
 def average_precision(relevance_grades: List[int]) -> float:
@@ -364,7 +375,10 @@ def compute_all_metrics(
         metrics[f'P@{k}'] = precision_at_k(relevance_grades, k)
         metrics[f'R@{k}'] = recall_at_k(relevance_grades, k, total_relevant)
         metrics[f'F1@{k}'] = f1_at_k(relevance_grades, k, total_relevant)
-        metrics[f'nDCG@{k}'] = ndcg_at_k(relevance_grades, k)
+        dcg_val, idcg_val = dcg_components_at_k(relevance_grades, k)
+        metrics[f'DCG@{k}'] = dcg_val
+        metrics[f'IDCG@{k}'] = idcg_val
+        metrics[f'nDCG@{k}'] = dcg_val / idcg_val if idcg_val > 0 else 0.0
 
     return metrics
 

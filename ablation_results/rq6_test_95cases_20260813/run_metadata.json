@@ -1,6 +1,6 @@
 {
   "status": "complete",
-  "generated_at": "2026-08-14T02:33:34.603108",
+  "generated_at": "2026-08-14T03:26:03.897124",
   "ground_truth_path": "data/expanded_ground_truth_rq6_95protocol.json",
   "ground_truth_sha256": "48551cd2fadee0bc9cce64745f603ce336c155232ae27ab93627cca159b4e822",
   "ground_truth_total_cases": 225,
@@ -41,7 +41,7 @@
     "cached_cases": 95,
     "case_set_validation": "exact"
   },
-  "completed_at": "2026-08-14T03:11:50.612171",
+  "completed_at": "2026-08-14T04:03:12.327321",
   "failed_experiments": {},
   "generated_files": [
     "ABLATION_STUDY_REPORT.md",

@@ -2,7 +2,7 @@
 
 ## ผลการวิจัย
 
-บทนี้รายงานผลจากชุดข้อมูลฉบับสุดท้าย 220 กรณีเท่านั้น โดยใช้ชุดฝึก 125 กรณี ชุดทดสอบ 95 กรณี และแยก Adversarial Cases 20 กรณีเป็น held-out stress-test slice การค้นคืน แบบจำลอง L2, Contextual Polarity Gate, component ablation และสถิติ Wilcoxon-Holm ล้วนคำนวณจาก artifact ชุดเดียวกันที่ตรวจสอบ hash และจำนวนแถวร่วมกันแล้ว โดย การรันและสร้าง artifact เริ่มเมื่อวันที่ 7 สิงหาคม 2569 และสรุปผลครบเมื่อวันที่ 13 สิงหาคม 2569 ตาม timestamp ที่บันทึกใน provenance manifest
+บทนี้รายงานผลจากชุดข้อมูลฉบับสุดท้าย 220 กรณีเท่านั้น โดยใช้ชุดฝึก 125 กรณี ชุดทดสอบ 95 กรณี และแยก Adversarial Cases 20 กรณีเป็น held-out stress-test slice การค้นคืน แบบจำลอง L2, Contextual Polarity Gate, component ablation และสถิติ Wilcoxon-Holm ล้วนคำนวณจาก artifact ชุดเดียวกันที่ตรวจสอบ hash และจำนวนแถวร่วมกันแล้ว โดย การรันและสร้าง artifact เริ่มเมื่อวันที่ 7 สิงหาคม 2569 และสรุปผลครบเมื่อวันที่ 14 สิงหาคม 2569 ตาม timestamp ที่บันทึกใน provenance manifest
 
 การทดสอบนัยสำคัญใช้หน่วยวิเคราะห์เป็นกรณีอิสระ โดยเฉลี่ยผล 3 รอบภายในแต่ละกรณีก่อนใช้ two-sided Wilcoxon signed-rank test และปรับ Holm แยกสำหรับ nDCG@5 และ nDCG@10 ผลของ stress-test เป็นหลักฐานความทนทานต่อกรณีสร้างเชิงท้าทาย ไม่ใช้แทนค่าประสิทธิภาพของข้อมูลภาคสนาม
 
@@ -46,10 +46,10 @@
 | Retrieval Wilcoxon-Holm CSV | evaluation_results/derived/retrieval_significance_20260807.csv | ab67030f4f5c |
 | Polarity | evaluation_results/sentence_polarity_eval_20260807_full95.json | f8a1e1d2b75d |
 | Adversarial stress-test summary | evaluation_results/adversarial_stress_test_20260807.json | c5e41840423c |
-| RQ6 results | ablation_results/rq6_test_95cases_20260807/rq6_results.csv | 39f4b724cbe5 |
-| RQ6 Wilcoxon-Holm | ablation_results/rq6_test_95cases_20260807/rq6_significance.csv | a95bbe2d59e4 |
-| RQ6 slice summary | ablation_results/rq6_test_95cases_20260807/rq6_slice_summary.csv | 573bf02f88dc |
-| RQ6 run metadata | ablation_results/rq6_test_95cases_20260807/run_metadata.json | 585e43f3ab08 |
+| RQ6 results | ablation_results/rq6_test_95cases_20260813/rq6_results.csv | 6640e539ab11 |
+| RQ6 Wilcoxon-Holm | ablation_results/rq6_test_95cases_20260813/rq6_significance.csv | 2f644feed1b6 |
+| RQ6 slice summary | ablation_results/rq6_test_95cases_20260813/rq6_slice_summary.csv | 417f85d5cdee |
+| RQ6 run metadata | ablation_results/rq6_test_95cases_20260813/run_metadata.json | 1e89e93d3028 |
 | Sensitivity results | sensitivity_results/run_20260807/sensitivity_raw.csv | 15c303dcbcd7 |
 | Sensitivity run metadata | sensitivity_results/run_20260807/run_metadata.json | 4f3a608a5d72 |
 
@@ -179,46 +179,46 @@ Adversarial 20 กรณีมีป้ายความซับซ้อน m
 
 | Configuration | P@5 | R@5 | F1@5 | DCG@5 | IDCG@5 | nDCG@5 | MAP | MRR |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Full V6 | 0.1221 | 0.2660 | 0.1570 | 0.6139 | 0.9221 | 0.2442 | 0.2454 | 0.2801 |
-| w/o Adaptive Alpha | 0.1221 | 0.2677 | 0.1576 | 0.6139 | 0.8965 | 0.2485 | 0.2467 | 0.2801 |
-| w/o Bayesian Prior | 0.1221 | 0.2660 | 0.1570 | 0.6139 | 0.9221 | 0.2442 | 0.2454 | 0.2801 |
-| w/o IDF Specificity | 0.1221 | 0.2660 | 0.1570 | 0.6139 | 0.9221 | 0.2442 | 0.2454 | 0.2801 |
-| w/o KL Penalty | 0.1221 | 0.2660 | 0.1570 | 0.6139 | 0.9221 | 0.2442 | 0.2454 | 0.2801 |
-| w/o Margin Activation | 0.1221 | 0.2625 | 0.1562 | 0.6139 | 0.9273 | 0.2430 | 0.2436 | 0.2801 |
-| w/o Negation Gate | 0.1221 | 0.2660 | 0.1570 | 0.6139 | 0.9221 | 0.2442 | 0.2454 | 0.2801 |
-| Product Feature Mode | 0.1221 | 0.2677 | 0.1576 | 0.6139 | 0.8965 | 0.2485 | 0.2467 | 0.2801 |
+| Full V6 | 0.2442 | 0.3464 | 0.2485 | 1.6904 | 3.2832 | 0.3269 | 0.3655 | 0.4318 |
+| w/o Adaptive Alpha | 0.2442 | 0.3464 | 0.2485 | 1.6904 | 3.2832 | 0.3269 | 0.3655 | 0.4318 |
+| w/o Bayesian Prior | 0.2442 | 0.3464 | 0.2485 | 1.6904 | 3.2832 | 0.3269 | 0.3655 | 0.4318 |
+| w/o IDF Specificity | 0.2442 | 0.3464 | 0.2485 | 1.6904 | 3.2832 | 0.3269 | 0.3655 | 0.4318 |
+| w/o KL Penalty | 0.2442 | 0.3464 | 0.2485 | 1.6904 | 3.2832 | 0.3269 | 0.3655 | 0.4318 |
+| w/o Margin Activation | 0.2442 | 0.3464 | 0.2485 | 1.6904 | 3.3018 | 0.3269 | 0.3658 | 0.4318 |
+| w/o Negation Gate | 0.2442 | 0.3464 | 0.2485 | 1.6904 | 3.2832 | 0.3269 | 0.3655 | 0.4318 |
+| Product Feature Mode | 0.2442 | 0.3464 | 0.2485 | 1.6909 | 3.2832 | 0.3272 | 0.3660 | 0.4318 |
 
 **ตารางที่ 4.8ข ผล RQ6 component ablation ที่ลำดับ 10 (n = 95)**
 
 | Configuration | P@10 | R@10 | F1@10 | DCG@10 | IDCG@10 | nDCG@10 | MAP | MRR |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Full V6 | 0.0768 | 0.3233 | 0.1189 | 0.6764 | 0.9221 | 0.2683 | 0.2454 | 0.2801 |
-| w/o Adaptive Alpha | 0.0768 | 0.3260 | 0.1193 | 0.6764 | 0.8965 | 0.2734 | 0.2467 | 0.2801 |
-| w/o Bayesian Prior | 0.0768 | 0.3233 | 0.1189 | 0.6764 | 0.9221 | 0.2683 | 0.2454 | 0.2801 |
-| w/o IDF Specificity | 0.0768 | 0.3233 | 0.1189 | 0.6764 | 0.9221 | 0.2683 | 0.2454 | 0.2801 |
-| w/o KL Penalty | 0.0768 | 0.3233 | 0.1189 | 0.6764 | 0.9221 | 0.2683 | 0.2454 | 0.2801 |
-| w/o Margin Activation | 0.0768 | 0.3198 | 0.1186 | 0.6764 | 0.9273 | 0.2671 | 0.2436 | 0.2801 |
-| w/o Negation Gate | 0.0768 | 0.3233 | 0.1189 | 0.6764 | 0.9221 | 0.2683 | 0.2454 | 0.2801 |
-| Product Feature Mode | 0.0768 | 0.3260 | 0.1193 | 0.6764 | 0.8965 | 0.2734 | 0.2467 | 0.2801 |
+| Full V6 | 0.2095 | 0.5573 | 0.2719 | 2.2355 | 3.5393 | 0.4034 | 0.3655 | 0.4318 |
+| w/o Adaptive Alpha | 0.2095 | 0.5573 | 0.2719 | 2.2355 | 3.5393 | 0.4034 | 0.3655 | 0.4318 |
+| w/o Bayesian Prior | 0.2095 | 0.5573 | 0.2719 | 2.2355 | 3.5393 | 0.4034 | 0.3655 | 0.4318 |
+| w/o IDF Specificity | 0.2095 | 0.5573 | 0.2719 | 2.2355 | 3.5393 | 0.4034 | 0.3655 | 0.4318 |
+| w/o KL Penalty | 0.2095 | 0.5573 | 0.2719 | 2.2355 | 3.5393 | 0.4034 | 0.3655 | 0.4318 |
+| w/o Margin Activation | 0.2095 | 0.5538 | 0.2716 | 2.2358 | 3.5578 | 0.4025 | 0.3658 | 0.4318 |
+| w/o Negation Gate | 0.2095 | 0.5573 | 0.2719 | 2.2355 | 3.5393 | 0.4034 | 0.3655 | 0.4318 |
+| Product Feature Mode | 0.2095 | 0.5573 | 0.2719 | 2.2360 | 3.5393 | 0.4037 | 0.3660 | 0.4318 |
 
 **ตารางที่ 4.8ค ผล Wilcoxon-Holm ของ RQ6 เทียบกับ Full V6**
 
 | ตัวชี้วัด | Configuration | ผลต่าง | คู่ไม่เป็นศูนย์ | p ดิบ | Holm p | ผลสรุป |
 |---|---:|---:|---:|---:|---:|---:|
-| nDCG@5 | w/o Adaptive Alpha | -0.0043 | 1 / 95 | 0.3173 | 1.0000 | ไม่พบความแตกต่าง |
+| nDCG@5 | w/o Adaptive Alpha | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
 | nDCG@5 | w/o Bayesian Prior | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
 | nDCG@5 | w/o IDF Specificity | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
-| nDCG@5 | w/o Margin Activation | +0.0012 | 1 / 95 | 0.3173 | 1.0000 | ไม่พบความแตกต่าง |
+| nDCG@5 | w/o Margin Activation | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
 | nDCG@5 | w/o KL Penalty | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
 | nDCG@5 | w/o Negation Gate | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
-| nDCG@5 | Product Feature Mode | -0.0043 | 1 / 95 | 0.3173 | 1.0000 | ไม่พบความแตกต่าง |
-| nDCG@10 | w/o Adaptive Alpha | -0.0051 | 1 / 95 | 0.3173 | 1.0000 | ไม่พบความแตกต่าง |
+| nDCG@5 | Product Feature Mode | -0.0003 | 1 / 95 | 0.3173 | 1.0000 | ไม่พบความแตกต่าง |
+| nDCG@10 | w/o Adaptive Alpha | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
 | nDCG@10 | w/o Bayesian Prior | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
 | nDCG@10 | w/o IDF Specificity | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
-| nDCG@10 | w/o Margin Activation | +0.0012 | 1 / 95 | 0.3173 | 1.0000 | ไม่พบความแตกต่าง |
+| nDCG@10 | w/o Margin Activation | +0.0010 | 2 / 95 | 0.6547 | 1.0000 | ไม่พบความแตกต่าง |
 | nDCG@10 | w/o KL Penalty | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
 | nDCG@10 | w/o Negation Gate | +0.0000 | 0 / 95 | 1.0000 | 1.0000 | ไม่พบความแตกต่าง |
-| nDCG@10 | Product Feature Mode | -0.0051 | 1 / 95 | 0.3173 | 1.0000 | ไม่พบความแตกต่าง |
+| nDCG@10 | Product Feature Mode | -0.0003 | 1 / 95 | 0.3173 | 1.0000 | ไม่พบความแตกต่าง |
 
 **ตารางที่ 4.9 ผล One-at-a-Time sensitivity analysis**
 
@@ -289,14 +289,14 @@ Sensitivity analysis เลือกชุดฝึก 125 กรณี แต�
 
 | Configuration | nDCG@5 | nDCG@10 | MAP | MRR |
 |---|---:|---:|---:|---:|
-| Full V6 | 0.0500 | 0.0500 | 0.0574 | 0.0574 |
-| w/o Adaptive Alpha | 0.0500 | 0.0500 | 0.0574 | 0.0574 |
-| w/o Bayesian Prior | 0.0500 | 0.0500 | 0.0574 | 0.0574 |
-| w/o IDF Specificity | 0.0500 | 0.0500 | 0.0574 | 0.0574 |
-| w/o KL Penalty | 0.0500 | 0.0500 | 0.0574 | 0.0574 |
-| w/o Margin Activation | 0.0500 | 0.0500 | 0.0574 | 0.0574 |
-| w/o Negation Gate | 0.0500 | 0.0500 | 0.0574 | 0.0574 |
-| Product Feature Mode | 0.0500 | 0.0500 | 0.0574 | 0.0574 |
+| Full V6 | 0.4793 | 0.5285 | 0.4492 | 0.4897 |
+| w/o Adaptive Alpha | 0.4793 | 0.5285 | 0.4492 | 0.4897 |
+| w/o Bayesian Prior | 0.4793 | 0.5285 | 0.4492 | 0.4897 |
+| w/o IDF Specificity | 0.4793 | 0.5285 | 0.4492 | 0.4897 |
+| w/o KL Penalty | 0.4793 | 0.5285 | 0.4492 | 0.4897 |
+| w/o Margin Activation | 0.4793 | 0.5285 | 0.4492 | 0.4897 |
+| w/o Negation Gate | 0.4793 | 0.5285 | 0.4492 | 0.4897 |
+| Product Feature Mode | 0.4807 | 0.5299 | 0.4517 | 0.4897 |
 
 ## 4.8 สรุปบท
 
