@@ -89,6 +89,14 @@ _DEFAULT_SELF_SUBJECTS = [
     "ผู้ป่วย", "เด็ก", "ผู้มารับบริการ", "ผู้รับบริการ",
 ]
 
+# Conjunction / Clause-boundary markers (V6.5)
+# Prevents cross-clause negation bleeding in compound sentences (e.g., "ไม่ได้ทำร้าย แต่ไม่มีเงิน")
+_DEFAULT_CONJUNCTION_MARKERS = [
+    "แต่", "ทว่า", "ส่วน", "ในขณะที่", "ขณะที่",
+    "ปัญหาคือ", "ปัญหาแท้จริงคือ", "ปัญหาจริงคือ",
+    "อย่างไรก็ตาม", "แต่มีปัญหา", "แต่พบว่า", "\n", ";"
+]
+
 
 @dataclass
 class H2LConfigV3:
@@ -155,11 +163,30 @@ class H2LConfigV3:
     KL_KAPPA: float = 0.15             # κ — penalty strength
     KL_MAX: float = 2.0                # Maximum KL penalty value (capped)
 
-    # V5.5: Negation-Aware Gating
+    # V5.5 / V6.4: Negation-Aware Gating & Adaptive Window
     NEG_LAMBDA: float = 0.6            # λ_neg — negation dampening strength
     NEG_ENABLE: bool = True            # Enable/disable negation gating
     NEGATION_MARKERS: list = None      # Language-specific negation markers (default: Thai)
-    NEG_WINDOW_CHARS: int = 30         # Look-back window (characters) before candidate term
+    NEG_WINDOW_CHARS: int = 30         # Look-back window (characters) fallback / fixed mode
+
+    # Adaptive Look-Back Window (V6.4)
+    # Allows dynamic calculation: clamp(min_chars, len(query) * ratio, max_chars)
+    # Modes:
+    #   'balanced' — clamp(20, len(query)*0.15, 32) (F1 & precision optimized, default)
+    #   'safety'   — clamp(25, len(query)*0.15, 35) (High negation recall optimized)
+    #   'fixed'    — fixed NEG_WINDOW_CHARS (30 characters)
+    ADAPTIVE_WINDOW_ENABLE: bool = True
+    ADAPTIVE_WINDOW_MODE: str = 'balanced'
+    ADAPTIVE_WINDOW_MODES: tuple = ('balanced', 'safety', 'fixed')
+    ADAPTIVE_WINDOW_MIN_CHARS: int = 20
+    ADAPTIVE_WINDOW_MAX_CHARS: int = 32
+    ADAPTIVE_WINDOW_RATIO: float = 0.15
+
+    # Clause-Boundary Segmentation (V6.5)
+    # Truncates look-back window at clause boundaries (e.g. "แต่", "ปัญหาคือ")
+    # preventing negation markers from bleeding across compound clauses.
+    CLAUSE_BOUNDARY_ENABLE: bool = True
+    CONJUNCTION_MARKERS: list = None
 
     # Subject / actor gate (G_sub)
     SUB_LAMBDA: float = 0.85           # Penalty when problem belongs to a third party
@@ -228,10 +255,16 @@ class H2LConfigV3:
                 f"MATCHING_MODE={self.MATCHING_MODE!r} is not one of "
                 f"{self.MATCHING_MODES}"
             )
+        # V6.4: Validate adaptive window mode
+        if self.ADAPTIVE_WINDOW_MODE not in self.ADAPTIVE_WINDOW_MODES:
+            raise ValueError(
+                f"ADAPTIVE_WINDOW_MODE={self.ADAPTIVE_WINDOW_MODE!r} is not one of "
+                f"{self.ADAPTIVE_WINDOW_MODES}"
+            )
         # Default negation markers (Thai) — override for other languages
         if self.NEGATION_MARKERS is None:
             self.NEGATION_MARKERS = list(_DEFAULT_NEGATION_MARKERS)
-        # Default tone exception lexicons (Sarcasm/Fear/Emotion/Contextual)
+        # Default tone exception lexicons (Sarcasm/Fear/Emotion/Contextual/Clinical Symptoms)
         if self.TONE_EXCEPTIONS is None:
             self.TONE_EXCEPTIONS = [
                 "ไม่กล้า", "ไม่อยาก", "ไม่มีเงิน", "ไม่มีความสุข",
@@ -241,7 +274,11 @@ class H2LConfigV3:
                 "ไม่ได้ออกไปไหน", "ไม่มีเพื่อน", "ไม่บอก", "ไม่พูดกัน", "ไม่ได้ทำอะไรผิด",
                 "ไม่มีรายได้", "ไม่มีที่อยู่", "ไม่รังเกียจ", "ไม่ได้พักผ่อน",
                 "ไม่พอ", "ไม่เข้าใจ", "เข้ากับเพื่อนบ้านไม่ได้",
-                "ไม่มีที่", "ไม่รังเกียจสังคม", "ทรุดโทรม"
+                "ไม่มีที่", "ไม่รังเกียจสังคม", "ทรุดโทรม",
+                # V6.5 Clinical Symptom & Non-compliance Exceptions (Non-negated problems)
+                "ไม่ยอม", "ไม่ให้", "ไม่ค่อยกินยา", "ช่วยเหลือตัวเองไม่ได้",
+                "พูดไม่ได้", "ควบคุมไม่ได้", "ปลดหนี้ไม่ได้", "หาเงินมาปลดหนี้ไม่ได้",
+                "ไม่เคยเชื่อฟัง", "กินยาไม่สม่ำเสมอ"
             ]
         # Default subject/actor lexicons for G_sub (Thai)
         if self.OTHER_SUBJECTS is None:
@@ -250,6 +287,34 @@ class H2LConfigV3:
             self.REPORTED_MARKERS = list(_DEFAULT_REPORTED_MARKERS)
         if self.SELF_SUBJECTS is None:
             self.SELF_SUBJECTS = list(_DEFAULT_SELF_SUBJECTS)
+        # Default clause boundary conjunction markers
+        if self.CONJUNCTION_MARKERS is None:
+            self.CONJUNCTION_MARKERS = list(_DEFAULT_CONJUNCTION_MARKERS)
+
+    def get_negation_window_size(self, query_text: str = None) -> int:
+        """
+        Calculate effective look-back character window for sentence polarity.
+        - If NEG_WINDOW_CHARS == 0, returns 0 (explicit test override).
+        - If ADAPTIVE_WINDOW_ENABLE is False or ADAPTIVE_WINDOW_MODE == 'fixed' or not query_text:
+            returns self.NEG_WINDOW_CHARS.
+        - 'balanced': clamp(20, len(query)*0.15, 32) -> Optimized for high precision and F1 (default).
+        - 'safety': clamp(25, len(query)*0.15, 35) -> Optimized for high recall on negations.
+        """
+        if self.NEG_WINDOW_CHARS == 0:
+            return 0
+        if not self.ADAPTIVE_WINDOW_ENABLE or self.ADAPTIVE_WINDOW_MODE == 'fixed' or not query_text:
+            return self.NEG_WINDOW_CHARS
+
+        q_len = len(query_text)
+        if self.ADAPTIVE_WINDOW_MODE == 'safety':
+            min_w, max_w, ratio = 25, 35, 0.15
+        elif self.ADAPTIVE_WINDOW_MODE == 'balanced':
+            min_w, max_w, ratio = self.ADAPTIVE_WINDOW_MIN_CHARS, self.ADAPTIVE_WINDOW_MAX_CHARS, self.ADAPTIVE_WINDOW_RATIO
+        else:
+            min_w, max_w, ratio = self.ADAPTIVE_WINDOW_MIN_CHARS, self.ADAPTIVE_WINDOW_MAX_CHARS, self.ADAPTIVE_WINDOW_RATIO
+
+        calculated = int(q_len * ratio)
+        return max(min_w, min(max_w, calculated))
 
     # Query Expansion (retained)
     QUERY_EXPANSION_MAX_PROBLEMS: int = 3
@@ -928,9 +993,25 @@ def calculate_sentence_polarity(
                 continue
             matched_terms += 1
             idx = query_lower.find(term)
-            # Look-back window only: Thai negation markers precede the term they
-            # negate, so text after the term is intentionally excluded.
-            window_start = max(0, idx - config.NEG_WINDOW_CHARS)
+            # Look-back window: uses adaptive clamp or fixed window based on config
+            window_size = config.get_negation_window_size(query_text)
+            window_start = max(0, idx - window_size)
+
+            # V6.5 Clause Boundary Segmentation:
+            # If a conjunction boundary appears before the candidate term (within the window),
+            # truncate the window to the boundary so negation markers from previous clauses do not bleed into the current clause.
+            if config.CLAUSE_BOUNDARY_ENABLE and config.CONJUNCTION_MARKERS:
+                preceding_text = query_lower[window_start:idx]
+                latest_boundary_end = -1
+                for marker in config.CONJUNCTION_MARKERS:
+                    b_idx = preceding_text.rfind(marker)
+                    if b_idx != -1:
+                        end_pos = b_idx + len(marker)
+                        if end_pos > latest_boundary_end:
+                            latest_boundary_end = end_pos
+                if latest_boundary_end > 0:
+                    window_start += latest_boundary_end
+
             window = query_lower[window_start:idx]
             for neg in config.NEGATION_MARKERS:
                 if neg in window:
@@ -985,7 +1066,8 @@ def calculate_sentence_polarity(
         "gate_total": round(gate_total, 4),
         "gate_neg": round(gate_neg, 4),
         "gate_len": round(gate_len, 4),
-        "gate_sub": round(gate_sub, 4)
+        "gate_sub": round(gate_sub, 4),
+        "window_size": config.get_negation_window_size(query_text)
     })
 
 # Backward-compat alias for callers expecting V5

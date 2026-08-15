@@ -794,21 +794,50 @@ if code and code not in l1_codes:
 
 ## 3.9 Contextual Polarity Gates
 
-Contextual Polarity Gates ถูกออกแบบเพื่อควบคุมผลบวกลวงที่เกิดจากบริบทของประโยค โดยเฉพาะกรณีที่มีคำปฏิเสธ ข้อความสั้นเกินไป หรือข้อความกล่าวถึงปัญหาของบุคคลอื่นแทนผู้รับบริการเอง ใน implementation ปัจจุบัน polarity gate ที่ใช้ใน H2L scoring เป็นกลไกแบบ lightweight ประกอบด้วย 3 ส่วน ได้แก่ `G_neg`, `G_len` และ `G_sub` โดยยังไม่ได้ใช้ full event-frame parser หรือการแยก `actor → action → target` เป็นตัวคำนวณหลักของคะแนนนี้
+Contextual Polarity Gates ถูกออกแบบเพื่อควบคุมผลบวกลวงที่เกิดจากบริบทของประโยค โดยเฉพาะกรณีที่มีคำปฏิเสธ ข้อความสั้นเกินไป หรือข้อความกล่าวถึงปัญหาของบุคคลอื่นแทนผู้รับบริการเอง ใน implementation ปัจจุบัน polarity gate ที่ใช้ใน H2L scoring เป็นกลไกแบบ lightweight ประกอบด้วย 3 ส่วน ได้แก่ `G_neg`, `G_len` และ `G_sub` โดยคำนวณคะแนนรวมเป็น:
 
-`G_neg` ตรวจคำปฏิเสธด้วยหน้าต่างย้อนหลัง `30` ตัวอักษรก่อนหน้า candidate term และใช้ค่า `NEG_LAMBDA=0.6` เพื่อลดคะแนนเมื่อพบ negation marker ที่ครอบคำสำคัญของปัญหา `G_len` ใช้สูตรลอการิทึมเพื่อปรับคะแนนของข้อความที่สั้นเกินไป ส่วน `G_sub` ลดคะแนนเป็น `0.85` เมื่อปัญหามี `severity >= 3` และพบการกล่าวถึงบุคคลอื่นโดยไม่พบ self-subject กลไก actor/context ที่ละเอียดกว่านี้ถูกใช้ในชั้น L1 context validation และส่วนแสดงผลเพื่อการตรวจสอบย้อนกลับ ขณะที่ polarity score ในสมการ H2L ยังคงใช้ negation window, length gate และ subject heuristic เป็นหลัก นอกจากนี้ระบบยังมี tone/hardship exceptions สำหรับวลีอย่าง `ไม่มีเงิน`, `ไม่มีที่ไป`, `ไม่สบายใจ` ที่ไม่ควรถูกตีความว่าเป็นการปฏิเสธปัญหาโดยอัตโนมัติ
+$$G_{\text{polarity}} = G_{\text{neg}} \times G_{\text{len}} \times G_{\text{sub}}$$
+
+### 3.9.1 กลไกตรวจจับคำปฏิเสธแบบปรับตามความยาวและขอบเขตอนุประโยค (Adaptive Window & Clause-Boundary Segmentation: $G_{\text{neg}}$)
+
+`G_neg` ตรวจจับคำปฏิเสธ (Negation Markers) เช่น `ไม่ได้`, `ไม่มี`, `ไม่เคย`, `ไม่ใช่`, `ปฏิเสธ` ที่อยู่ด้านหน้าคำสำคัญของปัญหา (Candidate Term) โดยระบบพัฒนาขึ้นด้วย 2 กลไกสำคัญ:
+
+1. **หน้าต่างย้อนหลังแบบปรับขนาดตามความยาวข้อความ (Hybrid Adaptive Look-Back Window):**
+   $$W(q) = \text{clamp}\Big(W_{\min}, \, \lfloor |q| \times r \rfloor, \, W_{\max}\Big)$$
+   โดยมี 2 รูปแบบการทำงานหลัก (Operational Profiles):
+   * **Balanced Profile (Default / F1-Optimized):** กำหนด $W_{\min} = 20$, $r = 15\%$, $W_{\max} = 32$ ตัวอักษร ออกแบบเพื่อเพิ่ม Precision และค่า F1-Score สูงสุด พร้อมลดอัตราการแจ้งเตือนลวง (False Alarm)
+   * **High-Safety Profile (Recall-Optimized):** กำหนด $W_{\min} = 25$, $r = 15\%$, $W_{\max} = 35$ ตัวอักษร ออกแบบสำหรับกรณีศึกษาที่มีความอ่อนไหวสูงเป็นพิเศษเพื่อเก็บการปฏิเสธให้ครอบคลุมสูงสุด (NDR = 72.22%)
+
+2. **การตัดขอบเขตอนุประโยคเพื่อป้องกันการรั่วไหลของคำปฏิเสธ (Conjunction-Aware Clause-Boundary Segmentation):**
+   ในประโยคประสม (Compound/Mixed Sentences) ที่มีทั้งส่วนปฏิเสธปัญหาและส่วนปัญหาจริง เช่น *"เด็กไม่ได้เล่นยาเสพติด แต่ปัญหาแท้จริงคือพ่อแม่หาเงินค่าเทอมไม่พอ"* ระบบจะตรวจจับคำเชื่อมอนุประโยค (`CONJUNCTION_MARKERS` เช่น `แต่`, `ทว่า`, `ปัญหาคือ`, `ปัญหาแท้จริงคือ`, `อย่างไรก็ตาม`, `\n`) ที่อยู่ระหว่างหน้าต่างย้อนหลังและตัดขอบเขตหน้าต่าง ($W_{\text{effective}}$) ให้หยุดอยู่ที่จุดสิ้นสุดของคำเชื่อม ทำให้คำปฏิเสธจากอนุประโยคก่อนหน้าไม่สามารถรั่วไหลข้ามมารบกวนปัญหาจริงในอนุประโยคหลังได้
+
+เมื่อตรวจพบคำปฏิเสธในหน้าต่างที่ผ่านการตัดขอบเขตแล้ว คะแนน $G_{\text{neg}}$ จะถูกลดลงตามสูตร:
+
+$$G_{\text{neg}} = \max\left(0.1, \, 1.0 - \lambda_{\text{neg}} \times \frac{\text{neg\_score}}{\text{matched\_terms}}\right) \quad (\lambda_{\text{neg}} = 0.6)$$
+
+3. **พจนานุกรมข้อยกเว้นอารมณ์และอาการทางคลินิก (Tone & Clinical Symptom Exceptions):**
+   ระบบมีกลไก Bypass การลดคะแนน $G_{\text{neg}}$ สำหรับคำว่า "ไม่..." ที่สะท้อนความเดือดร้อนจริงและอาการทางคลินิก:
+   * *กลุ่มภาวะความยากลำบาก:* `ไม่มีเงิน`, `ไม่มีรายได้`, `ไม่มีที่ไป`, `ไม่อยากมีชีวิตอยู่`, `ไม่สบายใจ`
+   * *กลุ่มพฤติกรรมไม่ยอมรับการรักษา (Non-compliance):* `ไม่ยอมกินยา`, `ไม่ยอมรักษา`, `ไม่ให้ความร่วมมือ`, `ไม่ไปตามนัด`
+   * *กลุ่มข้อจำกัดทางร่างกายและสังคม (Functional Limitations):* `ช่วยเหลือตัวเองไม่ได้`, `พูดไม่ได้`, `ควบคุมไม่ได้`, `ปลดหนี้ไม่ได้`
+
+### 3.9.2 กลไกปรับสมดุลข้อความสั้น ($G_{\text{len}}$) และประธานของปัญหา ($G_{\text{sub}}$)
+
+* `G_len` ใช้สูตรลอการิทึมเพื่อปรับคะแนนของข้อความที่สั้นเกินไป:
+  $$G_{\text{len}} = \min\left(1.0, \, \log_{10}\left(\frac{\text{char\_len}}{10.0} + 1.0\right) + 0.5\right)$$
+* `G_sub` ลดคะแนนเป็น `0.85` เมื่อปัญหามี `severity >= 3` และพบการกล่าวถึงบุคคลอื่น (`OTHER_SUBJECTS`) โดยไม่พบคำชี้ตัวผู้รับบริการ (`SELF_SUBJECTS`) และลดเป็น `0.70` หากพบว่าเป็นบริบทเล่าข่าว/สื่อ (`REPORTED_MARKERS`)
 
 **ภาพที่ 3.9 Contextual Polarity Gates พร้อมค่าตัวอย่าง**
 
 ```mermaid
 flowchart LR
-    A["Problem Match"] --> B["G_neg<br/>window=30 ตัวอักษร<br/>NEG_LAMBDA=0.6<br/>example=0.40"]
+    A["Problem Match"] --> B["G_neg<br/>Adaptive Window: clamp(20, 15%, 32)<br/>+ Clause Boundary Truncation<br/>NEG_LAMBDA=0.6<br/>example=0.40"]
     A --> C["G_len<br/>log10((L/10)+1)+0.5<br/>example=0.7041"]
     A --> D["G_sub<br/>severity >= 3<br/>other subject + no self<br/>example=0.85"]
     B --> E["G_polarity<br/>G_neg x G_len x G_sub"]
     C --> E
     D --> E
-    E --> F["Adjusted Score"]
+    E --> F["Adjusted H2L Score"]
 ```
 
 คำบรรยายภาพ: ภาพที่ 3.9 แสดงกลไก Contextual Polarity Gates ซึ่งทำหน้าที่ลดคะแนนเมื่อพบสัญญาณที่อาจทำให้ระบบตีความผิด ตัวอย่างเช่น ประโยค "ผู้ป่วยไม่ได้ขาดความรู้ เข้าใจโรคดี" ให้ `gate_neg=0.40`, ประโยคสั้น "รุนแรง" ให้ `gate_len=0.7041` และประโยค "น้องสาวถูกสามีทำร้ายร่างกาย" ให้ `gate_sub=0.85` เพราะกล่าวถึงบุคคลอื่นโดยไม่มีคำที่ชี้ว่าเป็นผู้ป่วยเอง
@@ -816,18 +845,39 @@ flowchart LR
 โค้ดอ้างอิงแบบย่อ:
 
 ```python
-# H2L_core.py
-window_start = max(0, idx - 30)
-gate_neg = 1.0 - config.NEG_LAMBDA * neg_ratio
-gate_neg = max(0.1, min(1.0, gate_neg))
+# h2l/core.py (Adaptive Look-Back Window & Clause Boundary Segmentation)
+def get_negation_window_size(self, query_text: str = None) -> int:
+    if not self.ADAPTIVE_WINDOW_ENABLE or self.ADAPTIVE_WINDOW_MODE == 'fixed' or not query_text:
+        return self.NEG_WINDOW_CHARS
+    q_len = len(query_text)
+    if self.ADAPTIVE_WINDOW_MODE == 'safety':
+        min_w, max_w, ratio = 25, 35, 0.15
+    else:  # 'balanced'
+        min_w, max_w, ratio = 20, 32, 0.15
+    return max(min_w, min(max_w, int(q_len * ratio)))
+
+# Clause Boundary Truncation
+window_size = config.get_negation_window_size(query_text)
+window_start = max(0, idx - window_size)
+if config.CLAUSE_BOUNDARY_ENABLE and config.CONJUNCTION_MARKERS:
+    preceding_text = query_lower[window_start:idx]
+    latest_boundary_end = max([preceding_text.rfind(m) + len(m) for m in config.CONJUNCTION_MARKERS if m in preceding_text] or [-1])
+    if latest_boundary_end > 0:
+        window_start += latest_boundary_end
+
+window = query_lower[window_start:idx]
+gate_neg = max(0.1, min(1.0, 1.0 - config.NEG_LAMBDA * neg_ratio))
 ```
 
 ```python
-# H2L_core.py
+# h2l/core.py (Length & Subject Gates)
 gate_len = min(1.0, math.log10((char_len / 10.0) + 1.0) + 0.5)
 
-if severity >= 3 and has_other and not has_self:
-    gate_sub = 0.85
+if severity >= 3 and not has_self:
+    if has_reported:
+        gate_sub = 0.70
+    elif has_other:
+        gate_sub = 0.85
 ```
 
 **ตารางที่ 3.3 ตัวอย่างค่าที่รันจากฟังก์ชันจริง**

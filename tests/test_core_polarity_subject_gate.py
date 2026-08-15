@@ -82,6 +82,49 @@ class TestNegationWindow(unittest.TestCase):
         result = calculate_sentence_polarity(problem, "ไม่ได้ถูกทำร้าย", config)
         self.assertEqual(result["gate_neg"], 1.0)
 
+    def test_adaptive_window_clamps_short_and_long_queries(self):
+        config = H2LConfigV3(ADAPTIVE_WINDOW_ENABLE=True, ADAPTIVE_WINDOW_MODE='balanced')
+        # Short query (30 chars): 30 * 0.15 = 4.5 -> clamped to min 20
+        self.assertEqual(config.get_negation_window_size("ก" * 30), 20)
+        # Medium query (180 chars): 180 * 0.15 = 27 -> inside [20, 32]
+        self.assertEqual(config.get_negation_window_size("ก" * 180), 27)
+        # Long query (400 chars): 400 * 0.15 = 60 -> clamped to max 32
+        self.assertEqual(config.get_negation_window_size("ก" * 400), 32)
+
+    def test_adaptive_window_safety_mode(self):
+        config = H2LConfigV3(ADAPTIVE_WINDOW_ENABLE=True, ADAPTIVE_WINDOW_MODE='safety')
+        # Short query (40 chars): 40 * 0.15 = 6 -> clamped to min 25
+        self.assertEqual(config.get_negation_window_size("ก" * 40), 25)
+        # Long query (400 chars): 400 * 0.15 = 60 -> clamped to max 35
+        self.assertEqual(config.get_negation_window_size("ก" * 400), 35)
+
+    def test_fixed_window_mode(self):
+        config = H2LConfigV3(ADAPTIVE_WINDOW_MODE='fixed', NEG_WINDOW_CHARS=42)
+        self.assertEqual(config.get_negation_window_size("ก" * 100), 42)
+
+    def test_clause_boundary_truncation(self):
+        config = H2LConfigV3()
+        prob_drug = {"name": "ยาเสพติด", "keywords": ["ยาเสพติด"], "severity": 4}
+        prob_tuition = {"name": "ค่าเทอม", "keywords": ["ค่าเทอม"], "severity": 3}
+        query = "เด็กไม่ได้เล่นยาเสพติด แต่ปัญหาแท้จริงคือพ่อแม่หาเงินค่าเทอมไม่พอ"
+
+        res_drug = calculate_sentence_polarity(prob_drug, query, config)
+        res_tuition = calculate_sentence_polarity(prob_tuition, query, config)
+
+        self.assertLess(res_drug["gate_neg"], 1.0)
+        self.assertEqual(res_tuition["gate_neg"], 1.0)
+
+    def test_symptom_exceptions_bypass_negation(self):
+        config = H2LConfigV3()
+        prob_non_adhere = {"name": "ไม่ยอมกินยา", "keywords": ["กินยา", "ความร่วมมือ"], "severity": 3}
+        prob_stroke = {"name": "หลอดเลือดสมอง", "keywords": ["หลอดเลือดสมอง", "พูด"], "severity": 4}
+
+        res1 = calculate_sentence_polarity(prob_non_adhere, "คนไข้ไม่ยอมกินยา ไม่ให้ความร่วมมือรักษา", config)
+        res2 = calculate_sentence_polarity(prob_stroke, "ผู้ป่วยอัมพาตครึ่งซีก พูดไม่ได้ กลืนลำบาก", config)
+
+        self.assertEqual(res1["gate_neg"], 1.0)
+        self.assertEqual(res2["gate_neg"], 1.0)
+
 
 class TestDenseSimilarityConversion(unittest.TestCase):
     """LanceDB returns squared L2; unit-norm vectors give cos = 1 - d/2."""

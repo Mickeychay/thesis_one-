@@ -343,7 +343,8 @@ def _summarize_adversarial_cases(cases):
 
 def evaluate_sentence_polarity(gt_path="data/expanded_ground_truth.json",
                             taxonomy_path="data/problem_codes.json",
-                            model_type="H2L (G_neg enabled)"):
+                            model_type="H2L (G_neg enabled)",
+                            config: H2LConfigV3 = None):
     """
     Run full sentence polarity evaluation.
 
@@ -353,7 +354,8 @@ def evaluate_sentence_polarity(gt_path="data/expanded_ground_truth.json",
     - per_severity (high/medium/low)
     - per_case details
     """
-    config = H2LConfigV3()
+    if config is None:
+        config = H2LConfigV3()
     if "Baseline" in model_type:
         config.NEG_ENABLE = False
         config.NEG_LAMBDA = 0.0
