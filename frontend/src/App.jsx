@@ -6,7 +6,7 @@ import PerformanceLandscape3D from './components/PerformanceLandscape3D.jsx';
 const configuredApiBase = import.meta.env.VITE_API_BASE_URL?.trim();
 const API_BASE_URL = (configuredApiBase || (import.meta.env.DEV ? '/api' : '')).replace(/\/$/, '');
 const REQUEST_TIMEOUT_MS = 120000;
-const DOC_SCALING_OPTIONS = [1, 3, 5, 10, 15];
+const DOC_SCALING_OPTIONS = [5, 10, 15, 20];
 const DEFAULT_DOC_TOP_K = 15;
 const DEFAULT_L2_MODEL = 'qwen2.5:7b';
 const SAMPLE_CASE = 'เด็กหญิงถูกแม่ดุด่าเป็นประจำ ครอบครัวรายได้น้อย เครียดมากและไม่อยากไปโรงเรียน';
@@ -3967,23 +3967,8 @@ function DocScalingPlot({ runs, selectedTopK, onSelectTopK }) {
     }
 
     if (!Number.isFinite(h2l) || !Number.isFinite(base)) {
-      const ref5 = (runs || []).find((r) => r.problem_source === source && Number(r.top_k) === 5);
-      const ref15 = (runs || []).find((r) => r.problem_source === source && Number(r.top_k) === 15);
-
-      const h5 = Number(ref5?.rows?.find((r) => r.strategy === 'h2l-hybrid')?.[metric === 'nDCG' ? 'nDCG@5' : metric] || 0.938);
-      const b5 = Number(ref5?.rows?.find((r) => r.strategy === 'basic')?.[metric === 'nDCG' ? 'nDCG@5' : metric] || 0.812);
-
-      if (metric === 'P') {
-        h2l = 0.95 - (k - 1) * 0.018;
-        base = 0.83 - (k - 1) * 0.021;
-      } else if (metric === 'R') {
-        h2l = 0.45 + (1 - Math.exp(-0.22 * k)) * 0.52;
-        base = 0.35 + (1 - Math.exp(-0.18 * k)) * 0.48;
-      } else {
-        const factor = k <= 5 ? (k / 5) * 0.08 : -(k - 5) * 0.006;
-        h2l = Math.max(0.4, Math.min(0.99, h5 + factor));
-        base = Math.max(0.3, Math.min(0.95, b5 + factor * 0.9));
-      }
+      // If artifact run data is unavailable for this specific Top-K, do not synthesize fake curves
+      return { topK: k, h2l: null, base: null, delta: null, pct: null, unavailable: true };
     }
 
     const delta = Number.isFinite(h2l) && Number.isFinite(base) ? h2l - base : 0;
@@ -4003,22 +3988,25 @@ function DocScalingPlot({ runs, selectedTopK, onSelectTopK }) {
   const plotWidth = svgWidth - padding.left - padding.right;
   const plotHeight = svgHeight - padding.top - padding.bottom;
 
-  const minVal = Math.max(0, Math.min(...scalingData.flatMap((d) => [d.base, d.h2l])) - 0.08);
-  const maxVal = Math.min(1.0, Math.max(...scalingData.flatMap((d) => [d.base, d.h2l])) + 0.08);
+  const validValues = scalingData.flatMap((d) => [d.base, d.h2l]).filter((v) => typeof v === 'number' && Number.isFinite(v));
+  const minVal = validValues.length ? Math.max(0, Math.min(...validValues) - 0.05) : 0;
+  const maxVal = validValues.length ? Math.min(1.0, Math.max(...validValues) + 0.05) : 1;
 
   const getX = (k) => {
     const idx = topKOptions.indexOf(k);
-    return padding.left + (idx / (topKOptions.length - 1)) * plotWidth;
+    return padding.left + (idx / (topKOptions.length - 1 || 1)) * plotWidth;
   };
 
   const getY = (val) => {
+    if (val === null || !Number.isFinite(val)) return padding.top + plotHeight;
     const norm = (val - minVal) / (maxVal - minVal || 1);
     return padding.top + plotHeight * (1 - norm);
   };
 
-  const h2lPoints = scalingData.map((d) => `${getX(d.topK)},${getY(d.h2l)}`).join(' ');
-  const basePoints = scalingData.map((d) => `${getX(d.topK)},${getY(d.base)}`).join(' ');
-  const areaPoints = `${getX(topKOptions[0])},${padding.top + plotHeight} ${h2lPoints} ${getX(topKOptions[topKOptions.length - 1])},${padding.top + plotHeight}`;
+  const validData = scalingData.filter((d) => !d.unavailable && Number.isFinite(d.h2l) && Number.isFinite(d.base));
+  const h2lPoints = validData.map((d) => `${getX(d.topK)},${getY(d.h2l)}`).join(' ');
+  const basePoints = validData.map((d) => `${getX(d.topK)},${getY(d.base)}`).join(' ');
+  const areaPoints = validData.length ? `${getX(validData[0].topK)},${padding.top + plotHeight} ${h2lPoints} ${getX(validData[validData.length - 1].topK)},${padding.top + plotHeight}` : '';
 
   return (
     <div className="flex h-full flex-col justify-between rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-5 shadow-sm">
@@ -4239,16 +4227,24 @@ function DocScalingPlot({ runs, selectedTopK, onSelectTopK }) {
                     </span>
                   )}
                 </div>
-                <div className="mt-2 text-base font-extrabold text-teal-700 dark:text-teal-300">
-                  {d.h2l.toFixed(3)}
-                </div>
-                <div className="mt-0.5 flex items-center justify-between text-[11px] text-on-surface-variant">
-                  <span>Base: {d.base.toFixed(3)}</span>
-                  <span className="font-bold text-teal-600 dark:text-teal-400">+{d.delta.toFixed(3)}</span>
-                </div>
-                <div className="mt-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                  +{d.pct.toFixed(1)}% Gain
-                </div>
+                {d.unavailable ? (
+                  <div className="mt-2 text-[11px] text-on-surface-variant italic">
+                    ไม่มีข้อมูล Top-{d.topK}
+                  </div>
+                ) : (
+                  <>
+                    <div className="mt-2 text-base font-extrabold text-teal-700 dark:text-teal-300">
+                      {d.h2l.toFixed(3)}
+                    </div>
+                    <div className="mt-0.5 flex items-center justify-between text-[11px] text-on-surface-variant">
+                      <span>Base: {d.base.toFixed(3)}</span>
+                      <span className="font-bold text-teal-600 dark:text-teal-400">+{d.delta.toFixed(3)}</span>
+                    </div>
+                    <div className="mt-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                      +{d.pct.toFixed(1)}% Gain
+                    </div>
+                  </>
+                )}
               </button>
             );
           })}
@@ -4585,7 +4581,7 @@ function QualityTradeoffScatter({ rows, selectedNdcgKey }) {
     .map((row) => ({
       ...row,
       xValue: Number(row[xMetric] ?? row[xMetric.toLowerCase()] ?? 0),
-      yValue: Number(row.retrieval_time || 0.0035),
+      yValue: row.retrieval_time != null ? Number(row.retrieval_time) : null,
     }))
     .filter((row) => Number.isFinite(row.xValue) && Number.isFinite(row.yValue));
 
@@ -5464,6 +5460,12 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
                 </button>
                 <StatusBadge label={runtime.status === 'ready' ? 'Runtime Ready' : 'Degraded'} tone={statusTone(runtime.status)} />
                 <StatusBadge label={summary.benchmark?.source ? 'Artifacts Loaded' : 'Missing'} tone={summary.benchmark?.source ? 'live' : 'warning'} />
+                {freshness && (
+                  <StatusBadge
+                    label={freshness.all_artifacts_current ? 'Artifacts Current' : 'Stale — Rerun Needed'}
+                    tone={freshness.all_artifacts_current ? 'live' : 'warning'}
+                  />
+                )}
               </div>
             </div>
             
@@ -5527,7 +5529,7 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
               </h3>
               <p className="text-sm text-on-surface-variant mt-1">ภาพรวมความสัมพันธ์ระหว่าง MAP, MRR, nDCG และ Retrieval Time ของทุก Strategy</p>
             </div>
-            <PerformanceLandscape3D rows={comparisonTableRows} />
+            <PerformanceLandscape3D rows={comparisonTableRows} totalCases={selectedReportRun?.num_cases || proper.num_cases || 100} />
           </section>
 
           {/* 4. Deep Dive Charts */}
@@ -5575,75 +5577,122 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
               </div>
             </div>
 
-            {/* Interactive Top-K Cut Selector for Case View (Top 1, 3, 5, 10, 15) */}
+            {/* Interactive Top-K Cut Selector for Case View */}
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-teal-500/20 pt-4">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px] text-teal-600">tune</span>
-                <span className="text-xs font-bold uppercase tracking-wider text-on-surface">เลือกระดับ Top-K (Scroll):</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-on-surface">เลือกระดับ Top-K (Scaling Cut):</span>
               </div>
               <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-[280px] sm:max-w-[400px] rounded-xl bg-surface-container-lowest p-1 border border-slate-200/60 dark:border-slate-800">
-                {[
-                  { k: 1, label: 'Top-1' },
-                  { k: 3, label: 'Top-3' },
-                  { k: 5, label: 'Top-5' },
-                  { k: 10, label: 'Top-10' },
-                  { k: 15, label: 'Top-15' },
-                ].map((item) => (
+                {DOC_SCALING_OPTIONS.map((k) => (
                   <button
-                    key={`case-k-${item.k}`}
-                    onClick={() => setSelectedExperimentTopK(item.k)}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${selectedExperimentTopK === item.k ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
+                    key={`case-k-${k}`}
+                    onClick={() => onSelectTopK && onSelectTopK(k)}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${selectedExperimentTopK === k ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
                     type="button"
                   >
-                    {item.label}
+                    Top-{k}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Case Metrics Bar (Full Top-K Metrics Range: 1 to 15) */}
-            <div className="mt-3.5 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-              {[
-                {
-                  label: `Precision@${selectedExperimentTopK} (P@${selectedExperimentTopK})`,
-                  value: selectedExperimentTopK === 15 ? (caseMetrics.p_at_15 ?? caseMetrics.p_at_10 ?? 0.81) : selectedExperimentTopK === 10 ? (caseMetrics.p_at_10 ?? 0.84) : selectedExperimentTopK === 3 ? (caseMetrics.p_at_3 ?? 1.0) : selectedExperimentTopK === 1 ? (caseMetrics.p_at_1 ?? 1.0) : (caseMetrics.p_at_5 ?? 1.0),
-                  hint: `สัดส่วนหลักฐานตรงใน ${selectedExperimentTopK} อันดับแรก`,
-                },
-                {
-                  label: `Recall@${selectedExperimentTopK} (R@${selectedExperimentTopK})`,
-                  value: selectedExperimentTopK === 15 ? (caseMetrics.r_at_15 ?? caseMetrics.r_at_10 ?? 0.95) : selectedExperimentTopK === 10 ? (caseMetrics.r_at_10 ?? 0.92) : selectedExperimentTopK === 3 ? (caseMetrics.r_at_3 ?? 0.65) : selectedExperimentTopK === 1 ? (caseMetrics.r_at_1 ?? 0.35) : (caseMetrics.r_at_5 ?? 0.85),
-                  hint: `ความครอบคลุมหลักฐานที่ ${selectedExperimentTopK} รายการ`,
-                },
-                {
-                  label: `nDCG@${selectedExperimentTopK}`,
-                  value: selectedExperimentTopK === 15 ? (caseMetrics.ndcg_at_15 ?? caseMetrics.ndcg_at_10 ?? 0.902) : selectedExperimentTopK === 10 ? (caseMetrics.ndcg_at_10 ?? 0.915) : selectedExperimentTopK === 3 ? (caseMetrics.ndcg_at_3 ?? 0.942) : selectedExperimentTopK === 1 ? (caseMetrics.ndcg_at_1 ?? 0.950) : (caseMetrics.ndcg_at_5 ?? 0.938),
-                  hint: 'คุณภาพการจัดอันดับเอกสาร',
-                },
-                {
-                  label: `F1@${selectedExperimentTopK}`,
-                  value: selectedExperimentTopK === 15 ? (caseMetrics.f1_at_15 ?? 0.875) : selectedExperimentTopK === 10 ? (caseMetrics.f1_at_10 ?? 0.88) : selectedExperimentTopK === 3 ? (caseMetrics.f1_at_3 ?? 0.78) : selectedExperimentTopK === 1 ? (caseMetrics.f1_at_1 ?? 0.52) : (caseMetrics.f1_at_5 ?? 0.884),
-                  hint: 'ความสมดุล Precision & Recall',
-                },
-                {
-                  label: 'MAP (Mean Avg Precision)',
-                  value: caseMetrics.map ?? 0.912,
-                  hint: 'ความแม่นยำเฉลี่ยตลอดทั้งเคส',
-                },
-                {
-                  label: 'MRR (First Relevant)',
-                  value: caseMetrics.mrr ?? 1.0,
-                  hint: 'อันดับที่พบหลักฐานชิ้นแรก',
-                },
-              ].map((m) => (
-                <div key={m.label} className="rounded-xl bg-surface-container-lowest p-3.5 border border-slate-200/60 dark:border-slate-800">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{m.label}</div>
-                  <div className="mt-1 font-headline text-xl font-extrabold text-teal-700 dark:text-teal-300">
-                    {typeof m.value === 'number' ? m.value.toFixed(3) : m.value}
+            {/* Case Metrics Bar */}
+            {caseMetrics.ground_truth_metrics_available ? (
+              <div className="mt-3.5 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+                {[
+                  {
+                    label: `Precision@${selectedExperimentTopK} (P@${selectedExperimentTopK})`,
+                    value: caseMetrics[`p_at_${selectedExperimentTopK}`] ?? caseMetrics.p_at_10,
+                    hint: `สัดส่วนหลักฐานตรงใน ${selectedExperimentTopK} อันดับแรก`,
+                  },
+                  {
+                    label: `Recall@${selectedExperimentTopK} (R@${selectedExperimentTopK})`,
+                    value: caseMetrics[`r_at_${selectedExperimentTopK}`] ?? caseMetrics.r_at_10,
+                    hint: `ความครอบคลุมหลักฐานที่ ${selectedExperimentTopK} รายการ`,
+                  },
+                  {
+                    label: `nDCG@${selectedExperimentTopK}`,
+                    value: caseMetrics[`ndcg_at_${selectedExperimentTopK}`] ?? caseMetrics.ndcg_at_10,
+                    hint: 'คุณภาพการจัดอันดับเอกสาร',
+                  },
+                  {
+                    label: `F1@${selectedExperimentTopK}`,
+                    value: caseMetrics[`f1_at_${selectedExperimentTopK}`] ?? caseMetrics.f1_at_10,
+                    hint: 'ความสมดุล Precision & Recall',
+                  },
+                  {
+                    label: 'MAP',
+                    value: caseMetrics.map,
+                    hint: 'Mean Average Precision',
+                  },
+                  {
+                    label: 'MRR',
+                    value: caseMetrics.mrr,
+                    hint: 'Mean Reciprocal Rank',
+                  },
+                ].map((m) => (
+                  <div key={m.label} className="rounded-xl bg-surface-container-lowest p-3.5 border border-slate-200/60 dark:border-slate-800">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{m.label}</div>
+                    <div className="mt-1 font-headline text-xl font-extrabold text-teal-700 dark:text-teal-300">
+                      {typeof m.value === 'number' ? m.value.toFixed(3) : (m.value || '-')}
+                    </div>
+                    <div className="mt-1 text-[11px] text-on-surface-variant">{m.hint}</div>
                   </div>
-                  <div className="mt-1 text-[11px] text-on-surface-variant">{m.hint}</div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-3.5 space-y-3">
+                <div className="rounded-xl bg-surface-container-lowest p-3.5 border border-slate-200/60 dark:border-slate-800 flex items-start gap-3">
+                  <span className="material-symbols-outlined text-teal-600 text-[20px] mt-0.5">info</span>
+                  <div className="text-xs text-on-surface-variant leading-relaxed">
+                    <strong className="font-bold text-on-surface">โหมดการประเมินเคสจริง (Live Case Intake):</strong> ข้อความนี้ไม่มี Ground Truth ป้ายกำกับล่วงหน้า จึงไม่คำนวณค่า Precision/Recall/MAP/MRR รายเคส (เพื่อความถูกต้องทางวิชาการ) — สถิติการประเมินอย่างเป็นทางการของโมเดลอิงจาก Benchmark <strong>100 เคส</strong> ในมุมมอง <strong>"ระดับระบบ (System Benchmark)"</strong>
+                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+                  {[
+                    {
+                      label: 'ปัญหาที่ตรวจพบ',
+                      value: caseMetrics.problems_found ?? caseProblems.length,
+                      hint: 'Accepted Problems',
+                    },
+                    {
+                      label: 'เอกสารที่ค้นคืนได้',
+                      value: caseMetrics.retrieved_docs_count ?? caseDocs.length,
+                      hint: `ดึง Top-${selectedExperimentTopK} รายการ`,
+                    },
+                    {
+                      label: 'ความมั่นใจเฉลี่ย',
+                      value: typeof caseMetrics.avg_confidence === 'number' ? `${(caseMetrics.avg_confidence * 100).toFixed(1)}%` : '-',
+                      hint: 'Detection Confidence',
+                    },
+                    {
+                      label: 'ตัดออก (Gate)',
+                      value: caseMetrics.filtered_count ?? caseFiltered.length,
+                      hint: 'Negated / Filtered',
+                    },
+                    {
+                      label: 'ความรุนแรงสูงสุด',
+                      value: caseMetrics.max_severity ?? '-',
+                      hint: 'Severity Level (1-5)',
+                    },
+                    {
+                      label: 'คะแนนเฉลี่ย H2L',
+                      value: typeof caseMetrics.avg_retrieval_score === 'number' ? caseMetrics.avg_retrieval_score.toFixed(3) : '-',
+                      hint: 'Avg Retrieval Score',
+                    },
+                  ].map((m) => (
+                    <div key={m.label} className="rounded-xl bg-surface-container-lowest p-3.5 border border-slate-200/60 dark:border-slate-800">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{m.label}</div>
+                      <div className="mt-1 font-headline text-xl font-extrabold text-teal-700 dark:text-teal-300">
+                        {m.value}
+                      </div>
+                      <div className="mt-1 text-[11px] text-on-surface-variant">{m.hint}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Case Retrieved Documents Ranked List (D1 to D15) */}
@@ -5688,7 +5737,7 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
                       </div>
                       <div className="text-right">
                         <span className="text-xs font-mono font-bold text-teal-700 dark:text-teal-300">
-                          Score: {formatNumber(doc.score || doc.similarity || 0.85, 3)}
+                          Score: {doc.score != null ? formatNumber(doc.score, 3) : doc.similarity != null ? formatNumber(doc.similarity, 3) : '—'}
                         </span>
                       </div>
                     </div>
@@ -5719,7 +5768,7 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
                   <div key={p.code || idx} className="rounded-lg bg-surface-container-lowest p-3 text-xs border border-emerald-200/60 dark:border-emerald-900/60">
                     <div className="flex items-center justify-between">
                       <strong className="font-bold text-on-surface">{p.code}: {p.name || p.thai_name}</strong>
-                      <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 font-bold">Conf: {formatNumber(p.confidence || 0.9, 2)}</span>
+                      <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 font-bold">Conf: {p.confidence != null ? formatNumber(p.confidence, 2) : '—'}</span>
                     </div>
                     {p.explanation && <p className="mt-1 text-on-surface-variant">{p.explanation}</p>}
                   </div>

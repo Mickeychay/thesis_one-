@@ -1,8 +1,10 @@
 import csv
 import difflib
+import hashlib
 import json
 import logging
 import math
+import os
 import re
 import threading
 import time
@@ -237,11 +239,23 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="H2L Clinical API", lifespan=lifespan)
 
+cors_origins_env = os.getenv("CORS_ORIGINS")
+if cors_origins_env:
+    allowed_origins = [orig.strip() for orig in cors_origins_env.split(",") if orig.strip()]
+else:
+    allowed_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3000",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -254,7 +268,7 @@ class CaseRequest(BaseModel):
     strategy: str = DEFAULT_STRATEGY
     enable_l2: bool = True
     llm_model: Optional[str] = None
-    top_k: int = Field(DEFAULT_DOC_TOP_K, ge=min(DOC_SCALING_OPTIONS), le=max(DOC_SCALING_OPTIONS))
+    top_k: int = Field(DEFAULT_DOC_TOP_K, ge=1, le=50)
     user_adjusted_spans: List[Dict[str, Any]] = Field(default_factory=list)
 
 
@@ -707,13 +721,22 @@ class RuntimeManager:
             shared = self.shared
 
         if strategy == "bm25_only":
-            from unified_baselines import BM25OnlyBaseline
+            try:
+                from eval.baselines import BM25OnlyBaseline
+            except ImportError:
+                from unified_baselines import BM25OnlyBaseline
             retriever = BM25OnlyBaseline(config, shared)
         elif strategy == "naive_rag":
-            from unified_baselines import NaiveRAGBaseline
+            try:
+                from eval.baselines import NaiveRAGBaseline
+            except ImportError:
+                from unified_baselines import NaiveRAGBaseline
             retriever = NaiveRAGBaseline(config, shared)
         elif strategy == "hyde":
-            from unified_baselines import HyDEBaseline
+            try:
+                from eval.baselines import HyDEBaseline
+            except ImportError:
+                from unified_baselines import HyDEBaseline
             retriever = HyDEBaseline(config, shared)
         elif strategy.startswith("h2l-"):
             from h2l.core import H2LUnifiedRetriever
@@ -2911,31 +2934,46 @@ def _artifact_inventory_summary() -> Dict[str, Any]:
     }
 
 
+def _normalize_progress_payload(progress: Optional[Dict[str, Any]], source_path: Path) -> Dict[str, Any]:
+    if not progress:
+        return {"source": str(source_path), "status": "idle", "phase": "not_started"}
+    payload = {"source": str(source_path), **progress}
+    raw_status = payload.get("status", "idle")
+    if raw_status == "running":
+        completed = int(payload.get("completed_case_count") or 0)
+        total = int(payload.get("total_case_count") or 0)
+        if total > 0 and completed >= total:
+            payload["status"] = "complete"
+            payload["phase"] = "completed"
+        else:
+            updated_dt = _parse_iso_datetime(payload.get("updated_at"))
+            if updated_dt and (datetime.now(timezone.utc) - updated_dt).total_seconds() > 300:
+                payload["status"] = "stale"
+                payload["phase"] = "timed_out"
+    return payload
+
+
 def _evaluation_progress_summary() -> Dict[str, Any]:
-    proper = _read_json_path(EVALUATION_PROGRESS_FILES["proper_eval"])
-    polarity = _read_json_path(EVALUATION_PROGRESS_FILES["sentence_polarity"])
-    proper_status = proper.get("status", "idle") if proper else "idle"
-    polarity_status = polarity.get("status", "idle") if polarity else "idle"
+    proper_raw = _read_json_path(EVALUATION_PROGRESS_FILES["proper_eval"])
+    polarity_raw = _read_json_path(EVALUATION_PROGRESS_FILES["sentence_polarity"])
+    proper = _normalize_progress_payload(proper_raw, EVALUATION_PROGRESS_FILES["proper_eval"])
+    polarity = _normalize_progress_payload(polarity_raw, EVALUATION_PROGRESS_FILES["sentence_polarity"])
+    proper_status = proper.get("status", "idle")
+    polarity_status = polarity.get("status", "idle")
     if "running" in {proper_status, polarity_status}:
         overall_status = "running"
     elif "error" in {proper_status, polarity_status}:
         overall_status = "error"
+    elif "complete" in {proper_status, polarity_status}:
+        overall_status = "complete"
     else:
         overall_status = "idle"
     return {
         "status": overall_status,
-        "proper_eval": (
-            {"source": str(EVALUATION_PROGRESS_FILES["proper_eval"]), **proper}
-            if proper else
-            {"source": str(EVALUATION_PROGRESS_FILES["proper_eval"]), "status": "idle", "phase": "not_started"}
-        ),
-        "sentence_polarity": (
-            {"source": str(EVALUATION_PROGRESS_FILES["sentence_polarity"]), **polarity}
-            if polarity else
-            {"source": str(EVALUATION_PROGRESS_FILES["sentence_polarity"]), "status": "idle", "phase": "not_started"}
-        ),
+        "proper_eval": proper,
+        "sentence_polarity": polarity,
         "interpretation": (
-            "progress นี้อ่านจากไฟล์จริงที่ evaluator เขียนระหว่างรัน เพื่อให้ report เห็นสถานะแบบสดโดยไม่สร้างข้อมูลจำลอง"
+            "progress นี้อ่านจากไฟล์จริงที่ evaluator เขียนระหว่างรัน พร้อมระบบตรวจสอบความสดใหม่เพื่อป้องกันการค้างสถานะ"
         ),
     }
 
@@ -3127,17 +3165,94 @@ def _json_safe(value: Any) -> Any:
 
 
 def _normalize_doc_top_k(value: Any) -> int:
+    """Normalize requested top_k to valid integer range [1, 50]."""
     try:
         requested = int(value)
     except (TypeError, ValueError):
         requested = DEFAULT_DOC_TOP_K
-    return min(DOC_SCALING_OPTIONS, key=lambda option: abs(option - requested))
+    return max(1, min(50, requested))
+
+
+def _file_sha256(file_path: Any) -> Optional[str]:
+    path = Path(file_path)
+    if not path.exists() or not path.is_file():
+        return None
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
+def _artifact_input_status(
+    metadata: Dict[str, Any],
+    current_taxonomy_sha256: Optional[str],
+    current_ground_truth_sha256: Optional[str],
+) -> Dict[str, Any]:
+    artifact_taxonomy_sha256 = metadata.get("taxonomy_sha256")
+    artifact_ground_truth_sha256 = metadata.get("ground_truth_sha256")
+    taxonomy_hash_present = bool(artifact_taxonomy_sha256)
+    ground_truth_hash_present = bool(artifact_ground_truth_sha256)
+    taxonomy_hash_match = bool(
+        taxonomy_hash_present
+        and current_taxonomy_sha256
+        and artifact_taxonomy_sha256 == current_taxonomy_sha256
+    )
+    ground_truth_hash_match = bool(
+        ground_truth_hash_present
+        and current_ground_truth_sha256
+        and artifact_ground_truth_sha256 == current_ground_truth_sha256
+    )
+    return {
+        "artifact_taxonomy_sha256": artifact_taxonomy_sha256,
+        "artifact_ground_truth_sha256": artifact_ground_truth_sha256,
+        "taxonomy_hash_present": taxonomy_hash_present,
+        "ground_truth_hash_present": ground_truth_hash_present,
+        "taxonomy_hash_match": taxonomy_hash_match,
+        "ground_truth_hash_match": ground_truth_hash_match,
+        "current": bool(taxonomy_hash_match and ground_truth_hash_match),
+    }
+
+
+def _statistical_artifact_status(
+    artifact: Dict[str, Any],
+    current_taxonomy_sha256: Optional[str],
+    current_ground_truth_sha256: Optional[str],
+) -> Dict[str, Any]:
+    input_status = _artifact_input_status(
+        artifact,
+        current_taxonomy_sha256,
+        current_ground_truth_sha256,
+    )
+    source_path_value = artifact.get("source")
+    source_path = Path(source_path_value) if source_path_value else None
+    reported_source_sha256 = artifact.get("source_sha256")
+    actual_source_sha256 = _file_sha256(source_path) if source_path else None
+    source_hash_match = bool(
+        reported_source_sha256
+        and actual_source_sha256
+        and reported_source_sha256 == actual_source_sha256
+    )
+    alternative = str(artifact.get("alternative") or "").lower()
+    test_name = str(artifact.get("statistical_test") or "").lower()
+    two_sided = alternative == "two-sided" and "wilcoxon" in test_name
+    return {
+        **input_status,
+        "source": source_path_value,
+        "reported_source_sha256": reported_source_sha256,
+        "actual_source_sha256": actual_source_sha256,
+        "source_hash_match": source_hash_match,
+        "alternative": alternative or None,
+        "two_sided": two_sided,
+        "current": bool(input_status["current"] and source_hash_match and two_sided),
+    }
 
 
 def _doc_scaling_guidance(selected_top_k: Optional[int] = None) -> Dict[str, Any]:
-    selected = _normalize_doc_top_k(selected_top_k or DEFAULT_DOC_TOP_K)
+    raw_k = _normalize_doc_top_k(selected_top_k or DEFAULT_DOC_TOP_K)
+    nearest_option = min(DOC_SCALING_OPTIONS, key=lambda option: abs(option - raw_k))
     return {
-        "selected_top_k": selected,
+        "selected_top_k": raw_k,
+        "nearest_scaling_option": nearest_option,
         "options": DOC_SCALING_OPTIONS,
         "recommended_top_k": DEFAULT_DOC_TOP_K,
         "recommended_for_reporting": "top_k=15",
@@ -3180,7 +3295,7 @@ def _latest_statistical_summary() -> Dict[str, Any]:
         metrics.append({
             "id": key,
             "metric_name": block.get("metric_name", key),
-            "source_function": "statistical_analysis.py::StatisticalAnalyzer",
+            "source_function": block.get("source_function") or data.get("source_function"),
             "direction": "lower_is_better" if lower_is_better else "higher_is_better",
             "anova": {
                 "f_statistic": _safe_number(block.get("anova", {}).get("f_statistic")),
@@ -3197,9 +3312,18 @@ def _latest_statistical_summary() -> Dict[str, Any]:
         })
     return {
         "source": str(path) if path else None,
-        "source_function": "statistical_analysis.py::StatisticalAnalyzer",
+        "source_function": data.get("source_function"),
+        "generated_at": data.get("generated_at"),
+        "source_artifact": data.get("source"),
+        "source_sha256": data.get("source_sha256"),
+        "taxonomy_sha256": data.get("taxonomy_sha256"),
+        "ground_truth_sha256": data.get("ground_truth_sha256"),
+        "statistical_test": data.get("statistical_test"),
+        "alternative": data.get("alternative"),
+        "multiplicity_correction": data.get("multiplicity_correction"),
+        "provenance_status": data.get("provenance_status"),
         "metrics": metrics,
-        "note": "statistical_analysis artifact เป็นผลทดลองภาพรวม ใช้เป็น guardrail ไม่ใช่ผลของเคสปัจจุบัน และอาจใช้ชื่อ strategy legacy จากชุดทดลองเดิม",
+        "note": data.get("note") or "ผลสถิติระดับระบบจาก matrix artifact ที่ตรวจสอบ provenance แล้ว",
     }
 
 
@@ -3937,16 +4061,19 @@ def _thesis_protocol_summary(
         ],
         "final_experiment_commands": {
             "primary_detected_top15": (
-                "python evaluate_h2l_proper.py --strategies bm25_only naive_rag hyde basic "
-                "h2l-bm25 h2l-naive_rag h2l-hyde h2l-hybrid --problem-source detected --top-k 15 --include-polarity"
+                "python eval/evaluate_h2l_proper.py --ground-truth data/expanded_ground_truth.json "
+                "--strategies bm25_only naive_rag hyde basic h2l-bm25 h2l-naive_rag h2l-hyde "
+                "h2l-hybrid --problem-source detected --top-k 15 --include-polarity"
             ),
             "sensitivity_detected": (
-                "python evaluate_h2l_proper.py --strategies bm25_only naive_rag hyde basic "
-                "h2l-bm25 h2l-naive_rag h2l-hyde h2l-hybrid --problem-source detected --top-k-list 5 10 15 20"
+                "python eval/evaluate_h2l_proper.py --ground-truth data/expanded_ground_truth.json "
+                "--strategies bm25_only naive_rag hyde basic h2l-bm25 h2l-naive_rag h2l-hyde "
+                "h2l-hybrid --problem-source detected --top-k-list 5 10 15 20"
             ),
             "gold_upper_bound": (
-                "python evaluate_h2l_proper.py --strategies bm25_only naive_rag hyde basic "
-                "h2l-bm25 h2l-naive_rag h2l-hyde h2l-hybrid --problem-source gold --top-k-list 5 10 15 20"
+                "python eval/evaluate_h2l_proper.py --ground-truth data/expanded_ground_truth.json "
+                "--strategies bm25_only naive_rag hyde basic h2l-bm25 h2l-naive_rag h2l-hyde "
+                "h2l-hybrid --problem-source gold --top-k-list 5 10 15 20"
             ),
         },
         "interpretation": (
@@ -4011,30 +4138,77 @@ def _evaluation_summary() -> Dict:
     gt_updated_dt = _parse_iso_datetime(ground_truth.get("dataset_updated_at"))
     proper_dt = _parse_iso_datetime(proper_metadata.get("timestamp"))
     polarity_dt = _parse_iso_datetime(polarity.get("metadata", {}).get("timestamp"))
-    benchmark_current = not gt_updated_dt or not proper_dt or proper_dt >= gt_updated_dt
-    polarity_current = not gt_updated_dt or not polarity_dt or polarity_dt >= gt_updated_dt
+    benchmark_current_ts = bool(proper_dt and (not gt_updated_dt or proper_dt >= gt_updated_dt))
+    polarity_current_ts = bool(polarity_dt and (not gt_updated_dt or polarity_dt >= gt_updated_dt))
+
+    current_tax_hash = _file_sha256("data/problem_codes.json")
+    current_gt_hash = _file_sha256("data/expanded_ground_truth.json")
+    benchmark_inputs = _artifact_input_status(proper_metadata, current_tax_hash, current_gt_hash)
+    polarity_inputs = _artifact_input_status(
+        polarity.get("metadata", {}),
+        current_tax_hash,
+        current_gt_hash,
+    )
+    statistics_inputs = _statistical_artifact_status(
+        {
+            "source": statistical.get("source_artifact"),
+            "source_sha256": statistical.get("source_sha256"),
+            "taxonomy_sha256": statistical.get("taxonomy_sha256"),
+            "ground_truth_sha256": statistical.get("ground_truth_sha256"),
+            "statistical_test": statistical.get("statistical_test"),
+            "alternative": statistical.get("alternative"),
+        },
+        current_tax_hash,
+        current_gt_hash,
+    )
+
+    is_benchmark_current = bool(benchmark_current_ts and benchmark_inputs["current"])
+    is_polarity_current = bool(polarity_current_ts and polarity_inputs["current"])
+    is_statistics_current = bool(statistical.get("source") and statistics_inputs["current"])
+    all_artifacts_current = bool(
+        is_benchmark_current and is_polarity_current and is_statistics_current
+    )
+    needs_review = not all_artifacts_current
+
     freshness = {
         "dataset_updated_at": ground_truth.get("dataset_updated_at"),
         "proper_eval_timestamp": proper_metadata.get("timestamp"),
         "polarity_eval_timestamp": polarity.get("metadata", {}).get("timestamp"),
-        "benchmark_current": benchmark_current,
-        "polarity_current": polarity_current,
-        "needs_review": not benchmark_current or not polarity_current,
+        "current_taxonomy_sha256": current_tax_hash,
+        "current_ground_truth_sha256": current_gt_hash,
+        "artifact_taxonomy_sha256": benchmark_inputs["artifact_taxonomy_sha256"],
+        "artifact_ground_truth_sha256": benchmark_inputs["artifact_ground_truth_sha256"],
+        "taxonomy_hash_match": benchmark_inputs["taxonomy_hash_match"],
+        "ground_truth_hash_match": benchmark_inputs["ground_truth_hash_match"],
+        "benchmark_hashes_present": bool(
+            benchmark_inputs["taxonomy_hash_present"]
+            and benchmark_inputs["ground_truth_hash_present"]
+        ),
+        "benchmark": benchmark_inputs,
+        "polarity": polarity_inputs,
+        "statistics": statistics_inputs,
+        "benchmark_current": is_benchmark_current,
+        "polarity_current": is_polarity_current,
+        "statistics_current": is_statistics_current,
+        "all_artifacts_current": all_artifacts_current,
+        "needs_review": needs_review,
         "interpretation": (
-            "evaluation artifacts สอดคล้องกับ ground truth รุ่นปัจจุบัน"
-            if benchmark_current and polarity_current else
-            "ground truth ถูกอัปเดตหลัง artifact บางส่วน จึงควร refresh performance snapshot และรัน evaluator ใหม่ถ้าจะใช้เป็นผลหลัก"
+            "evaluation, polarity และ statistical artifacts สอดคล้องกับ input และ source artifact รุ่นปัจจุบัน"
+            if all_artifacts_current else
+            "artifact อย่างน้อยหนึ่งรายการขาด provenance, ใช้ hash คนละรุ่น, หรือไม่ได้ใช้ two-sided Wilcoxon ตาม protocol"
         ),
     }
     review_actions = {
         "refresh_endpoint": "/evaluation-summary",
         "refresh_label": "Reload Performance Snapshot",
-        "needs_benchmark_rerun": not benchmark_current,
-        "needs_polarity_rerun": not polarity_current,
+        "needs_benchmark_rerun": not is_benchmark_current,
+        "needs_polarity_rerun": not is_polarity_current,
+        "needs_statistics_rerun": not is_statistics_current,
         "benchmark_command": thesis_protocol.get("final_experiment_commands", {}).get("primary_detected_top15"),
-        "polarity_command": "python evaluate_sentence_polarity.py --ground-truth expanded_ground_truth.json",
+        "polarity_command": "python eval/evaluate_sentence_polarity.py --ground-truth data/expanded_ground_truth.json --taxonomy data/problem_codes.json",
+        "statistics_command": "python scripts/build_statistical_analysis.py",
         "note": (
-            "กด reload เพื่ออ่าน artifact ล่าสุดจาก disk; ถ้า ground truth ใหม่กว่า artifact ต้องรัน evaluator ซ้ำก่อนสรุปผล"
+            "กด reload เพื่ออ่าน artifact ล่าสุดจาก disk; hash ที่หายหรือไม่ตรงจะถูกจัดเป็น stale และไม่ผ่าน thesis readiness"
         ),
     }
 
@@ -4052,7 +4226,7 @@ def _evaluation_summary() -> Dict:
             "strategy": preferred,
             "ground_truth_source": ground_truth.get("source"),
             "dataset_updated_at": ground_truth.get("dataset_updated_at"),
-            "benchmark_current": benchmark_current,
+            "benchmark_current": is_benchmark_current,
             "map": _mean_metric(preferred_metrics, "MAP"),
             "mrr": _mean_metric(preferred_metrics, "MRR"),
             "p_at_5": _mean_metric(preferred_metrics, "P@5"),
@@ -4073,7 +4247,7 @@ def _evaluation_summary() -> Dict:
             "total_cases": polarity.get("overall", {}).get("total_cases"),
             "ground_truth_source": ground_truth.get("source"),
             "dataset_updated_at": ground_truth.get("dataset_updated_at"),
-            "benchmark_current": polarity_current,
+            "benchmark_current": is_polarity_current,
             "accuracy": polarity.get("overall", {}).get("accuracy"),
             "negation_detection_rate": polarity.get("overall", {}).get("negation_detection_rate"),
             "false_positive_rate": polarity.get("overall", {}).get("false_positive_rate"),
@@ -4257,17 +4431,28 @@ def _thesis_status_payload() -> Dict[str, Any]:
 
     statistical_path = _latest_path("evaluation_results/statistical_analysis_*.json")
     statistical = summary.get("research_report", {}).get("statistical", {})
-    checks.append(_artifact_check(
+    statistics_freshness = freshness.get("statistics", {})
+    statistical_check = _artifact_check(
         "statistical_analysis",
         "Statistical analysis artifact",
         statistical_path,
-        "statistical_analysis.py::StatisticalAnalyzer",
+        statistical.get("source_function") or "scripts/build_statistical_analysis.py::build_artifact",
         True,
         {
             "metrics": [metric.get("id") for metric in statistical.get("metrics", [])],
             "note": statistical.get("note"),
+            "statistics_current": freshness.get("statistics_current"),
+            "source_hash_match": statistics_freshness.get("source_hash_match"),
+            "taxonomy_hash_match": statistics_freshness.get("taxonomy_hash_match"),
+            "ground_truth_hash_match": statistics_freshness.get("ground_truth_hash_match"),
+            "alternative": statistics_freshness.get("alternative"),
+            "two_sided": statistics_freshness.get("two_sided"),
         },
-    ))
+    )
+    statistical_check["status"] = (
+        "ready" if statistical_path and freshness.get("statistics_current") else "degraded"
+    )
+    checks.append(statistical_check)
 
     sensitivity_specs = [
         ("alpha_sensitivity", "Alpha sensitivity", Path("ablation_results/rq2_α_parameter_sensitivity.csv"), "ablation_study.py::AlphaSensitivityExperiment"),
@@ -4384,7 +4569,7 @@ def _thesis_status_payload() -> Dict[str, Any]:
     checks.append({
         "id": "evaluation_progress",
         "label": "Live evaluation progress feed",
-        "status": "ready" if evaluation_progress.get("status") in {"idle", "running"} else "degraded",
+        "status": "ready" if evaluation_progress.get("status") in {"idle", "running", "complete"} else "degraded",
         "required": False,
         "source": "/evaluation-progress",
         "source_function": "evaluate_h2l_proper.py / evaluate_sentence_polarity.py progress artifacts",
@@ -4712,7 +4897,7 @@ def analyze_case(req: CaseRequest):
         logger.exception("Retrieval failed")
         retrieval_errors.append(str(exc))
 
-    retrieved_docs = _serialize_retrieved_docs(retrieval_results, problems)
+    retrieved_docs = _serialize_retrieved_docs(retrieval_results[:requested_top_k], problems)
     retrieval_ms = round((time.perf_counter() - retrieval_started_perf) * 1000, 2)
     metrics = _calculate_metrics(problems, filtered_out, retrieved_docs)
 
@@ -4728,11 +4913,22 @@ def analyze_case(req: CaseRequest):
         "total": round((time.perf_counter() - request_started_perf) * 1000, 2),
     }
 
+    strategy_degraded = effective_strategy != requested_strategy
+    degradation_reason = None
+    if strategy_degraded:
+        degradation_reason = f"Requested strategy '{requested_strategy}' fell back to '{effective_strategy}' because dense embedding or reranker runtime components are unavailable."
+    elif retrieval_errors:
+        degradation_reason = f"Retrieval encountered errors: {'; '.join(retrieval_errors)}"
+
+    overall_status = "degraded" if (retrieval_errors or strategy_degraded) else "ok"
+
     result = {
-        "status": "ok",
+        "status": overall_status,
         "mode": "runtime-rag-h2l",
         "requested_strategy": requested_strategy,
         "effective_strategy": effective_strategy,
+        "strategy_fallback": strategy_degraded,
+        "degradation_reason": degradation_reason,
         "requested_l2_model": requested_l2_model,
         "effective_l2_model": metadata.get("l2_model"),
         "model_provenance": {

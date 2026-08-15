@@ -1,12 +1,12 @@
 {
   "metadata": {
-    "timestamp": "2026-08-14T20:49:47.661685",
+    "timestamp": "2026-08-15T15:49:40.548090",
     "gt_file": "data/expanded_ground_truth.json",
     "ground_truth_sha256": "c774e39238cdd7b500c91cedea693e48f838129833d1eb23d25dc21cc0970058",
     "taxonomy_file": "data/problem_codes.json",
-    "taxonomy_sha256": "4082c225399de877df767ec71f649e613ba2c2639847a5b2736b2c0697ff430e",
-    "evaluator_sha256": "e3111fc873bc936ce52eda1446f60895cbd2ed6b72944531aa422eef73d5ccff",
-    "h2l_core_sha256": "3e0e58df6e5b05f03ce86e7cc237950ed12d695ea545526fe06be3b82f32301e",
+    "taxonomy_sha256": "00be6391f15f61afe6e44d7d5b2a1f2e3c5d25a23e56552f838a9ebfe843a339",
+    "evaluator_sha256": "bf357866e2ab053317d260ed217ad40ec36101ef211073147fcd166abf2d43e5",
+    "h2l_core_sha256": "9941e2bc968a1cc0e5c3ba11dada4d1a2a9cc55008c6d193f2ace0ef8769fd93",
     "evaluation_scope": "all_split_test_cases",
     "total_test_cases": 100,
     "total_polarity_cases": 100,
@@ -29,13 +29,13 @@
     "window_size": 30
   },
   "overall": {
-    "accuracy": 0.87,
-    "negation_detection_rate": 0.7222222222222222,
-    "false_positive_rate": 0.0975609756097561,
-    "precision": 0.6190476190476191,
+    "accuracy": 0.89,
+    "negation_detection_rate": 0.6111111111111112,
+    "false_positive_rate": 0.04878048780487805,
+    "precision": 0.7333333333333333,
     "f1_score": 0.6666666666666666,
-    "mean_g_neg_positive": 0.9695121951219512,
-    "mean_g_neg_negated": 0.6000000000000001,
+    "mean_g_neg_positive": 0.9841463414634146,
+    "mean_g_neg_negated": 0.6666666666666666,
     "n_positive": 82,
     "n_negated": 18,
     "total_cases": 100
@@ -73,19 +73,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0201": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1601": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -125,25 +128,29 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0701": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0101": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -181,19 +188,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0303": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -233,25 +243,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "L89.3": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -293,31 +307,36 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "J18": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0301": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -357,25 +376,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "Z59.8": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -413,19 +436,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "E46": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "Z63.0": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -465,25 +491,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "F32": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "Z60.0": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -521,19 +551,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "L30": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0101": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -569,13 +602,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 29
             },
             "0101": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 29
             }
           },
           "correct": true,
@@ -611,13 +646,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "1401": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             }
           },
           "correct": true,
@@ -659,31 +696,36 @@
               "gate_total": 0.34,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "E11": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "I10": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0701": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             }
           },
           "correct": false,
@@ -721,19 +763,22 @@
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "F32": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -767,7 +812,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 23
             }
           },
           "correct": true,
@@ -803,13 +849,15 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "Z63.5": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -851,31 +899,36 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "L89.4": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0701": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1003": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -911,13 +964,15 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0701": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -953,13 +1008,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             },
             "1204": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             }
           },
           "correct": true,
@@ -995,13 +1052,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "1002": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             }
           },
           "correct": true,
@@ -1037,13 +1096,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 28
             },
             "I10": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 28
             }
           },
           "correct": true,
@@ -1083,25 +1144,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0501": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "F10.2": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -1137,13 +1202,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1004": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -1184,19 +1251,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0201": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1601": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -1239,25 +1309,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "L89.3": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -1302,31 +1376,36 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "J18": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0301": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -1369,25 +1448,29 @@
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "F32": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "Z60.0": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "1102": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -1426,13 +1509,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 30
             },
             "0101": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 30
             }
           },
           "correct": true,
@@ -1471,13 +1556,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             },
             "1401": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             }
           },
           "correct": true,
@@ -1516,13 +1603,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "1002": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             }
           },
           "correct": true,
@@ -1565,25 +1654,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0501": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "F10.2": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -1630,31 +1723,36 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "Z59.8": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "F32": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -1693,7 +1791,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 21
             }
           },
           "correct": true,
@@ -1771,7 +1870,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 25
             }
           },
           "correct": true,
@@ -1843,7 +1943,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -1897,24 +1998,25 @@
           "expected_problems": [
             "1101"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.8,
-          "mean_g_neg": 0.8,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1101": 0.8
+            "1101": 1.0
           },
           "g_full_details": {
             "1101": {
-              "gate_total": 0.8,
-              "gate_neg": 0.8,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": {
             "code": "T74",
             "trigger_word": "การทำร้ายร่างกาย",
@@ -1978,13 +2080,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 21
             },
             "1104": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 21
             }
           },
           "correct": true,
@@ -2051,7 +2155,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 23
             }
           },
           "correct": true,
@@ -2129,7 +2234,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -2201,7 +2307,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 22
             }
           },
           "correct": true,
@@ -2268,7 +2375,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -2335,7 +2443,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 22
             }
           },
           "correct": true,
@@ -2402,7 +2511,8 @@
               "gate_total": 0.8,
               "gate_neg": 0.8,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -2458,24 +2568,25 @@
           "expected_problems": [
             "0702"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.7,
-          "mean_g_neg": 0.7,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "0702": 0.7
+            "0702": 1.0
           },
           "g_full_details": {
             "0702": {
-              "gate_total": 0.7,
-              "gate_neg": 0.7,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": {
             "code": "1602",
             "trigger_word": "ยาเสพติด",
@@ -2541,7 +2652,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -2609,7 +2721,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 22
             }
           },
           "correct": true,
@@ -2671,7 +2784,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -2730,7 +2844,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -2791,7 +2906,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -2840,24 +2956,25 @@
           "expected_problems": [
             "0702"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.7,
-          "mean_g_neg": 0.7,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "0702": 0.7
+            "0702": 1.0
           },
           "g_full_details": {
             "0702": {
-              "gate_total": 0.7,
-              "gate_neg": 0.7,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": {
             "code": "C34",
             "trigger_word": "มะเร็งปอด",
@@ -2911,7 +3028,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -2958,24 +3076,25 @@
           "expected_problems": [
             "1201"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.7,
-          "mean_g_neg": 0.7,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1201": 0.7
+            "1201": 1.0
           },
           "g_full_details": {
             "1201": {
-              "gate_total": 0.7,
-              "gate_neg": 0.7,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": {
             "code": "A15",
             "trigger_word": "วัณโรคปอด",
@@ -3026,13 +3145,15 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 21
             },
             "1001": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 21
             }
           },
           "correct": true,
@@ -3068,13 +3189,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3110,13 +3233,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "Z59.0": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3152,13 +3277,15 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3194,13 +3321,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 25
             },
             "0501": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 25
             }
           },
           "correct": true,
@@ -3241,13 +3370,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "F32": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3283,13 +3414,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3323,7 +3456,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3357,7 +3491,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3393,13 +3528,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0201": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3421,24 +3558,25 @@
           "expected_problems": [
             "1405"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.6,
-          "mean_g_neg": 0.6,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1405": 0.6
+            "1405": 1.0
           },
           "g_full_details": {
             "1405": {
-              "gate_total": 0.6,
-              "gate_neg": 0.6,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": null
         },
         {
@@ -3469,13 +3607,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "E11.5": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3511,13 +3651,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1601": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3553,13 +3695,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "F20": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3595,13 +3739,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3639,19 +3785,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "T74.1": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3686,13 +3835,15 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "F32": {
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3725,13 +3876,15 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3763,7 +3916,8 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3795,7 +3949,8 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3828,13 +3983,15 @@
               "gate_total": 0.34,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "0201": {
               "gate_total": 0.34,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3866,7 +4023,8 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -3908,19 +4066,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             },
             "0206": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             },
             "0102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             }
           },
           "correct": true,
@@ -3956,13 +4117,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 24
             },
             "0201": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 24
             }
           },
           "correct": true,
@@ -3985,31 +4148,33 @@
             "0805",
             "0901"
           ],
-          "negation_detected": false,
-          "min_g_neg": 1.0,
-          "mean_g_neg": 1.0,
-          "n_codes_negated": 0,
+          "negation_detected": true,
+          "min_g_neg": 0.7,
+          "mean_g_neg": 0.85,
+          "n_codes_negated": 1,
           "g_neg_details": {
             "0805": 1.0,
-            "0901": 1.0
+            "0901": 0.7
           },
           "g_full_details": {
             "0805": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0901": {
-              "gate_total": 1.0,
-              "gate_neg": 1.0,
+              "gate_total": 0.7,
+              "gate_neg": 0.7,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": true,
+          "correct": false,
           "target_gate_evaluated": true,
-          "target_preserved": true,
+          "target_preserved": false,
           "adversarial_false_trigger": null
         },
         {
@@ -4040,13 +4205,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0401": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -4082,13 +4249,15 @@
               "gate_total": 0.8,
               "gate_neg": 0.8,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0701": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -4124,13 +4293,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -4166,19 +4337,22 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "0206": {
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "0102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             }
           },
           "correct": true,
@@ -4212,7 +4386,8 @@
               "gate_total": 0.595,
               "gate_neg": 0.7,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 23
             }
           },
           "correct": true,
@@ -4234,22 +4409,23 @@
           "expected_problems": [
             "1003"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.4,
-          "mean_g_neg": 0.4,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1003": 0.4
+            "1003": 1.0
           },
           "g_full_details": {
             "1003": {
-              "gate_total": 0.4,
-              "gate_neg": 0.4,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 22
             }
           },
-          "correct": true,
+          "correct": false,
           "target_gate_evaluated": true,
           "target_preserved": null,
           "adversarial_false_trigger": null
@@ -4280,7 +4456,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -4313,13 +4490,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0701": {
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -4353,7 +4532,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -4395,19 +4575,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "T74": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -4445,19 +4628,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1002": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0301": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -4493,13 +4679,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -4537,19 +4725,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 27
             },
             "T74": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 27
             },
             "1102": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 27
             }
           },
           "correct": true,
@@ -4587,19 +4778,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 24
             },
             "0201": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 24
             },
             "0301": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 24
             }
           },
           "correct": true,
@@ -4635,13 +4829,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0302": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -4677,19 +4873,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "T74": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 0.34,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -4723,19 +4922,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1002": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0301": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -4757,22 +4959,23 @@
           "expected_problems": [
             "1405"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.7,
-          "mean_g_neg": 0.7,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1405": 0.7
+            "1405": 1.0
           },
           "g_full_details": {
             "1405": {
-              "gate_total": 0.7,
-              "gate_neg": 0.7,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
-          "correct": true,
+          "correct": false,
           "target_gate_evaluated": true,
           "target_preserved": null,
           "adversarial_false_trigger": null
@@ -4803,7 +5006,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 29
             }
           },
           "correct": false,
@@ -4837,7 +5041,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             }
           },
           "correct": false,
@@ -4860,18 +5065,19 @@
             "0807"
           ],
           "negation_detected": true,
-          "min_g_neg": 0.4,
-          "mean_g_neg": 0.4,
+          "min_g_neg": 0.7,
+          "mean_g_neg": 0.7,
           "n_codes_negated": 1,
           "g_neg_details": {
-            "0807": 0.4
+            "0807": 0.7
           },
           "g_full_details": {
             "0807": {
-              "gate_total": 0.4,
-              "gate_neg": 0.4,
+              "gate_total": 0.7,
+              "gate_neg": 0.7,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 21
             }
           },
           "correct": true,
@@ -4911,13 +5117,15 @@
               "gate_total": 0.915,
               "gate_neg": 1.0,
               "gate_len": 0.915,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "T74.1": {
               "gate_total": 0.915,
               "gate_neg": 1.0,
               "gate_len": 0.915,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -4953,13 +5161,15 @@
               "gate_total": 0.8617,
               "gate_neg": 1.0,
               "gate_len": 0.8617,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "F20": {
               "gate_total": 0.8617,
               "gate_neg": 1.0,
               "gate_len": 0.8617,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -4993,7 +5203,8 @@
               "gate_total": 0.9314,
               "gate_neg": 1.0,
               "gate_len": 0.9314,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -5038,19 +5249,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0201": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1601": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5090,25 +5304,29 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0701": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0101": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5146,19 +5364,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0303": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5198,25 +5419,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "L89.3": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5258,31 +5483,36 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "J18": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0301": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5322,25 +5552,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "Z59.8": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5378,19 +5612,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "E46": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "Z63.0": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5430,25 +5667,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "F32": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "Z60.0": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5486,19 +5727,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "L30": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0101": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5534,13 +5778,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 29
             },
             "0101": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 29
             }
           },
           "correct": true,
@@ -5576,13 +5822,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "1401": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             }
           },
           "correct": true,
@@ -5624,31 +5872,36 @@
               "gate_total": 0.34,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "E11": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "I10": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0701": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             }
           },
           "correct": false,
@@ -5686,19 +5939,22 @@
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "F32": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5732,7 +5988,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 23
             }
           },
           "correct": true,
@@ -5768,13 +6025,15 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "Z63.5": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -5816,31 +6075,36 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "L89.4": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0701": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1003": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5876,13 +6140,15 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             },
             "0701": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -5918,13 +6184,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             },
             "1204": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             }
           },
           "correct": true,
@@ -5960,13 +6228,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "1002": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             }
           },
           "correct": true,
@@ -6002,13 +6272,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 28
             },
             "I10": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 28
             }
           },
           "correct": true,
@@ -6048,25 +6320,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0501": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "F10.2": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -6102,13 +6378,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1004": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -6149,19 +6427,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0201": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1601": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -6204,25 +6485,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "L89.3": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -6267,31 +6552,36 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "J18": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0301": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -6334,25 +6624,29 @@
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "F32": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "Z60.0": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             },
             "1102": {
               "gate_total": 0.7,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.7
+              "gate_sub": 0.7,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -6391,13 +6685,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 30
             },
             "0101": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 30
             }
           },
           "correct": true,
@@ -6436,13 +6732,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             },
             "1401": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             }
           },
           "correct": true,
@@ -6481,13 +6779,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "1002": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             }
           },
           "correct": true,
@@ -6530,25 +6830,29 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0501": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "F10.2": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -6595,31 +6899,36 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "Z59.8": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "F32": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -6658,7 +6967,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 21
             }
           },
           "correct": true,
@@ -6736,7 +7046,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 25
             }
           },
           "correct": true,
@@ -6808,7 +7119,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -6862,24 +7174,25 @@
           "expected_problems": [
             "1101"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.8,
-          "mean_g_neg": 0.8,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1101": 0.8
+            "1101": 1.0
           },
           "g_full_details": {
             "1101": {
-              "gate_total": 0.8,
-              "gate_neg": 0.8,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": {
             "code": "T74",
             "trigger_word": "การทำร้ายร่างกาย",
@@ -6943,13 +7256,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 21
             },
             "1104": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 21
             }
           },
           "correct": true,
@@ -7013,13 +7328,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "E11.5": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7055,13 +7372,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1601": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7097,13 +7416,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "F20": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7139,13 +7460,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7183,19 +7506,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "T74.1": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7231,13 +7557,15 @@
               "gate_total": 0.915,
               "gate_neg": 1.0,
               "gate_len": 0.915,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "T74.1": {
               "gate_total": 0.915,
               "gate_neg": 1.0,
               "gate_len": 0.915,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7273,13 +7601,15 @@
               "gate_total": 0.8617,
               "gate_neg": 1.0,
               "gate_len": 0.8617,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "F20": {
               "gate_total": 0.8617,
               "gate_neg": 1.0,
               "gate_len": 0.8617,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7313,7 +7643,8 @@
               "gate_total": 0.9314,
               "gate_neg": 1.0,
               "gate_len": 0.9314,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7352,7 +7683,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 23
             }
           },
           "correct": true,
@@ -7430,7 +7762,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7502,7 +7835,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 22
             }
           },
           "correct": true,
@@ -7569,7 +7903,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7636,7 +7971,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 22
             }
           },
           "correct": true,
@@ -7703,7 +8039,8 @@
               "gate_total": 0.8,
               "gate_neg": 0.8,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -7759,24 +8096,25 @@
           "expected_problems": [
             "0702"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.7,
-          "mean_g_neg": 0.7,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "0702": 0.7
+            "0702": 1.0
           },
           "g_full_details": {
             "0702": {
-              "gate_total": 0.7,
-              "gate_neg": 0.7,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": {
             "code": "1602",
             "trigger_word": "ยาเสพติด",
@@ -7842,7 +8180,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -7910,7 +8249,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 22
             }
           },
           "correct": true,
@@ -7972,7 +8312,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8031,7 +8372,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8092,7 +8434,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8141,24 +8484,25 @@
           "expected_problems": [
             "0702"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.7,
-          "mean_g_neg": 0.7,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "0702": 0.7
+            "0702": 1.0
           },
           "g_full_details": {
             "0702": {
-              "gate_total": 0.7,
-              "gate_neg": 0.7,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": {
             "code": "C34",
             "trigger_word": "มะเร็งปอด",
@@ -8212,7 +8556,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8259,24 +8604,25 @@
           "expected_problems": [
             "1201"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.7,
-          "mean_g_neg": 0.7,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1201": 0.7
+            "1201": 1.0
           },
           "g_full_details": {
             "1201": {
-              "gate_total": 0.7,
-              "gate_neg": 0.7,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": {
             "code": "A15",
             "trigger_word": "วัณโรคปอด",
@@ -8327,13 +8673,15 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 21
             },
             "1001": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 21
             }
           },
           "correct": true,
@@ -8369,13 +8717,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8411,13 +8761,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "Z59.0": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8453,13 +8805,15 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8495,13 +8849,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 25
             },
             "0501": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 25
             }
           },
           "correct": true,
@@ -8542,13 +8898,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "F32": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8586,19 +8944,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             },
             "0206": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             },
             "0102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             }
           },
           "correct": true,
@@ -8636,19 +8997,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "T74": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -8682,7 +9046,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8718,13 +9083,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0401": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8762,19 +9129,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 27
             },
             "T74": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 27
             },
             "1102": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 27
             }
           },
           "correct": true,
@@ -8809,13 +9179,15 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "F32": {
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8849,19 +9221,22 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "0206": {
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             },
             "0102": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 26
             }
           },
           "correct": true,
@@ -8895,19 +9270,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "T74": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 0.34,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8939,7 +9317,8 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -8973,7 +9352,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -9007,7 +9387,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 29
             }
           },
           "correct": false,
@@ -9047,13 +9428,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9089,13 +9472,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 24
             },
             "0201": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 24
             }
           },
           "correct": true,
@@ -9133,19 +9518,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1002": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "0301": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -9181,13 +9569,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0201": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9223,13 +9613,15 @@
               "gate_total": 0.8,
               "gate_neg": 0.8,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0701": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -9267,19 +9659,22 @@
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 24
             },
             "0201": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 24
             },
             "0301": {
               "gate_total": 0.85,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 24
             }
           },
           "correct": true,
@@ -9314,13 +9709,15 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1001": {
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9354,7 +9751,8 @@
               "gate_total": 0.595,
               "gate_neg": 0.7,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 23
             }
           },
           "correct": true,
@@ -9388,19 +9786,22 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1002": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0301": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -9433,13 +9834,15 @@
               "gate_total": 0.34,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             },
             "0201": {
               "gate_total": 0.34,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 0.85
+              "gate_sub": 0.85,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9472,13 +9875,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0701": {
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9512,7 +9917,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 27
             }
           },
           "correct": false,
@@ -9550,7 +9956,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9573,31 +9980,33 @@
             "0805",
             "0901"
           ],
-          "negation_detected": false,
-          "min_g_neg": 1.0,
-          "mean_g_neg": 1.0,
-          "n_codes_negated": 0,
+          "negation_detected": true,
+          "min_g_neg": 0.7,
+          "mean_g_neg": 0.85,
+          "n_codes_negated": 1,
           "g_neg_details": {
             "0805": 1.0,
-            "0901": 1.0
+            "0901": 0.7
           },
           "g_full_details": {
             "0805": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0901": {
-              "gate_total": 1.0,
-              "gate_neg": 1.0,
+              "gate_total": 0.7,
+              "gate_neg": 0.7,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": true,
+          "correct": false,
           "target_gate_evaluated": true,
-          "target_preserved": true,
+          "target_preserved": false,
           "adversarial_false_trigger": null
         },
         {
@@ -9628,13 +10037,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
           "correct": true,
@@ -9656,24 +10067,25 @@
           "expected_problems": [
             "1405"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.6,
-          "mean_g_neg": 0.6,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1405": 0.6
+            "1405": 1.0
           },
           "g_full_details": {
             "1405": {
-              "gate_total": 0.6,
-              "gate_neg": 0.6,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
-          "correct": false,
+          "correct": true,
           "target_gate_evaluated": true,
-          "target_preserved": false,
+          "target_preserved": true,
           "adversarial_false_trigger": null
         },
         {
@@ -9704,13 +10116,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "1405": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9746,13 +10160,15 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             },
             "0302": {
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9786,7 +10202,8 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9808,22 +10225,23 @@
           "expected_problems": [
             "1003"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.4,
-          "mean_g_neg": 0.4,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1003": 0.4
+            "1003": 1.0
           },
           "g_full_details": {
             "1003": {
-              "gate_total": 0.4,
-              "gate_neg": 0.4,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 22
             }
           },
-          "correct": true,
+          "correct": false,
           "target_gate_evaluated": true,
           "target_preserved": null,
           "adversarial_false_trigger": null
@@ -9842,22 +10260,23 @@
           "expected_problems": [
             "1405"
           ],
-          "negation_detected": true,
-          "min_g_neg": 0.7,
-          "mean_g_neg": 0.7,
-          "n_codes_negated": 1,
+          "negation_detected": false,
+          "min_g_neg": 1.0,
+          "mean_g_neg": 1.0,
+          "n_codes_negated": 0,
           "g_neg_details": {
-            "1405": 0.7
+            "1405": 1.0
           },
           "g_full_details": {
             "1405": {
-              "gate_total": 0.7,
-              "gate_neg": 0.7,
+              "gate_total": 1.0,
+              "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 32
             }
           },
-          "correct": true,
+          "correct": false,
           "target_gate_evaluated": true,
           "target_preserved": null,
           "adversarial_false_trigger": null
@@ -9886,7 +10305,8 @@
               "gate_total": 0.4,
               "gate_neg": 0.4,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": true,
@@ -9920,7 +10340,8 @@
               "gate_total": 1.0,
               "gate_neg": 1.0,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 20
             }
           },
           "correct": false,
@@ -9943,18 +10364,19 @@
             "0807"
           ],
           "negation_detected": true,
-          "min_g_neg": 0.4,
-          "mean_g_neg": 0.4,
+          "min_g_neg": 0.7,
+          "mean_g_neg": 0.7,
           "n_codes_negated": 1,
           "g_neg_details": {
-            "0807": 0.4
+            "0807": 0.7
           },
           "g_full_details": {
             "0807": {
-              "gate_total": 0.4,
-              "gate_neg": 0.4,
+              "gate_total": 0.7,
+              "gate_neg": 0.7,
               "gate_len": 1.0,
-              "gate_sub": 1.0
+              "gate_sub": 1.0,
+              "window_size": 21
             }
           },
           "correct": true,
@@ -9996,19 +10418,22 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0201": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1601": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10048,25 +10473,29 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "0701": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "0101": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10104,19 +10533,22 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "0303": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10156,25 +10588,29 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "L89.3": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10216,31 +10652,36 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "J18": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0301": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10280,25 +10721,29 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "Z59.8": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10336,19 +10781,22 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "E46": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "Z63.0": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10388,25 +10836,29 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "F32": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "Z60.0": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1102": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10444,19 +10896,22 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "L30": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0101": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10492,13 +10947,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 29
         },
         "0101": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 29
         }
       },
       "correct": true,
@@ -10534,13 +10991,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         },
         "1401": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         }
       },
       "correct": true,
@@ -10582,31 +11041,36 @@
           "gate_total": 0.34,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "E11": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "I10": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "0701": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         }
       },
       "correct": false,
@@ -10644,19 +11108,22 @@
           "gate_total": 0.7,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.7
+          "gate_sub": 0.7,
+          "window_size": 32
         },
         "F32": {
           "gate_total": 0.7,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.7
+          "gate_sub": 0.7,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 0.7,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.7
+          "gate_sub": 0.7,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10690,7 +11157,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 23
         }
       },
       "correct": true,
@@ -10726,13 +11194,15 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         },
         "Z63.5": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -10774,31 +11244,36 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "L89.4": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0701": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1003": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10834,13 +11309,15 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         },
         "0701": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -10876,13 +11353,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 27
         },
         "1204": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 27
         }
       },
       "correct": true,
@@ -10918,13 +11397,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         },
         "1002": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         }
       },
       "correct": true,
@@ -10960,13 +11441,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 28
         },
         "I10": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 28
         }
       },
       "correct": true,
@@ -11006,25 +11489,29 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0501": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "F10.2": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -11060,13 +11547,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "1004": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -11107,19 +11596,22 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0201": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1601": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -11162,25 +11654,29 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "L89.3": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -11225,31 +11721,36 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "J18": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0301": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -11292,25 +11793,29 @@
           "gate_total": 0.7,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.7
+          "gate_sub": 0.7,
+          "window_size": 32
         },
         "F32": {
           "gate_total": 0.7,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.7
+          "gate_sub": 0.7,
+          "window_size": 32
         },
         "Z60.0": {
           "gate_total": 0.7,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.7
+          "gate_sub": 0.7,
+          "window_size": 32
         },
         "1102": {
           "gate_total": 0.7,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.7
+          "gate_sub": 0.7,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -11349,13 +11854,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 30
         },
         "0101": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 30
         }
       },
       "correct": true,
@@ -11394,13 +11901,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 27
         },
         "1401": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 27
         }
       },
       "correct": true,
@@ -11439,13 +11948,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         },
         "1002": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         }
       },
       "correct": true,
@@ -11488,25 +11999,29 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0501": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "F10.2": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -11553,31 +12068,36 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "Z59.8": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "F32": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -11616,7 +12136,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 21
         }
       },
       "correct": true,
@@ -11694,7 +12215,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 25
         }
       },
       "correct": true,
@@ -11766,7 +12288,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -11820,24 +12343,25 @@
       "expected_problems": [
         "1101"
       ],
-      "negation_detected": true,
-      "min_g_neg": 0.8,
-      "mean_g_neg": 0.8,
-      "n_codes_negated": 1,
+      "negation_detected": false,
+      "min_g_neg": 1.0,
+      "mean_g_neg": 1.0,
+      "n_codes_negated": 0,
       "g_neg_details": {
-        "1101": 0.8
+        "1101": 1.0
       },
       "g_full_details": {
         "1101": {
-          "gate_total": 0.8,
-          "gate_neg": 0.8,
+          "gate_total": 1.0,
+          "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
-      "correct": false,
+      "correct": true,
       "target_gate_evaluated": true,
-      "target_preserved": false,
+      "target_preserved": true,
       "adversarial_false_trigger": {
         "code": "T74",
         "trigger_word": "การทำร้ายร่างกาย",
@@ -11901,13 +12425,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 21
         },
         "1104": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 21
         }
       },
       "correct": true,
@@ -11971,13 +12497,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "F32": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12010,13 +12538,15 @@
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "F32": {
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12052,13 +12582,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12091,13 +12623,15 @@
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "1001": {
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12131,7 +12665,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12163,7 +12698,8 @@
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12201,19 +12737,22 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 27
         },
         "0206": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 27
         },
         "0102": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 27
         }
       },
       "correct": true,
@@ -12247,19 +12786,22 @@
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         },
         "0206": {
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         },
         "0102": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 26
         }
       },
       "correct": true,
@@ -12295,13 +12837,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 24
         },
         "0201": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 24
         }
       },
       "correct": true,
@@ -12335,7 +12879,8 @@
           "gate_total": 0.595,
           "gate_neg": 0.7,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 23
         }
       },
       "correct": true,
@@ -12358,31 +12903,33 @@
         "0805",
         "0901"
       ],
-      "negation_detected": false,
-      "min_g_neg": 1.0,
-      "mean_g_neg": 1.0,
-      "n_codes_negated": 0,
+      "negation_detected": true,
+      "min_g_neg": 0.7,
+      "mean_g_neg": 0.85,
+      "n_codes_negated": 1,
       "g_neg_details": {
         "0805": 1.0,
-        "0901": 1.0
+        "0901": 0.7
       },
       "g_full_details": {
         "0805": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "0901": {
-          "gate_total": 1.0,
-          "gate_neg": 1.0,
+          "gate_total": 0.7,
+          "gate_neg": 0.7,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
-      "correct": true,
+      "correct": false,
       "target_gate_evaluated": true,
-      "target_preserved": true,
+      "target_preserved": false,
       "adversarial_false_trigger": null
     },
     {
@@ -12399,22 +12946,23 @@
       "expected_problems": [
         "1003"
       ],
-      "negation_detected": true,
-      "min_g_neg": 0.4,
-      "mean_g_neg": 0.4,
-      "n_codes_negated": 1,
+      "negation_detected": false,
+      "min_g_neg": 1.0,
+      "mean_g_neg": 1.0,
+      "n_codes_negated": 0,
       "g_neg_details": {
-        "1003": 0.4
+        "1003": 1.0
       },
       "g_full_details": {
         "1003": {
-          "gate_total": 0.4,
-          "gate_neg": 0.4,
+          "gate_total": 1.0,
+          "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 22
         }
       },
-      "correct": true,
+      "correct": false,
       "target_gate_evaluated": true,
       "target_preserved": null,
       "adversarial_false_trigger": null
@@ -12449,19 +12997,22 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "T74": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -12495,19 +13046,22 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         },
         "T74": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         },
         "1001": {
           "gate_total": 0.34,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12545,19 +13099,22 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1002": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "0301": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -12591,19 +13148,22 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "1002": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "0301": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": false,
@@ -12639,13 +13199,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
       "correct": true,
@@ -12667,22 +13229,23 @@
       "expected_problems": [
         "1405"
       ],
-      "negation_detected": true,
-      "min_g_neg": 0.7,
-      "mean_g_neg": 0.7,
-      "n_codes_negated": 1,
+      "negation_detected": false,
+      "min_g_neg": 1.0,
+      "mean_g_neg": 1.0,
+      "n_codes_negated": 0,
       "g_neg_details": {
-        "1405": 0.7
+        "1405": 1.0
       },
       "g_full_details": {
         "1405": {
-          "gate_total": 0.7,
-          "gate_neg": 0.7,
+          "gate_total": 1.0,
+          "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 32
         }
       },
-      "correct": true,
+      "correct": false,
       "target_gate_evaluated": true,
       "target_preserved": null,
       "adversarial_false_trigger": null
@@ -12713,7 +13276,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12745,7 +13309,8 @@
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12781,13 +13346,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "0201": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12820,13 +13387,15 @@
           "gate_total": 0.34,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         },
         "0201": {
           "gate_total": 0.34,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12848,24 +13417,25 @@
       "expected_problems": [
         "1405"
       ],
-      "negation_detected": true,
-      "min_g_neg": 0.6,
-      "mean_g_neg": 0.6,
-      "n_codes_negated": 1,
+      "negation_detected": false,
+      "min_g_neg": 1.0,
+      "mean_g_neg": 1.0,
+      "n_codes_negated": 0,
       "g_neg_details": {
-        "1405": 0.6
+        "1405": 1.0
       },
       "g_full_details": {
         "1405": {
-          "gate_total": 0.6,
-          "gate_neg": 0.6,
+          "gate_total": 1.0,
+          "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
-      "correct": false,
+      "correct": true,
       "target_gate_evaluated": true,
-      "target_preserved": false,
+      "target_preserved": true,
       "adversarial_false_trigger": null
     },
     {
@@ -12892,7 +13462,8 @@
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12928,13 +13499,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "0401": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -12968,7 +13541,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": false,
@@ -13004,13 +13578,15 @@
           "gate_total": 0.8,
           "gate_neg": 0.8,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "0701": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": false,
@@ -13043,13 +13619,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "0701": {
           "gate_total": 0.4,
           "gate_neg": 0.4,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13085,13 +13663,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "1405": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13125,7 +13705,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": false,
@@ -13163,19 +13744,22 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 27
         },
         "T74": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 27
         },
         "1102": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 27
         }
       },
       "correct": true,
@@ -13209,7 +13793,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 29
         }
       },
       "correct": false,
@@ -13247,19 +13832,22 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 24
         },
         "0201": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 24
         },
         "0301": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 24
         }
       },
       "correct": true,
@@ -13293,7 +13881,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 27
         }
       },
       "correct": false,
@@ -13329,13 +13918,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "0302": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13358,18 +13949,19 @@
         "0807"
       ],
       "negation_detected": true,
-      "min_g_neg": 0.4,
-      "mean_g_neg": 0.4,
+      "min_g_neg": 0.7,
+      "mean_g_neg": 0.7,
       "n_codes_negated": 1,
       "g_neg_details": {
-        "0807": 0.4
+        "0807": 0.7
       },
       "g_full_details": {
         "0807": {
-          "gate_total": 0.4,
-          "gate_neg": 0.4,
+          "gate_total": 0.7,
+          "gate_neg": 0.7,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 21
         }
       },
       "correct": true,
@@ -13405,13 +13997,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "E11.5": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13447,13 +14041,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "1601": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13489,13 +14085,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "F20": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13531,13 +14129,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "1102": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13575,19 +14175,22 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "T74.1": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "0102": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13623,13 +14226,15 @@
           "gate_total": 0.915,
           "gate_neg": 1.0,
           "gate_len": 0.915,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "T74.1": {
           "gate_total": 0.915,
           "gate_neg": 1.0,
           "gate_len": 0.915,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13665,13 +14270,15 @@
           "gate_total": 0.8617,
           "gate_neg": 1.0,
           "gate_len": 0.8617,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "F20": {
           "gate_total": 0.8617,
           "gate_neg": 1.0,
           "gate_len": 0.8617,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13705,7 +14312,8 @@
           "gate_total": 0.9314,
           "gate_neg": 1.0,
           "gate_len": 0.9314,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13744,7 +14352,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 23
         }
       },
       "correct": true,
@@ -13822,7 +14431,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -13894,7 +14504,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 22
         }
       },
       "correct": true,
@@ -13961,7 +14572,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14028,7 +14640,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 22
         }
       },
       "correct": true,
@@ -14095,7 +14708,8 @@
           "gate_total": 0.8,
           "gate_neg": 0.8,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": false,
@@ -14151,24 +14765,25 @@
       "expected_problems": [
         "0702"
       ],
-      "negation_detected": true,
-      "min_g_neg": 0.7,
-      "mean_g_neg": 0.7,
-      "n_codes_negated": 1,
+      "negation_detected": false,
+      "min_g_neg": 1.0,
+      "mean_g_neg": 1.0,
+      "n_codes_negated": 0,
       "g_neg_details": {
-        "0702": 0.7
+        "0702": 1.0
       },
       "g_full_details": {
         "0702": {
-          "gate_total": 0.7,
-          "gate_neg": 0.7,
+          "gate_total": 1.0,
+          "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
-      "correct": false,
+      "correct": true,
       "target_gate_evaluated": true,
-      "target_preserved": false,
+      "target_preserved": true,
       "adversarial_false_trigger": {
         "code": "1602",
         "trigger_word": "ยาเสพติด",
@@ -14234,7 +14849,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14302,7 +14918,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 22
         }
       },
       "correct": true,
@@ -14364,7 +14981,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14423,7 +15041,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14484,7 +15103,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14533,24 +15153,25 @@
       "expected_problems": [
         "0702"
       ],
-      "negation_detected": true,
-      "min_g_neg": 0.7,
-      "mean_g_neg": 0.7,
-      "n_codes_negated": 1,
+      "negation_detected": false,
+      "min_g_neg": 1.0,
+      "mean_g_neg": 1.0,
+      "n_codes_negated": 0,
       "g_neg_details": {
-        "0702": 0.7
+        "0702": 1.0
       },
       "g_full_details": {
         "0702": {
-          "gate_total": 0.7,
-          "gate_neg": 0.7,
+          "gate_total": 1.0,
+          "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
-      "correct": false,
+      "correct": true,
       "target_gate_evaluated": true,
-      "target_preserved": false,
+      "target_preserved": true,
       "adversarial_false_trigger": {
         "code": "C34",
         "trigger_word": "มะเร็งปอด",
@@ -14604,7 +15225,8 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14651,24 +15273,25 @@
       "expected_problems": [
         "1201"
       ],
-      "negation_detected": true,
-      "min_g_neg": 0.7,
-      "mean_g_neg": 0.7,
-      "n_codes_negated": 1,
+      "negation_detected": false,
+      "min_g_neg": 1.0,
+      "mean_g_neg": 1.0,
+      "n_codes_negated": 0,
       "g_neg_details": {
-        "1201": 0.7
+        "1201": 1.0
       },
       "g_full_details": {
         "1201": {
-          "gate_total": 0.7,
-          "gate_neg": 0.7,
+          "gate_total": 1.0,
+          "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
-      "correct": false,
+      "correct": true,
       "target_gate_evaluated": true,
-      "target_preserved": false,
+      "target_preserved": true,
       "adversarial_false_trigger": {
         "code": "A15",
         "trigger_word": "วัณโรคปอด",
@@ -14719,13 +15342,15 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 21
         },
         "1001": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 21
         }
       },
       "correct": true,
@@ -14761,13 +15386,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "1001": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14803,13 +15430,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         },
         "Z59.0": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14845,13 +15474,15 @@
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         },
         "1001": {
           "gate_total": 0.85,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 0.85
+          "gate_sub": 0.85,
+          "window_size": 20
         }
       },
       "correct": true,
@@ -14887,13 +15518,15 @@
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 25
         },
         "0501": {
           "gate_total": 1.0,
           "gate_neg": 1.0,
           "gate_len": 1.0,
-          "gate_sub": 1.0
+          "gate_sub": 1.0,
+          "window_size": 25
         }
       },
       "correct": true,
@@ -14907,33 +15540,33 @@
       "n_positive": 56,
       "n_negated": 0,
       "ndr": 0,
-      "fpr": 0.10714285714285714,
-      "mean_g_pos": 0.9660714285714286,
+      "fpr": 0.03571428571428571,
+      "mean_g_pos": 0.9857142857142857,
       "mean_g_neg": 0.0
     },
     "short": {
       "n_positive": 11,
       "n_negated": 6,
       "ndr": 1.0,
-      "fpr": 0.09090909090909091,
-      "mean_g_pos": 0.9636363636363636,
+      "fpr": 0.0,
+      "mean_g_pos": 1.0,
       "mean_g_neg": 0.39999999999999997
     },
     "medium": {
       "n_positive": 6,
       "n_negated": 6,
-      "ndr": 0.6666666666666666,
-      "fpr": 0.16666666666666666,
-      "mean_g_pos": 0.9666666666666667,
-      "mean_g_neg": 0.65
+      "ndr": 0.5,
+      "fpr": 0.3333333333333333,
+      "mean_g_pos": 0.9166666666666666,
+      "mean_g_neg": 0.75
     },
     "long": {
       "n_positive": 6,
       "n_negated": 6,
-      "ndr": 0.5,
+      "ndr": 0.3333333333333333,
       "fpr": 0.0,
       "mean_g_pos": 1.0,
-      "mean_g_neg": 0.75
+      "mean_g_neg": 0.8500000000000001
     },
     "tiny": {
       "n_positive": 3,
@@ -14949,8 +15582,8 @@
       "n_positive": 64,
       "n_negated": 0,
       "ndr": 0,
-      "fpr": 0.09375,
-      "mean_g_pos": 0.9703125,
+      "fpr": 0.03125,
+      "mean_g_pos": 0.9874999999999999,
       "mean_g_neg": 0.0
     },
     "high": {
@@ -14972,10 +15605,10 @@
     "low": {
       "n_positive": 6,
       "n_negated": 6,
-      "ndr": 0.8333333333333334,
+      "ndr": 0.5,
       "fpr": 0.16666666666666666,
-      "mean_g_pos": 0.9333333333333332,
-      "mean_g_neg": 0.5499999999999999
+      "mean_g_pos": 0.9500000000000001,
+      "mean_g_neg": 0.75
     }
   },
   "category_summary": {
@@ -15494,10 +16127,10 @@
       "n_positive": 20,
       "n_negated": 0,
       "target_evaluated_count": 20,
-      "target_preserved_count": 15,
-      "target_preservation_rate": 0.75,
-      "false_suppression_count": 5,
-      "false_suppression_rate": 0.25,
+      "target_preserved_count": 19,
+      "target_preservation_rate": 0.95,
+      "false_suppression_count": 1,
+      "false_suppression_rate": 0.05,
       "false_trigger_evaluated_count": 20,
       "false_trigger_negation_suppression_count": 5,
       "false_trigger_negation_suppression_rate": 0.25,
@@ -15508,9 +16141,9 @@
       "mean_false_trigger_gate_neg": 0.9100000000000001,
       "mean_false_trigger_gate_sub": 1.0,
       "mean_false_trigger_gate_total": 0.9100000000000001,
-      "joint_pass_count": 3,
+      "joint_pass_count": 4,
       "joint_pass_eligible_count": 20,
-      "joint_pass_rate": 0.15,
+      "joint_pass_rate": 0.2,
       "thresholds": {
         "attenuation_threshold": 1.0,
         "comparison": "strictly_less_than"

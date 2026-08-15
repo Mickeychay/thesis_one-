@@ -435,14 +435,11 @@ def derive(
     if missing_document_ids:
         raise ValueError(f"Missing document IDs: {sorted(missing_document_ids)}")
     if max_existing_metric_difference > 1e-12:
-        print(
-            "Note: Reconstructed metrics differ from the source artifact: "
-            f"max_abs_difference={max_existing_metric_difference:.3e} (expected due to expanded ground truth)"
+        raise ValueError(
+            "Reconstructed metrics differ from the source artifact: "
+            f"max_abs_difference={max_existing_metric_difference:.3e}. "
+            "Do not combine runtime scores with a different relevance reconstruction."
         )
-        # raise ValueError(
-        #     "Reconstructed metrics differ from the source artifact: "
-        #     f"max_abs_difference={max_existing_metric_difference:.3e}"
-        # )
 
     frame = pd.DataFrame(records)
     unique_case_count = int(frame["case_id"].nunique())

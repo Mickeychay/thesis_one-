@@ -1013,18 +1013,25 @@ def calculate_sentence_polarity(
                     window_start += latest_boundary_end
 
             window = query_lower[window_start:idx]
+            latest_neg = None
+            latest_neg_pos = -1
             for neg in config.NEGATION_MARKERS:
-                if neg in window:
-                    # Tone Analysis Module (V6.3): Emotion / Sarcasm / Contextual Bypassing
-                    # Exceptions often occur within the keyword itself (e.g., "ไม่มีเงิน")
-                    # or in the preceding text window ("ไม่กล้า").
-                    has_tone_exception = any(tone in window or tone in term for tone in config.TONE_EXCEPTIONS)
-                    if has_tone_exception:
-                        # Bypass negation penalty due to emotional context
-                        break
-                        
+                pos = window.rfind(neg)
+                if pos > latest_neg_pos:
+                    latest_neg_pos = pos
+                    latest_neg = neg
+
+            if latest_neg is not None:
+                # Tone Analysis Module (V6.3): Emotion / Sarcasm / Contextual Bypassing
+                # Ensure tone exceptions apply only to the immediate negation phrase
+                # preceding the term or the term itself, rather than bleeding from earlier clauses.
+                neg_phrase = window[latest_neg_pos:] + term
+                has_tone_exception = any(
+                    tone in neg_phrase or tone == term
+                    for tone in config.TONE_EXCEPTIONS
+                )
+                if not has_tone_exception:
                     neg_score += 1.0
-                    break
         if matched_terms > 0:
             neg_ratio = neg_score / matched_terms
             gate_neg = 1.0 - config.NEG_LAMBDA * neg_ratio
@@ -2014,13 +2021,22 @@ class H2LUnifiedRetriever:
         from h2l.retriever import HybridRetriever
 
         if self.base_strategy == "bm25_only":
-            from baselines import BM25OnlyBaseline
+            try:
+                from eval.baselines import BM25OnlyBaseline
+            except ImportError:
+                from baselines import BM25OnlyBaseline
             return BM25OnlyBaseline(config, shared_components)
         elif self.base_strategy == "naive_rag":
-            from baselines import NaiveRAGBaseline
+            try:
+                from eval.baselines import NaiveRAGBaseline
+            except ImportError:
+                from baselines import NaiveRAGBaseline
             return NaiveRAGBaseline(config, shared_components)
         elif self.base_strategy == "hyde":
-            from baselines import HyDEBaseline
+            try:
+                from eval.baselines import HyDEBaseline
+            except ImportError:
+                from baselines import HyDEBaseline
             return HyDEBaseline(config, shared_components)
         else:  # default to hybrid
             return HybridRetriever(config, shared_components)

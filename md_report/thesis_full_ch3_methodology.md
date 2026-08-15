@@ -162,9 +162,10 @@ flowchart TD
 - `H2L Document Score Breakdown` อธิบายการเกิดคะแนนระดับเอกสารโดยแยกตัวแปรหลักของสมการ H2L ออกจากบริบทระดับเคส
 - `Problem-Document Matrix` เป็นมุมมองเชิงโครงสร้างที่แสดงว่า problem code ใดมี supporting document ใดหนุนอยู่บ้าง และความหนาแน่นของการรองรับเป็นอย่างไร
 - `Semantic Evidence Map` แสดงความสัมพันธ์เชิงความหมายระหว่าง query, problem codes และ supporting documents โดยเน้นรายละเอียดระดับ node, semantic distance และหลักฐานเชิงลึก ซึ่งละเอียดกว่ามุมมองแบบ matrix
-- `Research Report` แยก `Case-Level Runtime Review` ออกจาก `Benchmark Performance Review` อย่างชัดเจน พร้อมมี `Performance Provenance` สำหรับบอกแหล่งที่มาของผล, `System Evaluation Status` สำหรับสรุปว่าหลักฐาน benchmark ส่วนใดพร้อมใช้อ้างอิงแล้ว, `Latest Pair Reruns` สำหรับอ่านผลเปรียบเทียบ baseline vs H2L ราย family จาก `evaluation_results/pairs/` โดยตรง, `Live Evaluation Progress` สำหรับอ่านสถานะการรัน evaluator จาก progress artifact จริง และ `Artifact Retention` สำหรับอธิบายว่า dashboard ใช้ latest/checkpoint alias เป็นหลักและเก็บ timestamped history ไว้เพียงเท่าที่จำเป็น ทั้งหมดนี้ refresh ผ่าน `/evaluation-summary` และ `/evaluation-progress` เป็นช่วง ๆ โดยไม่สร้างข้อมูลจำลอง
+- `Research Report` แยก `Case-Level Runtime Review` (มุมมองระดับเคสสำหรับการใช้งานจริง Operational Case Intake ที่แสดงผลปัญหาที่พบและเอกสารที่ดึงมาโดยไม่สังเคราะห์ตัวชี้วัด Precision/Recall ปลอมเนื่องจากไม่มี Ground Truth) ออกจาก `Benchmark Performance Review` (มุมมองระดับระบบ System Benchmark Evaluation Matrix ที่ประเมินจาก Benchmark มาตรฐาน 95 เคสอย่างเป็นทางการ) พร้อมมี `Performance Provenance` สำหรับบอกแหล่งที่มาของผล, `System Evaluation Status` สำหรับสรุปว่าหลักฐาน benchmark ส่วนใดพร้อมใช้อ้างอิงแล้ว, `Latest Pair Reruns` สำหรับอ่านผลเปรียบเทียบ baseline vs H2L ราย family จาก `evaluation_results/pairs/` โดยตรง, `Live Evaluation Progress` สำหรับอ่านสถานะการรัน evaluator จาก progress artifact จริง และ `Artifact Retention` สำหรับอธิบายว่า dashboard ใช้ latest/checkpoint alias เป็นหลักและเก็บ timestamped history ไว้เพียงเท่าที่จำเป็น ทั้งหมดนี้ refresh ผ่าน `/evaluation-summary` และ `/evaluation-progress` เป็นช่วง ๆ โดยไม่สร้างข้อมูลจำลอง
+- `Lexical Breakdown & Token Highlight System` ใช้รหัสสีแยกประเภทคำสำคัญทางคลินิกอย่างเด็ดขาด โดยกำหนดให้ **คำกริยาแสดงอาการ/การกระทำ (Action Tokens)** ใช้โทนสีคราม (Indigo: `#6366F1`) เพื่อไม่ให้ทับซ้อนกับ **คำปฏิเสธและเงื่อนไข (Negation Tokens)** ซึ่งใช้โทนสีแดงกุหลาบ (Rose: `#E11D48`) ช่วยให้นักสังคมสงเคราะห์และผู้ประเมินแยกแยะโครงสร้างประโยคได้อย่างชัดเจน
 
-ใน implementation ที่ใช้รายงานผล ส่วนแสดงผลช่วยให้ตรวจสอบตำแหน่งหลักฐานที่ระบบใช้ได้ชัดขึ้น โดยแยก occurrence ของคำสำคัญและบริบทที่สนับสนุนการตัดสินใจออกจากกัน อย่างไรก็ตาม การคำนวณ `G_neg` ใน H2L scoring ยังคงใช้กลไก lightweight จากหน้าต่างคำปฏิเสธย้อนหลัง `30` ตัวอักษรก่อนหน้า candidate term เป็นหลัก
+ใน implementation ที่ใช้รายงานผล ส่วนแสดงผลช่วยให้ตรวจสอบตำแหน่งหลักฐานที่ระบบใช้ได้ชัดขึ้น โดยแยก occurrence ของคำสำคัญและบริบทที่สนับสนุนการตัดสินใจออกจากกัน อย่างไรก็ตาม การคำนวณ `G_neg` ใน H2L scoring ใช้กลไก lightweight แบบ Adaptive Window ร่วมกับ Anchored Tone Exception Scoping ก่อนหน้า candidate term เป็นหลัก
 
 ดังนั้น ส่วนแสดงผลจึงไม่ได้เป็นองค์ประกอบตกแต่งส่วนติดต่อผู้ใช้เท่านั้น แต่เป็นเครื่องมือสนับสนุนการตรวจสอบวิธีวิจัยและการอภิปรายผลในบทที่ 4 ด้วย
 
@@ -815,8 +816,8 @@ $$G_{\text{polarity}} = G_{\text{neg}} \times G_{\text{len}} \times G_{\text{sub
 
 $$G_{\text{neg}} = \max\left(0.1, \, 1.0 - \lambda_{\text{neg}} \times \frac{\text{neg\_score}}{\text{matched\_terms}}\right) \quad (\lambda_{\text{neg}} = 0.6)$$
 
-3. **พจนานุกรมข้อยกเว้นอารมณ์และอาการทางคลินิก (Tone & Clinical Symptom Exceptions):**
-   ระบบมีกลไก Bypass การลดคะแนน $G_{\text{neg}}$ สำหรับคำว่า "ไม่..." ที่สะท้อนความเดือดร้อนจริงและอาการทางคลินิก:
+3. **พจนานุกรมข้อยกเว้นอารมณ์และอาการทางคลินิกแบบตรึงตำแหน่ง (Anchored Tone & Clinical Symptom Exceptions):**
+   ระบบมีกลไก Bypass การลดคะแนน $G_{\text{neg}}$ สำหรับคำว่า "ไม่..." ที่สะท้อนความเดือดร้อนจริงและอาการทางคลินิก โดยทำการตรวจสอบเฉพาะกลุ่มคำปฏิเสธที่อยู่ติดกับคำเป้าหมายโดยตรง (`window[latest_neg_pos:] + term`) เพื่อป้องกันไม่ให้อาการที่ระบุไว้ก่อนหน้าในประโยคที่ไม่มีเครื่องหมายวรรคตอน (เช่น *"ผู้ป่วยไม่ได้พักผ่อนไม่ได้ซึมเศร้า"*) ล้นข้ามไปกลบการปฏิเสธของปัญหาอื่นในอนุประโยคถัดไป:
    * *กลุ่มภาวะความยากลำบาก:* `ไม่มีเงิน`, `ไม่มีรายได้`, `ไม่มีที่ไป`, `ไม่อยากมีชีวิตอยู่`, `ไม่สบายใจ`
    * *กลุ่มพฤติกรรมไม่ยอมรับการรักษา (Non-compliance):* `ไม่ยอมกินยา`, `ไม่ยอมรักษา`, `ไม่ให้ความร่วมมือ`, `ไม่ไปตามนัด`
    * *กลุ่มข้อจำกัดทางร่างกายและสังคม (Functional Limitations):* `ช่วยเหลือตัวเองไม่ได้`, `พูดไม่ได้`, `ควบคุมไม่ได้`, `ปลดหนี้ไม่ได้`
@@ -976,7 +977,9 @@ Adversarial Cases คือกรณีที่จงใจใส่คำซ�
 | `hyde` | `h2l-hyde` | ทดสอบผลของ H2L เมื่อ backbone ใช้ hypothetical expansion |
 | `basic` | `h2l-hybrid` | ทดสอบระบบเต็มบน hybrid retrieval backbone |
 
-ตัวชี้วัดการจัดอันดับที่รายงานประกอบด้วย MAP, MRR, nDCG@5 และ nDCG@10 การทดสอบนัยสำคัญใช้กรณีศึกษาเป็นหน่วยวิเคราะห์อิสระ โดยเฉลี่ยผลการรัน 3 รอบภายในแต่ละกรณีก่อนเปรียบเทียบ H2L-hybrid กับอีก 7 กลยุทธ์ด้วย two-sided Wilcoxon signed-rank test จากนั้นปรับค่า p ด้วยวิธี Holm แยกเป็นสองครอบครัวสำหรับ nDCG@5 และ nDCG@10 ครอบครัวละ 7 คู่ นอกจากนี้ใช้ผลต่างเชิงปฏิบัติ (`absolute delta < 0.01`) เพื่อแยกกรณีที่ค่าต่างกันเพียงเล็กน้อยและไม่ควรตีความว่ามีความสำคัญในทางปฏิบัติ
+ตัวชี้วัดการจัดอันดับที่รายงานประกอบด้วย MAP, MRR, nDCG@5 และ nDCG@10 ผลหลักใช้ค่า per-case runtime จาก matrix จำนวน 100 กรณีและ 1 รอบต่อกรณี (`repeats=1`) แล้วเปรียบเทียบ H2L-hybrid กับอีก 7 กลยุทธ์ด้วย two-sided Wilcoxon signed-rank test จากนั้นปรับค่า p ด้วยวิธี Holm แยกเป็นสี่ครอบครัวตาม metric ได้แก่ nDCG@5, nDCG@10, MAP และ MRR ครอบครัวละ 7 คู่ การตีความผลหลักยึด nDCG@5 และ nDCG@10 และใช้ผลต่างเชิงปฏิบัติ (`absolute delta < 0.01`) เพื่อแยกกรณีที่ค่าต่างกันเพียงเล็กน้อย
+
+matrix ดังกล่าวเป็น frozen experimental artifact ที่สร้างภายใต้ taxonomy SHA-256 `4082c225399d...` ขณะที่ runtime ปัจจุบันใช้ taxonomy `00be6391f15f...` ระบบจึงแสดงผลชุดนี้เป็น versioned evidence และไม่ถือว่าเป็น benchmark ปัจจุบันจนกว่าจะรัน matrix ใหม่ ผลการทดลองยังตรวจสอบสถิติซ้ำจาก per-case values ได้ แต่ห้ามนำไปอ้างว่าเป็นผลของ taxonomy รุ่นปัจจุบัน
 
 ### 3.11.4 Blind expert evaluation
 

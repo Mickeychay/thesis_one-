@@ -111,8 +111,8 @@ const PARAMETER_PAIRS = [
     interpretation: 'จุดยอดเขาอยู่ที่ α = 0.65, τ = 0.50 แสดงให้เห็นว่าการผสมผสาน H2L แบบ Hybrid ชนะทั้ง Baseline เดิม (α = 0) และการพึ่งพาเฉพาะ Finding เพียงอย่างเดียว (α = 1)',
     pipelineRole: 'Finding Gate (τ) → Hybrid Document Re-ranking Score (α)',
     keyTakeaways: [
-      { icon: 'star', text: 'จุดทำงานดีที่สุด: α = 0.65, τ = 0.50 (คะแนนพุ่งขึ้นสูงสุด +23.4% เหนือ Baseline)' },
-      { icon: 'warning', text: 'ถ้า α = 0.00: ระบบจะกลายเป็น Baseline เดิม ซึ่งคะแนนตกฮวบเหลือเพียง ~0.76' },
+      { icon: 'star', text: 'จุดทำงานแนะนำตามแบบจำลอง: α = 0.65, τ = 0.50 (จุดสมดุลระหว่างปัญหา H2L กับความคล้ายคลึงของข้อความ)' },
+      { icon: 'warning', text: 'ถ้า α = 0.00: ระบบจะกลายเป็น Baseline เดิม ซึ่งคะแนนตกไปอยู่ที่ระดับ Baseline' },
       { icon: 'shield', text: 'Safe Operating Zone: ค่า τ อยู่ช่วง 0.40–0.60 และ α อยู่ช่วง 0.50–0.80 ให้ผลลัพธ์สูงสม่ำเสมอ' },
     ],
     zoneAnnotations: [
@@ -324,7 +324,7 @@ function getHeightColor(val, isDark = true, minVal = 0.30, maxVal = 0.95) {
   }
 }
 
-export default function PerformanceLandscape3D({ rows }) {
+export default function PerformanceLandscape3D({ rows = [], totalCases = null }) {
   const [selectedGroupId, setSelectedGroupId] = useState('ndcg');
   const [metricId, setMetricId] = useState('NDCG5');
   const [paramPair, setParamPair] = useState('alpha_thresh');
@@ -334,6 +334,13 @@ export default function PerformanceLandscape3D({ rows }) {
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showExplanation, setShowExplanation] = useState(true);
+
+  // Extract empirical benchmark metrics from real rows if available
+  const empiricalH2L = useMemo(() => (rows || []).find((r) => r.strategy === 'h2l-hybrid') || {}, [rows]);
+  const empiricalBasic = useMemo(() => (rows || []).find((r) => r.strategy === 'basic') || {}, [rows]);
+  const hasEmpiricalData = Boolean(empiricalH2L.map || empiricalH2L['nDCG@5'] || empiricalH2L['nDCG@10'] || empiricalH2L.mrr);
+  const empiricalCases = totalCases || empiricalH2L.num_cases || rows?.[0]?.num_cases || (rows?.length ? 100 : null);
+  const formatMetric = (val) => (val !== undefined && val !== null && !isNaN(Number(val)) ? Number(val).toFixed(4) : '—');
 
   // Interactive Simulator slider states
   const [simX, setSimX] = useState(0.50);
@@ -763,12 +770,17 @@ export default function PerformanceLandscape3D({ rows }) {
           <div className="flex items-center gap-2">
             <span className={`h-2.5 w-2.5 rounded-full animate-pulse ${isDark ? 'bg-cyan-400' : 'bg-teal-600'}`} />
             <span className={`text-[11px] font-bold uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-teal-700'}`}>
-              3D Sensitivity & Performance Landscape · {pair.rqTag}
+              แบบจำลองการตอบสนองเชิงพารามิเตอร์ 3 มิติ (Parametric Response Surface Simulator) · {pair.rqTag}
             </span>
           </div>
           <h2 className={`mt-1 font-headline text-lg sm:text-xl font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>
             ภูมิทัศน์ความไวต่อพารามิเตอร์ ({pair.zName} × {pair.xName})
           </h2>
+          {/* Conceptual illustration notice */}
+          <div className={`mt-1.5 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 border text-[10px] font-bold uppercase tracking-wider ${isDark ? 'bg-amber-950/40 border-amber-700/50 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-800'}`}>
+            <span className="material-symbols-outlined text-[13px]">info</span>
+            ภาพประกอบแนวคิด (Conceptual Illustration) — พื้นผิวสร้างจากสูตรจำลองทางทฤษฎี ไม่ใช่ผลการ sweep จริง
+          </div>
           <div className={`mt-2 inline-flex items-center gap-2 rounded-xl px-3 py-1.5 border text-xs leading-relaxed max-w-2xl ${isDark ? 'bg-cyan-950/30 border-cyan-900/50 text-cyan-200' : 'bg-teal-50 border-teal-200 text-teal-950'}`}>
             <span className="material-symbols-outlined text-[16px] text-teal-600 dark:text-cyan-400 flex-shrink-0">help</span>
             <div>
@@ -985,6 +997,53 @@ export default function PerformanceLandscape3D({ rows }) {
           </button>
         </div>
       </div>
+
+      {/* Empirical Benchmark Snapshot Banner (Real benchmark data from Chapter 4 / latest benchmark) */}
+      {hasEmpiricalData && (
+        <div className={`relative z-10 border-b p-4 sm:p-5 ${isDark ? 'border-slate-800/80 bg-slate-950/90' : 'border-slate-200 bg-emerald-50/60'}`}>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-emerald-600 text-[20px]">verified</span>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-950 dark:text-emerald-300">
+                ผลการทดลองจริงจากชุดทดสอบ {empiricalCases ? `${empiricalCases} เคส` : ''} (Empirical Benchmark: H2L-Hybrid vs Basic Baseline)
+              </h3>
+            </div>
+            <span className="rounded-full bg-emerald-600/20 px-2.5 py-0.5 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
+              {empiricalCases ? `N = ${empiricalCases} Cases` : 'Empirical Benchmark'} · Official Evaluation Artifact
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+            <div className="rounded-xl bg-surface-container-lowest p-3 border border-slate-200/60 dark:border-slate-800">
+              <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">MAP (Mean Avg Precision)</span>
+              <div className="font-headline font-extrabold text-base text-emerald-700 dark:text-emerald-300 mt-1">
+                {formatMetric(empiricalH2L.map)}
+                <span className="text-[11px] text-on-surface-variant font-normal ml-1.5">(Base: {formatMetric(empiricalBasic.map)})</span>
+              </div>
+            </div>
+            <div className="rounded-xl bg-surface-container-lowest p-3 border border-slate-200/60 dark:border-slate-800">
+              <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">MRR (Mean Reciprocal Rank)</span>
+              <div className="font-headline font-extrabold text-base text-emerald-700 dark:text-emerald-300 mt-1">
+                {formatMetric(empiricalH2L.mrr)}
+                <span className="text-[11px] text-on-surface-variant font-normal ml-1.5">(Base: {formatMetric(empiricalBasic.mrr)})</span>
+              </div>
+            </div>
+            <div className="rounded-xl bg-surface-container-lowest p-3 border border-slate-200/60 dark:border-slate-800">
+              <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">nDCG@5</span>
+              <div className="font-headline font-extrabold text-base text-emerald-700 dark:text-emerald-300 mt-1">
+                {formatMetric(empiricalH2L['nDCG@5'])}
+                <span className="text-[11px] text-on-surface-variant font-normal ml-1.5">(Base: {formatMetric(empiricalBasic['nDCG@5'])})</span>
+              </div>
+            </div>
+            <div className="rounded-xl bg-surface-container-lowest p-3 border border-slate-200/60 dark:border-slate-800">
+              <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">nDCG@10</span>
+              <div className="font-headline font-extrabold text-base text-emerald-700 dark:text-emerald-300 mt-1">
+                {formatMetric(empiricalH2L['nDCG@10'])}
+                <span className="text-[11px] text-on-surface-variant font-normal ml-1.5">(Base: {formatMetric(empiricalBasic['nDCG@10'])})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Axis Objectives & Interpretation Guide Card (รายละเอียดวัตถุประสงค์แต่ละแกนและวิธีอ่านแปรผล) */}
       <div className={`relative z-10 border-b p-4 sm:p-5 text-xs ${isDark ? 'border-slate-800/80 bg-slate-950/70' : 'border-slate-200 bg-white/90'}`}>
@@ -1731,7 +1790,7 @@ export default function PerformanceLandscape3D({ rows }) {
                 หลักการตีความสำหรับเล่มวิทยานิพนธ์ (Thesis Interpretation Principle):
               </strong>
               <p className="leading-relaxed text-xs opacity-90">
-                {pair.interpretation} — ผลการวิเคราะห์ยืนยันว่าพื้นผิวมีลักษณะเป็น <strong>Smooth Convex Manifold</strong> ที่มีเสถียรภาพสูง ไม่เกิดอาการ High-variance Overfitting ต่อค่าพารามิเตอร์ใดตัวแปรหนึ่ง ซึ่งเป็นคุณสมบัติสำคัญสำหรับการนำระบบ Retrieval-Augmented Generation ไปปรับใช้ในกระบวนการทางคลินิกและสังคมสงเคราะห์จริง
+                {pair.interpretation} — <strong className="text-amber-600 dark:text-amber-400">หมายเหตุ: พื้นผิวนี้สร้างจากสูตรจำลองทางทฤษฎีเพื่อแสดงแนวคิด ไม่ใช่ผลการ sweep จริง ใช้เพื่อประกอบความเข้าใจหลักการเท่านั้น</strong>
               </p>
             </div>
           </div>

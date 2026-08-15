@@ -40,12 +40,16 @@ logger = logging.getLogger(__name__)
 
 # External baselines
 try:
-    from unified_baselines import BASELINE_REGISTRY, NaiveRAGBaseline, BM25OnlyBaseline, QueryExpansionBaseline, HyDEBaseline
+    from eval.baselines import BASELINE_REGISTRY, NaiveRAGBaseline, BM25OnlyBaseline, QueryExpansionBaseline, HyDEBaseline
     _HAS_EXTERNAL_BASELINES = True
 except ImportError:
-    _HAS_EXTERNAL_BASELINES = False
-    BASELINE_REGISTRY = {}
-    logger.warning("⚠️ external_baselines.py not found - external baseline comparison disabled")
+    try:
+        from unified_baselines import BASELINE_REGISTRY, NaiveRAGBaseline, BM25OnlyBaseline, QueryExpansionBaseline, HyDEBaseline
+        _HAS_EXTERNAL_BASELINES = True
+    except ImportError:
+        _HAS_EXTERNAL_BASELINES = False
+        BASELINE_REGISTRY = {}
+        logger.warning("⚠️ eval/baselines.py not found - external baseline comparison disabled")
 
 # Statistical analysis
 try:
@@ -122,7 +126,7 @@ except ImportError:
 # ====================================================================
 
 try:
-    from h2l.detector from h2l import detector
+    from h2l import detector
     from orchestrator import RAGFirstOrchestrator
     from h2l.core import H2LConfigV3, compare_v2_v3
     _HAS_H2L_COMPONENTS = True

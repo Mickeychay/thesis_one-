@@ -77,6 +77,33 @@ class TestGroundTruthIndexGuard(unittest.TestCase):
             self.assertEqual(labeled[0]["data_source"], "ground_truth_label_index")
 
 
+class TestEvaluationArtifactProvenance(unittest.TestCase):
+    def test_proper_evaluation_payload_records_input_hashes(self):
+        from eval.evaluate_h2l_proper import build_results_payload, _sha256_file
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ground_truth = Path(tmp) / "ground_truth.json"
+            taxonomy = Path(tmp) / "taxonomy.json"
+            ground_truth.write_text('{"cases":[]}', encoding="utf-8")
+            taxonomy.write_text('{"P1":{"name":"Problem"}}', encoding="utf-8")
+
+            payload = build_results_payload(
+                cases=[],
+                strategies=["basic"],
+                top_k=15,
+                problem_source="detected",
+                per_strategy={},
+                aggregates={},
+                ground_truth_path=str(ground_truth),
+                taxonomy_path=str(taxonomy),
+            )
+
+            metadata = payload["metadata"]
+            self.assertEqual(metadata["ground_truth_sha256"], _sha256_file(str(ground_truth)))
+            self.assertEqual(metadata["taxonomy_sha256"], _sha256_file(str(taxonomy)))
+            self.assertTrue(metadata["evaluation_code_sha256"])
+
+
 class TestVisualizationGuard(unittest.TestCase):
     def test_3d_visualization_does_not_create_demo_docs_by_default(self):
         from visualizations import create_3d_vector_space_with_hover

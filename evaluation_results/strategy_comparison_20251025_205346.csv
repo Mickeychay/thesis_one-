@@ -1,5 +1,0 @@
-﻿case_id,strategy,num_problems,avg_confidence,num_retrieved,avg_retrieval_score,processing_time,complexity,rag_contribution,problems_from_case,evidence_rag,evidence_hybrid,evidence_case
-TEST_001,basic,5,0.956,10,10.1417036180948,0.383,complex,4,1,1,3,1
-TEST_001,dynamic,5,0.956,10,10.1417036180948,0.031,complex,4,1,1,3,1
-TEST_001,multi_hop,5,0.956,10,10.1417036180948,0.027,complex,4,1,1,3,1
-TEST_001,adaptive,5,0.956,10,10.1417036180948,0.026,complex,4,1,1,3,1

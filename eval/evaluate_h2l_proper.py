@@ -20,6 +20,7 @@ Usage:
 """
 
 import json
+import hashlib
 import math
 import time
 import logging
@@ -91,6 +92,13 @@ CHECKPOINT_ARTIFACT_BASENAMES = {
 }
 
 PROGRESS_ARTIFACT_BASENAME = 'proper_eval_progress.json'
+
+
+def _sha256_file(file_path: str) -> str:
+    path = Path(file_path)
+    if not path.exists() or not path.is_file():
+        raise FileNotFoundError(f"Artifact input does not exist: {path}")
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def load_test_cases_from_ground_truth(ground_truth_path: str = "expanded_ground_truth.json") -> List[Dict]:
@@ -477,6 +485,7 @@ class EvaluationRunner:
     """
 
     def __init__(self, config=None, taxonomy_path="data/problem_codes.json"):
+        self.taxonomy_path = taxonomy_path
         self.taxonomy = load_problem_taxonomy(taxonomy_path)
         self._config = config
         self._shared = None
@@ -868,6 +877,8 @@ class EvaluationRunner:
                     problem_source=problem_source,
                     per_strategy=all_results,
                     aggregates=aggregate_metrics,
+                    ground_truth_path=ground_truth_path,
+                    taxonomy_path=self.taxonomy_path,
                     status='partial',
                 )
                 save_checkpoint(checkpoint_results, checkpoint_dir)
@@ -916,6 +927,8 @@ class EvaluationRunner:
             problem_source=problem_source,
             per_strategy=all_results,
             aggregates=aggregate_metrics,
+            ground_truth_path=ground_truth_path,
+            taxonomy_path=self.taxonomy_path,
             status='complete',
         )
         if progress_dir:
@@ -1575,6 +1588,8 @@ def build_results_payload(
     problem_source: str,
     per_strategy: Dict,
     aggregates: Dict,
+    ground_truth_path: str,
+    taxonomy_path: str,
     status: str = 'complete',
 ) -> Dict:
     completed_strategies = list(aggregates.keys())
@@ -1591,6 +1606,11 @@ def build_results_payload(
             'pending_strategies': pending_strategies,
             'completed_strategy_count': len(completed_strategies),
             'total_strategy_count': len(strategies),
+            'ground_truth_path': str(ground_truth_path),
+            'ground_truth_sha256': _sha256_file(ground_truth_path),
+            'taxonomy_path': str(taxonomy_path),
+            'taxonomy_sha256': _sha256_file(taxonomy_path),
+            'evaluation_code_sha256': _sha256_file(__file__),
         },
         'per_strategy': per_strategy,
         'aggregates': aggregates,
@@ -1868,7 +1888,7 @@ def main():
                        help='Number of docs to retrieve per query')
     parser.add_argument('--top-k-list', nargs='+', type=int, default=None,
                        help='Run several doc-scaling experiments, e.g. --top-k-list 5 10 15 20')
-    parser.add_argument('--ground-truth', default='expanded_ground_truth.json',
+    parser.add_argument('--ground-truth', default='data/expanded_ground_truth.json',
                        help='Path to ground truth file')
     parser.add_argument('--problem-source', choices=['detected', 'gold'], default='detected',
                        help='Problem source for H2L strategies: detected runtime problems or gold ground-truth problems')
@@ -1940,8 +1960,8 @@ def main():
                     from evaluate_sentence_polarity import evaluate_sentence_polarity, format_results_text
                     # Polarity evaluation uses the expanded ground truth tailored for polarity cases
                     pol_results = evaluate_sentence_polarity(
-                        gt_path="expanded_ground_truth.json",
-                        taxonomy_path="problem_codes.json"
+                        gt_path="data/expanded_ground_truth.json",
+                        taxonomy_path="data/problem_codes.json"
                     )
                     print("\n" + format_results_text(pol_results))
                 except Exception as e:

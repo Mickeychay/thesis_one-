@@ -12,8 +12,23 @@ python start.py
 
 This will automatically:
 1. Clean up stale processes on ports 8000/5173.
-2. Initialize the Backend (FastAPI) and serve the UI.
-3. Display Local and Network (Public) access links.
+2. Initialize the Backend (FastAPI) and serve the UI on `http://127.0.0.1:8000/`.
+3. Restrict access to Localhost only (default security mode for confidential case data).
+
+### Security & Access Modes
+
+- **Localhost Only (Default & Recommended):**
+  ```bash
+  python start.py
+  ```
+  Runs securely on `127.0.0.1`. CORS is strictly restricted to local origins.
+
+- **Public Network Mode (Demo/Staging):**
+  ```bash
+  python start.py --public
+  ```
+  > [!WARNING]
+  > Binding to `0.0.0.0` exposes the application to your local network. **Never expose the system publicly or on untrusted networks with real, unanonymized patient/case data** without authenticating reverse proxies.
 
 ### Advanced Usage
 
@@ -24,7 +39,7 @@ This will automatically:
 - **Manual Build**: If you prefer the legacy manual method:
   ```bash
   cd frontend && npm run build && cd ..
-  python api.py
+  python start.py
   ```
 
 ### Deployment Configuration

@@ -1,5 +1,0 @@
-Strategy,Precision,Recall,F1,NDCG,MRR,MAP,Latency (s),Docs Retrieved
-basic,0.0,0.0,0.0,0.0,0.0,0.0,6.9131,10.0
-dynamic,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-multihop,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-adaptive,0.0,0.0,0.0,0.0,0.0,0.0,5.2859,10.0

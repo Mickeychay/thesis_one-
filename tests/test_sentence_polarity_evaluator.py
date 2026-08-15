@@ -144,6 +144,8 @@ class TestSentencePolarityEvaluator(unittest.TestCase):
             ):
                 results = evaluator.evaluate_sentence_polarity(gt_path, taxonomy_path)
 
+            progress = json.loads(progress_path.read_text(encoding="utf-8"))
+
         self.assertEqual(results["overall"]["total_cases"], 2)
         self.assertEqual(results["overall"]["false_positive_rate"], 0.5)
 
@@ -173,6 +175,8 @@ class TestSentencePolarityEvaluator(unittest.TestCase):
         self.assertEqual(summary["joint_pass_rate"], 0.5)
         self.assertEqual(summary["thresholds"]["comparison"], "strictly_less_than")
         self.assertIn("Adversarial Test Slice", evaluator.format_results_text(results))
+        self.assertEqual(progress["status"], "running")
+        self.assertEqual(progress["phase"], "aggregating")
 
 
 if __name__ == "__main__":

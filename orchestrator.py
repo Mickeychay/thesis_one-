@@ -132,13 +132,22 @@ class RAGFirstOrchestrator:
             )
         # Baselines (no H2L scoring)
         elif strategy == "bm25_only":
-            from unified_baselines import BM25OnlyBaseline
+            try:
+                from eval.baselines import BM25OnlyBaseline
+            except ImportError:
+                from unified_baselines import BM25OnlyBaseline
             return BM25OnlyBaseline(config, shared)
         elif strategy == "naive_rag":
-            from unified_baselines import NaiveRAGBaseline
+            try:
+                from eval.baselines import NaiveRAGBaseline
+            except ImportError:
+                from unified_baselines import NaiveRAGBaseline
             return NaiveRAGBaseline(config, shared)
         elif strategy == "hyde":
-            from unified_baselines import HyDEBaseline
+            try:
+                from eval.baselines import HyDEBaseline
+            except ImportError:
+                from unified_baselines import HyDEBaseline
             return HyDEBaseline(config, shared)
         else:
             return HybridRetriever(config, shared)

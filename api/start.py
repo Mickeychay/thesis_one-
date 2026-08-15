@@ -74,6 +74,8 @@ def main():
     root_dir = Path(__file__).resolve().parent.parent
     frontend_dir = root_dir / "frontend"
     is_dev = "--dev" in sys.argv or os.environ.get("H2L_MODE") == "dev"
+    is_public = "--public" in sys.argv or os.environ.get("H2L_PUBLIC") == "true"
+    host = "0.0.0.0" if is_public else os.environ.get("HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", 8000))
 
     print("\n🚀 H2L Thesis System Startup")
@@ -86,7 +88,9 @@ def main():
         kill_port(5173)
 
     # Environment Overrides for Full Performance
-    os.environ["H2L_SAFE_START"] = "false"
+    # H2L_SAFE_START respects existing env var; defaults to false for full performance
+    if "H2L_SAFE_START" not in os.environ:
+        os.environ["H2L_SAFE_START"] = "false"
     os.environ["ENABLE_DENSE_RUNTIME"] = "true"
     os.environ["USE_RERANK"] = "true"
 
@@ -96,8 +100,11 @@ def main():
         # Start Frontend Dev Server if requested
         if is_dev:
             print("🌐 Starting Frontend Dev Server (Port 5173)...")
+            frontend_args = ["npm", "run", "dev"]
+            if is_public:
+                frontend_args.extend(["--", "--host"])
             frontend_proc = subprocess.Popen(
-                ["npm", "run", "dev", "--", "--host"],
+                frontend_args,
                 cwd=frontend_dir,
                 stdout=None,
                 stderr=None
@@ -105,14 +112,17 @@ def main():
             processes.append(frontend_proc)
             time.sleep(2)
 
-        # Print Links
+        # Print Links & Security Notice
         local_ip = "127.0.0.1"
-        network_ip = get_network_ip()
+        network_ip = get_network_ip() if is_public else None
         
         print("\n✅ Access Links:")
         print(f"   ➜  Local:   http://{local_ip}:{port}/")
-        if network_ip != "Unknown":
+        if network_ip and network_ip != "Unknown":
             print(f"   ➜  Network: http://{network_ip}:{port}/")
+            print("   ⚠️  SECURITY NOTICE: Public network access is enabled. Do not expose confidential case data on untrusted networks!")
+        else:
+            print("   🔒 Localhost Only Mode (Secure for confidential clinical data)")
         
         if is_dev:
             print(f"   ➜  UI Dev:  http://{local_ip}:5173/ (with Hot Reload)")
@@ -123,7 +133,7 @@ def main():
         if is_dev:
             # Run uvicorn in a sub-process
             backend_proc = subprocess.Popen(
-                [sys.executable, "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", str(port), "--reload"],
+                [sys.executable, "-m", "uvicorn", "api.main:app", "--host", host, "--port", str(port), "--reload"],
                 cwd=root_dir
             )
             processes.append(backend_proc)
@@ -134,7 +144,7 @@ def main():
                     break
         else:
             # Production mode
-            uvicorn.run("api.main:app", host="0.0.0.0", port=port, reload=False, log_level="info")
+            uvicorn.run("api.main:app", host=host, port=port, reload=False, log_level="info")
 
     except KeyboardInterrupt:
         print("\n\n👋 Stopping all services...")
