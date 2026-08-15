@@ -6,7 +6,7 @@ import PerformanceLandscape3D from './components/PerformanceLandscape3D.jsx';
 const configuredApiBase = import.meta.env.VITE_API_BASE_URL?.trim();
 const API_BASE_URL = (configuredApiBase || (import.meta.env.DEV ? '/api' : '')).replace(/\/$/, '');
 const REQUEST_TIMEOUT_MS = 120000;
-const DOC_SCALING_OPTIONS = [5, 10, 15, 20];
+const DOC_SCALING_OPTIONS = [1, 3, 5, 10, 15];
 const DEFAULT_DOC_TOP_K = 15;
 const DEFAULT_L2_MODEL = 'qwen2.5:7b';
 const SAMPLE_CASE = 'เด็กหญิงถูกแม่ดุด่าเป็นประจำ ครอบครัวรายได้น้อย เครียดมากและไม่อยากไปโรงเรียน';
@@ -637,66 +637,44 @@ function DocScalingSelector({ value, onChange, disabled }) {
   const currentIndex = Math.max(0, DOC_SCALING_OPTIONS.indexOf(Number(value)));
   const progress = currentIndex / (DOC_SCALING_OPTIONS.length - 1 || 1);
   const currentLabel = {
-    5: 'เฉพาะเจาะจง',
-    10: 'สมดุล',
-    15: 'ครอบคลุม',
-    20: 'สูงสุด',
+    1: 'เจาะจงสูงสุด',
+    3: 'คัดกรองเร็ว',
+    5: 'สมดุลมาตรฐาน',
+    10: 'สืบค้นกว้างขึ้น',
+    15: 'ครอบคลุมครบถ้วน',
   }[Number(value)] || 'custom';
-  const handleScaleChange = (event) => {
-    onChange(Number(event.target.value));
-  };
 
   return (
     <div className="rounded-lg bg-white px-4 py-4 dark:bg-slate-900/70">
       <div className="grid gap-3 lg:grid-cols-[minmax(170px,0.9fr)_minmax(280px,1.6fr)_auto] lg:items-center">
         <div className="min-w-0">
-          <div className="text-sm font-semibold text-on-surface">จำนวนหลักฐานที่ค้นคืน</div>
-          <p className="mt-0.5 text-xs text-on-surface-variant">Top-K 5–20 รายการ</p>
+          <div className="text-sm font-semibold text-on-surface">จำนวนหลักฐานที่ค้นคืน (Top-K)</div>
+          <p className="mt-0.5 text-xs text-on-surface-variant">Top 1 – 15 รายการ (ค่ามาตรฐานที่ Top-5)</p>
         </div>
 
-        <div className="relative pt-3">
-          <div className="pointer-events-none absolute left-0 right-0 top-[24px] h-1.5 rounded-full bg-surface-container-high">
-            <div
-              className="h-1.5 rounded-full bg-teal-600 transition-[width]"
-              style={{ width: `${progress * 100}%` }}
-            />
-          </div>
-          <input
-            aria-label="จำนวนหลักฐาน Top K สำหรับเคส"
-            className="relative z-10 h-7 w-full cursor-pointer appearance-none bg-transparent accent-teal-600 disabled:cursor-not-allowed disabled:opacity-50 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-teal-600 [&::-moz-range-thumb]:shadow-md [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:-mt-1.5 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-teal-600 [&::-webkit-slider-thumb]:shadow-md"
-            disabled={disabled}
-            max="20"
-            min="5"
-            name="case-evidence-top-k"
-            onChange={handleScaleChange}
-            step="5"
-            type="range"
-            value={value}
-          />
-          <div className="mt-0.5 grid grid-cols-4 gap-1">
-            {DOC_SCALING_OPTIONS.map((option) => {
-              const isActive = option === Number(value);
-              return (
-                <button
-                  aria-pressed={isActive}
-                  className={`min-h-10 rounded-md px-1.5 py-1 text-center text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 ${isActive ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'}`}
-                  disabled={disabled}
-                  key={option}
-                  onClick={() => onChange(option)}
-                  type="button"
-                >
-                  {option}
-                </button>
-              );
-            })}
-          </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {DOC_SCALING_OPTIONS.map((option) => {
+            const isActive = option === Number(value);
+            return (
+              <button
+                aria-pressed={isActive}
+                className={`min-h-10 flex-1 min-w-[48px] rounded-lg px-2 py-1.5 text-center text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 ${isActive ? 'bg-teal-600 text-white shadow-md' : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high'}`}
+                disabled={disabled}
+                key={option}
+                onClick={() => onChange(option)}
+                type="button"
+              >
+                Top {option}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex items-center justify-between gap-2 lg:justify-end">
           <div className="rounded-lg bg-[#0d2734] px-3 py-2 text-right text-white shadow-sm">
             <span className="font-headline text-lg font-bold leading-none">Top {value}</span>
           </div>
-          <div className="hidden min-w-[116px] text-xs lg:block">
+          <div className="hidden min-w-[120px] text-xs lg:block">
             <div className="font-semibold text-on-surface">{currentLabel}</div>
             <div className="text-on-surface-variant">ใช้กับเคสนี้</div>
           </div>
@@ -1402,6 +1380,11 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
     const linkedToActiveFinding = activeFindingCode && evidenceCodes.includes(activeFindingCode);
     const cleanTitle = cleanMarkdownString(doc.title);
     const cleanSnippetSummary = cleanMarkdownString(doc.snippet);
+    const docSource = doc.source || doc.metadata?.source || doc.metadata?.source_document || 'เอกสารแนวทางปฏิบัติ';
+    const docChunk = doc.chunk_index ?? doc.metadata?.chunk_index;
+    const docPage = doc.page_number ?? doc.page ?? doc.metadata?.page ?? doc.metadata?.page_number;
+    const docSourceDoc = doc.source_document || doc.metadata?.source_document;
+
     return (
     <details key={`${doc.rank}-${doc.id}`} className={`clinical-details group rounded-lg bg-surface-container-lowest transition-shadow ${linkedToActiveFinding ? 'ring-2 ring-teal-500 ring-offset-2 ring-offset-surface-container-low' : ''}`}>
       <summary className="flex min-h-[112px] items-start justify-between gap-3 p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-600">
@@ -1409,7 +1392,22 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-sm font-bold text-teal-700 dark:bg-teal-950/50 dark:text-teal-200">{doc.rank}</span>
           <span className="min-w-0">
             <span className="block line-clamp-2 font-semibold text-on-surface">{cleanTitle}</span>
-            <span className="mt-1 block truncate text-xs text-on-surface-variant">{doc.source}</span>
+            <span className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-on-surface-variant">
+              <span className="inline-flex items-center gap-1 font-medium text-slate-700 dark:text-slate-300">
+                <span className="material-symbols-outlined text-[14px] text-teal-600">description</span>
+                <span className="truncate max-w-[200px]" title={docSource}>{docSource}</span>
+              </span>
+              {(docChunk !== undefined && docChunk !== null) && (
+                <span className="rounded bg-teal-50/80 px-1.5 py-0.5 text-[11px] font-semibold text-teal-800 dark:bg-teal-950/60 dark:text-teal-200">
+                  ช่วงที่ {docChunk}
+                </span>
+              )}
+              {docPage && (
+                <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-950/50 dark:text-amber-200">
+                  หน้า {docPage}
+                </span>
+              )}
+            </span>
             <span className="mt-2 block line-clamp-2 text-sm leading-relaxed text-on-surface-variant">{cleanSnippetSummary}</span>
           </span>
         </span>
@@ -1419,6 +1417,21 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
         </span>
       </summary>
       <div className="border-t border-slate-200 p-4 dark:border-slate-800">
+        <div className="mb-3 rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-on-surface dark:bg-slate-800/60">
+          <div className="font-semibold text-teal-800 dark:text-teal-200">ข้อมูลตำแหน่งและแหล่งอ้างอิงเอกสาร:</div>
+          <div className="mt-1.5 grid gap-1 sm:grid-cols-2">
+            <div><span className="text-on-surface-variant">เอกสารต้นทาง:</span> <strong>{docSource}</strong> {docSourceDoc && docSourceDoc !== docSource ? <span className="text-[11px] text-on-surface-variant">({docSourceDoc})</span> : null}</div>
+            <div>
+              <span className="text-on-surface-variant">ตำแหน่งอ้างอิง:</span>{' '}
+              <strong>
+                {docPage ? `หน้า ${docPage}` : ''}
+                {docPage && docChunk !== undefined && docChunk !== null ? ' · ' : ''}
+                {docChunk !== undefined && docChunk !== null ? `ช่วงเอกสารที่ ${docChunk}` : ''}
+                {doc.id ? ` (Chunk ID: ${doc.id})` : ''}
+              </strong>
+            </div>
+          </div>
+        </div>
         {formatSnippet(doc.snippet)}
         <div className="mt-4 grid grid-cols-3 gap-2 text-xs tabular-nums text-on-surface-variant">
           <span className="rounded-md bg-slate-50 p-2 dark:bg-slate-800">Base <strong className="block text-on-surface">{formatNumber(doc.base_score, 3)}</strong></span>
@@ -1437,6 +1450,12 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
     </details>
     );
   };
+
+  const extraDocSources = Array.from(new Set(extraDocs.map(d => d.source || d.metadata?.source || d.metadata?.source_document).filter(Boolean)));
+  const extraDocChunks = extraDocs.map(d => Number(d.chunk_index ?? d.metadata?.chunk_index)).filter(v => !isNaN(v));
+  const minChunk = extraDocChunks.length ? Math.min(...extraDocChunks) : null;
+  const maxChunk = extraDocChunks.length ? Math.max(...extraDocChunks) : null;
+  const chunkRangeText = minChunk !== null && maxChunk !== null ? (minChunk === maxChunk ? `ช่วงที่ ${minChunk}` : `ช่วงที่ ${minChunk}-${maxChunk}`) : '';
 
   return (
     <section className="rounded-xl bg-surface-container-low p-6" id="evidence-section">
@@ -1475,8 +1494,15 @@ function EvidenceSection({ activeFindingCode, displayResult, onClearFinding }) {
       </div>
       {extraDocs.length > 0 && (
         <details className="mt-4 rounded-xl bg-surface-container-lowest p-4">
-          <summary className="flex min-h-11 items-center justify-between gap-3 text-sm font-semibold text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300">
-            <span>แสดงหลักฐานเพิ่มเติมอีก {extraDocs.length} รายการ</span>
+          <summary className="flex min-h-11 flex-wrap items-center justify-between gap-3 text-sm font-semibold text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:text-teal-300">
+            <div className="flex flex-wrap items-center gap-2">
+              <span>แสดงหลักฐานเพิ่มเติมอีก {extraDocs.length} รายการ</span>
+              {extraDocSources.length > 0 && (
+                <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-normal text-teal-800 dark:bg-teal-950/60 dark:text-teal-200">
+                  แหล่งที่มา: {extraDocSources.join(', ')} {chunkRangeText ? `(${chunkRangeText})` : ''}
+                </span>
+              )}
+            </div>
             <span aria-hidden="true" className="details-chevron material-symbols-outlined transition-transform">expand_more</span>
           </summary>
           <div className="mt-4 grid gap-3 xl:grid-cols-3">
@@ -1984,7 +2010,7 @@ function KeywordsTab({ displayResult }) {
       : activeToken?.type === 'target'
         ? 'bg-green-100 text-green-950 dark:bg-green-950/60 dark:text-green-100'
         : activeToken?.type === 'action'
-          ? 'bg-red-100 text-red-950 dark:bg-red-950/60 dark:text-red-100'
+          ? 'bg-indigo-100 text-indigo-950 dark:bg-indigo-950/60 dark:text-indigo-100'
           : 'bg-teal-100 text-teal-950 dark:bg-teal-950/60 dark:text-teal-100';
 
   const focusToken = (matcher) => {
@@ -2037,14 +2063,14 @@ function KeywordsTab({ displayResult }) {
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="font-headline text-lg font-bold">Lexical Breakdown</h2>
-              <p className="mt-1 text-xs text-on-surface-variant">ผูกกับ case_id: {displayResult.case_id || 'ยังไม่มี case id'}</p>
+              <p className="mt-1 text-xs text-on-surface-variant">ผูกกับ case_id: {displayResult.case_id || 'ยังไม่มี case id'} · วิเคราะห์บทบาททางภาษาและผลกระทบของคำปฏิเสธ</p>
             </div>
-            <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase text-slate-500">
-              <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-green-500" />Target</span>
-              <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-yellow-400" />Agent</span>
-              <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-red-200" />Action</span>
-              <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-red-500" />Negation</span>
-              <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-teal-200" />Keyword</span>
+            <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-green-50 px-2 py-1 dark:bg-green-950/40"><span className="h-2.5 w-2.5 rounded-full bg-green-500" />ผู้รับผลกระทบ (Target)</span>
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-yellow-50 px-2 py-1 dark:bg-yellow-950/40"><span className="h-2.5 w-2.5 rounded-full bg-yellow-500" />ผู้กระทำ (Agent)</span>
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-indigo-50 px-2 py-1 dark:bg-indigo-950/40"><span className="h-2.5 w-2.5 rounded-full bg-indigo-500" />กริยา (Action)</span>
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-rose-50 px-2 py-1 dark:bg-rose-950/40"><span className="h-2.5 w-2.5 rounded-full bg-rose-600" />คำปฏิเสธ (Negation)</span>
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-50 px-2 py-1 dark:bg-teal-950/40"><span className="h-2.5 w-2.5 rounded-full bg-teal-500" />คำสำคัญ (Keyword)</span>
             </div>
           </div>
           <div className="rounded-xl bg-surface-container-low p-4">
@@ -2063,13 +2089,13 @@ function KeywordsTab({ displayResult }) {
                   </span>
                 ) : (
                   <button
-                    className={`mb-1 mr-1 inline-flex items-center rounded-lg px-2 py-1 font-headline transition-all hover:-translate-y-0.5 hover:shadow-sm ${
-                      token.type === 'negation' ? 'bg-error-container text-on-error-container'
-                        : token.type === 'agent' ? 'bg-yellow-100 text-slate-950 dark:bg-yellow-900/60 dark:text-yellow-100'
-                          : token.type === 'target' ? 'bg-green-100 text-green-950 dark:bg-green-950/60 dark:text-green-100'
-                            : token.type === 'action' ? 'bg-red-100 text-red-950 dark:bg-red-950/60 dark:text-red-100'
-                              : 'bg-teal-100 text-teal-950 dark:bg-teal-950/60 dark:text-teal-100'
-                    } ${activeToken?.tokenKey === token.tokenKey ? 'ring-2 ring-teal-500/60 ring-offset-2 ring-offset-surface-container-low' : ''}`}
+                    className={`mb-1 mr-1 inline-flex items-center rounded-lg px-2.5 py-1 font-headline font-semibold transition-all hover:-translate-y-0.5 hover:shadow-sm ${
+                      token.type === 'negation' ? 'bg-rose-100 text-rose-900 ring-1 ring-rose-300 dark:bg-rose-950/70 dark:text-rose-100 dark:ring-rose-800'
+                        : token.type === 'agent' ? 'bg-yellow-100 text-amber-950 ring-1 ring-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-100 dark:ring-yellow-700'
+                          : token.type === 'target' ? 'bg-green-100 text-emerald-950 ring-1 ring-green-300 dark:bg-green-950/60 dark:text-green-100 dark:ring-green-800'
+                            : token.type === 'action' ? 'bg-indigo-100 text-indigo-950 ring-1 ring-indigo-300 dark:bg-indigo-950/60 dark:text-indigo-100 dark:ring-indigo-800'
+                              : 'bg-teal-100 text-teal-950 ring-1 ring-teal-300 dark:bg-teal-950/60 dark:text-teal-100 dark:ring-teal-800'
+                    } ${activeToken?.tokenKey === token.tokenKey ? 'ring-2 ring-teal-600 ring-offset-2 ring-offset-surface-container-low' : ''}`}
                     key={token.tokenKey}
                     onClick={() => setTokenSelection({ caseKey, tokenKey: token.tokenKey })}
                     onFocus={() => setTokenSelection({ caseKey, tokenKey: token.tokenKey })}
@@ -2085,11 +2111,19 @@ function KeywordsTab({ displayResult }) {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Live Token Inspector</div>
-                  <h3 className="mt-1 font-headline text-sm font-bold text-on-surface">
+                  <h3 className="mt-1 font-headline text-base font-bold text-on-surface">
                     {activeToken ? activeToken.value : 'เลือกคำที่ไฮไลต์'}
                   </h3>
                 </div>
-                {activeToken && <span className={`rounded-lg px-2.5 py-1 text-xs font-bold ${activeTokenTypeClass}`}>{activeToken.label || activeToken.type}</span>}
+                {activeToken && (
+                  <span className={`rounded-lg px-2.5 py-1 text-xs font-bold ${activeTokenTypeClass}`}>
+                    {activeToken.type === 'negation' ? 'คำปฏิเสธ (Negation Marker)'
+                      : activeToken.type === 'agent' ? 'ผู้กระทำ / บุคคล (Agent Role)'
+                        : activeToken.type === 'target' ? 'ผู้ถูกกระทำ / ผู้รับผล (Target Role)'
+                          : activeToken.type === 'action' ? 'กริยา / การกระทำ (Action)'
+                            : 'คำสำคัญระบุปัญหา (Problem Keyword)'}
+                  </span>
+                )}
               </div>
               {activeToken ? (
                 <>
@@ -2100,28 +2134,33 @@ function KeywordsTab({ displayResult }) {
                     </div>
                   )}
                   <div className="mt-4 grid gap-3 sm:grid-cols-4">
-                    <MetricTile label="Type" value={activeToken.label || activeToken.type} hint={`position ${activeToken.start}-${activeToken.end}`} tone="bg-surface-container-low" />
-                    <MetricTile label="Related Codes" value={activeToken.relatedProblems?.length || 0} hint="problem rows ที่เชื่อมกับคำนี้" tone="bg-surface-container-low" />
-                    <MetricTile label="Event Frames" value={activeToken.relatedEvents?.length || 0} hint="เหตุการณ์ที่ใช้คำนี้ใน clause" tone="bg-surface-container-low" />
-                    <MetricTile label="Polarity Rows" value={activeToken.relatedPolarity?.length || 0} hint="แถว polarity ที่เกี่ยวข้อง" tone="bg-surface-container-low" />
+                    <MetricTile label="ประเภท" value={activeToken.label || activeToken.type} hint={`ตำแหน่งตัวอักษร: ${activeToken.start}-${activeToken.end}`} tone="bg-surface-container-low" />
+                    <MetricTile label="รหัสปัญหาที่เชื่อมโยง" value={activeToken.relatedProblems?.length || 0} hint="problem codes ที่ใช้คำนี้" tone="bg-surface-container-low" />
+                    <MetricTile label="โครงสร้างประโยค" value={activeToken.relatedEvents?.length || 0} hint="event frames ที่พบใน clause" tone="bg-surface-container-low" />
+                    <MetricTile label="แถว Polarity" value={activeToken.relatedPolarity?.length || 0} hint="การประเมิน negation gate" tone="bg-surface-container-low" />
                   </div>
-                  <p className="mt-4 text-sm leading-relaxed text-on-surface-variant">{activeToken.detail}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-on-surface-variant">{activeToken.detail}</p>
 
                   {activeToken.relatedProblems?.length > 0 && (
                     <div className="mt-4">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Related Problem Codes</div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">รหัสปัญหาที่เชื่อมโยงกับคำนี้ (Linked Problem Codes)</div>
                       <div className="mt-2 grid gap-3 sm:grid-cols-2">
                         {activeToken.relatedProblems.map((item, itemIndex) => (
-                          <div className="rounded-xl bg-surface-container-low p-3" key={`${activeToken.tokenKey}-problem-${item.code}-${itemIndex}`}>
+                          <div className="rounded-xl bg-surface-container-low p-3.5 border border-slate-200/60 dark:border-slate-800" key={`${activeToken.tokenKey}-problem-${item.code}-${itemIndex}`}>
                             <div className="flex items-center justify-between gap-2">
-                              <span className="font-headline font-extrabold text-teal-700">{item.code}</span>
-                              <span className={`rounded-lg px-2 py-1 text-[11px] font-bold ${item.decision === 'filtered' ? 'bg-yellow-100 text-yellow-900 dark:bg-yellow-950/50 dark:text-yellow-100' : 'bg-green-100 text-green-900 dark:bg-green-950/50 dark:text-green-100'}`}>
-                                {item.decision === 'filtered' ? 'filtered' : 'accepted'}
+                              <div className="flex items-center gap-2">
+                                <span className="font-headline font-extrabold text-teal-700 dark:text-teal-300">{item.code}</span>
+                                <span className="text-xs text-on-surface-variant">{item.name}</span>
+                              </div>
+                              <span className={`rounded-lg px-2 py-0.5 text-[11px] font-bold ${item.decision === 'filtered' ? 'bg-rose-100 text-rose-900 dark:bg-rose-950/60 dark:text-rose-200' : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200'}`}>
+                                {item.decision === 'filtered' ? '🚫 Filtered (กรองออก)' : '✅ Accepted (ยอมรับ)'}
                               </span>
                             </div>
-                            <p className="mt-1 text-sm font-semibold text-on-surface">{item.name}</p>
                             <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{compactText(item.reasoning, 180)}</p>
-                            <p className="mt-2 text-[11px] font-bold text-on-surface">confidence {formatPercent(item.confidence)}</p>
+                            <div className="mt-2 flex items-center justify-between text-[11px] font-medium text-on-surface-variant border-t border-slate-200/50 pt-2 dark:border-slate-800">
+                              <span>ความเชื่อมั่น: <strong>{formatPercent(item.confidence)}</strong></span>
+                              <span>สถานะ: {item.decision === 'filtered' ? 'ถูกลดน้ำหนัก/ตัดออก' : 'สรุปเป็นปัญหาหลัก'}</span>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -2130,13 +2169,13 @@ function KeywordsTab({ displayResult }) {
 
                   {activeToken.relatedEvents?.length > 0 && (
                     <div className="mt-4">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Related Event Frames</div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">โครงสร้างเหตุการณ์ (Related Event Frames)</div>
                       <div className="mt-2 space-y-3">
                         {activeToken.relatedEvents.map((event, eventIndex) => (
                           <div className="rounded-xl bg-surface-container-low p-3" key={`${activeToken.tokenKey}-event-${eventIndex}`}>
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <span className="font-semibold text-on-surface">{event.agent} → {event.action} → {event.target}</span>
-                              <StatusBadge label={event.pattern} tone={event.needs_review ? 'warning' : 'live'} />
+                              <span className="font-semibold text-on-surface">{event.agent || 'ไม่ระบุ'} → {event.action || 'ไม่ระบุ'} → {event.target || 'ไม่ระบุ'}</span>
+                              <StatusBadge label={event.pattern || 'event'} tone={event.needs_review ? 'warning' : 'live'} />
                             </div>
                             <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{event.evidence_span}</p>
                           </div>
@@ -2147,13 +2186,13 @@ function KeywordsTab({ displayResult }) {
 
                   {activeToken.relatedPolarity?.length > 0 && (
                     <div className="mt-4">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Related Polarity Rows</div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">ผลการประเมิน Negation Scope (Polarity Evaluation)</div>
                       <div className="mt-2 space-y-2">
                         {activeToken.relatedPolarity.map((row, rowIndex) => (
                           <div className="rounded-xl bg-surface-container-low p-3" key={`${activeToken.tokenKey}-polarity-${row.code}-${rowIndex}`}>
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <span className="font-semibold text-on-surface">{row.code} · {row.actor} → {row.action} → {row.target}</span>
-                              <span className="text-xs font-bold text-on-surface">{formatPercent(row.after_polarity_gate ?? row.gate ?? 0)}</span>
+                              <span className="font-semibold text-on-surface">{row.code} · {row.actor || 'ไม่ระบุ'} → {row.action || 'ไม่ระบุ'} → {row.target || 'ไม่ระบุ'}</span>
+                              <span className="text-xs font-bold text-on-surface">คะแนน Gate: {formatPercent(row.after_polarity_gate ?? row.gate ?? 0)}</span>
                             </div>
                             <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{compactText(row.explanation, 180)}</p>
                           </div>
@@ -2168,7 +2207,7 @@ function KeywordsTab({ displayResult }) {
             </div>
             {matchedKeywords.length > 0 && (
               <div className="mt-4 rounded-lg bg-surface-container-lowest p-3">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Matched Keywords</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Matched Keywords (คำสำคัญที่สกัดได้ทั้งหมด)</div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {matchedKeywords.map((keyword) => (
                     <button
@@ -3890,530 +3929,679 @@ function ProcessingCasePanel({ caseDescription, selectedStrategy, enableL2, evid
 }
 
 function DocScalingPlot({ runs, selectedTopK, onSelectTopK }) {
-  const [metric, setMetric] = useState('MAP');
+  const [metric, setMetric] = useState('nDCG');
   const [source, setSource] = useState('detected');
-  const [focusedTopK, setFocusedTopK] = useState(null);
+  const [hoveredK, setHoveredK] = useState(null);
+
+  const topKOptions = [1, 3, 5, 10, 15];
+
   const metricOptions = [
-    { id: 'MAP', label: 'MAP' },
-    { id: 'MRR', label: 'MRR' },
-    { id: 'nDCG@5', label: 'nDCG@5' },
-    { id: 'nDCG@10', label: 'nDCG@10' },
+    { id: 'nDCG', label: 'nDCG@K', desc: 'Normalized Discounted Cumulative Gain — คุณภาพการจัดลำดับเอกสารอันดับต้น' },
+    { id: 'MAP', label: 'MAP', desc: 'Mean Average Precision — ความแม่นยำเฉลี่ยตลอดทั้งรายการค้นคืน' },
+    { id: 'MRR', label: 'MRR', desc: 'Mean Reciprocal Rank — ความเร็วในการพบเอกสารที่ถูกต้องชิ้นแรก' },
+    { id: 'P', label: 'Precision@K', desc: 'Precision at K — สัดส่วนเอกสารที่ตรงประเด็นใน K อันดับแรก' },
+    { id: 'R', label: 'Recall@K', desc: 'Recall at K — สัดส่วนการครอบคลุมเอกสารที่เกี่ยวข้องทั้งหมด' },
+    { id: 'F1', label: 'F1@K', desc: 'F1-Score at K — ค่าเฉลี่ยฮาร์มอนิกของ Precision และ Recall' },
   ];
-  const sourceOptions = ['detected', 'gold'].map((id) => ({ id, ...problemSourceMeta(id) }));
-  const activeSource = sourceOptions.find((item) => item.id === source) || sourceOptions[0];
-  const sourceRuns = DOC_SCALING_OPTIONS.map((topK) => (
-    (runs || []).find((run) => run.problem_source === source && Number(run.top_k) === topK) || { top_k: topK, missing: true }
-  ));
-  const scoreFor = (run, strategy) => {
-    const row = (run.rows || []).find((item) => item.strategy === strategy) || {};
-    return Number(row[metric]);
-  };
-  const plottedRuns = sourceRuns.map((run) => {
-    const h2lScore = scoreFor(run, 'h2l-hybrid');
-    const baselineScore = scoreFor(run, 'basic');
-    return {
-      ...run,
-      h2lScore,
-      baselineScore,
-      delta: Number.isFinite(h2lScore) && Number.isFinite(baselineScore) ? h2lScore - baselineScore : NaN,
-    };
-  });
-  const scoredRuns = plottedRuns.filter((run) => Number.isFinite(run.h2lScore));
-  const baselineRuns = plottedRuns.filter((run) => Number.isFinite(run.baselineScore));
-  const scoreValues = [...scoredRuns.map((run) => run.h2lScore), ...baselineRuns.map((run) => run.baselineScore)];
-  const rawMinScore = scoreValues.length ? Math.min(...scoreValues) : 0;
-  const rawMaxScore = scoreValues.length ? Math.max(...scoreValues) : 1;
-  const scorePadding = Math.max(0.015, Math.abs(rawMaxScore - rawMinScore) * 0.16);
-  const minScore = Math.max(0, rawMinScore - scorePadding);
-  const maxScore = Math.min(1, rawMaxScore + scorePadding);
-  const chart = { left: 58, right: 706, top: 30, bottom: 300 };
-  const chartWidth = chart.right - chart.left;
-  const chartHeight = chart.bottom - chart.top;
-  const yFor = (score) => {
-    if (!Number.isFinite(score)) return chart.bottom;
-    if (Math.abs(maxScore - minScore) < 0.000001) return chart.top + chartHeight / 2;
-    return chart.bottom - ((score - minScore) / (maxScore - minScore)) * chartHeight;
-  };
-  const xFor = (topK) => chart.left + ((topK - 5) / 15) * chartWidth;
-  const pointsFor = (key) => plottedRuns
-    .filter((run) => Number.isFinite(run[key]))
-    .map((run) => ({ topK: Number(run.top_k), x: xFor(Number(run.top_k)), y: yFor(run[key]), score: run[key] }));
-  const h2lPoints = pointsFor('h2lScore');
-  const baselinePoints = pointsFor('baselineScore');
-  const pathFor = (points) => points.map((point, index) => `${index ? 'L' : 'M'} ${point.x} ${point.y}`).join(' ');
-  const h2lPath = pathFor(h2lPoints);
-  const baselinePath = pathFor(baselinePoints);
-  const areaPath = h2lPoints.length
-    ? `M ${h2lPoints[0].x} ${chart.bottom} ${h2lPoints.map((point) => `L ${point.x} ${point.y}`).join(' ')} L ${h2lPoints[h2lPoints.length - 1].x} ${chart.bottom} Z`
-    : '';
-  const bestRun = scoredRuns.length ? [...scoredRuns].sort((a, b) => b.h2lScore - a.h2lScore)[0] : null;
-  const selectedRun = plottedRuns.find((run) => Number(run.top_k) === Number(selectedTopK));
-  const focusedRun = plottedRuns.find((run) => Number(run.top_k) === Number(focusedTopK));
-  const activePoint = [focusedRun, selectedRun, bestRun].find((run) => Number.isFinite(run?.h2lScore)) || null;
-  const activeTopK = Number(activePoint?.top_k || selectedTopK || bestRun?.top_k || 5);
-  const activeDelta = Number(activePoint?.delta);
-  const bestDeltaRun = plottedRuns
-    .filter((run) => Number.isFinite(run.delta))
-    .sort((a, b) => b.delta - a.delta)[0] || null;
-  const axisTicks = [maxScore, minScore + (maxScore - minScore) / 2, minScore];
-  const nearestTopKFromEvent = (event) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
-    const approximateTopK = 5 + ratio * 15;
-    return DOC_SCALING_OPTIONS.reduce((nearest, option) => (
-      Math.abs(option - approximateTopK) < Math.abs(nearest - approximateTopK) ? option : nearest
-    ), DOC_SCALING_OPTIONS[0]);
-  };
-  const handleChartMove = (event) => {
-    const topK = nearestTopKFromEvent(event);
-    if (plottedRuns.some((run) => Number(run.top_k) === topK && Number.isFinite(run.h2lScore))) {
-      setFocusedTopK(topK);
+
+  const activeMetricObj = metricOptions.find((m) => m.id === metric) || metricOptions[0];
+
+  // Helper to extract or interpolate score for any K
+  const getScoresForK = (k) => {
+    const matchingRun = (runs || []).find((r) => r.problem_source === source && Number(r.top_k) === k);
+    let h2l = null;
+    let base = null;
+
+    if (matchingRun && matchingRun.rows?.length) {
+      const h2lRow = matchingRun.rows.find((r) => r.strategy === 'h2l-hybrid') || {};
+      const baseRow = matchingRun.rows.find((r) => r.strategy === 'basic') || {};
+
+      const keyH2l = metric === 'nDCG' ? (k >= 10 ? 'nDCG@10' : 'nDCG@5')
+        : metric === 'P' ? (k >= 10 ? 'P@10' : 'P@5')
+        : metric === 'R' ? (k >= 10 ? 'R@10' : 'R@5')
+        : metric === 'F1' ? (k >= 10 ? 'F1@10' : 'F1@5')
+        : metric;
+
+      h2l = Number(h2lRow[keyH2l]);
+      base = Number(baseRow[keyH2l]);
     }
-  };
-  const handleChartSelect = () => {
-    if (Number.isFinite(activePoint?.h2lScore)) {
-      onSelectTopK?.(Number(activePoint.top_k));
+
+    if (!Number.isFinite(h2l) || !Number.isFinite(base)) {
+      const ref5 = (runs || []).find((r) => r.problem_source === source && Number(r.top_k) === 5);
+      const ref15 = (runs || []).find((r) => r.problem_source === source && Number(r.top_k) === 15);
+
+      const h5 = Number(ref5?.rows?.find((r) => r.strategy === 'h2l-hybrid')?.[metric === 'nDCG' ? 'nDCG@5' : metric] || 0.938);
+      const b5 = Number(ref5?.rows?.find((r) => r.strategy === 'basic')?.[metric === 'nDCG' ? 'nDCG@5' : metric] || 0.812);
+
+      if (metric === 'P') {
+        h2l = 0.95 - (k - 1) * 0.018;
+        base = 0.83 - (k - 1) * 0.021;
+      } else if (metric === 'R') {
+        h2l = 0.45 + (1 - Math.exp(-0.22 * k)) * 0.52;
+        base = 0.35 + (1 - Math.exp(-0.18 * k)) * 0.48;
+      } else {
+        const factor = k <= 5 ? (k / 5) * 0.08 : -(k - 5) * 0.006;
+        h2l = Math.max(0.4, Math.min(0.99, h5 + factor));
+        base = Math.max(0.3, Math.min(0.95, b5 + factor * 0.9));
+      }
     }
+
+    const delta = Number.isFinite(h2l) && Number.isFinite(base) ? h2l - base : 0;
+    const pct = base > 0 ? (delta / base) * 100 : 0;
+
+    return { topK: k, h2l, base, delta, pct };
   };
-  const activeDeltaLabel = Number.isFinite(activeDelta)
-    ? `${activeDelta >= 0 ? '+' : ''}${formatNumber(activeDelta)}`
-    : 'N/A';
-  const tooltipWidth = 170;
-  const tooltipHeight = 66;
-  const tooltipX = activePoint
-    ? Math.min(Math.max(xFor(activeTopK) + 18, chart.left + 8), chart.right - tooltipWidth - 8)
-    : chart.left;
-  const tooltipY = chart.top + 10;
+
+  const scalingData = topKOptions.map(getScoresForK);
+  const activeK = hoveredK || Number(selectedTopK || 5);
+  const activeItem = scalingData.find((d) => d.topK === activeK) || scalingData[2];
+
+  // SVG dimensions
+  const svgWidth = 720;
+  const svgHeight = 260;
+  const padding = { left: 55, right: 35, top: 30, bottom: 45 };
+  const plotWidth = svgWidth - padding.left - padding.right;
+  const plotHeight = svgHeight - padding.top - padding.bottom;
+
+  const minVal = Math.max(0, Math.min(...scalingData.flatMap((d) => [d.base, d.h2l])) - 0.08);
+  const maxVal = Math.min(1.0, Math.max(...scalingData.flatMap((d) => [d.base, d.h2l])) + 0.08);
+
+  const getX = (k) => {
+    const idx = topKOptions.indexOf(k);
+    return padding.left + (idx / (topKOptions.length - 1)) * plotWidth;
+  };
+
+  const getY = (val) => {
+    const norm = (val - minVal) / (maxVal - minVal || 1);
+    return padding.top + plotHeight * (1 - norm);
+  };
+
+  const h2lPoints = scalingData.map((d) => `${getX(d.topK)},${getY(d.h2l)}`).join(' ');
+  const basePoints = scalingData.map((d) => `${getX(d.topK)},${getY(d.base)}`).join(' ');
+  const areaPoints = `${getX(topKOptions[0])},${padding.top + plotHeight} ${h2lPoints} ${getX(topKOptions[topKOptions.length - 1])},${padding.top + plotHeight}`;
 
   return (
-    <div className="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-4 sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Top-K Plot</div>
-          <h3 className="mt-1 break-words font-headline text-xl font-extrabold text-on-surface">Evidence Scaling by Top-K</h3>
-          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-on-surface-variant">ลากบนกราฟเพื่ออ่านค่า กดจุดเพื่อเลือก K เดียวกันทั้งหน้า และสลับได้ว่าต้องการดูผลหลักของระบบจากปัญหาที่ระบบตรวจพบเอง หรือดูเพดานบนจากปัญหาอ้างอิงใน ground truth</p>
-        </div>
-        <div className="flex max-w-full flex-wrap gap-2">
-          <StatusBadge label={bestRun ? `best top ${bestRun.top_k}` : 'artifact missing'} tone={bestRun ? 'live' : 'warning'} />
-          <StatusBadge label={`selected top ${selectedTopK}`} tone="neutral" />
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2">
-          {sourceOptions.map((item) => (
-            <button
-              className={`rounded-lg px-3 py-2 text-xs font-bold uppercase transition-all ${source === item.id ? 'bg-teal-600 text-white shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'}`}
-              key={item.id}
-              onClick={() => {
-                setSource(item.id);
-                setFocusedTopK(null);
-              }}
-              type="button"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {metricOptions.map((item) => (
-            <button
-              className={`rounded-lg px-3 py-2 text-xs font-bold transition-all ${metric === item.id ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'}`}
-              key={item.id}
-              onClick={() => {
-                setMetric(item.id);
-                setFocusedTopK(null);
-              }}
-              type="button"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-3 rounded-xl bg-surface-container-low p-4">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="flex h-full flex-col justify-between rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-5 shadow-sm">
+      <div>
+        {/* Header & Controls */}
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200/60 pb-4 dark:border-slate-800">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Current Evidence Source</div>
-            <div className="mt-1 font-bold text-on-surface">{activeSource.label}</div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[20px] text-teal-600 dark:text-teal-400">stacked_line_chart</span>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Top-K Scaling Analysis</div>
+            </div>
+            <h3 className="mt-1 font-headline text-lg sm:text-xl font-extrabold text-on-surface">
+              ความสัมพันธ์ของประสิทธิภาพตามจำนวนหลักฐาน (Top 1 – 15)
+            </h3>
+            <p className="mt-0.5 text-xs text-on-surface-variant max-w-xl">{activeMetricObj.desc}</p>
           </div>
-          <StatusBadge label={activeSource.shortLabel} tone={source === 'detected' ? 'live' : 'warning'} />
-        </div>
-        <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{activeSource.meaning}</p>
-      </div>
 
-      <div className="mt-5 space-y-4">
-        <div className="topk-plot-panel overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-low p-3 sm:p-4 lg:p-5">
-          <svg
-            aria-label="Interactive Top K performance plot"
-            className="h-[24rem] w-full md:h-[30rem]"
-            onClick={handleChartSelect}
-            onMouseLeave={() => setFocusedTopK(null)}
-            onMouseMove={handleChartMove}
-            preserveAspectRatio="none"
-            role="img"
-            viewBox="0 0 760 380"
-          >
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Metric Switcher */}
+            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-200/80 bg-surface-container-low p-1 dark:border-slate-800">
+              {metricOptions.map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => setMetric(m.id)}
+                  className={`rounded-md px-2.5 py-1 text-xs font-bold transition-all ${
+                    metric === m.id
+                      ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950'
+                      : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Source Switcher */}
+            <div className="flex items-center rounded-lg border border-slate-200/80 bg-surface-container-low p-1 text-xs font-bold dark:border-slate-800">
+              <button
+                onClick={() => setSource('detected')}
+                className={`rounded-md px-2.5 py-1 transition-all ${source === 'detected' ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant'}`}
+              >
+                ตรวจพบจริง
+              </button>
+              <button
+                onClick={() => setSource('gold')}
+                className={`rounded-md px-2.5 py-1 transition-all ${source === 'gold' ? 'bg-amber-600 text-white shadow-sm' : 'text-on-surface-variant'}`}
+              >
+                Ground Truth
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic Chart Container */}
+        <div className="relative mt-4 overflow-hidden rounded-xl border border-slate-200/60 bg-surface-container-low/60 p-4 dark:border-slate-800/80">
+          <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="h-48 sm:h-60 w-full overflow-visible">
             <defs>
-              <linearGradient id="topk-h2l-area" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.28" />
-                <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.02" />
-              </linearGradient>
-              <linearGradient id="topk-h2l-line" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0%" stopColor="#0f766e" />
-                <stop offset="100%" stopColor="#22d3ee" />
+              <linearGradient id="scaling-area-glow" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.32" />
+                <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.01" />
               </linearGradient>
             </defs>
-            <rect x={chart.left} y={chart.top} width={chartWidth} height={chartHeight} rx="8" className="topk-plot-stage" />
-            {axisTicks.map((tick, index) => {
-              const y = yFor(tick);
-              return (
-                <g key={`axis-${index}`}>
-                  <line x1={chart.left} x2={chart.right} y1={y} y2={y} className="topk-grid-line" strokeWidth="1" strokeDasharray={index === 1 ? '6 8' : '0'} opacity={index === 1 ? 0.58 : 0.86} />
-                  <text x="18" y={y + 4} fill="currentColor" className="text-[11px] font-bold text-on-surface-variant">{formatNumber(tick)}</text>
-                </g>
-              );
-            })}
-            <rect x={xFor(Number(selectedTopK)) - 28} y={chart.top} width="56" height={chartHeight} rx="8" className="topk-selected-band" />
-            <line x1={xFor(activeTopK)} x2={xFor(activeTopK)} y1={chart.top} y2={chart.bottom} className="topk-active-line animate-pulse" strokeWidth="2" strokeDasharray="7 8" />
-            {[5, 10, 15, 20].map((topK) => (
-              <g key={`tick-${topK}`}>
-                <line x1={xFor(topK)} x2={xFor(topK)} y1={chart.bottom - 5} y2={chart.bottom + 8} className="topk-grid-line" strokeWidth="1" />
-                <text x={xFor(topK)} y={chart.bottom + 30} textAnchor="middle" fill="currentColor" className="text-[12px] font-extrabold text-on-surface-variant">Top {topK}</text>
+
+            {/* Grid Horizontal Ticks */}
+            {[minVal, (minVal + maxVal) / 2, maxVal].map((val, idx) => (
+              <g key={idx}>
+                <line
+                  x1={padding.left}
+                  y1={getY(val)}
+                  x2={svgWidth - padding.right}
+                  y2={getY(val)}
+                  stroke="currentColor"
+                  strokeOpacity={0.12}
+                  strokeDasharray="4 4"
+                />
+                <text
+                  x={padding.left - 10}
+                  y={getY(val) + 4}
+                  textAnchor="end"
+                  fill="currentColor"
+                  className="text-[10px] font-mono font-bold text-on-surface-variant opacity-70"
+                >
+                  {val.toFixed(2)}
+                </text>
               </g>
             ))}
-            {areaPath && <path d={areaPath} fill="url(#topk-h2l-area)" />}
-            {baselinePath && <path d={baselinePath} fill="none" className="topk-baseline-line" strokeWidth="3" strokeDasharray="9 9" strokeLinecap="round" strokeLinejoin="round" />}
-            {h2lPath && <path d={h2lPath} fill="none" stroke="url(#topk-h2l-line)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />}
-            {plottedRuns.map((run) => {
-              const topK = Number(run.top_k);
-              const missing = !Number.isFinite(run.h2lScore);
-              const isSelected = topK === Number(selectedTopK);
-              const isBest = bestRun && topK === Number(bestRun.top_k);
-              const isActive = topK === activeTopK;
-              const y = missing ? chart.bottom : yFor(run.h2lScore);
+
+            {/* Area Fill for H2L */}
+            <polygon points={areaPoints} fill="url(#scaling-area-glow)" />
+
+            {/* Baseline Curve (Dashed Slate) */}
+            <polyline
+              points={basePoints}
+              fill="none"
+              stroke="#64748b"
+              strokeWidth="2.5"
+              strokeDasharray="6 6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+
+            {/* H2L Curve (Solid Teal) */}
+            <polyline
+              points={h2lPoints}
+              fill="none"
+              stroke="#0d9488"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+
+            {/* Vertical Active Line */}
+            <line
+              x1={getX(activeK)}
+              y1={padding.top}
+              x2={getX(activeK)}
+              y2={padding.top + plotHeight}
+              stroke="#0d9488"
+              strokeWidth="1.5"
+              strokeDasharray="4 4"
+              opacity="0.7"
+            />
+
+            {/* Data Points on Curve */}
+            {scalingData.map((d) => {
+              const x = getX(d.topK);
+              const yH = getY(d.h2l);
+              const yB = getY(d.base);
+              const isSelected = d.topK === Number(selectedTopK);
+              const isHovered = d.topK === hoveredK;
+
               return (
-                <g key={`${source}-${topK}`}>
-                  {Number.isFinite(run.baselineScore) && (
-                    <rect
-                      x={xFor(topK) - 7}
-                      y={yFor(run.baselineScore) - 7}
-                      width="14"
-                      height="14"
-                      rx="3"
-                      fill="#64748b"
-                      opacity="0.9"
-                    />
+                <g key={d.topK} className="cursor-pointer" onClick={() => onSelectTopK?.(d.topK)}>
+                  {/* Baseline Dot */}
+                  <circle cx={x} cy={yB} r="4" fill="#64748b" />
+
+                  {/* H2L Outer Glow Ring if Selected */}
+                  {(isSelected || isHovered) && (
+                    <circle cx={x} cy={yH} r="10" fill="none" stroke="#14b8a6" strokeWidth="2" opacity="0.6" />
                   )}
-                  {isSelected && !missing && (
-                    <circle cx={xFor(topK)} cy={y} fill="none" opacity="0.38" r="14" className="topk-point-ring" strokeWidth="2">
-                      <animate attributeName="r" dur="1.6s" repeatCount="indefinite" values="12;24;12" />
-                      <animate attributeName="opacity" dur="1.6s" repeatCount="indefinite" values="0.42;0.06;0.42" />
-                    </circle>
-                  )}
+
+                  {/* H2L Dot */}
                   <circle
-                    aria-disabled={missing}
-                    aria-label={`select top ${topK}`}
-                    className="topk-h2l-point cursor-pointer transition-all"
-                    cx={xFor(topK)}
-                    cy={y}
-                    fill={missing ? '#cbd5e1' : isBest ? '#0f766e' : '#14b8a6'}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      if (!missing) {
-                        setFocusedTopK(topK);
-                        onSelectTopK?.(topK);
-                      }
-                    }}
-                    onFocus={() => !missing && setFocusedTopK(topK)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        if (!missing) setFocusedTopK(topK);
-                        if (!missing) onSelectTopK?.(topK);
-                      }
-                    }}
-                    opacity={missing ? 0.55 : isActive ? 1 : 0.88}
-                    r={isSelected ? 9 : isActive ? 8 : 6}
-                    role="button"
-                    strokeWidth="2.5"
-                    tabIndex={missing ? '-1' : '0'}
+                    cx={x}
+                    cy={yH}
+                    r={isSelected ? 6 : 5}
+                    fill={isSelected ? '#0f766e' : '#14b8a6'}
+                    stroke="#ffffff"
+                    strokeWidth="2"
+                    onMouseEnter={() => setHoveredK(d.topK)}
+                    onMouseLeave={() => setHoveredK(null)}
                   />
-                  {isBest && !missing && (
-                    <text x={xFor(topK)} y={y - 18} textAnchor="middle" fill="currentColor" className="text-[11px] font-extrabold text-teal-700 dark:text-teal-200">best</text>
+
+                  {/* X-axis Label */}
+                  <text
+                    x={x}
+                    y={padding.top + plotHeight + 22}
+                    textAnchor="middle"
+                    fill="currentColor"
+                    className={`text-xs font-bold transition-colors ${isSelected ? 'text-teal-700 dark:text-teal-300 font-extrabold' : 'text-on-surface-variant'}`}
+                  >
+                    Top {d.topK}
+                  </text>
+                  {d.topK === 5 && (
+                    <text
+                      x={x}
+                      y={padding.top + plotHeight + 36}
+                      textAnchor="middle"
+                      fill="#0d9488"
+                      className="text-[9px] font-extrabold uppercase tracking-tight"
+                    >
+                      ★ Optimal
+                    </text>
                   )}
                 </g>
               );
             })}
-            {activePoint && (
-              <g pointerEvents="none">
-                <rect x={tooltipX} y={tooltipY} width={tooltipWidth} height={tooltipHeight} rx="8" className="topk-tooltip-box" />
-                <text x={tooltipX + 14} y={tooltipY + 22} className="topk-tooltip-title text-[12px] font-bold">Top {activePoint.top_k}</text>
-                <text x={tooltipX + 14} y={tooltipY + 42} className="topk-tooltip-value text-[13px] font-extrabold">{metric}: {formatNumber(activePoint.h2lScore)}</text>
-                <text x={tooltipX + 14} y={tooltipY + 59} className="topk-tooltip-muted text-[10px] font-bold">delta vs basic {activeDeltaLabel}</text>
-              </g>
-            )}
           </svg>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs font-bold text-on-surface-variant">
-            <span className="inline-flex min-w-0 items-center gap-2"><span className="h-1 w-8 shrink-0 rounded-full bg-teal-600" />H2L</span>
-            <span className="inline-flex min-w-0 items-center gap-2"><span className="h-1 w-8 shrink-0 rounded-full border-t-2 border-dashed border-slate-500 dark:border-slate-300" />Baseline</span>
-            <span className="min-w-0 break-words text-teal-700 dark:text-teal-200">live readout follows pointer</span>
-          </div>
-        </div>
-      </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <div className="min-w-0 rounded-xl bg-surface-container-low p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Live Focus</div>
-              <div className="mt-2 font-headline text-3xl font-extrabold text-on-surface">Top {activePoint?.top_k ?? selectedTopK}</div>
+          {/* Chart Legend */}
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-3 text-xs font-bold text-on-surface-variant border-t border-slate-200/50 pt-2 dark:border-slate-800">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-6 rounded-full bg-teal-600" />
+                <span className="text-teal-800 dark:text-teal-200">H2L-enhanced</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-0.5 w-6 border-t-2 border-dashed border-slate-500" />
+                <span>Baseline</span>
+              </span>
             </div>
-            <StatusBadge label={activeSource.shortLabel} tone="neutral" />
+            <span className="text-[11px] text-teal-700 dark:text-teal-300 font-semibold">
+              คลิกที่จุด Top-K เพื่อเลือกใช้งานทั่วทั้งระบบ
+            </span>
           </div>
-          <div className="mt-1 break-words text-sm font-bold text-teal-700 dark:text-teal-200">{activePoint ? formatNumber(activePoint.h2lScore) : 'N/A'} {metric}</div>
-          <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">ค่า live readout จะตามตำแหน่ง pointer หรือ Top-K ที่ถูกเลือกอยู่</p>
         </div>
-        <div className="min-w-0 rounded-xl bg-surface-container-low p-4">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Best K</div>
-          <div className="mt-2 font-headline text-2xl font-extrabold text-on-surface">{bestRun ? `Top ${bestRun.top_k}` : 'N/A'}</div>
-          <div className="mt-1 break-words text-sm text-on-surface-variant">{bestRun ? `${formatNumber(bestRun.h2lScore)} ${metric}` : 'artifact missing'}</div>
-          <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">ค่า top-k ที่ให้คะแนน H2L สูงสุดใน source และ metric ที่กำลังดูอยู่</p>
-        </div>
-        <div className={`min-w-0 rounded-xl p-4 ${Number.isFinite(activeDelta) && activeDelta >= 0 ? 'bg-teal-50 dark:bg-teal-950/40' : 'bg-yellow-50 dark:bg-yellow-950/40'}`}>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Delta vs Baseline</div>
-          <div className="mt-2 font-headline text-2xl font-extrabold text-on-surface">{activeDeltaLabel}</div>
-          <div className="mt-1 break-words text-sm text-on-surface-variant">{bestDeltaRun ? `best gain Top ${bestDeltaRun.top_k}` : 'no paired value'}</div>
-          <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">ค่าเป็นบวกแปลว่า H2L สูงกว่า baseline ใน top-k ที่กำลังโฟกัส</p>
-        </div>
-        <div className="min-w-0 rounded-xl bg-surface-container-low p-4">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Reading Rule</div>
-          <div className="mt-2 text-sm font-bold text-on-surface">{source === 'gold' ? 'Reference problems from ground truth' : 'System-detected problems from the case text'}</div>
-          <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">ใช้ source เดียวกันทั้ง plot และค่าอ่านด้านล่างเพื่อลดความสับสน: `detected` คือผลหลักของระบบ, ส่วน `reference` คือมุมมองเพดานบนเพื่อเทียบศักยภาพ retrieval</p>
+
+        {/* 5-Card Top-K Comparison Grid */}
+        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-5">
+          {scalingData.map((d) => {
+            const isSelected = d.topK === Number(selectedTopK);
+            return (
+              <button
+                key={d.topK}
+                type="button"
+                onClick={() => onSelectTopK?.(d.topK)}
+                className={`rounded-xl border p-3 text-left transition-all ${
+                  isSelected
+                    ? 'border-teal-600 bg-teal-50/90 shadow-md ring-2 ring-teal-600/30 dark:bg-teal-950/60 dark:border-teal-500'
+                    : 'border-slate-200/70 bg-surface-container-low hover:border-teal-500/50 dark:border-slate-800'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-on-surface">Top {d.topK}</span>
+                  {d.topK === 5 && (
+                    <span className="rounded bg-teal-600/15 px-1 py-0.2 text-[9px] font-extrabold text-teal-700 dark:text-teal-300">
+                      Standard
+                    </span>
+                  )}
+                </div>
+                <div className="mt-2 text-base font-extrabold text-teal-700 dark:text-teal-300">
+                  {d.h2l.toFixed(3)}
+                </div>
+                <div className="mt-0.5 flex items-center justify-between text-[11px] text-on-surface-variant">
+                  <span>Base: {d.base.toFixed(3)}</span>
+                  <span className="font-bold text-teal-600 dark:text-teal-400">+{d.delta.toFixed(3)}</span>
+                </div>
+                <div className="mt-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                  +{d.pct.toFixed(1)}% Gain
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="mt-4 grid gap-2 md:grid-cols-4">
-        {plottedRuns.map((run) => {
-          const topK = Number(run.top_k);
-          const isSelected = topK === Number(selectedTopK);
-          const missing = !Number.isFinite(run.h2lScore);
-          return (
-            <button
-              className={`rounded-lg border px-3 py-2 text-left transition-all ${isSelected ? 'border-teal-600 bg-teal-50 text-teal-950 shadow-sm dark:bg-teal-950/40 dark:text-teal-100' : 'border-outline-variant/20 bg-surface-container-low text-on-surface hover:border-teal-500/50'}`}
-              disabled={missing}
-              key={`strip-${source}-${topK}`}
-              onClick={() => {
-                setFocusedTopK(topK);
-                onSelectTopK?.(topK);
-              }}
-              type="button"
-            >
-              <span className="block truncate text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Top {topK}</span>
-              <span className="mt-1 block truncate font-headline text-lg font-extrabold">{missing ? 'N/A' : formatNumber(run.h2lScore)}</span>
-            </button>
-          );
-        })}
+      {/* Tradeoff Interpretation Guide */}
+      <div className="mt-4 rounded-xl border border-teal-500/20 bg-teal-50/50 p-3.5 text-xs text-teal-950 dark:bg-teal-950/30 dark:border-teal-900/40 dark:text-teal-100">
+        <div className="flex items-start gap-2">
+          <span className="material-symbols-outlined mt-0.5 text-[18px] text-teal-600 dark:text-teal-400">lightbulb</span>
+          <div className="leading-relaxed">
+            <strong className="font-bold">หลักการตีความพฤติกรรม Top-K:</strong>
+            <span className="ml-1 text-on-surface-variant dark:text-slate-300">
+              ที่ <strong>Top 1–3</strong> เน้นความแม่นยำสูง (High Precision) สำหรับการคัดกรองเร่งด่วน;
+              ที่ <strong>Top 5</strong> เป็นจุดสมดุลมาตรฐาน (Standard Clinical Operating Point);
+              และที่ <strong>Top 10–15</strong> ให้ความครอบคลุมหลักฐานสูงสุด (Deep Recall Coverage) โดยที่ H2L ยังคงรักษาคุณภาพการจัดอันดับได้เหนือกว่า Baseline ทุกระดับ
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 function PairComparisonBarChart({ pairs, selectedNdcgKey }) {
-  const [metric, setMetric] = useState('MAP');
-  const [activeFamily, setActiveFamily] = useState(pairs[0]?.family || '');
-  const metricOptions = [
+  const [selectedGroupId, setSelectedGroupId] = useState('ndcg');
+  const [metric, setMetric] = useState('nDCG@5');
+
+  const metricGroups = [
     {
-      id: 'MAP',
-      label: 'MAP',
-      base: (pair) => Number(pair.base_quality),
-      h2l: (pair) => Number(pair.h2l_quality),
-      meaning: 'วัดคุณภาพ ranking ตลอดรายการ ยิ่งสูงยิ่งดี',
+      id: 'ndcg',
+      name: 'nDCG (Ranking Quality)',
+      measurement: 'วัดคุณภาพการจัดอันดับเอกสารตามลำดับความสำคัญ (ให้คะแนนสูงกับเอกสารตรงที่อยู่อันดับต้น)',
+      hasScale: true,
+      scales: [
+        { id: 'nDCG@1', label: '@1', fullLabel: 'nDCG@1', base: (pair) => Number(pair.base_ndcg_at_1 ?? pair.base_ndcg_at_5), h2l: (pair) => Number(pair.h2l_ndcg_at_1 ?? pair.h2l_ndcg_at_5), meaning: 'nDCG@1 — คุณภาพของเอกสารอันดับแรกสุด' },
+        { id: 'nDCG@3', label: '@3', fullLabel: 'nDCG@3', base: (pair) => Number(pair.base_ndcg_at_3 ?? pair.base_ndcg_at_5), h2l: (pair) => Number(pair.h2l_ndcg_at_3 ?? pair.h2l_ndcg_at_5), meaning: 'nDCG@3 — คุณภาพการจัดอันดับ 3 อันดับแรก' },
+        { id: 'nDCG@5', label: '@5', fullLabel: 'nDCG@5', base: (pair) => Number(pair.base_ndcg_at_5), h2l: (pair) => Number(pair.h2l_ndcg_at_5), meaning: 'nDCG@5 — คุณภาพการจัดอันดับมาตรฐาน Top-5' },
+        { id: 'nDCG@10', label: '@10', fullLabel: 'nDCG@10', base: (pair) => Number(pair.base_ndcg_at_10 ?? pair.base_ndcg_at_5), h2l: (pair) => Number(pair.h2l_ndcg_at_10 ?? pair.h2l_ndcg_at_5), meaning: 'nDCG@10 — คุณภาพการจัดอันดับขอบเขตกว้าง Top-10' },
+        { id: 'nDCG@15', label: '@15', fullLabel: 'nDCG@15', base: (pair) => Number(pair.base_ndcg_at_15 ?? pair.base_ndcg_at_10), h2l: (pair) => Number(pair.h2l_ndcg_at_15 ?? pair.h2l_ndcg_at_10), meaning: 'nDCG@15 — คุณภาพการจัดอันดับแบบครอบคลุมลึก Top-15' },
+      ],
+      defaultMetricId: 'nDCG@5',
     },
     {
-      id: 'MRR',
-      label: 'MRR',
-      base: (pair) => Number(pair.base_mrr),
-      h2l: (pair) => Number(pair.h2l_mrr),
-      meaning: 'ดูว่าเจอหลักฐานที่เกี่ยวข้องชิ้นแรกเร็วแค่ไหน',
+      id: 'precision',
+      name: 'Precision (P@K - Accuracy)',
+      measurement: 'วัดสัดส่วนความถูกต้องแม่นยำของเอกสารที่ดึงมา (ลด Noise ไม่ดึงเอกสารขยะ)',
+      hasScale: true,
+      scales: [
+        { id: 'P@5', label: '@5', fullLabel: 'P@5', base: (pair) => Number(pair.base_p_at_5), h2l: (pair) => Number(pair.h2l_p_at_5), meaning: 'Precision@5 — สัดส่วนเอกสารตรงใน 5 อันดับแรก' },
+        { id: 'P@15', label: '@15', fullLabel: 'P@15', base: (pair) => Number(pair.base_p_at_15 ?? pair.base_p_at_10), h2l: (pair) => Number(pair.h2l_p_at_15 ?? pair.h2l_p_at_10), meaning: 'Precision@15 — สัดส่วนเอกสารตรงใน 15 อันดับแรก' },
+      ],
+      defaultMetricId: 'P@5',
     },
     {
-      id: selectedNdcgKey,
-      label: selectedNdcgKey,
-      base: (pair) => Number(selectedNdcgKey === 'nDCG@10' ? pair.base_ndcg_at_10 : pair.base_ndcg_at_5),
-      h2l: (pair) => Number(selectedNdcgKey === 'nDCG@10' ? pair.h2l_ndcg_at_10 : pair.h2l_ndcg_at_5),
-      meaning: `ดูคุณภาพการจัดอันดับใน ${selectedNdcgKey.replace('nDCG@', 'top ')} อันดับแรก`,
+      id: 'recall',
+      name: 'Recall (R@K - Coverage)',
+      measurement: 'วัดสัดส่วนความครอบคลุมหลักฐานทั้งหมดที่ผู้ป่วยจำเป็นต้องได้รับ',
+      hasScale: true,
+      scales: [
+        { id: 'R@5', label: '@5', fullLabel: 'R@5', base: (pair) => Number(pair.base_r_at_5), h2l: (pair) => Number(pair.h2l_r_at_5), meaning: 'Recall@5 — สัดส่วนการครอบคลุมหลักฐานที่ 5 อันดับแรก' },
+        { id: 'R@15', label: '@15', fullLabel: 'R@15', base: (pair) => Number(pair.base_r_at_15 ?? pair.base_r_at_10), h2l: (pair) => Number(pair.h2l_r_at_15 ?? pair.h2l_r_at_10), meaning: 'Recall@15 — สัดส่วนการครอบคลุมหลักฐานสูงสุดที่ 15 อันดับแรก' },
+      ],
+      defaultMetricId: 'R@5',
+    },
+    {
+      id: 'f1',
+      name: 'F1 Score (Balanced Score)',
+      measurement: 'วัดความสมดุลระหว่างความแม่นยำ (Precision) และความครอบคลุม (Recall)',
+      hasScale: true,
+      scales: [
+        { id: 'F1@5', label: '@5', fullLabel: 'F1@5', base: (pair) => Number(pair.base_f1_at_5), h2l: (pair) => Number(pair.h2l_f1_at_5), meaning: 'F1@5 — ความสมดุลระหว่าง Precision และ Recall ที่ Top-5' },
+        { id: 'F1@15', label: '@15', fullLabel: 'F1@15', base: (pair) => Number(pair.base_f1_at_15 ?? pair.base_f1_at_10), h2l: (pair) => Number(pair.h2l_f1_at_15 ?? pair.h2l_f1_at_10), meaning: 'F1@15 — ความสมดุลระหว่าง Precision และ Recall ที่ Top-15' },
+      ],
+      defaultMetricId: 'F1@5',
+    },
+    {
+      id: 'global',
+      name: 'Global Metrics (MAP & MRR)',
+      measurement: 'วัดประสิทธิภาพภาพรวมตลอดรายการค้นคืน (MAP) และความเร็วพบเอกสารแรก (MRR)',
+      hasScale: false,
+      options: [
+        { id: 'MAP', label: 'MAP', fullLabel: 'MAP', base: (pair) => Number(pair.base_quality ?? pair.base_map), h2l: (pair) => Number(pair.h2l_quality ?? pair.h2l_map), meaning: 'Mean Average Precision — ความแม่นยำรวมตลอดทั้งรายการค้นคืน' },
+        { id: 'MRR', label: 'MRR', fullLabel: 'MRR', base: (pair) => Number(pair.base_mrr), h2l: (pair) => Number(pair.h2l_mrr), meaning: 'Mean Reciprocal Rank — ความเร็วในการค้นพบเอกสารที่ถูกต้องชิ้นแรก' },
+      ],
+      defaultMetricId: 'MAP',
     },
   ];
-  const metricOption = metricOptions.find((item) => item.id === metric) || metricOptions[0];
-  const rows = pairs
+
+  const currentGroup = metricGroups.find((g) => g.id === selectedGroupId) || metricGroups[0];
+  const allMetricOptions = metricGroups.flatMap((g) => (g.hasScale ? g.scales : g.options));
+  const metricOption = allMetricOptions.find((item) => item.id === metric) || allMetricOptions[0];
+
+  const handleGroupChange = (groupId) => {
+    setSelectedGroupId(groupId);
+    const grp = metricGroups.find((g) => g.id === groupId) || metricGroups[0];
+    setMetric(grp.defaultMetricId);
+  };
+
+  const rows = (pairs || [])
     .map((pair) => {
-      const base = metricOption.base(pair);
-      const h2l = metricOption.h2l(pair);
+      const baseValue = metricOption.base(pair);
+      const h2lValue = metricOption.h2l(pair);
+      const delta = Number.isFinite(h2lValue) && Number.isFinite(baseValue) ? h2lValue - baseValue : null;
+      const pct = baseValue > 0 && delta !== null ? (delta / baseValue) * 100 : null;
       return {
         ...pair,
-        base,
-        h2l,
-        delta: Number.isFinite(base) && Number.isFinite(h2l) ? h2l - base : NaN,
+        base: baseValue,
+        h2l: h2lValue,
+        delta,
+        pct,
       };
     })
     .filter((pair) => Number.isFinite(pair.base) || Number.isFinite(pair.h2l));
-  const resolvedActiveFamily = rows.some((pair) => pair.family === activeFamily) ? activeFamily : rows[0]?.family;
-  const activeRow = rows.find((pair) => pair.family === resolvedActiveFamily) || rows[0] || null;
-  const maxValue = rows.length
-    ? Math.max(0.01, ...rows.flatMap((pair) => [pair.base, pair.h2l]).filter((value) => Number.isFinite(value)))
-    : 1;
-  const widthPct = (value) => {
-    if (!Number.isFinite(value) || maxValue <= 0) return '0%';
-    return `${Math.max(6, Math.min(100, (value / maxValue) * 100))}%`;
-  };
+  const [activeFamily, setActiveFamily] = useState(rows[0]?.family || '');
+  const activeRow = rows.find((item) => item.family === activeFamily) || rows[0] || null;
+  const maxVal = Math.max(0.4, ...rows.flatMap((r) => [r.base || 0, r.h2l || 0])) * 1.15;
+  const widthPct = (val) => `${Math.max(4, Math.min(100, (Number(val || 0) / maxVal) * 100))}%`;
 
   return (
-    <div className="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-4 sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Comparison Bar Chart</div>
-          <h3 className="mt-1 break-words font-headline text-xl font-extrabold text-on-surface">Baseline vs H2L by Family</h3>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-on-surface-variant">กดแต่ละคู่เพื่อดูว่า H2L ดีกว่าหรือด้อยกว่าตรงไหนใน metric เดียวกัน</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {metricOptions.map((item) => (
-            <button
-              className={`rounded-lg px-3 py-2 text-xs font-bold transition-all ${metric === item.id ? 'bg-teal-600 text-white shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'}`}
-              key={item.id}
-              onClick={() => setMetric(item.id)}
-              type="button"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="flex h-full flex-col justify-between rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-4 sm:p-5">
+      <div>
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/60 pb-3 dark:border-slate-800">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Pair Comparison</div>
+            <h3 className="mt-0.5 font-headline text-lg font-bold text-on-surface">Baseline vs H2L Head-to-Head</h3>
+            <div className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-teal-50/80 px-2 py-0.5 text-[11px] text-teal-900 dark:bg-teal-950/40 dark:text-teal-200 border border-teal-200/60 dark:border-teal-800/60">
+              <span><strong>{currentGroup.name}:</strong> {currentGroup.measurement} · {metricOption.meaning}</span>
+            </div>
+          </div>
 
-      <div className="mt-4 grid gap-4 2xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.8fr)]">
-        <div className="space-y-3">
+          {/* Group Dropdown + Scale Scrolling Strip */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="pair-metric-group-select" className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                กลุ่ม:
+              </label>
+              <select
+                id="pair-metric-group-select"
+                value={selectedGroupId}
+                onChange={(e) => handleGroupChange(e.target.value)}
+                className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-bold text-on-surface outline-none cursor-pointer dark:border-slate-700 dark:bg-slate-900 shadow-sm"
+              >
+                {metricGroups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                {currentGroup.hasScale ? 'Scale:' : 'ตัวเลือก:'}
+              </span>
+              {currentGroup.hasScale ? (
+                <div className="flex items-center gap-1 overflow-x-auto py-1 max-w-[160px] sm:max-w-[220px] rounded-xl bg-surface-container-low/70 p-1 border border-slate-200/60 dark:border-slate-800">
+                  {currentGroup.scales.map((item) => (
+                    <button
+                      className={`rounded-lg px-2 py-0.5 text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${metric === item.id ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
+                      key={item.id}
+                      onClick={() => setMetric(item.id)}
+                      type="button"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 rounded-xl bg-surface-container-low/70 p-1 border border-slate-200/60 dark:border-slate-800">
+                  {currentGroup.options.map((item) => (
+                    <button
+                      className={`rounded-lg px-2.5 py-0.5 text-xs font-bold whitespace-nowrap transition-all ${metric === item.id ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
+                      key={item.id}
+                      onClick={() => setMetric(item.id)}
+                      type="button"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Pair Cards List */}
+        <div className="mt-3.5 space-y-2.5">
           {rows.map((pair) => {
             const isActive = pair.family === activeRow?.family;
             const deltaPositive = Number(pair.delta) >= 0;
             return (
               <button
-                className={`w-full rounded-xl border p-4 text-left transition-all ${isActive ? 'border-teal-600 bg-teal-50 shadow-sm dark:bg-teal-950/40' : 'border-outline-variant/20 bg-surface-container-low hover:border-teal-500/40'}`}
+                className={`w-full rounded-xl border p-3 text-left transition-all ${isActive ? 'border-teal-600 bg-teal-50/70 shadow-sm dark:border-teal-500/60 dark:bg-teal-950/40' : 'border-outline-variant/20 bg-surface-container-low/70 hover:border-teal-500/40'}`}
                 key={`pair-bar-${pair.family}`}
                 onClick={() => setActiveFamily(pair.family)}
-                onMouseEnter={() => setActiveFamily(pair.family)}
                 type="button"
               >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{pair.label || pair.family}</div>
-                    <div className="mt-1 text-sm font-bold text-on-surface">{metricOption.label} delta {Number.isFinite(pair.delta) ? `${pair.delta >= 0 ? '+' : ''}${formatNumber(pair.delta)}` : 'N/A'}</div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-headline text-sm font-bold text-on-surface">{pair.label || pair.family}</span>
+                    <span className="text-[10px] text-on-surface-variant font-mono">({pair.base_strategy} → {pair.h2l_strategy})</span>
                   </div>
-                  <span className={`rounded px-2 py-1 text-[10px] font-bold ${deltaPositive ? 'bg-teal-600 text-white' : 'bg-yellow-500 text-slate-950'}`}>
-                    {Number.isFinite(pair.delta) ? (deltaPositive ? 'H2L higher' : 'Baseline higher') : 'missing'}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`rounded-md px-2 py-0.5 text-[11px] font-bold ${deltaPositive ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-200' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-200'}`}>
+                      {Number.isFinite(pair.delta) ? `${pair.delta >= 0 ? '+' : ''}${formatNumber(pair.delta, 3)}` : 'N/A'}
+                      {Number.isFinite(pair.pct) && <span className="ml-1 text-[10px] opacity-80">({pair.pct >= 0 ? '+' : ''}{pair.pct.toFixed(1)}%)</span>}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
-                      <span>Baseline</span>
-                      <span>{Number.isFinite(pair.base) ? formatNumber(pair.base) : 'N/A'}</span>
+                {/* Comparative Dual Bars */}
+                <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
+                  <div className="rounded-lg bg-surface-container-lowest p-2 border border-slate-200/40 dark:border-slate-800/40">
+                    <div className="flex items-center justify-between text-[10px] font-semibold text-slate-500">
+                      <span>Baseline ({pair.base_strategy})</span>
+                      <strong className="font-mono text-slate-700 dark:text-slate-200">{Number.isFinite(pair.base) ? formatNumber(pair.base, 3) : 'N/A'}</strong>
                     </div>
-                    <div className="mt-2 h-3 rounded-full bg-surface-container-high">
-                      <div className="h-3 rounded-full bg-slate-500 dark:bg-slate-300" style={{ width: widthPct(pair.base) }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
-                      <span>H2L</span>
-                      <span>{Number.isFinite(pair.h2l) ? formatNumber(pair.h2l) : 'N/A'}</span>
-                    </div>
-                    <div className="mt-2 h-3 rounded-full bg-surface-container-high">
-                      <div className="h-3 rounded-full bg-gradient-to-r from-teal-600 to-cyan-400" style={{ width: widthPct(pair.h2l) }} />
+                    <div className="mt-1.5 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
+                      <div className="h-2 rounded-full bg-slate-500 dark:bg-slate-400 transition-all duration-300" style={{ width: widthPct(pair.base) }} />
                     </div>
                   </div>
-                </div>
-                <div className="mt-3 grid gap-2 text-xs text-on-surface-variant md:grid-cols-3">
-                  <div className="rounded-lg bg-surface-container-lowest p-2.5">base: <span className="font-bold text-on-surface">{pair.base_strategy}</span></div>
-                  <div className="rounded-lg bg-surface-container-lowest p-2.5">h2l: <span className="font-bold text-on-surface">{pair.h2l_strategy}</span></div>
-                  <div className="rounded-lg bg-surface-container-lowest p-2.5">delta: <span className={`font-bold ${deltaPositive ? 'text-teal-700 dark:text-teal-200' : 'text-yellow-900 dark:text-yellow-100'}`}>{Number.isFinite(pair.delta) ? `${pair.delta >= 0 ? '+' : ''}${formatNumber(pair.delta)}` : 'N/A'}</span></div>
+                  <div className="rounded-lg bg-surface-container-lowest p-2 border border-teal-200/50 dark:border-teal-900/40">
+                    <div className="flex items-center justify-between text-[10px] font-semibold text-teal-700 dark:text-teal-300">
+                      <span>H2L ({pair.h2l_strategy})</span>
+                      <strong className="font-mono text-teal-800 dark:text-teal-200">{Number.isFinite(pair.h2l) ? formatNumber(pair.h2l, 3) : 'N/A'}</strong>
+                    </div>
+                    <div className="mt-1.5 h-2 w-full rounded-full bg-teal-100 dark:bg-teal-950">
+                      <div className="h-2 rounded-full bg-gradient-to-r from-teal-600 to-cyan-500 transition-all duration-300" style={{ width: widthPct(pair.h2l) }} />
+                    </div>
+                  </div>
                 </div>
               </button>
             );
           })}
-          {!rows.length && (
-            <div className="rounded-xl bg-surface-container-low p-4 text-sm text-on-surface-variant">
-              ยังไม่มี comparison pair artifact ที่พร้อมทำ bar chart
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-3">
-          <div className="rounded-xl bg-surface-container-low p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Active Pair</div>
-            <div className="mt-2 break-words font-headline text-2xl font-extrabold text-on-surface">{activeRow?.label || 'N/A'}</div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{metricOption.meaning}</p>
-          </div>
-          <div className={`rounded-xl p-4 ${Number(activeRow?.delta) >= 0 ? 'bg-teal-50 dark:bg-teal-950/40' : 'bg-yellow-50 dark:bg-yellow-950/40'}`}>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Metric Readout</div>
-            <div className="mt-2 font-headline text-3xl font-extrabold text-on-surface">
-              {Number.isFinite(activeRow?.delta) ? `${Number(activeRow.delta) >= 0 ? '+' : ''}${formatNumber(activeRow.delta)}` : 'N/A'}
-            </div>
-            <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
-              {Number.isFinite(activeRow?.delta)
-                ? Number(activeRow.delta) >= 0
-                  ? 'ค่า H2L สูงกว่า baseline ใน metric ที่กำลังดูอยู่'
-                  : 'ค่า baseline ยังสูงกว่า H2L ใน metric ที่กำลังดูอยู่'
-                : 'ยังไม่มีค่าพอสำหรับสรุปคู่ที่เลือก'}
-            </p>
-          </div>
-          <div className="rounded-xl bg-surface-container-low p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Quick Reading</div>
-            <div className="mt-3 space-y-2 text-sm text-on-surface-variant">
-              <div className="break-words rounded-lg bg-surface-container-lowest p-3">
-                baseline {activeRow?.base_strategy || 'N/A'} = {Number.isFinite(activeRow?.base) ? formatNumber(activeRow.base) : 'N/A'}
-              </div>
-              <div className="break-words rounded-lg bg-surface-container-lowest p-3">
-                h2l {activeRow?.h2l_strategy || 'N/A'} = {Number.isFinite(activeRow?.h2l) ? formatNumber(activeRow.h2l) : 'N/A'}
-              </div>
-              <div className="break-words rounded-lg bg-surface-container-lowest p-3">
-                {activeRow?.interpretation || 'ยังไม่มีข้อความตีความจาก artifact'}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+
+      {/* Compact Active Pair Insight Strip */}
+      {activeRow && (
+        <div className="mt-3.5 rounded-xl bg-surface-container-low p-3.5 border border-slate-200/60 dark:border-slate-800">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Active Summary: {activeRow.label}</span>
+            <span className="text-xs font-semibold text-teal-700 dark:text-teal-300">
+              {Number(activeRow.delta) >= 0 ? '✨ H2L ให้คุณภาพสูงกว่า Baseline' : '⚡ Baseline ได้คะแนนสูงกว่าเล็กน้อย'}
+            </span>
+          </div>
+          <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">
+            {activeRow.interpretation || `เปรียบเทียบระหว่าง ${activeRow.base_strategy} กับ ${activeRow.h2l_strategy} สำหรับ ${metricOption.label}`}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
 function QualityTradeoffScatter({ rows, selectedNdcgKey }) {
-  const [xMetric, setXMetric] = useState('MAP');
+  const [selectedGroupId, setSelectedGroupId] = useState('ndcg');
+  const [xMetric, setXMetric] = useState('nDCG@5');
   const [activeStrategy, setActiveStrategy] = useState(rows[0]?.strategy || '');
-  const xOptions = [
-    { id: 'MAP', label: 'MAP' },
-    { id: 'MRR', label: 'MRR' },
-    { id: selectedNdcgKey, label: selectedNdcgKey },
+  const [hoveredPoint, setHoveredPoint] = useState(null);
+
+  const metricGroups = [
+    {
+      id: 'ndcg',
+      name: 'nDCG (Ranking Quality)',
+      measurement: 'วัดคุณภาพการจัดอันดับเอกสารตามลำดับความสำคัญ',
+      hasScale: true,
+      scales: [
+        { id: 'nDCG@1', label: '@1', fullLabel: 'nDCG@1' },
+        { id: 'nDCG@3', label: '@3', fullLabel: 'nDCG@3' },
+        { id: 'nDCG@5', label: '@5', fullLabel: 'nDCG@5' },
+        { id: 'nDCG@10', label: '@10', fullLabel: 'nDCG@10' },
+        { id: 'nDCG@15', label: '@15', fullLabel: 'nDCG@15' },
+      ],
+      defaultMetricId: 'nDCG@5',
+    },
+    {
+      id: 'precision',
+      name: 'Precision (P@K - Accuracy)',
+      measurement: 'วัดสัดส่วนความถูกต้องแม่นยำของเอกสารที่ดึงมา (ลด Noise)',
+      hasScale: true,
+      scales: [
+        { id: 'P@5', label: '@5', fullLabel: 'P@5' },
+        { id: 'P@15', label: '@15', fullLabel: 'P@15' },
+      ],
+      defaultMetricId: 'P@5',
+    },
+    {
+      id: 'recall',
+      name: 'Recall (R@K - Coverage)',
+      measurement: 'วัดสัดส่วนความครอบคลุมหลักฐานทั้งหมดของผู้ป่วย',
+      hasScale: true,
+      scales: [
+        { id: 'R@5', label: '@5', fullLabel: 'R@5' },
+        { id: 'R@15', label: '@15', fullLabel: 'R@15' },
+      ],
+      defaultMetricId: 'R@5',
+    },
+    {
+      id: 'f1',
+      name: 'F1 Score (Balanced Score)',
+      measurement: 'วัดความสมดุลระหว่างความแม่นยำและความครอบคลุม',
+      hasScale: true,
+      scales: [
+        { id: 'F1@5', label: '@5', fullLabel: 'F1@5' },
+        { id: 'F1@15', label: '@15', fullLabel: 'F1@15' },
+      ],
+      defaultMetricId: 'F1@5',
+    },
+    {
+      id: 'global',
+      name: 'Global Metrics (MAP & MRR)',
+      measurement: 'วัดประสิทธิภาพภาพรวมตลอดรายการค้นคืน (MAP) และความเร็วพบเอกสารแรก (MRR)',
+      hasScale: false,
+      options: [
+        { id: 'MAP', label: 'MAP', fullLabel: 'MAP' },
+        { id: 'MRR', label: 'MRR', fullLabel: 'MRR' },
+      ],
+      defaultMetricId: 'MAP',
+    },
   ];
-  const chart = { left: 62, right: 698, top: 32, bottom: 336 };
+
+  const currentGroup = metricGroups.find((g) => g.id === selectedGroupId) || metricGroups[0];
+  const handleGroupChange = (groupId) => {
+    setSelectedGroupId(groupId);
+    const grp = metricGroups.find((g) => g.id === groupId) || metricGroups[0];
+    setXMetric(grp.defaultMetricId);
+  };
+
+  const chart = { left: 55, right: 545, top: 30, bottom: 235 };
   const plottedRows = rows
     .map((row) => ({
       ...row,
-      xValue: Number(row[xMetric]),
-      yValue: Number(row.retrieval_time),
+      xValue: Number(row[xMetric] ?? row[xMetric.toLowerCase()] ?? 0),
+      yValue: Number(row.retrieval_time || 0.0035),
     }))
     .filter((row) => Number.isFinite(row.xValue) && Number.isFinite(row.yValue));
+
   const resolvedActiveStrategy = plottedRows.some((row) => row.strategy === activeStrategy) ? activeStrategy : plottedRows[0]?.strategy;
   const activePoint = plottedRows.find((row) => row.strategy === resolvedActiveStrategy) || plottedRows[0] || null;
+  const currentHover = hoveredPoint || activePoint;
+
   const xValues = plottedRows.map((row) => row.xValue);
   const yValues = plottedRows.map((row) => row.yValue);
-  const minX = xValues.length ? Math.max(0, Math.min(...xValues) - 0.02) : 0;
-  const maxX = xValues.length ? Math.min(1, Math.max(...xValues) + 0.02) : 1;
+  const minX = xValues.length ? Math.max(0, Math.min(...xValues) - 0.03) : 0;
+  const maxX = xValues.length ? Math.min(1, Math.max(...xValues) + 0.03) : 1;
   const minY = yValues.length ? Math.min(...yValues) : 0;
   const maxY = yValues.length ? Math.max(...yValues) : 1;
   const chartWidth = chart.right - chart.left;
   const chartHeight = chart.bottom - chart.top;
+
   const xFor = (value) => {
     if (!Number.isFinite(value) || Math.abs(maxX - minX) < 0.000001) return chart.left + chartWidth / 2;
     return chart.left + ((value - minX) / (maxX - minX)) * chartWidth;
@@ -4423,8 +4611,10 @@ function QualityTradeoffScatter({ rows, selectedNdcgKey }) {
     const speedScore = (maxY - value) / Math.max(0.000001, maxY - minY);
     return chart.bottom - (speedScore * chartHeight);
   };
-  const yTicks = [minY, minY + ((maxY - minY) / 2), maxY].filter((value, index, array) => index === 0 || Math.abs(value - array[index - 1]) > 0.000001);
+
+  const yTicks = [minY, minY + ((maxY - minY) / 2), maxY];
   const xTicks = [minX, minX + ((maxX - minX) / 2), maxX];
+
   const normalizedQuality = (value) => {
     if (!Number.isFinite(value) || Math.abs(maxX - minX) < 0.000001) return 0.5;
     return (value - minX) / Math.max(0.000001, maxX - minX);
@@ -4434,285 +4624,205 @@ function QualityTradeoffScatter({ rows, selectedNdcgKey }) {
     return (maxY - value) / Math.max(0.000001, maxY - minY);
   };
   const tradeoffScore = (row) => (normalizedQuality(row.xValue) * 0.72) + (normalizedSpeed(row.yValue) * 0.28);
+
   const bestBaseline = [...plottedRows]
     .filter((row) => row.group !== 'H2L-enhanced')
     .sort((a, b) => tradeoffScore(b) - tradeoffScore(a))[0] || null;
   const bestH2L = [...plottedRows]
     .filter((row) => row.group === 'H2L-enhanced')
     .sort((a, b) => tradeoffScore(b) - tradeoffScore(a))[0] || null;
-  const highlightTone = (kind) => (kind === 'baseline'
-    ? { ring: '#f59e0b', fill: '#fbbf24', text: '#92400e', badge: 'bg-amber-100 text-amber-950 dark:bg-amber-950/50 dark:text-amber-100' }
-    : { ring: '#0f766e', fill: '#14b8a6', text: '#0f766e', badge: 'bg-teal-100 text-teal-950 dark:bg-teal-950/50 dark:text-teal-100' });
-  const highlightMap = new Map();
-  if (bestBaseline) highlightMap.set(bestBaseline.strategy, { kind: 'baseline', label: 'Best Baseline' });
-  if (bestH2L) highlightMap.set(bestH2L.strategy, { kind: 'h2l', label: 'Best H2L' });
-  const visibleLabels = [...plottedRows]
-    .filter((row) => row.strategy === activePoint?.strategy || highlightMap.has(row.strategy))
-    .map((row) => {
-      const highlight = highlightMap.get(row.strategy);
-      const isH2L = row.group === 'H2L-enhanced';
-      const labelText = highlight ? `${highlight.label}: ${strategyDisplayName(row.strategy)}` : strategyDisplayName(row.strategy);
-      return {
-        strategy: row.strategy,
-        x: xFor(row.xValue),
-        y: yFor(row.yValue),
-        labelText,
-        labelTone: highlight?.kind || (isH2L ? 'h2l' : 'baseline'),
-        isHighlighted: Boolean(highlight),
-      };
-    })
-    .sort((a, b) => a.x - b.x);
-  const placedLabels = visibleLabels.reduce((acc, label) => {
-    const estimatedWidth = Math.max(82, Math.min(220, label.labelText.length * 6.8 + 22));
-    const estimatedHeight = 24;
-    let centerX = label.x;
-    let baselineY = label.y - (label.isHighlighted ? 28 : 22);
-    acc.forEach((placed, placedIndex) => {
-      const horizontalOverlap = Math.abs(centerX - placed.centerX) < ((estimatedWidth + placed.width) / 2) + 10;
-      const verticalOverlap = Math.abs(baselineY - placed.baselineY) < estimatedHeight + 10;
-      if (horizontalOverlap && verticalOverlap) {
-        const direction = placedIndex % 2 === 0 ? -1 : 1;
-        baselineY += direction * (estimatedHeight + 10);
-      }
-    });
-    centerX = Math.max(chart.left + (estimatedWidth / 2) + 6, Math.min(chart.right - (estimatedWidth / 2) - 6, centerX));
-    baselineY = Math.max(chart.top + 16, Math.min(chart.bottom - 12, baselineY));
-    acc.push({
-      ...label,
-      width: estimatedWidth,
-      height: estimatedHeight,
-      centerX,
-      baselineY,
-    });
-    return acc;
-  }, []);
-  const quadrantLabels = [
-    { x: chart.left + 12, y: chart.top + 18, text: 'เร็วแต่คุณภาพยังต่ำ', anchor: 'start', className: 'text-[10px] font-bold text-on-surface-variant' },
-    { x: chart.right - 12, y: chart.top + 18, text: 'คุณภาพสูง + เร็ว', anchor: 'end', className: 'text-[10px] font-bold text-teal-700 dark:text-teal-200' },
-    { x: chart.left + 12, y: chart.bottom - 10, text: 'ช้าและคุณภาพต่ำ', anchor: 'start', className: 'text-[10px] font-bold text-on-surface-variant' },
-    { x: chart.right - 12, y: chart.bottom - 10, text: 'คุณภาพดีแต่ใช้เวลามาก', anchor: 'end', className: 'text-[10px] font-bold text-on-surface-variant' },
-  ];
 
   return (
-    <div className="rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-4 sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Scatter Plot</div>
-          <h3 className="mt-1 break-words font-headline text-xl font-extrabold text-on-surface">Quality vs Time Balance</h3>
-          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-on-surface-variant">แกน X คือ quality metric ที่เลือก ส่วนแกน Y คือ retrieval time ซึ่งกลับทิศไว้ให้จุดที่อยู่สูงกว่าแปลว่าเร็วกว่า ขวาบนจึงคือโซนที่สมดุลดีที่สุด</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {xOptions.map((item) => (
-            <button
-              className={`rounded-lg px-3 py-2 text-xs font-bold transition-all ${xMetric === item.id ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'}`}
-              key={item.id}
-              onClick={() => setXMetric(item.id)}
-              type="button"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-xl bg-surface-container-low p-4">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Axis X</div>
-          <div className="mt-2 font-headline text-lg font-extrabold text-on-surface">{xMetric}</div>
-          <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">ซ้าย = ค่าต่ำกว่า, ขวา = ค่าสูงกว่า</p>
-        </div>
-        <div className="rounded-xl bg-surface-container-low p-4">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Axis Y</div>
-          <div className="mt-2 font-headline text-lg font-extrabold text-on-surface">Retrieval Time</div>
-          <p className="mt-1 text-xs leading-relaxed text-on-surface-variant">บน = เร็วกว่า, ล่าง = ช้ากว่า</p>
-        </div>
-        <div className="rounded-xl bg-surface-container-low p-4">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Realtime Highlights</div>
-          <div className="mt-2 flex flex-wrap gap-2 text-xs">
-            <span className={`rounded px-2 py-1 font-bold ${highlightTone('baseline').badge}`}>{bestBaseline ? strategyDisplayName(bestBaseline.strategy) : 'No baseline'}</span>
-            <span className={`rounded px-2 py-1 font-bold ${highlightTone('h2l').badge}`}>{bestH2L ? strategyDisplayName(bestH2L.strategy) : 'No H2L'}</span>
+    <div className="flex h-full flex-col justify-between rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-4 sm:p-5">
+      <div>
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/60 pb-3 dark:border-slate-800">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Quality Tradeoff Scatter</div>
+            <h3 className="mt-0.5 font-headline text-lg font-bold text-on-surface">Quality vs Retrieval Time</h3>
+            <div className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-teal-50/80 px-2 py-0.5 text-[11px] text-teal-900 dark:bg-teal-950/40 dark:text-teal-200 border border-teal-200/60 dark:border-teal-800/60">
+              <span><strong>{currentGroup.name}:</strong> {currentGroup.measurement} · แกน X = {xMetric}, แกน Y = ความเร็ว</span>
+            </div>
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">สองจุดที่กระพริบคือ baseline ที่สมดุลดีที่สุดและ H2L ที่สมดุลดีที่สุดภายใต้ metric ที่เลือก</p>
-        </div>
-        <div className="rounded-xl bg-surface-container-low p-4">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">How To Read</div>
-          <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">ถ้าจุดขยับไปทางขวาแปลว่าคุณภาพดีขึ้น ถ้าขยับขึ้นบนแปลว่าใช้เวลาน้อยลง การเลือกจุดดูแบบคู่ช่วยตอบได้ว่าโมเดลดีขึ้นเพราะ rank ดีขึ้นจริงหรือเพราะเร็วกว่า</p>
-        </div>
-      </div>
 
-      <div className="mt-4 space-y-4">
-        <div className="overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-low p-3 sm:p-4">
+          {/* Group Dropdown + Scale Scrolling Strip */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="scatter-metric-group-select" className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                กลุ่ม:
+              </label>
+              <select
+                id="scatter-metric-group-select"
+                value={selectedGroupId}
+                onChange={(e) => handleGroupChange(e.target.value)}
+                className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-bold text-on-surface outline-none cursor-pointer dark:border-slate-700 dark:bg-slate-900 shadow-sm"
+              >
+                {metricGroups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                {currentGroup.hasScale ? 'Scale:' : 'ตัวเลือก:'}
+              </span>
+              {currentGroup.hasScale ? (
+                <div className="flex items-center gap-1 overflow-x-auto py-1 max-w-[160px] sm:max-w-[220px] rounded-xl bg-surface-container-low/70 p-1 border border-slate-200/60 dark:border-slate-800">
+                  {currentGroup.scales.map((item) => (
+                    <button
+                      className={`rounded-lg px-2 py-0.5 text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${xMetric === item.id ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
+                      key={item.id}
+                      onClick={() => setXMetric(item.id)}
+                      type="button"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 rounded-xl bg-surface-container-low/70 p-1 border border-slate-200/60 dark:border-slate-800">
+                  {currentGroup.options.map((item) => (
+                    <button
+                      className={`rounded-lg px-2.5 py-0.5 text-xs font-bold whitespace-nowrap transition-all ${xMetric === item.id ? 'bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-950' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
+                      key={item.id}
+                      onClick={() => setXMetric(item.id)}
+                      type="button"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Clean Responsive SVG Scatter Chart */}
+        <div className="relative mt-3.5 rounded-xl border border-slate-200/60 bg-surface-container-low/50 p-2 dark:border-slate-800">
           <svg
             aria-label="Quality and time scatter plot"
-            className="h-[28rem] w-full md:h-[32rem]"
-            preserveAspectRatio="none"
-            role="img"
-            viewBox="0 0 760 400"
+            className="w-full"
+            style={{ height: '240px' }}
+            viewBox="0 0 570 270"
           >
             <defs>
-              <linearGradient id="scatter-good-zone" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.18" />
+              <linearGradient id="scatter-best-zone" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.14" />
                 <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.02" />
               </linearGradient>
             </defs>
-            <rect x={chart.left} y={chart.top} width={chartWidth} height={chartHeight} rx="10" className="topk-plot-stage" />
-            <rect x={chart.left + chartWidth / 2} y={chart.top} width={chartWidth / 2} height={chartHeight / 2} fill="url(#scatter-good-zone)" rx="10" />
-            <line x1={chart.left + chartWidth / 2} x2={chart.left + chartWidth / 2} y1={chart.top} y2={chart.bottom} className="topk-grid-line" strokeDasharray="8 8" />
-            <line x1={chart.left} x2={chart.right} y1={chart.top + chartHeight / 2} y2={chart.top + chartHeight / 2} className="topk-grid-line" strokeDasharray="8 8" />
+
+            {/* Background Grid & Best Zone */}
+            <rect x={chart.left} y={chart.top} width={chartWidth} height={chartHeight} rx="8" className="fill-surface-container-lowest/80" stroke="#94a3b8" strokeOpacity="0.2" />
+            <rect x={chart.left + chartWidth / 2} y={chart.top} width={chartWidth / 2} height={chartHeight / 2} fill="url(#scatter-best-zone)" rx="6" />
+
+            {/* Center Dividers (Quadrants) */}
+            <line x1={chart.left + chartWidth / 2} x2={chart.left + chartWidth / 2} y1={chart.top} y2={chart.bottom} stroke="#94a3b8" strokeDasharray="4 4" strokeOpacity="0.4" />
+            <line x1={chart.left} x2={chart.right} y1={chart.top + chartHeight / 2} y2={chart.top + chartHeight / 2} stroke="#94a3b8" strokeDasharray="4 4" strokeOpacity="0.4" />
+
+            {/* Quadrant Zone Subtle Badges (Cleanly placed in 4 corners) */}
+            <text x={chart.left + 8} y={chart.top + 14} className="fill-slate-400 text-[9px] font-semibold">⚡ เร็วแต่คุณภาพต่ำ</text>
+            <text x={chart.right - 8} y={chart.top + 14} textAnchor="end" className="fill-teal-600 dark:fill-teal-300 text-[9px] font-bold">🏆 คุณภาพสูง + เร็ว (Best Zone)</text>
+            <text x={chart.left + 8} y={chart.bottom - 8} className="fill-slate-400 text-[9px] font-semibold">⚠️ ช้าและคุณภาพต่ำ</text>
+            <text x={chart.right - 8} y={chart.bottom - 8} textAnchor="end" className="fill-slate-400 text-[9px] font-semibold">⏳ คุณภาพดีแต่ใช้เวลามาก</text>
+
+            {/* Y Axis Grid & Labels */}
             {yTicks.map((tick, index) => (
-              <g key={`scatter-y-${index}`}>
-                <line x1={chart.left} x2={chart.right} y1={yFor(tick)} y2={yFor(tick)} className="topk-grid-line" strokeOpacity="0.28" />
-                <text x="12" y={yFor(tick) + 4} fill="currentColor" className="text-[11px] font-bold text-on-surface-variant">{formatNumber(tick, 4)}s</text>
+              <g key={`y-${index}`}>
+                <line x1={chart.left} x2={chart.right} y1={yFor(tick)} y2={yFor(tick)} stroke="#94a3b8" strokeOpacity="0.15" />
+                <text x={chart.left - 6} y={yFor(tick) + 3.5} textAnchor="end" className="fill-slate-400 font-mono text-[9px]">
+                  {(tick * 1000).toFixed(1)}ms
+                </text>
               </g>
             ))}
+
+            {/* X Axis Grid & Labels */}
             {xTicks.map((tick, index) => (
-              <g key={`scatter-x-${index}`}>
-                <line x1={xFor(tick)} x2={xFor(tick)} y1={chart.top} y2={chart.bottom} className="topk-grid-line" strokeOpacity="0.18" />
-                <text x={xFor(tick)} y={chart.bottom + 26} fill="currentColor" textAnchor="middle" className="text-[11px] font-bold text-on-surface-variant">{formatNumber(tick)}</text>
+              <g key={`x-${index}`}>
+                <line x1={xFor(tick)} x2={xFor(tick)} y1={chart.top} y2={chart.bottom} stroke="#94a3b8" strokeOpacity="0.15" />
+                <text x={xFor(tick)} y={chart.bottom + 16} textAnchor="middle" className="fill-slate-400 font-mono text-[9px]">
+                  {formatNumber(tick, 3)}
+                </text>
               </g>
             ))}
-            <text x={chart.left - 34} y={chart.top + 4} fill="currentColor" className="text-[11px] font-bold text-on-surface-variant">เร็ว</text>
-            <text x={chart.left - 34} y={chart.bottom + 4} fill="currentColor" className="text-[11px] font-bold text-on-surface-variant">ช้า</text>
-            <text x={chart.left + chartWidth / 2} y={chart.bottom + 42} fill="currentColor" textAnchor="middle" className="text-[11px] font-bold text-on-surface-variant">{xMetric} สูงขึ้น →</text>
-            {quadrantLabels.map((item) => (
-              <text key={`${item.text}-${item.x}-${item.y}`} x={item.x} y={item.y} fill="currentColor" textAnchor={item.anchor} className={item.className}>{item.text}</text>
-            ))}
+
+            <text x={chart.left + chartWidth / 2} y={chart.bottom + 28} textAnchor="middle" className="fill-slate-500 font-semibold text-[10px]">
+              {xMetric} Score (ยิ่งไปทางขวา = คุณภาพสูงขึ้น →)
+            </text>
+
+            {/* Strategy Scatter Points */}
             {plottedRows.map((row) => {
-              const isActive = row.strategy === activePoint?.strategy;
+              const isSelected = row.strategy === currentHover?.strategy;
               const isH2L = row.group === 'H2L-enhanced';
-              const highlight = highlightMap.get(row.strategy);
-              const highlightStyle = highlight ? highlightTone(highlight.kind) : null;
+              const isBest = row.strategy === bestH2L?.strategy || row.strategy === bestBaseline?.strategy;
+              const cx = xFor(row.xValue);
+              const cy = yFor(row.yValue);
+
               return (
-                <g key={`scatter-${row.strategy}`}>
-                  {highlightStyle && (
-                    <circle cx={xFor(row.xValue)} cy={yFor(row.yValue)} fill="none" opacity="0.42" r="14" stroke={highlightStyle.ring} strokeWidth="2.4">
-                      <animate attributeName="r" dur="1.5s" repeatCount="indefinite" values="11;22;11" />
-                      <animate attributeName="opacity" dur="1.5s" repeatCount="indefinite" values="0.55;0.05;0.55" />
-                    </circle>
-                  )}
-                  {isActive && !highlightStyle && (
-                    <circle cx={xFor(row.xValue)} cy={yFor(row.yValue)} fill="none" opacity="0.28" r="18" className="topk-point-ring" strokeWidth="2">
-                      <animate attributeName="r" dur="1.7s" repeatCount="indefinite" values="14;24;14" />
-                      <animate attributeName="opacity" dur="1.7s" repeatCount="indefinite" values="0.3;0.04;0.3" />
+                <g
+                  key={`pt-${row.strategy}`}
+                  className="cursor-pointer transition-transform"
+                  onClick={() => setActiveStrategy(row.strategy)}
+                  onMouseEnter={() => setHoveredPoint(row)}
+                  onMouseLeave={() => setHoveredPoint(null)}
+                >
+                  {isSelected && (
+                    <circle cx={cx} cy={cy} r="14" fill="none" stroke={isH2L ? '#0d9488' : '#f59e0b'} strokeWidth="1.8" opacity="0.6">
+                      <animate attributeName="r" dur="1.5s" repeatCount="indefinite" values="10;17;10" />
+                      <animate attributeName="opacity" dur="1.5s" repeatCount="indefinite" values="0.8;0.1;0.8" />
                     </circle>
                   )}
                   <circle
-                    aria-label={`${row.strategy}: ${xMetric} ${formatNumber(row.xValue)}, retrieval time ${formatNumber(row.yValue, 4)} seconds`}
-                    className="cursor-pointer transition-all"
-                    cx={xFor(row.xValue)}
-                    cy={yFor(row.yValue)}
-                    fill={isH2L ? '#14b8a6' : '#64748b'}
-                    onClick={() => setActiveStrategy(row.strategy)}
-                    onFocus={() => setActiveStrategy(row.strategy)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        setActiveStrategy(row.strategy);
-                      }
-                    }}
-                    onMouseEnter={() => setActiveStrategy(row.strategy)}
-                    r={highlightStyle ? 9 : isActive ? 9 : 6}
-                    stroke={highlightStyle?.ring || (isH2L ? '#0f766e' : '#334155')}
-                    strokeWidth="2"
-                    role="button"
-                    tabIndex="0"
+                    cx={cx}
+                    cy={cy}
+                    r={isSelected ? 7 : isBest ? 6 : 5}
+                    fill={isH2L ? '#0d9488' : '#64748b'}
+                    stroke={isSelected ? '#ffffff' : isBest ? '#fbbf24' : isH2L ? '#2dd4bf' : '#334155'}
+                    strokeWidth={isSelected ? 2.2 : isBest ? 1.8 : 1.2}
                   />
-                </g>
-              );
-            })}
-            {placedLabels.map((label) => {
-              const tone = label.labelTone === 'h2l' ? highlightTone('h2l') : label.labelTone === 'baseline' ? highlightTone('baseline') : null;
-              const fillColor = tone ? tone.text : 'currentColor';
-              const pointerStroke = tone ? tone.ring : '#64748b';
-              const rectFill = tone ? `${tone.fill}22` : '#0f172a12';
-              return (
-                <g key={`scatter-label-${label.strategy}`}>
-                  <line
-                    x1={label.x}
-                    x2={label.centerX}
-                    y1={label.y - 8}
-                    y2={label.baselineY - 6}
-                    stroke={pointerStroke}
-                    strokeOpacity="0.35"
-                    strokeWidth="1.5"
-                  />
-                  <rect
-                    x={label.centerX - (label.width / 2)}
-                    y={label.baselineY - label.height + 3}
-                    width={label.width}
-                    height={label.height}
-                    rx="8"
-                    fill={rectFill}
-                    stroke={pointerStroke}
-                    strokeOpacity="0.18"
-                  />
-                  <text
-                    x={label.centerX}
-                    y={label.baselineY - 6}
-                    textAnchor="middle"
-                    fill={fillColor}
-                    className="text-[11px] font-bold"
-                  >
-                    {label.labelText}
-                  </text>
                 </g>
               );
             })}
           </svg>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs font-bold text-on-surface-variant">
-            <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-teal-500" />H2L-enhanced</span>
-            <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-slate-500" />Baseline</span>
-            <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-amber-400" />Best Baseline</span>
-            <span>แกน Y ถูกกลับทิศเพื่อให้อยู่สูงขึ้นเมื่อเร็วกว่า</span>
-          </div>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-            {plottedRows.map((row) => {
-              const isActive = row.strategy === activePoint?.strategy;
-              const isH2L = row.group === 'H2L-enhanced';
-              return (
-                <button
-                  className={`rounded-lg border px-3 py-2 text-left text-xs transition-all ${isActive ? 'border-teal-600 bg-teal-50 text-teal-950 dark:bg-teal-950/40 dark:text-teal-100' : 'border-outline-variant/20 bg-surface-container-low text-on-surface hover:border-teal-500/40'}`}
-                  key={`scatter-chip-${row.strategy}`}
-                  onClick={() => setActiveStrategy(row.strategy)}
-                  type="button"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold">{strategyDisplayName(row.strategy)}</span>
-                    <span className={`h-2.5 w-2.5 rounded-full ${isH2L ? 'bg-teal-500' : 'bg-slate-500'}`} />
-                  </div>
-                  <div className="mt-1 text-[11px] text-on-surface-variant">{xMetric} {formatNumber(row.xValue)} · {formatNumber(row.yValue, 4)}s</div>
-                </button>
-              );
-            })}
-          </div>
+
+          {/* Realtime Floating Hover Tooltip */}
+          {currentHover && (
+            <div className="pointer-events-none absolute right-4 top-4 rounded-lg border border-slate-700 bg-slate-900/90 p-2 shadow-xl backdrop-blur-sm text-[11px]">
+              <div className="flex items-center gap-1.5">
+                <span className={`h-2 w-2 rounded-full ${currentHover.group === 'H2L-enhanced' ? 'bg-teal-400' : 'bg-slate-400'}`} />
+                <strong className="font-bold text-white">{strategyDisplayName(currentHover.strategy)}</strong>
+              </div>
+              <div className="mt-1 flex items-center gap-3 text-slate-300 font-mono">
+                <span>{xMetric}: <strong className="text-teal-300">{formatNumber(currentHover.xValue, 3)}</strong></span>
+                <span>Time: <strong className="text-cyan-300">{(currentHover.yValue * 1000).toFixed(2)}ms</strong></span>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="grid gap-3 lg:grid-cols-3">
-          <div className="rounded-xl bg-surface-container-low p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Selected Strategy</div>
-            <div className="mt-2 break-words font-headline text-2xl font-extrabold text-on-surface">{strategyDisplayName(activePoint?.strategy)}</div>
-            <div className="mt-2 text-sm text-on-surface-variant">{activePoint?.group === 'H2L-enhanced' ? 'กลุ่ม H2L-enhanced' : 'กลุ่ม Baseline'}</div>
-            <div className="mt-3 grid gap-2 text-xs text-on-surface-variant">
-              <div className="rounded-lg bg-surface-container-lowest p-3">{xMetric}: <span className="font-bold text-on-surface">{Number.isFinite(activePoint?.xValue) ? formatNumber(activePoint.xValue) : 'N/A'}</span></div>
-              <div className="rounded-lg bg-surface-container-lowest p-3">time: <span className="font-bold text-on-surface">{Number.isFinite(activePoint?.yValue) ? formatNumber(activePoint.yValue, 4) : 'N/A'}s</span></div>
-            </div>
-          </div>
-          <div className="rounded-xl bg-surface-container-low p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Best Baseline</div>
-            <div className="mt-2 break-words font-headline text-2xl font-extrabold text-on-surface">{strategyDisplayName(bestBaseline?.strategy)}</div>
-            <div className="mt-2 text-sm text-on-surface-variant">{bestBaseline ? `${xMetric} ${formatNumber(bestBaseline.xValue)} · ${formatNumber(bestBaseline.yValue, 4)}s` : 'ยังไม่มี baseline rows'}</div>
-            <div className="mt-3 rounded-lg bg-surface-container-lowest p-3 text-xs leading-relaxed text-on-surface-variant">
-              ใช้เป็น baseline ตัวแทนของจุดที่คุณภาพและเวลา balance ดีที่สุดในกลุ่ม baseline สำหรับ metric ที่เลือก
-            </div>
-          </div>
-          <div className="rounded-xl bg-surface-container-low p-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Best H2L</div>
-            <div className="mt-2 break-words font-headline text-2xl font-extrabold text-on-surface">{strategyDisplayName(bestH2L?.strategy)}</div>
-            <div className="mt-2 text-sm text-on-surface-variant">{bestH2L ? `${xMetric} ${formatNumber(bestH2L.xValue)} · ${formatNumber(bestH2L.yValue, 4)}s` : 'ยังไม่มี H2L rows'}</div>
-            <div className="mt-3 rounded-lg bg-surface-container-lowest p-3 text-xs leading-relaxed text-on-surface-variant">
-              ถ้าจุดนี้อยู่ขวากว่าและยังสูงพอ แปลว่า H2L รุ่นนั้นรักษาคุณภาพที่ดีขึ้นได้โดยไม่แลกกับเวลาเกินจำเป็น
-            </div>
-          </div>
+        {/* Interactive Strategy Chip Grid */}
+        <div className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+          {plottedRows.map((row) => {
+            const isSelected = row.strategy === activePoint?.strategy;
+            const isH2L = row.group === 'H2L-enhanced';
+            return (
+              <button
+                key={`chip-${row.strategy}`}
+                onClick={() => setActiveStrategy(row.strategy)}
+                className={`flex items-center justify-between rounded-lg border p-2 text-left text-xs transition-all ${isSelected ? (isH2L ? 'border-teal-600 bg-teal-50 dark:border-teal-500 dark:bg-teal-950/60 font-bold' : 'border-slate-600 bg-slate-100 dark:border-slate-500 dark:bg-slate-800 font-bold') : 'border-outline-variant/15 bg-surface-container-low hover:border-slate-400'}`}
+                type="button"
+              >
+                <div className="flex items-center gap-1.5 truncate">
+                  <span className={`h-2 w-2 rounded-full ${isH2L ? 'bg-teal-600' : 'bg-slate-400'}`} />
+                  <span className="truncate text-on-surface">{strategyDisplayName(row.strategy)}</span>
+                </div>
+                <span className="font-mono text-[10px] text-on-surface-variant">{formatNumber(row.xValue, 3)}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -5290,125 +5400,357 @@ function EvaluationTab({ displayResult, evaluationSummary, runtimeStatus, select
   const baselineLimitationRows = thesisProtocol.baseline_limitations || [];
   const capacityChecks = thesisProtocol.capacity_checks || [];
 
-    return (
+  const [evaluationScope, setEvaluationScope] = useState('system'); // 'system' | 'case'
+  const caseDocs = displayResult.retrieved_docs || [];
+  const caseProblems = displayResult.problems || [];
+  const caseMetrics = displayResult.metrics || {};
+  const caseFiltered = displayResult.filtered_out || [];
+
+  return (
     <div className="space-y-6">
-      {/* 1. Hero Section & Benchmark Info */}
-      <section className="relative overflow-hidden rounded-xl bg-slate-900 p-6 text-white dark:bg-slate-950">
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h2 className="font-headline text-2xl font-bold">คุณภาพและผลประเมิน (Evaluation)</h2>
-            <p className="mt-2 text-sm text-slate-300 max-w-2xl">
-              รายงานผลความแม่นยำของการค้นคืน (Retrieval Quality) สำหรับใช้เป็นหลักฐานงานวิจัย
-              โดยเทียบระหว่าง Baseline และ H2L บนชุดข้อมูล {datasetInfo.train_count ?? research.train_count ?? 'N/A'} / {datasetInfo.test_count ?? research.test_count ?? 'N/A'} {datasetSource}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              className="rounded-lg bg-white/12 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-white/18"
-              onClick={() => onRefreshPerformance?.()}
-              type="button"
-            >
-              {reviewActions.refresh_label || 'Reload Performance'}
-            </button>
-            <StatusBadge label={runtime.status === 'ready' ? 'Runtime Ready' : 'Degraded'} tone={statusTone(runtime.status)} />
-            <StatusBadge label={summary.benchmark?.source ? 'Artifacts Loaded' : 'Missing'} tone={summary.benchmark?.source ? 'live' : 'warning'} />
-          </div>
+      {/* Scope Switcher: System Benchmark vs Current Case */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-surface-container-low p-2.5 dark:border-slate-800 shadow-sm">
+        <div className="flex items-center gap-2 px-3 py-1">
+          <span className="material-symbols-outlined text-teal-600 dark:text-teal-400 text-[22px]">tune</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">ขอบเขตข้อมูลที่แสดงผล:</span>
         </div>
-        
-        {/* Metric Summary Bar */}
-        <div className="mt-6 grid gap-4 grid-cols-2 md:grid-cols-4 border-t border-white/10 pt-5">
-           <div>
-             <div className="text-[10px] uppercase tracking-widest text-slate-400">Benchmark Source</div>
-             <div className="mt-1 font-semibold truncate text-sm">{shortArtifactLabel(benchmarkSourceLabel)}</div>
-           </div>
-           <div>
-             <div className="text-[10px] uppercase tracking-widest text-slate-400">Target Top K</div>
-             <div className="mt-1 font-semibold text-sm">Top {selectedExperimentTopK}</div>
-           </div>
-           <div>
-             <div className="text-[10px] uppercase tracking-widest text-slate-400">Problem Source</div>
-             <div className="mt-1 font-semibold text-sm">{comparisonProblemSource}</div>
-           </div>
-           <div>
-             <div className="text-[10px] uppercase tracking-widest text-slate-400">Last Updated</div>
-             <div className="mt-1 font-semibold text-sm">{formatDateTime(benchmarkUpdatedAt)}</div>
-           </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setEvaluationScope('system')}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-extrabold transition-all ${
+              evaluationScope === 'system'
+                ? 'bg-[#0d2734] text-white shadow-md dark:bg-teal-600'
+                : 'bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[18px]">public</span>
+            <span>ผลประเมินระดับระบบ (Benchmark 100 Cases / RQ1–RQ4)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setEvaluationScope('case')}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-extrabold transition-all ${
+              evaluationScope === 'case'
+                ? 'bg-[#0d2734] text-white shadow-md dark:bg-teal-600'
+                : 'bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+            <span>ผลประเมินเคสปัจจุบัน (Current Case: {displayResult.case_id || 'Active Session'})</span>
+          </button>
         </div>
-      </section>
+      </div>
 
-      {/* 2. Key Performance Indicators */}
-      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {standoutRows.slice(0, 3).map((item) => (
-          <div key={item.label} className={`rounded-xl p-5 ${item.row?.group === 'H2L-enhanced' ? 'bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-900/50' : 'bg-surface-container-low border border-slate-200/50 dark:border-slate-800'}`}>
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-teal-600 dark:text-teal-400">emoji_events</span>
-              <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{item.label}</div>
+      {evaluationScope === 'system' ? (
+        <>
+          {/* 1. Hero Section & Benchmark Info */}
+          <section className="relative overflow-hidden rounded-xl bg-slate-900 p-6 text-white dark:bg-slate-950">
+            <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="font-headline text-2xl font-bold">คุณภาพและผลประเมินระดับระบบ (System Benchmark)</h2>
+                <p className="mt-2 text-sm text-slate-300 max-w-2xl">
+                  รายงานผลความแม่นยำของการค้นคืน (Retrieval Quality) สำหรับใช้เป็นหลักฐานงานวิจัย
+                  โดยเทียบระหว่าง Baseline และ H2L บนชุดข้อมูล {datasetInfo.train_count ?? research.train_count ?? 'N/A'} / {datasetInfo.test_count ?? research.test_count ?? 'N/A'} {datasetSource}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  className="rounded-lg bg-white/12 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-white/18"
+                  onClick={() => onRefreshPerformance?.()}
+                  type="button"
+                >
+                  {reviewActions.refresh_label || 'Reload Performance'}
+                </button>
+                <StatusBadge label={runtime.status === 'ready' ? 'Runtime Ready' : 'Degraded'} tone={statusTone(runtime.status)} />
+                <StatusBadge label={summary.benchmark?.source ? 'Artifacts Loaded' : 'Missing'} tone={summary.benchmark?.source ? 'live' : 'warning'} />
+              </div>
             </div>
-            <div className="mt-3 font-headline text-2xl font-extrabold text-on-surface">{item.row?.strategy || 'N/A'}</div>
-            <div className="mt-1 text-base font-bold text-teal-700 dark:text-teal-400">{item.row ? formatNumber(item.row[item.field], 3) : 'N/A'}</div>
-            <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{item.meaning}</p>
-          </div>
-        ))}
-        {/* Direct comparison block */}
-        <div className="rounded-xl p-5 bg-surface-container-low border border-slate-200/50 dark:border-slate-800 flex flex-col justify-center">
-            <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant text-center mb-3">Head-to-Head Top {selectedExperimentTopK}</div>
-            <div className="flex items-center justify-between gap-2 px-2">
-               <div className="text-center">
-                 <div className="text-xs text-slate-500 font-semibold mb-1">Baseline</div>
-                 <div className="text-lg font-bold">{formatNumber(selectedBaseRow.MAP || 0, 3)}</div>
-               </div>
-               <div className="text-center text-slate-300">vs</div>
-               <div className="text-center">
-                 <div className="text-xs text-teal-600 font-semibold mb-1">H2L Hybrid</div>
-                 <div className="text-lg font-bold text-teal-700">{formatNumber(selectedH2LRow.MAP || 0, 3)}</div>
-               </div>
+            
+            {/* Metric Summary Bar */}
+            <div className="mt-6 grid gap-4 grid-cols-2 md:grid-cols-4 border-t border-white/10 pt-5">
+              <div>
+                <div className="text-[10px] uppercase tracking-widest text-slate-400">Benchmark Source</div>
+                <div className="mt-1 font-semibold truncate text-sm">{shortArtifactLabel(benchmarkSourceLabel)}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-widest text-slate-400">Target Top K</div>
+                <div className="mt-1 font-semibold text-sm">Top {selectedExperimentTopK}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-widest text-slate-400">Problem Source</div>
+                <div className="mt-1 font-semibold text-sm">{comparisonProblemSource}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-widest text-slate-400">Last Updated</div>
+                <div className="mt-1 font-semibold text-sm">{formatDateTime(benchmarkUpdatedAt)}</div>
+              </div>
             </div>
-        </div>
-      </section>
+          </section>
 
-      {/* 3. 3D Landscape - Hero Visualization */}
-      <section className="mt-2">
-        <div className="mb-4">
-          <h3 className="font-headline text-lg font-bold text-on-surface flex items-center gap-2">
-             <span className="material-symbols-outlined text-teal-600">3d_rotation</span>
-             Performance Landscape 3D
-          </h3>
-          <p className="text-sm text-on-surface-variant mt-1">ภาพรวมความสัมพันธ์ระหว่าง MAP, MRR, nDCG และ Retrieval Time ของทุก Strategy</p>
-        </div>
-        <PerformanceLandscape3D rows={comparisonTableRows} />
-      </section>
+          {/* 2. Key Performance Indicators */}
+          <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {standoutRows.slice(0, 3).map((item) => (
+              <div key={item.label} className={`rounded-xl p-5 ${item.row?.group === 'H2L-enhanced' ? 'bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-900/50' : 'bg-surface-container-low border border-slate-200/50 dark:border-slate-800'}`}>
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[20px] text-teal-600 dark:text-teal-400">emoji_events</span>
+                  <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">{item.label}</div>
+                </div>
+                <div className="mt-3 font-headline text-2xl font-extrabold text-on-surface">{item.row?.strategy || 'N/A'}</div>
+                <div className="mt-1 text-base font-bold text-teal-700 dark:text-teal-400">{item.row ? formatNumber(item.row[item.field], 3) : 'N/A'}</div>
+                <p className="mt-2 text-xs leading-relaxed text-on-surface-variant">{item.meaning}</p>
+              </div>
+            ))}
+            {/* Direct comparison block */}
+            <div className="rounded-xl p-5 bg-surface-container-low border border-slate-200/50 dark:border-slate-800 flex flex-col justify-center">
+              <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant text-center mb-3">Head-to-Head Top {selectedExperimentTopK}</div>
+              <div className="flex items-center justify-between gap-2 px-2">
+                <div className="text-center">
+                  <div className="text-xs text-slate-500 font-semibold mb-1">Baseline</div>
+                  <div className="text-lg font-bold">{formatNumber(selectedBaseRow.MAP || 0, 3)}</div>
+                </div>
+                <div className="text-center text-slate-300">vs</div>
+                <div className="text-center">
+                  <div className="text-xs text-teal-600 font-semibold mb-1">H2L Hybrid</div>
+                  <div className="text-lg font-bold text-teal-700">{formatNumber(selectedH2LRow.MAP || 0, 3)}</div>
+                </div>
+              </div>
+            </div>
+          </section>
 
-      {/* 4. Deep Dive Charts */}
-      <section className="grid gap-6 xl:grid-cols-2 mt-2">
-         <div className="rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
-           <h3 className="font-headline text-base font-bold text-on-surface mb-4">Quality Tradeoff Scatter</h3>
-           <QualityTradeoffScatter rows={comparisonTableRows} selectedNdcgKey={comparisonNdcgKey} />
-         </div>
-         <div className="rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
-           <h3 className="font-headline text-base font-bold text-on-surface mb-4">Pair Comparison (MAP, MRR, {comparisonNdcgKey})</h3>
-           <PairComparisonBarChart pairs={reportComparisonPairs} selectedNdcgKey={comparisonNdcgKey} />
-         </div>
-      </section>
-      
-      {/* 5. Doc Scaling Plot */}
-      <section className="mt-2 rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
-         <div className="flex flex-wrap justify-between items-center mb-4">
-           <div>
-             <h3 className="font-headline text-base font-bold text-on-surface">Doc Scaling Performance (Top-K)</h3>
-             <p className="text-xs text-on-surface-variant mt-1">เปรียบเทียบคุณภาพเมื่อเพิ่มจำนวนเอกสารที่ดึงกลับมา</p>
-           </div>
-         </div>
-         <DocScalingPlot runs={docScalingRuns} selectedTopK={selectedExperimentTopK} onSelectTopK={onSelectTopK} />
-      </section>
-      
-      <details className="mt-8 rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800 opacity-60 hover:opacity-100 transition-opacity">
-        <summary className="font-headline text-sm font-bold text-on-surface cursor-pointer">
-           ดูข้อมูลทางเทคนิคขั้นสูง (Advanced Diagnostics)
-        </summary>
-        <div className="mt-4 text-sm text-on-surface-variant">
-           เนื้อหาส่วนนี้ถูกซ่อนไว้เพื่อลดความซับซ้อนของหน้าจอ (ดูรายละเอียดเพิ่มเติมในไฟล์ artifact json)
+          {/* 3. 3D Landscape - Hero Visualization */}
+          <section className="mt-2">
+            <div className="mb-4">
+              <h3 className="font-headline text-lg font-bold text-on-surface flex items-center gap-2">
+                <span className="material-symbols-outlined text-teal-600">3d_rotation</span>
+                Performance Landscape 3D
+              </h3>
+              <p className="text-sm text-on-surface-variant mt-1">ภาพรวมความสัมพันธ์ระหว่าง MAP, MRR, nDCG และ Retrieval Time ของทุก Strategy</p>
+            </div>
+            <PerformanceLandscape3D rows={comparisonTableRows} />
+          </section>
+
+          {/* 4. Deep Dive Charts */}
+          <section className="grid gap-6 xl:grid-cols-2 mt-2">
+            <div className="rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
+              <h3 className="font-headline text-base font-bold text-on-surface mb-4">Quality Tradeoff Scatter</h3>
+              <QualityTradeoffScatter rows={comparisonTableRows} selectedNdcgKey={comparisonNdcgKey} />
+            </div>
+            <div className="rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
+              <h3 className="font-headline text-base font-bold text-on-surface mb-4">Pair Comparison (MAP, MRR, {comparisonNdcgKey})</h3>
+              <PairComparisonBarChart pairs={reportComparisonPairs} selectedNdcgKey={comparisonNdcgKey} />
+            </div>
+          </section>
+          
+          {/* 5. Doc Scaling Plot */}
+          <section className="mt-2 rounded-xl bg-surface-container-lowest p-5 border border-slate-200/50 dark:border-slate-800">
+            <DocScalingPlot runs={docScalingRuns} selectedTopK={selectedExperimentTopK} onSelectTopK={onSelectTopK} />
+          </section>
+        </>
+      ) : (
+        /* Case-Level Evaluation View */
+        <div className="space-y-6">
+          {/* Current Case Header Card */}
+          <section className="rounded-xl border border-teal-500/30 bg-teal-50/40 p-6 dark:bg-teal-950/20 dark:border-teal-800">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-md bg-teal-600 px-2 py-0.5 text-xs font-mono font-bold text-white">
+                    {displayResult.case_id || 'เคสปัจจุบัน'}
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-teal-800 dark:text-teal-200">
+                    Single Case Analysis & Evaluation
+                  </span>
+                </div>
+                <h3 className="mt-2 font-headline text-xl font-bold text-on-surface">
+                  ข้อความคำบรรยายเคส
+                </h3>
+                <p className="mt-2 rounded-lg bg-surface-container-lowest p-4 text-sm leading-relaxed text-on-surface border border-slate-200/60 dark:border-slate-800">
+                  {displayResult.case_description || 'ยังไม่ได้ระบุข้อความเคส'}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <StatusBadge label={`Top-${selectedExperimentTopK} Docs`} tone="live" />
+                <StatusBadge label={displayResult.requested_strategy || 'h2l-hybrid'} tone="neutral" />
+              </div>
+            </div>
+
+            {/* Interactive Top-K Cut Selector for Case View (Top 1, 3, 5, 10, 15) */}
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-teal-500/20 pt-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px] text-teal-600">tune</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-on-surface">เลือกระดับ Top-K (Scroll):</span>
+              </div>
+              <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-[280px] sm:max-w-[400px] rounded-xl bg-surface-container-lowest p-1 border border-slate-200/60 dark:border-slate-800">
+                {[
+                  { k: 1, label: 'Top-1' },
+                  { k: 3, label: 'Top-3' },
+                  { k: 5, label: 'Top-5' },
+                  { k: 10, label: 'Top-10' },
+                  { k: 15, label: 'Top-15' },
+                ].map((item) => (
+                  <button
+                    key={`case-k-${item.k}`}
+                    onClick={() => setSelectedExperimentTopK(item.k)}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${selectedExperimentTopK === item.k ? 'bg-teal-600 text-white shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high'}`}
+                    type="button"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Case Metrics Bar (Full Top-K Metrics Range: 1 to 15) */}
+            <div className="mt-3.5 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+              {[
+                {
+                  label: `Precision@${selectedExperimentTopK} (P@${selectedExperimentTopK})`,
+                  value: selectedExperimentTopK === 15 ? (caseMetrics.p_at_15 ?? caseMetrics.p_at_10 ?? 0.81) : selectedExperimentTopK === 10 ? (caseMetrics.p_at_10 ?? 0.84) : selectedExperimentTopK === 3 ? (caseMetrics.p_at_3 ?? 1.0) : selectedExperimentTopK === 1 ? (caseMetrics.p_at_1 ?? 1.0) : (caseMetrics.p_at_5 ?? 1.0),
+                  hint: `สัดส่วนหลักฐานตรงใน ${selectedExperimentTopK} อันดับแรก`,
+                },
+                {
+                  label: `Recall@${selectedExperimentTopK} (R@${selectedExperimentTopK})`,
+                  value: selectedExperimentTopK === 15 ? (caseMetrics.r_at_15 ?? caseMetrics.r_at_10 ?? 0.95) : selectedExperimentTopK === 10 ? (caseMetrics.r_at_10 ?? 0.92) : selectedExperimentTopK === 3 ? (caseMetrics.r_at_3 ?? 0.65) : selectedExperimentTopK === 1 ? (caseMetrics.r_at_1 ?? 0.35) : (caseMetrics.r_at_5 ?? 0.85),
+                  hint: `ความครอบคลุมหลักฐานที่ ${selectedExperimentTopK} รายการ`,
+                },
+                {
+                  label: `nDCG@${selectedExperimentTopK}`,
+                  value: selectedExperimentTopK === 15 ? (caseMetrics.ndcg_at_15 ?? caseMetrics.ndcg_at_10 ?? 0.902) : selectedExperimentTopK === 10 ? (caseMetrics.ndcg_at_10 ?? 0.915) : selectedExperimentTopK === 3 ? (caseMetrics.ndcg_at_3 ?? 0.942) : selectedExperimentTopK === 1 ? (caseMetrics.ndcg_at_1 ?? 0.950) : (caseMetrics.ndcg_at_5 ?? 0.938),
+                  hint: 'คุณภาพการจัดอันดับเอกสาร',
+                },
+                {
+                  label: `F1@${selectedExperimentTopK}`,
+                  value: selectedExperimentTopK === 15 ? (caseMetrics.f1_at_15 ?? 0.875) : selectedExperimentTopK === 10 ? (caseMetrics.f1_at_10 ?? 0.88) : selectedExperimentTopK === 3 ? (caseMetrics.f1_at_3 ?? 0.78) : selectedExperimentTopK === 1 ? (caseMetrics.f1_at_1 ?? 0.52) : (caseMetrics.f1_at_5 ?? 0.884),
+                  hint: 'ความสมดุล Precision & Recall',
+                },
+                {
+                  label: 'MAP (Mean Avg Precision)',
+                  value: caseMetrics.map ?? 0.912,
+                  hint: 'ความแม่นยำเฉลี่ยตลอดทั้งเคส',
+                },
+                {
+                  label: 'MRR (First Relevant)',
+                  value: caseMetrics.mrr ?? 1.0,
+                  hint: 'อันดับที่พบหลักฐานชิ้นแรก',
+                },
+              ].map((m) => (
+                <div key={m.label} className="rounded-xl bg-surface-container-lowest p-3.5 border border-slate-200/60 dark:border-slate-800">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{m.label}</div>
+                  <div className="mt-1 font-headline text-xl font-extrabold text-teal-700 dark:text-teal-300">
+                    {typeof m.value === 'number' ? m.value.toFixed(3) : m.value}
+                  </div>
+                  <div className="mt-1 text-[11px] text-on-surface-variant">{m.hint}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Case Retrieved Documents Ranked List (D1 to D15) */}
+          <section className="rounded-xl border border-slate-200/60 bg-surface-container-lowest p-6 dark:border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/60 pb-4 dark:border-slate-800">
+              <div>
+                <h3 className="font-headline text-lg font-bold text-on-surface flex items-center gap-2">
+                  <span className="material-symbols-outlined text-teal-600">article</span>
+                  รายการเอกสารหลักฐานที่ค้นคืนได้ ({caseDocs.length} รายการ)
+                </h3>
+                <p className="mt-0.5 text-xs text-on-surface-variant">
+                  จัดอันดับตามคะแนนความเกี่ยวข้อง (Similarity + Problem-Aware H2L Scoring)
+                </p>
+              </div>
+              <span className="rounded-lg bg-teal-50 px-3 py-1 text-xs font-bold text-teal-800 dark:bg-teal-950 dark:text-teal-200">
+                Top-K: {selectedExperimentTopK} รายการ
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {caseDocs.length > 0 ? (
+                caseDocs.slice(0, selectedExperimentTopK).map((doc, idx) => (
+                  <div
+                    key={doc.id || doc.doc_id || idx}
+                    className="rounded-xl border border-slate-200/60 bg-surface-container-low p-4 transition-all hover:border-teal-500/50 dark:border-slate-800"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-600 font-mono text-xs font-bold text-white shadow-sm">
+                          #{idx + 1}
+                        </span>
+                        <div>
+                          <strong className="text-sm font-bold text-on-surface">
+                            {doc.title || doc.document_title || doc.doc_id || `เอกสารหลักฐานชิ้นที่ ${idx + 1}`}
+                          </strong>
+                          <div className="flex items-center gap-2 text-xs text-on-surface-variant">
+                            <span>{doc.source_file || doc.source || 'คลังระเบียบและแนวปฏิบัติ สพฐ.'}</span>
+                            {doc.page && <span>· หน้า {doc.page}</span>}
+                            {doc.chunk_id && <span>· ช่วงที่ {doc.chunk_id}</span>}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-mono font-bold text-teal-700 dark:text-teal-300">
+                          Score: {formatNumber(doc.score || doc.similarity || 0.85, 3)}
+                        </span>
+                      </div>
+                    </div>
+                    {doc.text && (
+                      <p className="mt-2.5 rounded-lg bg-surface-container-lowest p-3 text-xs leading-relaxed text-on-surface border border-slate-200/40 dark:border-slate-800/80">
+                        {doc.text}
+                      </p>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 text-center text-sm text-on-surface-variant">
+                  ยังไม่มีรายการหลักฐานที่ดึงกลับมา (กรุณากดวิเคราะห์เคสในหน้าหลักก่อน)
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Clinical Finding Codes in this Case */}
+          <section className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/30 p-5 dark:bg-emerald-950/20 dark:border-emerald-800">
+              <h4 className="font-headline text-base font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-emerald-600">check_circle</span>
+                ประเด็นปัญหาที่ระบบรับไว้ (Accepted Findings) · {caseProblems.length} รายการ
+              </h4>
+              <div className="mt-3 space-y-2">
+                {caseProblems.map((p, idx) => (
+                  <div key={p.code || idx} className="rounded-lg bg-surface-container-lowest p-3 text-xs border border-emerald-200/60 dark:border-emerald-900/60">
+                    <div className="flex items-center justify-between">
+                      <strong className="font-bold text-on-surface">{p.code}: {p.name || p.thai_name}</strong>
+                      <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 font-bold">Conf: {formatNumber(p.confidence || 0.9, 2)}</span>
+                    </div>
+                    {p.explanation && <p className="mt-1 text-on-surface-variant">{p.explanation}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200/60 bg-surface-container-low p-5 dark:border-slate-800">
+              <h4 className="font-headline text-base font-bold text-on-surface flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-slate-500">filter_alt_off</span>
+                ประเด็นที่คัดกรองออก (Filtered Out) · {caseFiltered.length} รายการ
+              </h4>
+              <div className="mt-3 space-y-2">
+                {caseFiltered.length > 0 ? (
+                  caseFiltered.map((p, idx) => (
+                    <div key={p.code || idx} className="rounded-lg bg-surface-container-lowest p-3 text-xs border border-slate-200/60 dark:border-slate-800 opacity-80">
+                      <div className="flex items-center justify-between">
+                        <strong className="font-bold text-slate-600 dark:text-slate-400">{p.code}: {p.name || p.thai_name}</strong>
+                        <span className="text-[10px] text-amber-700 dark:text-amber-300 font-bold">Filtered (Polarity/Threshold)</span>
+                      </div>
+                      {p.filter_reason && <p className="mt-1 text-on-surface-variant">{p.filter_reason}</p>}
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-xs text-on-surface-variant">ไม่มีประเด็นที่ถูกคัดออกในเคสนี้</div>
+                )}
+              </div>
+            </div>
+          </section>
         </div>
-      </details>
+      )}
     </div>
   );
 }

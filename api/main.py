@@ -1899,20 +1899,34 @@ def _event_support_spans(event: Dict[str, Any]) -> List[Tuple[int, int]]:
 def _positive_hardship_patterns(item: Dict[str, Any]) -> List[str]:
     code = str(item.get("code") or "")
     category = str(item.get("category") or "")
+    patterns = []
     if code.startswith("10") or "การเงิน" in category:
-        return [
+        patterns.extend([
             "ไม่มีเงิน", "เงินไม่พอ", "รายได้ไม่พอ", "รายได้ไม่เพียงพอ",
             "จ่ายไม่ไหว", "หนี้", "หนี้สิน", "หนี้นอกระบบ", "กู้ยืม",
             "ค้างชำระ", "ค่าเช่า", "ยังไม่ได้นำส่ง", "ไม่ได้นำส่ง", "ดอก",
-        ]
+            "ค่าเทอม", "ค่าเทอมไม่พอ", "หาเงินค่าเทอมไม่พอ", "เงินค่าเทอม",
+            "ไม่มีเงินจ่ายค่าเทอม", "หาเงินไม่พอ", "เงินไม่พอใช้", "ขาดแคลนเงิน",
+        ])
+    if code.startswith("11") or "การศึกษา" in category:
+        patterns.extend([
+            "ค่าเทอมไม่พอ", "ขาดค่าเทอม", "หาเงินค่าเทอมไม่พอ", "เงินค่าเทอม", "ไม่มีเงินจ่ายค่าเทอม",
+        ])
     if code.startswith("12") or "อาชีพ" in category:
-        return [
+        patterns.extend([
             "ไม่มีงาน", "ว่างงาน", "ตกงาน", "ทำงานไม่ได้", "ไม่มีอาชีพ",
             "งานไม่มั่นคง", "รายได้ไม่แน่นอน",
-        ]
+        ])
     if code.startswith("08") or code.startswith("Z59") or "ที่อยู่อาศัย" in category:
-        return ["ไม่มีที่อยู่", "ไม่มีที่อยู่อาศัย", "ไม่มีบ้าน", "ไร้ที่พึ่ง", "เร่ร่อน"]
-    return []
+        patterns.extend(["ไม่มีที่อยู่", "ไม่มีที่อยู่อาศัย", "ไม่มีบ้าน", "ไร้ที่พึ่ง", "เร่ร่อน"])
+    if code.startswith("14") or code.startswith("17") or code.startswith(("I", "G", "E")) or "สุขภาพ" in category or "อุปสรรค" in category:
+        patterns.extend([
+            "ไม่ยอมกินยา", "ไม่ยอมรักษา", "ไม่ให้ความร่วมมือ", "ไม่ให้ความร่วมมือรักษา",
+            "ไม่กินยา", "ไม่ร่วมมือรักษา", "ไม่มาตามนัด", "ขาดนัด", "ขาดนัดหมาย",
+            "ช่วยเหลือตัวเองไม่ได้", "พูดไม่ได้", "ควบคุมไม่ได้", "ปลดหนี้ไม่ได้",
+            "กินยาไม่สม่ำเสมอ", "ไม่มีเวลาพักผ่อน", "ไม่ได้พักผ่อน", "เข้ากับเพื่อนบ้านไม่ได้",
+        ])
+    return patterns
 
 
 def _candidate_allows_actor_relation(item: Dict[str, Any]) -> bool:
@@ -2663,12 +2677,34 @@ def _serialize_retrieved_docs(results: List[Any], problems: List[Dict]) -> List[
         breakdown = getattr(result, "h2l_breakdown", None)
         if isinstance(result, dict):
             breakdown = result.get("h2l_breakdown", breakdown)
+        chunk_index = meta.get("chunk_index") if meta.get("chunk_index") is not None else meta.get("chunk_idx", meta.get("index"))
+        if chunk_index is None and isinstance(doc_id, str) and doc_id.startswith("chunk_"):
+            chunk_index = doc_id.replace("chunk_", "")
+        page_number = meta.get("page") or meta.get("page_number") or meta.get("page_no")
+        source_doc = meta.get("source_document") or meta.get("file_name") or meta.get("filename") or source
+        if source_doc:
+            source_doc = str(source_doc).strip()
+
+        location_parts = []
+        if source:
+            location_parts.append(str(source))
+        if chunk_index is not None:
+            location_parts.append(f"ช่วงที่ {chunk_index}")
+        if page_number is not None:
+            location_parts.append(f"หน้า {page_number}")
+        location_label = " · ".join(location_parts)
+
         matched = _matched_problem_evidence(text, problems)
+
         docs.append({
             "rank": rank,
             "id": doc_id,
             "title": title,
             "source": source,
+            "source_document": source_doc,
+            "chunk_index": chunk_index,
+            "page_number": page_number,
+            "location_label": location_label,
             "snippet": text[:520],
             "content": text[:1500],
             "score": final_score,
@@ -3211,25 +3247,26 @@ def _compact_proper_run(path: Path, data: Dict[str, Any]) -> Dict[str, Any]:
     strategies = metadata.get("strategies", [])
     rows = []
     for strategy in strategies:
-        rows.append({
+        row_data = {
             "strategy": strategy,
             "group": "H2L-enhanced" if strategy.startswith("h2l-") else "Baseline",
             "MAP": metric(strategy, "MAP"),
             "MRR": metric(strategy, "MRR"),
-            "nDCG@5": metric(strategy, "nDCG@5"),
-            "nDCG@10": metric(strategy, "nDCG@10"),
-            "P@5": metric(strategy, "P@5"),
-            "P@10": metric(strategy, "P@10"),
-            "R@5": metric(strategy, "R@5"),
-            "R@10": metric(strategy, "R@10"),
-            "F1@5": metric(strategy, "F1@5"),
-            "F1@10": metric(strategy, "F1@10"),
             "retrieval_time": metric(strategy, "retrieval_time"),
-        })
+        }
+        for k in [1, 3, 5, 10, 15]:
+            row_data[f"nDCG@{k}"] = metric(strategy, f"nDCG@{k}")
+            row_data[f"P@{k}"] = metric(strategy, f"P@{k}")
+            row_data[f"R@{k}"] = metric(strategy, f"R@{k}")
+            row_data[f"F1@{k}"] = metric(strategy, f"F1@{k}")
+        rows.append(row_data)
 
     delta = {}
     if "basic" in aggregates and "h2l-hybrid" in aggregates:
-        for key in ["MAP", "MRR", "nDCG@5", "nDCG@10", "P@5", "P@10", "R@5", "R@10", "F1@5", "F1@10", "retrieval_time"]:
+        keys_to_delta = ["MAP", "MRR", "retrieval_time"] + [
+            f"{m}@{k}" for m in ["nDCG", "P", "R", "F1"] for k in [1, 3, 5, 10, 15]
+        ]
+        for key in keys_to_delta:
             base = metric("basic", key)
             h2l = metric("h2l-hybrid", key)
             delta[key] = h2l - base if base is not None and h2l is not None else None
@@ -3556,7 +3593,7 @@ def _comparison_pairs_from_results(results: Dict[str, Any], raw: Dict[str, Any])
         h2l_time = _mean_metric(h2l, "retrieval_time")
         quality_delta = h2l_quality - base_quality if base_quality is not None and h2l_quality is not None else None
         time_delta = h2l_time - base_time if base_time is not None and h2l_time is not None else None
-        pairs.append({
+        pair_dict = {
             "family": pair["family"],
             "label": pair["label"],
             "base_strategy": base_name,
@@ -3569,20 +3606,25 @@ def _comparison_pairs_from_results(results: Dict[str, Any], raw: Dict[str, Any])
             "time_delta": time_delta,
             "base_mrr": _mean_metric(base, "MRR"),
             "h2l_mrr": _mean_metric(h2l, "MRR"),
-            "base_ndcg_at_5": _mean_metric(base, "nDCG@5"),
-            "h2l_ndcg_at_5": _mean_metric(h2l, "nDCG@5"),
-            "base_ndcg_at_10": _mean_metric(base, "nDCG@10"),
-            "h2l_ndcg_at_10": _mean_metric(h2l, "nDCG@10"),
-            "base_p_at_5": _mean_metric(base, "P@5"),
-            "h2l_p_at_5": _mean_metric(h2l, "P@5"),
-            "base_f1_at_5": _mean_metric(base, "F1@5"),
-            "h2l_f1_at_5": _mean_metric(h2l, "F1@5"),
+        }
+        for k in [1, 3, 5, 10, 15]:
+            pair_dict[f"base_ndcg_at_{k}"] = _mean_metric(base, f"nDCG@{k}")
+            pair_dict[f"h2l_ndcg_at_{k}"] = _mean_metric(h2l, f"nDCG@{k}")
+            pair_dict[f"base_p_at_{k}"] = _mean_metric(base, f"P@{k}")
+            pair_dict[f"h2l_p_at_{k}"] = _mean_metric(h2l, f"P@{k}")
+            pair_dict[f"base_r_at_{k}"] = _mean_metric(base, f"R@{k}")
+            pair_dict[f"h2l_r_at_{k}"] = _mean_metric(h2l, f"R@{k}")
+            pair_dict[f"base_f1_at_{k}"] = _mean_metric(base, f"F1@{k}")
+            pair_dict[f"h2l_f1_at_{k}"] = _mean_metric(h2l, f"F1@{k}")
+
+        pair_dict.update({
             "base_queries": base.get("MAP", {}).get("n") if isinstance(base.get("MAP"), dict) else None,
             "h2l_queries": h2l.get("MAP", {}).get("n") if isinstance(h2l.get("MAP"), dict) else None,
             "case_diagnostics": _pair_case_diagnostics(raw, base_name, h2l_name),
             "limitation_coverage": BASELINE_LIMITATION_GUIDE.get(pair["family"], {}),
             "interpretation": _strategy_delta_interpretation(base_name, quality_delta, time_delta),
         })
+        pairs.append(pair_dict)
     return pairs
 
 
