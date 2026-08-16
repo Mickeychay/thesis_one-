@@ -1,0 +1,69 @@
+% Table 1: Main Strategy Comparison
+
+\begin{table*}[t]
+\centering
+\caption{Retrieval Quality Comparison Across Strategies (Corpus-Level Metrics)}
+\label{tab:main_comparison}
+\begin{tabular}{lcccccc}
+\toprule
+Strategy & nDCG@5 & P@5 & MAP & MRR & F1@5 & Time (s) \\
+\midrule
+bm25\_only & 0.1870 ± 0.2878 & 0.1360 ± 0.2076 & \textbf{0.2267 ± 0.2924} & 0.2636 ± 0.3572 & 0.1566 ± 0.2208 & \textbf{0.0036 ± 0.0029} \\
+naive\_rag & 0.0928 ± 0.1581 & 0.1180 ± 0.1878 & 0.0575 ± 0.0990 & 0.2329 ± 0.3224 & 0.0677 ± 0.1114 & 0.0377 ± 0.0497 \\
+hyde & 0.0127 ± 0.0599 & 0.0140 ± 0.0648 & 0.0041 ± 0.0252 & 0.0209 ± 0.0845 & 0.0079 ± 0.0517 & 4.6319 ± 1.2101 \\
+basic & 0.1891 ± 0.2668 & 0.1940 ± 0.2521 & 0.1284 ± 0.2030 & 0.3507 ± 0.3896 & 0.1247 ± 0.1719 & 19.0008 ± 3.4884 \\
+\midrule
+h2l-bm25 & 0.2250 ± 0.2800 & 0.2260 ± 0.2618 & 0.1433 ± 0.1919 & 0.3388 ± 0.3647 & 0.1496 ± 0.1764 & 0.0163 ± 0.0070 \\
+h2l-naive\_rag & 0.1128 ± 0.1859 & 0.1460 ± 0.2330 & 0.0654 ± 0.1133 & 0.2493 ± 0.3390 & 0.0808 ± 0.1290 & 0.1795 ± 0.1606 \\
+h2l-hyde & 0.0109 ± 0.0615 & 0.0120 ± 0.0621 & 0.0045 ± 0.0387 & 0.0182 ± 0.0818 & 0.0068 ± 0.0507 & 4.7711 ± 1.2535 \\
+h2l-hybrid & \textbf{0.2756 ± 0.3056} & \textbf{0.2580 ± 0.2861} & 0.1812 ± 0.2202 & \textbf{0.4350 ± 0.4016} & \textbf{0.1754 ± 0.1885} & 20.3372 ± 3.2121 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+
+
+% Table 3: Statistical Significance
+
+\begin{table*}[t]
+\centering
+\caption{Pairwise Statistical Comparison (nDCG@5, Wilcoxon two-sided + Holm Bonferroni)}
+\label{tab:significance}
+\begin{tabular}{lcccl}
+\toprule
+Comparison & $p$-value (Holm) & Cohen's $d$ & $\Delta$ & Effect \\
+\midrule
+basic\_vs\_h2l-bm25$^*$ & 0.4649 & -0.152 & -0.0359 & negligible \\
+basic\_vs\_h2l-hybrid$^*$ & 0.0019 & -0.400 & -0.0865 & small \\
+basic\_vs\_h2l-hyde$^*$ & $<$0.0001 & +0.673 & +0.1783 & medium \\
+basic\_vs\_h2l-naive\_rag$^*$ & 0.0153 & +0.325 & +0.0763 & small \\
+bm25\_only\_vs\_basic & 1.0000 & -0.008 & -0.0021 & negligible \\
+bm25\_only\_vs\_h2l-bm25$^*$ & 0.2644 & -0.174 & -0.0380 & negligible \\
+bm25\_only\_vs\_h2l-hybrid$^*$ & 0.0254 & -0.308 & -0.0886 & small \\
+bm25\_only\_vs\_h2l-hyde$^*$ & $<$0.0001 & +0.606 & +0.1761 & medium \\
+bm25\_only\_vs\_h2l-naive\_rag$^*$ & 0.2644 & +0.236 & +0.0742 & small \\
+bm25\_only\_vs\_hyde$^*$ & $<$0.0001 & +0.619 & +0.1743 & medium \\
+bm25\_only\_vs\_naive\_rag$^*$ & 0.0532 & +0.305 & +0.0942 & small \\
+h2l-bm25\_vs\_h2l-hybrid$^*$ & 0.2644 & -0.220 & -0.0506 & small \\
+h2l-bm25\_vs\_h2l-hyde$^*$ & $<$0.0001 & +0.783 & +0.2142 & medium \\
+h2l-bm25\_vs\_h2l-naive\_rag$^*$ & 0.0009 & +0.389 & +0.1122 & small \\
+h2l-hyde\_vs\_h2l-hybrid$^*$ & $<$0.0001 & -0.848 & -0.2648 & large \\
+h2l-naive\_rag\_vs\_h2l-hybrid$^*$ & $<$0.0001 & -0.572 & -0.1628 & medium \\
+h2l-naive\_rag\_vs\_h2l-hyde$^*$ & $<$0.0001 & +0.555 & +0.1020 & medium \\
+hyde\_vs\_basic$^*$ & $<$0.0001 & -0.675 & -0.1764 & medium \\
+hyde\_vs\_h2l-bm25$^*$ & $<$0.0001 & -0.795 & -0.2123 & medium \\
+hyde\_vs\_h2l-hybrid$^*$ & $<$0.0001 & -0.860 & -0.2629 & large \\
+hyde\_vs\_h2l-hyde & 1.0000 & +0.056 & +0.0018 & negligible \\
+hyde\_vs\_h2l-naive\_rag$^*$ & $<$0.0001 & -0.540 & -0.1001 & medium \\
+naive\_rag\_vs\_basic$^*$ & 0.0038 & -0.386 & -0.0964 & small \\
+naive\_rag\_vs\_h2l-bm25$^*$ & 0.0003 & -0.447 & -0.1323 & small \\
+naive\_rag\_vs\_h2l-hybrid$^*$ & $<$0.0001 & -0.631 & -0.1829 & medium \\
+naive\_rag\_vs\_h2l-hyde$^*$ & $<$0.0001 & +0.544 & +0.0819 & medium \\
+naive\_rag\_vs\_h2l-naive\_rag$^*$ & 0.2644 & -0.203 & -0.0201 & small \\
+naive\_rag\_vs\_hyde$^*$ & $<$0.0001 & +0.518 & +0.0801 & medium \\
+\bottomrule
+\end{tabular}
+\vspace{2mm}
+\footnotesize{$^*$ indicates $p < 0.05$ after Holm–Bonferroni correction. Total comparisons: 28.}
+\end{table*}

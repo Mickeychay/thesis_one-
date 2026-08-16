@@ -29,6 +29,12 @@ import re
 import sys
 import os
 from pathlib import Path
+
+# Ensure repo root is in sys.path so 'h2l' module can be imported
+_REPO_ROOT = Path(__file__).parent.parent.resolve()
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Set
 from dataclasses import dataclass, field
 from collections import defaultdict
@@ -307,8 +313,18 @@ def ndcg_at_k(relevance_grades: List[int], k: int) -> float:
     return actual_dcg / ideal_dcg
 
 
-def dcg_components_at_k(relevance_grades: List[int], k: int):
-    """Return (DCG@k, IDCG@k) for provenance columns in the ablation CSV."""
+def dcg_components_at_k(
+    relevance_grades: List[int],
+    k: int,
+    all_qrel_grades: Optional[List[int]] = None,
+):
+    """Return (DCG@k, IDCG@k) for provenance columns in the ablation CSV.
+
+    If all_qrel_grades is supplied (corpus-level grades from qrels), IDCG is
+    built from the full relevance pool so the ideal ranking can include docs
+    not returned by the retriever.  Without it, IDCG falls back to the
+    retrieved-results-only ideal (previous behaviour).
+    """
     def dcg(grades, cutoff):
         result = 0.0
         for i, g in enumerate(grades[:cutoff]):
@@ -316,17 +332,23 @@ def dcg_components_at_k(relevance_grades: List[int], k: int):
         return result
 
     actual_dcg = dcg(relevance_grades, k)
-    ideal_dcg = dcg(sorted(relevance_grades, reverse=True), k)
+    ideal_source = all_qrel_grades if all_qrel_grades is not None else relevance_grades
+    ideal_dcg = dcg(sorted(ideal_source, reverse=True), k)
     return actual_dcg, ideal_dcg
 
 
-def average_precision(relevance_grades: List[int]) -> float:
+def average_precision(relevance_grades: List[int], total_relevant: Optional[int] = None) -> float:
     """
     Average Precision (AP)
 
-    AP = (Σᵢ P(i) × rel(i)) / |relevant|
+    AP = (Σᵢ P(i) × rel(i)) / R_q
+
+    where R_q is the total number of relevant documents for this query.
+    If total_relevant is provided (from corpus-level qrels), that value is
+    used as R_q; otherwise it is counted from the retrieved grades only.
     """
-    total_relevant = sum(1 for g in relevance_grades if g > 0)
+    if total_relevant is None:
+        total_relevant = sum(1 for g in relevance_grades if g > 0)
     if total_relevant == 0:
         return 0.0
 
@@ -364,18 +386,40 @@ def f1_at_k(relevance_grades: List[int], k: int, total_relevant: int) -> float:
 
 def compute_all_metrics(
     relevance_grades: List[int],
-    k_values: List[int] = None
+    k_values: List[int] = None,
+    corpus_total_relevant: Optional[int] = None,
+    corpus_qrel_grades: Optional[List[int]] = None,
 ) -> Dict:
-    """Compute all rank-aware metrics for a single query"""
+    """Compute all rank-aware metrics for a single query.
+
+    Args:
+        relevance_grades:       Ordered relevance grades (0/1/2) for retrieved docs.
+        k_values:               Cutoff values to compute metrics at.
+        corpus_total_relevant:  Total relevant docs in the corpus for this query,
+                                derived from pooled or full qrels.  When provided,
+                                Recall@k, AP, and F1@k use this as the denominator
+                                so that metrics reflect corpus-level coverage rather
+                                than retrieved-set coverage only.
+        corpus_qrel_grades:     Full list of relevance grades from qrels (all judged
+                                docs).  When provided, IDCG is built from this pool
+                                so nDCG reflects performance against the ideal over
+                                the full judgment set.
+    """
     if k_values is None:
         k_values = [3, 5, 10]
 
-    total_relevant = sum(1 for g in relevance_grades if g > 0)
+    # Denominator for recall-based metrics: corpus-level if available
+    total_relevant = (
+        corpus_total_relevant
+        if corpus_total_relevant is not None
+        else sum(1 for g in relevance_grades if g > 0)
+    )
 
     metrics = {
         'total_docs': len(relevance_grades),
         'total_relevant': total_relevant,
-        'MAP': average_precision(relevance_grades),
+        'total_relevant_source': 'corpus_qrels' if corpus_total_relevant is not None else 'retrieved_only',
+        'MAP': average_precision(relevance_grades, total_relevant),
         'MRR': reciprocal_rank(relevance_grades),
     }
 
@@ -383,7 +427,7 @@ def compute_all_metrics(
         metrics[f'P@{k}'] = precision_at_k(relevance_grades, k)
         metrics[f'R@{k}'] = recall_at_k(relevance_grades, k, total_relevant)
         metrics[f'F1@{k}'] = f1_at_k(relevance_grades, k, total_relevant)
-        dcg_val, idcg_val = dcg_components_at_k(relevance_grades, k)
+        dcg_val, idcg_val = dcg_components_at_k(relevance_grades, k, corpus_qrel_grades)
         metrics[f'DCG@{k}'] = dcg_val
         metrics[f'IDCG@{k}'] = idcg_val
         metrics[f'nDCG@{k}'] = dcg_val / idcg_val if idcg_val > 0 else 0.0
@@ -643,6 +687,111 @@ class EvaluationRunner:
             })
         return problems
 
+    # ------------------------------------------------------------------
+    # CORPUS QRELS — automated keyword-based relevance for all chunks
+    # ------------------------------------------------------------------
+
+    def _build_or_load_corpus_qrels(
+        self,
+        cases: List[Dict],
+        qrels_path: str,
+        ground_truth_path: str,
+    ) -> Dict[str, Dict[str, int]]:
+        """
+        Return corpus-level relevance judgments: case_id -> {chunk_id: grade}.
+
+        On first call the judgments are computed by applying judge_relevance()
+        to all corpus chunks for every query, then written to qrels_path.
+        Subsequent calls load the cached file if the ground-truth and taxonomy
+        hashes still match, otherwise the file is rebuilt from scratch.
+
+        Only non-zero grades are stored to keep the file compact; a lookup
+        that misses in the dict implicitly returns grade 0.
+        """
+        qrels_file = Path(qrels_path)
+        gt_sha = _sha256_file(ground_truth_path)
+        tax_sha = _sha256_file(self.taxonomy_path)
+
+        # Try loading an existing file
+        if qrels_file.exists():
+            try:
+                with open(qrels_file, 'r', encoding='utf-8') as fh:
+                    cached = json.load(fh)
+                meta = cached.get('metadata', {})
+                if (
+                    meta.get('ground_truth_sha256') == gt_sha
+                    and meta.get('taxonomy_sha256') == tax_sha
+                    and meta.get('num_queries') == len(cases)
+                ):
+                    logger.info("📂 Loaded cached corpus qrels from %s", qrels_path)
+                    return cached['qrels']
+                else:
+                    logger.info("⚠️  Cached qrels are stale (hash or size mismatch); rebuilding…")
+            except Exception as exc:
+                logger.warning("Could not read cached qrels (%s); rebuilding…", exc)
+
+        # Build from scratch
+        logger.info("🔨 Building corpus qrels for %d queries × %d chunks…", len(cases), len(self._get_all_docs()))
+        all_docs = self._get_all_docs()
+        qrels: Dict[str, Dict[str, int]] = {}
+
+        for idx, case in enumerate(cases):
+            case_id = case.get('case_id', f'case_{idx}')
+            expected = case.get('expected_diagnosis', {}).get('problem_list', [])
+            rel_kw = build_relevance_keywords(expected, self.taxonomy)
+            case_qrels: Dict[str, int] = {}
+            for doc in all_docs:
+                chunk_id = (
+                    doc.meta.get('chunk_id', str(doc.id))
+                    if hasattr(doc, 'meta') and isinstance(doc.meta, dict)
+                    else str(doc.id)
+                )
+                grade = judge_relevance(doc.text, rel_kw, expected)
+                if grade > 0:
+                    case_qrels[chunk_id] = grade
+            qrels[case_id] = case_qrels
+
+        # Persist with provenance
+        qrels_file.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            'metadata': {
+                'version': '1.0',
+                'evaluation_unit': 'chunk',
+                'relevant_threshold': 1,
+                'judgment_method': 'automated_keyword_matching',
+                'judgment_scale': {
+                    '0': 'not_relevant',
+                    '1': 'partially_relevant',
+                    '2': 'highly_relevant',
+                },
+                'ground_truth_sha256': gt_sha,
+                'taxonomy_sha256': tax_sha,
+                'num_queries': len(cases),
+                'num_corpus_chunks': len(all_docs),
+                'created_at': datetime.now().isoformat(),
+                'note': (
+                    'Only non-zero grades are stored. '
+                    'Missing chunk_id implies grade 0 (not relevant). '
+                    'Recall@k denominators derived from sum(grade >= 1) per query.'
+                ),
+            },
+            'qrels': qrels,
+        }
+        with open(qrels_file, 'w', encoding='utf-8') as fh:
+            json.dump(payload, fh, ensure_ascii=False, indent=2)
+        logger.info("💾 Corpus qrels saved to %s", qrels_path)
+        return qrels
+
+    def _get_all_docs(self):
+        """Return all corpus docs, loading them directly if shared components not yet initialized."""
+        if self._shared is not None:
+            return self._shared['all_docs']
+
+        # Shared components not loaded yet — load docs directly from metadata
+        config = self._ensure_config()
+        from h2l.retriever import HybridRetriever
+        return HybridRetriever._load_all_docs(config)
+
     def evaluate_single_query(
         self,
         strategy_name: str,
@@ -650,9 +799,17 @@ class EvaluationRunner:
         expected_problems: List[Dict],
         top_k: int = 15,
         problem_source: str = "detected",
+        case_qrels: Optional[Dict[str, int]] = None,
     ) -> Dict:
         """
         Evaluate a single query on a single strategy.
+
+        Args:
+            case_qrels: Optional dict mapping chunk_id -> relevance grade from
+                        pre-built corpus qrels.  When supplied, relevance grades
+                        for retrieved docs are looked up here (no on-the-fly
+                        judge_relevance call) and corpus-level totals are derived
+                        from the full qrel set for correct Recall/AP/IDCG.
 
         Returns:
             Dict with metrics and timing
@@ -660,7 +817,7 @@ class EvaluationRunner:
         retriever = self._get_retriever(strategy_name)
         strategy_cfg = STRATEGY_CONFIGS[strategy_name]
 
-        # Build relevance keywords from expected problems
+        # Build relevance keywords — still needed when case_qrels is absent
         relevance_keywords = build_relevance_keywords(expected_problems, self.taxonomy)
 
         # Detect problems if strategy needs them
@@ -693,7 +850,9 @@ class EvaluationRunner:
 
         elapsed = time.time() - start_time
 
-        # Judge relevance for each retrieved doc
+        # Judge relevance for each retrieved doc.
+        # When corpus qrels are available, look up the pre-judged grade by
+        # chunk_id; otherwise fall back to on-the-fly keyword matching.
         relevance_grades = []
         doc_details = []
 
@@ -701,19 +860,42 @@ class EvaluationRunner:
             doc = r.doc if hasattr(r, 'doc') else r
             doc_text = getattr(doc, 'text', '')
             score = getattr(r, 'final_score', getattr(r, 'score', 0.0))
+            chunk_id = (
+                doc.meta.get('chunk_id', str(doc.id))
+                if hasattr(doc, 'meta') and isinstance(doc.meta, dict)
+                else str(getattr(doc, 'id', -1))
+            )
 
-            grade = judge_relevance(doc_text, relevance_keywords, expected_problems)
+            if case_qrels is not None:
+                grade = case_qrels.get(chunk_id, 0)
+            else:
+                grade = judge_relevance(doc_text, relevance_keywords, expected_problems)
+
             relevance_grades.append(grade)
 
             doc_details.append({
                 'doc_id': getattr(doc, 'id', -1),
+                'chunk_id': chunk_id,
                 'score': float(score),
                 'relevance_grade': grade,
                 'text_preview': doc_text[:100] + '...' if len(doc_text) > 100 else doc_text,
             })
 
+        # Derive corpus-level totals from qrels when available so that
+        # Recall, AP/MAP, and IDCG all use the correct denominator.
+        corpus_total_relevant: Optional[int] = None
+        corpus_qrel_grades: Optional[List[int]] = None
+        if case_qrels is not None:
+            corpus_total_relevant = sum(1 for g in case_qrels.values() if g >= 1)
+            corpus_qrel_grades = list(case_qrels.values())
+
         # Compute metrics
-        metrics = compute_all_metrics(relevance_grades, k_values=[3, 5, 10])
+        metrics = compute_all_metrics(
+            relevance_grades,
+            k_values=[3, 5, 10],
+            corpus_total_relevant=corpus_total_relevant,
+            corpus_qrel_grades=corpus_qrel_grades,
+        )
         metrics['retrieval_time'] = elapsed
         metrics['num_detected_problems'] = len(detected_problems)
         metrics['detected_codes'] = [p.get('code', '') for p in detected_problems]
@@ -734,10 +916,17 @@ class EvaluationRunner:
         problem_source: str = "detected",
         checkpoint_dir: Optional[str] = None,
         progress_dir: Optional[str] = None,
+        qrels_path: Optional[str] = None,
     ) -> Dict:
         """
         Run full evaluation across all strategies and ground truth cases.
         Uses Test set by default to prevent parameter/rule overfitting.
+
+        Args:
+            qrels_path: Path for corpus qrels JSON (built once, then reused).
+                        When provided, conventional corpus-level Recall, AP/MAP,
+                        and IDCG are computed against the full judgment set.
+                        Omit to use the legacy retrieved-only denominator.
 
         Returns:
             Dict with per-strategy, per-query results and aggregates
@@ -753,12 +942,39 @@ class EvaluationRunner:
         logger.info(f"📊 Evaluating {len(strategies)} strategies on {len(cases)} Unseen TEST cases")
         logger.info(f"   Strategies: {strategies}")
 
+        # Build (or load cached) automated corpus qrels so Recall, AP, and IDCG
+        # use the correct corpus-level denominator for every query.
+        corpus_qrels: Optional[Dict[str, Dict[str, int]]] = None
+        if qrels_path:
+            corpus_qrels = self._build_or_load_corpus_qrels(
+                cases=cases,
+                qrels_path=qrels_path,
+                ground_truth_path=ground_truth_path,
+            )
+            logger.info(f"✅ Corpus qrels ready for {len(corpus_qrels)} queries")
+
         all_results = {}
         aggregate_metrics = {}
         total_cases = len(cases)
         total_strategies = len(strategies)
         evaluation_started_at = time.time()
 
+        if checkpoint_dir:
+            loaded = load_checkpoint(
+                checkpoint_dir=checkpoint_dir,
+                expected_ground_truth_sha=_sha256_file(ground_truth_path),
+                expected_taxonomy_sha=_sha256_file(self.taxonomy_path),
+                expected_top_k=top_k,
+                expected_problem_source=problem_source,
+            )
+            if loaded:
+                loaded_results, loaded_aggs = loaded
+                for strat, strat_results in loaded_results.items():
+                    if strat in strategies:
+                        all_results[strat] = strat_results
+                        aggregate_metrics[strat] = loaded_aggs[strat]
+
+        completed_so_far = len(all_results)
         if progress_dir:
             _write_progress(progress_dir, {
                 "status": "running",
@@ -767,12 +983,12 @@ class EvaluationRunner:
                 "top_k": top_k,
                 "ground_truth_path": ground_truth_path,
                 "strategies": strategies,
-                "completed_strategy_count": 0,
+                "completed_strategy_count": completed_so_far,
                 "total_strategy_count": total_strategies,
-                "completed_case_count": 0,
+                "completed_case_count": completed_so_far * total_cases,
                 "total_case_count": total_cases * total_strategies,
                 "current_strategy": None,
-                "current_strategy_index": 0,
+                "current_strategy_index": completed_so_far,
                 "current_case_id": None,
                 "current_case_index": 0,
                 "elapsed_seconds": 0.0,
@@ -780,8 +996,14 @@ class EvaluationRunner:
             })
 
         for strategy_index, strategy in enumerate(strategies, start=1):
+            if strategy in all_results:
+                logger.info(f"\n{'='*60}")
+                logger.info(f"⏩ Strategy [{strategy_index}/{total_strategies}]: {strategy} (Already completed in checkpoint, skipping)")
+                logger.info(f"{'='*60}")
+                continue
+
             logger.info(f"\n{'='*60}")
-            logger.info(f"🔄 Strategy: {strategy} ({STRATEGY_CONFIGS[strategy]['description']})")
+            logger.info(f"🔄 Strategy [{strategy_index}/{total_strategies}]: {strategy} ({STRATEGY_CONFIGS[strategy]['description']})")
             logger.info(f"{'='*60}")
 
             strategy_results = []
@@ -798,7 +1020,7 @@ class EvaluationRunner:
                 logger.info(f"  [{i+1}/{len(cases)}] {case_id} ({case.get('complexity', '?')})")
 
                 if progress_dir:
-                    completed_case_count = ((strategy_index - 1) * total_cases) + i
+                    completed_case_count = (len(all_results) * total_cases) + i
                     _write_progress(progress_dir, {
                         "status": "running",
                         "phase": "evaluating",
@@ -806,7 +1028,7 @@ class EvaluationRunner:
                         "top_k": top_k,
                         "ground_truth_path": ground_truth_path,
                         "strategies": strategies,
-                        "completed_strategy_count": strategy_index - 1,
+                        "completed_strategy_count": len(all_results),
                         "total_strategy_count": total_strategies,
                         "completed_case_count": completed_case_count,
                         "total_case_count": total_cases * total_strategies,
@@ -825,6 +1047,7 @@ class EvaluationRunner:
                     expected_problems=expected,
                     top_k=top_k,
                     problem_source=problem_source,
+                    case_qrels=corpus_qrels.get(case_id) if corpus_qrels else None,
                 )
 
                 if 'error' in result:
@@ -880,6 +1103,7 @@ class EvaluationRunner:
                     ground_truth_path=ground_truth_path,
                     taxonomy_path=self.taxonomy_path,
                     status='partial',
+                    qrels_path=qrels_path,
                 )
                 save_checkpoint(checkpoint_results, checkpoint_dir)
 
@@ -930,6 +1154,7 @@ class EvaluationRunner:
             ground_truth_path=ground_truth_path,
             taxonomy_path=self.taxonomy_path,
             status='complete',
+            qrels_path=qrels_path,
         )
         if progress_dir:
             _write_progress(progress_dir, {
@@ -1255,21 +1480,23 @@ def run_statistical_tests(aggregates: Dict) -> Dict:
     Run statistical significance tests between strategies.
 
     Tests:
-    - Paired t-test (or Wilcoxon for non-normal)
-    - Effect size (Cohen's d)
-    - Confidence intervals
+    - Paired two-sided Wilcoxon signed-rank test (always; no normality assumption)
+    - Holm–Bonferroni correction for multiple comparisons across all pairs
+    - Effect size (Cohen's d on paired differences)
+
+    Metrics covered: nDCG@5, nDCG@10, MAP, MRR  (thesis primary metrics)
     """
     from scipy import stats
 
     results = {}
     strategies = list(aggregates.keys())
-    key_metrics = ['nDCG@5', 'P@5', 'MAP', 'MRR']
+    key_metrics = ['nDCG@5', 'nDCG@10', 'MAP', 'MRR']
 
     for metric in key_metrics:
         metric_results = {}
 
-        # Get values for each strategy
-        strategy_values = {}
+        # Collect per-strategy value arrays
+        strategy_values: Dict[str, List[float]] = {}
         for s in strategies:
             if metric in aggregates[s]:
                 strategy_values[s] = aggregates[s][metric]['values']
@@ -1277,9 +1504,12 @@ def run_statistical_tests(aggregates: Dict) -> Dict:
         if len(strategy_values) < 2:
             continue
 
-        # Pairwise tests
-        pairwise = {}
         strategy_list = list(strategy_values.keys())
+
+        # ── Pass 1: collect raw p-values from all pairs ──────────────────
+        pair_keys: List[str] = []
+        raw_p_values: List[float] = []
+        pair_data: Dict[str, Dict] = {}
 
         for i in range(len(strategy_list)):
             for j in range(i + 1, len(strategy_list)):
@@ -1287,7 +1517,6 @@ def run_statistical_tests(aggregates: Dict) -> Dict:
                 v1 = strategy_values[s1]
                 v2 = strategy_values[s2]
 
-                # Ensure same length (paired test)
                 min_len = min(len(v1), len(v2))
                 v1_paired = v1[:min_len]
                 v2_paired = v2[:min_len]
@@ -1295,53 +1524,74 @@ def run_statistical_tests(aggregates: Dict) -> Dict:
                 if min_len < 3:
                     continue
 
-                # Normality check
+                key = f"{s1}_vs_{s2}"
+                pair_keys.append(key)
+
                 try:
-                    _, p_norm1 = stats.shapiro(v1_paired)
-                    _, p_norm2 = stats.shapiro(v2_paired)
-                    is_normal = p_norm1 > 0.05 and p_norm2 > 0.05
-                except:
-                    is_normal = False
+                    stat, p_raw = stats.wilcoxon(
+                        v1_paired, v2_paired, alternative='two-sided'
+                    )
+                except ValueError:
+                    # All differences are zero
+                    stat, p_raw = 0.0, 1.0
 
-                if is_normal:
-                    stat, p_value = stats.ttest_rel(v1_paired, v2_paired)
-                    test_name = "paired_t_test"
-                else:
-                    stat, p_value = stats.wilcoxon(v1_paired, v2_paired)
-                    test_name = "wilcoxon_signed_rank"
-
-                # Cohen's d
                 diff = np.array(v1_paired) - np.array(v2_paired)
-                d = float(np.mean(diff) / (np.std(diff) + 1e-10))
+                cohens_d = float(np.mean(diff) / (np.std(diff) + 1e-10))
 
-                pairwise[f"{s1}_vs_{s2}"] = {
-                    'test': test_name,
+                raw_p_values.append(p_raw)
+                pair_data[key] = {
+                    'test': 'wilcoxon_signed_rank_two_sided',
                     'statistic': float(stat),
-                    'p_value': float(p_value),
-                    'significant': p_value < 0.05,
-                    'cohens_d': d,
+                    'p_value_raw': float(p_raw),
+                    'cohens_d': cohens_d,
                     'effect_interpretation': (
-                        'large' if abs(d) >= 0.8 else
-                        'medium' if abs(d) >= 0.5 else
-                        'small' if abs(d) >= 0.2 else
+                        'large' if abs(cohens_d) >= 0.8 else
+                        'medium' if abs(cohens_d) >= 0.5 else
+                        'small' if abs(cohens_d) >= 0.2 else
                         'negligible'
                     ),
                     'mean_diff': float(np.mean(v1_paired) - np.mean(v2_paired)),
+                    'n_pairs': min_len,
                 }
 
-        metric_results['pairwise'] = pairwise
+        # ── Pass 2: Holm–Bonferroni correction ───────────────────────────
+        if raw_p_values:
+            n_tests = len(raw_p_values)
+            # Sort by ascending p-value
+            order = sorted(range(n_tests), key=lambda idx: raw_p_values[idx])
+            p_holm = [None] * n_tests
+            running_max = 0.0
+            for rank, idx in enumerate(order):
+                adjusted = raw_p_values[idx] * (n_tests - rank)
+                running_max = max(running_max, adjusted)
+                p_holm[idx] = min(running_max, 1.0)
 
-        # Descriptive table
+            for idx, key in enumerate(pair_keys):
+                pair_data[key]['p_value_holm'] = round(p_holm[idx], 6)
+                pair_data[key]['significant_holm'] = p_holm[idx] < 0.05
+                # Keep backward-compat alias
+                pair_data[key]['p_value'] = p_holm[idx]
+                pair_data[key]['significant'] = p_holm[idx] < 0.05
+
+        metric_results['pairwise'] = pair_data
+        metric_results['multiple_comparison_correction'] = 'holm_bonferroni'
+        metric_results['n_comparisons'] = len(pair_keys)
+
+        # ── Descriptive statistics ────────────────────────────────────────
         desc_table = {}
         for s, vals in strategy_values.items():
+            n = len(vals)
+            mean = float(np.mean(vals))
+            std = float(np.std(vals))
             desc_table[s] = {
-                'mean': float(np.mean(vals)),
-                'std': float(np.std(vals)),
+                'mean': mean,
+                'std': std,
                 'median': float(np.median(vals)),
                 'ci_95': (
-                    float(np.mean(vals) - 1.96 * np.std(vals) / np.sqrt(len(vals))),
-                    float(np.mean(vals) + 1.96 * np.std(vals) / np.sqrt(len(vals)))
+                    mean - 1.96 * std / (n ** 0.5),
+                    mean + 1.96 * std / (n ** 0.5),
                 ),
+                'n': n,
             }
         metric_results['descriptive'] = desc_table
 
@@ -1591,13 +1841,49 @@ def build_results_payload(
     ground_truth_path: str,
     taxonomy_path: str,
     status: str = 'complete',
+    qrels_path: Optional[str] = None,
+    repeat_count: int = 1,
 ) -> Dict:
+    """Build the canonical results dict with full provenance metadata.
+
+    Provenance fields recorded:
+        - timestamp, status
+        - ground_truth_sha256, taxonomy_sha256, evaluation_code_sha256
+        - corpus_sha256  (hash of the metadata store used as the retrieval corpus)
+        - qrels_path / qrels_sha256  (when corpus qrels were used)
+        - split (always 'test' — evaluation never touches the development set)
+        - top_k, problem_source, repeat_count
+        - strategies (completed / pending)
+    """
     completed_strategies = list(aggregates.keys())
-    pending_strategies = [strategy for strategy in strategies if strategy not in completed_strategies]
+    pending_strategies = [s for s in strategies if s not in completed_strategies]
+
+    # Corpus hash: hash the metadata store that was loaded during retrieval
+    corpus_sha: Optional[str] = None
+    try:
+        import sys as _sys
+        _repo_root = str(Path(__file__).parent.parent)
+        if _repo_root not in _sys.path:
+            _sys.path.insert(0, _repo_root)
+        from h2l.config import get_config as _get_config
+        _corpus_path = _get_config().METADATA_STORE
+        corpus_sha = _sha256_file(_corpus_path)
+    except Exception:
+        pass
+
+    qrels_sha: Optional[str] = None
+    if qrels_path:
+        try:
+            qrels_sha = _sha256_file(qrels_path)
+        except Exception:
+            pass
+
     return {
         'metadata': {
             'timestamp': datetime.now().isoformat(),
             'num_cases': len(cases),
+            'split': 'test',
+            'repeat_count': repeat_count,
             'strategies': strategies,
             'top_k': top_k,
             'problem_source': problem_source,
@@ -1610,6 +1896,9 @@ def build_results_payload(
             'ground_truth_sha256': _sha256_file(ground_truth_path),
             'taxonomy_path': str(taxonomy_path),
             'taxonomy_sha256': _sha256_file(taxonomy_path),
+            'corpus_sha256': corpus_sha,
+            'qrels_path': str(qrels_path) if qrels_path else None,
+            'qrels_sha256': qrels_sha,
             'evaluation_code_sha256': _sha256_file(__file__),
         },
         'per_strategy': per_strategy,
@@ -1725,6 +2014,84 @@ def save_checkpoint(results: Dict, output_dir: str = "evaluation_results") -> Tu
         results.get('metadata', {}).get('total_strategy_count', 0),
     )
     return summary_file, raw_file, cases_file
+
+
+def load_checkpoint(
+    checkpoint_dir: str = "evaluation_results",
+    expected_ground_truth_sha: Optional[str] = None,
+    expected_taxonomy_sha: Optional[str] = None,
+    expected_top_k: Optional[int] = None,
+    expected_problem_source: Optional[str] = None,
+) -> Optional[Tuple[Dict[str, List[Dict]], Dict[str, Dict]]]:
+    """
+    Attempt to load completed strategies from an existing checkpoint bundle.
+    Returns (all_results, aggregate_metrics) if compatible, else None.
+    """
+    output_path = Path(checkpoint_dir)
+    summary_file = output_path / CHECKPOINT_ARTIFACT_BASENAMES['summary']
+    raw_file = output_path / CHECKPOINT_ARTIFACT_BASENAMES['raw']
+    cases_file = output_path / CHECKPOINT_ARTIFACT_BASENAMES['cases']
+
+    if not (summary_file.exists() and raw_file.exists() and cases_file.exists()):
+        return None
+
+    try:
+        with open(summary_file, 'r', encoding='utf-8') as f:
+            summary = json.load(f)
+        with open(raw_file, 'r', encoding='utf-8') as f:
+            raw_data = json.load(f)
+        with open(cases_file, 'r', encoding='utf-8') as f:
+            cases_data = json.load(f)
+
+        meta = summary.get('metadata', {})
+        if expected_ground_truth_sha and meta.get('ground_truth_sha256') != expected_ground_truth_sha:
+            logger.info("Checkpoint ground truth sha mismatch; ignoring checkpoint")
+            return None
+        if expected_taxonomy_sha and meta.get('taxonomy_sha256') != expected_taxonomy_sha:
+            logger.info("Checkpoint taxonomy sha mismatch; ignoring checkpoint")
+            return None
+        if expected_top_k is not None and meta.get('top_k') != expected_top_k:
+            logger.info("Checkpoint top_k mismatch; ignoring checkpoint")
+            return None
+        if expected_problem_source and meta.get('problem_source') != expected_problem_source:
+            logger.info("Checkpoint problem_source mismatch; ignoring checkpoint")
+            return None
+
+        per_strategy_cases = cases_data.get('per_strategy', {})
+        completed_strategies = meta.get('completed_strategies', list(summary.get('aggregates', {}).keys()))
+
+        all_results = {}
+        aggregate_metrics = {}
+
+        for strat in completed_strategies:
+            if strat in per_strategy_cases and strat in raw_data:
+                all_results[strat] = per_strategy_cases[strat]
+                agg = {}
+                for metric_name, values in raw_data[strat].items():
+                    if values:
+                        agg[metric_name] = {
+                            'mean': float(np.mean(values)),
+                            'std': float(np.std(values)),
+                            'median': float(np.median(values)),
+                            'min': float(np.min(values)),
+                            'max': float(np.max(values)),
+                            'n': len(values),
+                            'values': values,
+                        }
+                aggregate_metrics[strat] = agg
+
+        if all_results:
+            logger.info(
+                "📂 Loaded checkpoint from %s with %d completed strategies: %s",
+                checkpoint_dir,
+                len(all_results),
+                list(all_results.keys()),
+            )
+            return all_results, aggregate_metrics
+    except Exception as exc:
+        logger.warning("Failed to load checkpoint from %s: %s", checkpoint_dir, exc)
+
+    return None
 
 
 def save_results(
@@ -1904,6 +2271,15 @@ def main():
                        help='Also run and append sentence polarity evaluation results')
     parser.add_argument('--history-limit', type=int, default=2,
                        help='Number of timestamped proper-eval bundles to keep after refreshing latest/checkpoint files')
+    parser.add_argument('--qrels-path', default=None,
+                       help=(
+                           'Path for automated corpus qrels JSON.  '
+                           'When set, conventional corpus-level Recall, AP/MAP, and IDCG '
+                           'are computed against all 884 corpus chunks.  '
+                           'The file is built on first run and reused on subsequent runs '
+                           'if ground-truth and taxonomy hashes still match.  '
+                           'Example: evaluation_results/corpus_qrels.json'
+                       ))
 
     args = parser.parse_args()
 
@@ -1924,6 +2300,7 @@ def main():
                 problem_source=args.problem_source,
                 checkpoint_dir=None if args.no_checkpoint else args.output_dir,
                 progress_dir=args.output_dir,
+                qrels_path=args.qrels_path,
             )
 
             _write_progress(args.output_dir, {
